@@ -29,8 +29,15 @@ router.get('/servers', ensureAuth, async (req, res) => {
     const guilds = req.session.guilds || [];
     console.log('📋 Total guilds:', guilds.length);
     
-    // ─── NO FILTER — SHOW ALL SERVERS ───────────────────────────
-    // const filteredGuilds = guilds; // ← ALL SERVERS
+    // ─── CORRECT PERMISSION CHECK ──────────────────────────────
+    // Check if user is OWNER (g.owner === true) OR ADMIN (permissions & 0x8)
+    const filteredGuilds = guilds.filter(g => {
+      const isOwner = g.owner === true;
+      const isAdmin = (g.permissions & 0x8) === 0x8;
+      return isOwner || isAdmin;
+    });
+    
+    console.log('📋 Owner/Admin guilds:', filteredGuilds.length);
     
     // ─── Check which servers the bot is in ──────────────────────
     const botToken = process.env.DISCORD_BOT_TOKEN;
@@ -49,7 +56,7 @@ router.get('/servers', ensureAuth, async (req, res) => {
     }
     
     // ─── Add hasBot status ────────────────────────────────────────
-    const serverList = guilds.map(g => ({
+    const serverList = filteredGuilds.map(g => ({
       ...g,
       hasBot: botGuildIds.includes(g.id)
     }));
