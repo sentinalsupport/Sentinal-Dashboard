@@ -1,13 +1,18 @@
+// FILE: routes/dashboard.js (ROUTE HANDLER)
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const GuildConfig = require('../models/GuildConfig');
 
+// ─── Auth Middleware ──────────────────────────────────────────────
 function ensureAuth(req, res, next) {
-  if (req.session.user) return next();
+  if (req.session.user) {
+    return next();
+  }
   res.redirect('/login');
 }
 
+// ─── Home ──────────────────────────────────────────────────────────
 router.get('/', (req, res) => {
   if (req.session.user) {
     res.redirect('/servers');
@@ -16,24 +21,21 @@ router.get('/', (req, res) => {
   }
 });
 
-// ─── THIS IS THE FIX ──────────────────────────────────────────────
+// ─── Servers List ──────────────────────────────────────────────────
 router.get('/servers', ensureAuth, async (req, res) => {
   try {
     console.log('📋 Fetching servers for user:', req.session.user.username);
     
     const guilds = req.session.guilds || [];
-    console.log('📋 Total guilds from Discord:', guilds.length);
+    console.log('📋 Total guilds:', guilds.length);
     
-    // ─── 🔥 ONLY KEEP SERVERS WHERE USER IS OWNER OR ADMIN ────
+    // ─── FILTER: Only Owner (0x1) or Administrator (0x8) ──────
     const filteredGuilds = guilds.filter(g => {
       const perms = g.permissions || 0;
-      // Owner = 0x1, Administrator = 0x8
-      const isOwner = (perms & 0x1) === 0x1;
-      const isAdmin = (perms & 0x8) === 0x8;
-      return isOwner || isAdmin;
+      return (perms & 0x1) === 0x1 || (perms & 0x8) === 0x8;
     });
     
-    console.log('📋 Filtered (Owner/Admin only):', filteredGuilds.length);
+    console.log('📋 Owner/Admin guilds:', filteredGuilds.length);
     
     // ─── Check which servers the bot is in ──────────────────────
     const botToken = process.env.DISCORD_BOT_TOKEN;
@@ -51,20 +53,18 @@ router.get('/servers', ensureAuth, async (req, res) => {
       }
     }
     
-    // ─── Add hasBot status to each server ────────────────────────
+    // ─── Add hasBot status ────────────────────────────────────────
     const serverList = filteredGuilds.map(g => ({
       ...g,
       hasBot: botGuildIds.includes(g.id)
     }));
-    
-    console.log('📋 Final list:', serverList.length, 'servers');
     
     res.render('servers', { 
       user: req.session.user, 
       guilds: serverList 
     });
   } catch (err) {
-    console.error('❌ Error:', err);
+    console.error('❌ Error fetching servers:', err);
     res.redirect('/login');
   }
 });
@@ -95,6 +95,7 @@ router.get('/servers/:guildId', ensureAuth, async (req, res) => {
       return res.redirect(`/invite/${guildId}`);
     }
     
+    // Get config from database
     let config = await GuildConfig.findOne({ guildId });
     if (!config) {
       config = {
@@ -110,6 +111,7 @@ router.get('/servers/:guildId', ensureAuth, async (req, res) => {
       };
     }
     
+    // Get channels from Discord API
     const channelsRes = await axios.get(
       `https://discord.com/api/v10/guilds/${guildId}/channels`,
       { headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` } }
@@ -129,12 +131,14 @@ router.get('/servers/:guildId', ensureAuth, async (req, res) => {
   }
 });
 
+// ─── Invite Redirect ─────────────────────────────────────────────────
 router.get('/invite/:guildId', ensureAuth, (req, res) => {
   const guildId = req.params.guildId;
   const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${guildId}`;
   res.redirect(inviteUrl);
 });
 
+// ─── Save Config ────────────────────────────────────────────────────
 router.post('/api/servers/:guildId/config', ensureAuth, async (req, res) => {
   try {
     const guildId = req.params.guildId;
@@ -164,6 +168,7 @@ router.post('/api/servers/:guildId/config', ensureAuth, async (req, res) => {
   }
 });
 
+// ─── Get Stats ──────────────────────────────────────────────────────
 router.get('/api/servers/:guildId/stats', ensureAuth, async (req, res) => {
   try {
     const guildId = req.params.guildId;
@@ -184,6 +189,7 @@ router.get('/api/servers/:guildId/stats', ensureAuth, async (req, res) => {
   }
 });
 
+// ─── General Invite Link ────────────────────────────────────────────
 router.get('/invite', (req, res) => {
   const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
   res.redirect(inviteUrl);
