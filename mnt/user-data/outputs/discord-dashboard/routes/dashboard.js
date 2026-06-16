@@ -26,14 +26,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ─── SIMPLEST SESSION ─────────────────────────────────────────────
+// ─── SESSION WITH CUSTOM NAME ─────────────────────────────────────
 app.use(
   session({
+    name: 'sentinal.sid',  // ← Custom cookie name
     secret: process.env.SESSION_SECRET || 'change-this-secret-key',
     resave: false,
-    saveUninitialized: true,  // ← Changed to true
+    saveUninitialized: true,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      secure: false,
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
     }
   })
 );
@@ -43,6 +48,7 @@ app.use((req, res, next) => {
   console.log('🍪 Cookie:', req.headers.cookie || 'None');
   console.log('📦 Session ID:', req.session?.id || 'None');
   console.log('👤 User:', req.session?.user?.username || 'None');
+  console.log('📦 Session data:', req.session);
   next();
 });
 
