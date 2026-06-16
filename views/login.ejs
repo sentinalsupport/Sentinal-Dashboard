@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        /* ===== RESET & BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -38,7 +37,6 @@
             background: #2563EB;
         }
 
-        /* ===== CONTAINER ===== */
         .container {
             max-width: 1100px;
             margin: 0 auto;
@@ -98,6 +96,7 @@
             font-size: 13px;
             font-weight: 500;
             transition: color 0.2s ease;
+            cursor: pointer;
         }
 
         .navbar .nav-links a:hover {
@@ -135,6 +134,7 @@
             font-size: 12px;
             font-weight: 600;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
 
         .navbar .premium-btn:hover {
@@ -155,6 +155,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            cursor: pointer;
         }
 
         .navbar .logout-btn:hover {
@@ -174,6 +175,69 @@
             font-size: 14px;
             font-weight: 600;
             color: #FFFFFF;
+        }
+
+        .navbar .login-btn {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFFFFF;
+            padding: 6px 20px;
+            border-radius: 100px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .navbar .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+        }
+
+        .navbar .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 100px;
+            background: rgba(34, 197, 94, 0.12);
+            color: #4ADE80;
+            border: 1px solid rgba(34, 197, 94, 0.15);
+        }
+
+        .navbar .status-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ADE80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .navbar .status-badge.maintenance {
+            background: rgba(245, 158, 11, 0.12);
+            color: #FBBF24;
+            border-color: rgba(245, 158, 11, 0.15);
+        }
+
+        .navbar .status-badge.maintenance .dot {
+            background: #FBBF24;
+        }
+
+        .navbar .status-badge.offline {
+            background: rgba(239, 68, 68, 0.12);
+            color: #EF4444;
+            border-color: rgba(239, 68, 68, 0.15);
+        }
+
+        .navbar .status-badge.offline .dot {
+            background: #EF4444;
         }
 
         /* ===== HERO ===== */
@@ -262,6 +326,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
         }
 
         .hero .btn-secondary:hover {
@@ -310,7 +375,6 @@
             padding-bottom: 48px;
         }
 
-        /* ===== SECTION TITLE ===== */
         .section-header {
             margin-bottom: 20px;
         }
@@ -330,7 +394,6 @@
             max-width: 600px;
         }
 
-        /* ===== FEATURES GRID ===== */
         .features-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -388,13 +451,14 @@
             font-size: 13px;
             font-weight: 500;
             transition: color 0.2s ease;
+            cursor: pointer;
         }
 
         .feature-card .feature-actions a:hover {
             color: #93BBFC;
         }
 
-        /* ===== APPLICATION SUBMISSION ===== */
+        /* ===== SUBMISSION ===== */
         .submission-card {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.04);
@@ -493,7 +557,7 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
-        /* ===== TICKET CARD ===== */
+        /* ===== TICKET ===== */
         .ticket-actions {
             display: flex;
             gap: 8px;
@@ -636,6 +700,7 @@
             font-size: 13px;
             font-weight: 500;
             transition: color 0.2s ease;
+            cursor: pointer;
         }
 
         .verification-card .verification-info .feature-actions a:hover {
@@ -770,7 +835,7 @@
             font-size: 12px;
         }
 
-        /* ===== PREMIUM ===== */
+        /* ===== PREMIUM SECTION ===== */
         .premium-section {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.04), rgba(217, 119, 6, 0.01));
             border: 1px solid rgba(245, 158, 11, 0.08);
@@ -801,6 +866,99 @@
             margin: 0 auto 20px;
         }
 
+        .premium-plans {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto 24px;
+        }
+
+        .premium-plan {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 24px;
+            transition: all 0.2s ease;
+        }
+
+        .premium-plan:hover {
+            transform: translateY(-4px);
+            border-color: rgba(245, 158, 11, 0.2);
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.05);
+        }
+
+        .premium-plan.featured {
+            border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .premium-plan .plan-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 4px;
+        }
+
+        .premium-plan .plan-price {
+            font-size: 32px;
+            font-weight: 800;
+            color: #FBBF24;
+            margin-bottom: 12px;
+        }
+
+        .premium-plan .plan-price span {
+            font-size: 16px;
+            font-weight: 400;
+            color: #8B9BB5;
+        }
+
+        .premium-plan .plan-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .premium-plan .plan-features li {
+            color: #8B9BB5;
+            font-size: 13px;
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .premium-plan .plan-features li i {
+            color: #FBBF24;
+            font-size: 12px;
+        }
+
+        .premium-plan .plan-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFFFFF;
+        }
+
+        .premium-plan .plan-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+        }
+
+        .premium-plan.featured .plan-btn {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+        }
+
+        .premium-plan.featured .plan-btn:hover {
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+        }
+
         .premium-features {
             display: flex;
             justify-content: center;
@@ -822,23 +980,6 @@
         .premium-features .pf-item i {
             color: #FBBF24;
             margin-right: 8px;
-        }
-
-        .premium-section .upgrade-btn {
-            background: linear-gradient(135deg, #F59E0B, #D97706);
-            color: #FFFFFF;
-            padding: 12px 44px;
-            border-radius: 100px;
-            border: none;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .premium-section .upgrade-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(245, 158, 11, 0.25);
         }
 
         /* ===== FOOTER ===== */
@@ -884,6 +1025,7 @@
             font-size: 13px;
             padding: 3px 0;
             transition: color 0.2s ease;
+            cursor: pointer;
         }
 
         .footer .footer-col a:hover {
@@ -912,6 +1054,11 @@
             .footer .footer-grid {
                 grid-template-columns: 1fr 1fr;
             }
+
+            .premium-plans {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -922,6 +1069,8 @@
             .navbar {
                 padding: 0 20px;
                 height: 58px;
+                flex-wrap: wrap;
+                gap: 8px;
             }
 
             .navbar .nav-links {
@@ -981,15 +1130,11 @@
 
             .navbar .nav-right {
                 gap: 8px;
+                flex-wrap: wrap;
             }
 
             .hero h1 {
                 font-size: 26px;
-            }
-
-            .premium-features {
-                flex-direction: column;
-                align-items: center;
             }
 
             .submission-actions {
@@ -1009,38 +1154,49 @@
                 flex-direction: column;
                 text-align: center;
             }
+
+            .premium-plans {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
-        <a href="#" class="brand">
+        <a href="#" class="brand" onclick="scrollToTop()">
             <div class="logo-icon">⚡</div>
             Sentinal <span>Dashboard</span>
         </a>
         <div class="nav-links">
-            <a href="#" class="active">Home</a>
-            <a href="#">Status</a>
-            <a href="#">Documentation</a>
-            <a href="#">Support</a>
+            <a href="#" class="active" onclick="scrollToTop()">Home</a>
+            <a href="#" onclick="scrollToSection('features')">Features</a>
+            <a href="#" onclick="scrollToSection('premium')">Premium</a>
+            <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd', '_blank')">Support</a>
         </div>
         <div class="nav-right">
-            <a href="#" class="premium-btn">Premium</a>
-            <div class="user-avatar">8a</div>
-            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <span class="status-badge">
+                <span class="dot"></span>
+                Online
+            </span>
+            <% if (isAuthenticated) { %>
+                <div class="user-avatar">8a</div>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <% } else { %>
+                <a href="/login" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <% } %>
         </div>
     </nav>
 
     <!-- ===== HERO ===== -->
-    <section class="hero">
+    <section class="hero" id="home">
         <div class="container">
             <div class="badge">✦ Free & Highly Customizable</div>
             <h1>A free and highly<br />customizable Discord <span>application bot</span></h1>
             <p>Sentinal is an easy to use, powerful and highly customizable Discord bot. With over 15 customizable settings for your applications to benefit from.</p>
             <div class="cta-buttons">
-                <a href="#" class="btn-primary"><i class="fas fa-rocket"></i> Get Started</a>
-                <a href="#" class="btn-secondary"><i class="fas fa-book"></i> Learn more</a>
+                <a href="#" class="btn-primary" onclick="handleGetStarted()"><i class="fas fa-rocket"></i> Get Started</a>
+                <a href="#" class="btn-secondary" onclick="scrollToSection('features')"><i class="fas fa-arrow-down"></i> Learn More</a>
             </div>
         </div>
     </section>
@@ -1065,121 +1221,123 @@
 
     <!-- ===== MAIN CONTENT ===== -->
     <div class="container main-content">
-        <!-- APPLICATIONS FEATURE -->
-        <div class="section-header">
-            <h2>Applications</h2>
-            <p>Sentinal's built in Discord application and forms feature makes filling out questionnaires and forms easy. With a simple and intuitive interface you can get a fully functional form system up and running in your Discord server in minutes.</p>
-        </div>
+        <!-- FEATURES SECTION -->
+        <div id="features">
+            <div class="section-header">
+                <h2>Applications</h2>
+                <p>Sentinal's built in Discord application and forms feature makes filling out questionnaires and forms easy. With a simple and intuitive interface you can get a fully functional form system up and running in your Discord server in minutes.</p>
+            </div>
 
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="icon">📋</div>
-                <h4>Applications</h4>
-                <p>Create custom application forms for staff, events, or any purpose. Review and manage submissions with ease.</p>
-                <div class="feature-actions">
-                    <a href="#"><i class="fas fa-arrow-right"></i> Get Started</a>
-                    <a href="#"><i class="fas fa-book"></i> Learn more</a>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="icon">📋</div>
+                    <h4>Applications</h4>
+                    <p>Create custom application forms for staff, events, or any purpose. Review and manage submissions with ease.</p>
+                    <div class="feature-actions">
+                        <a href="#" onclick="handleGetStarted()"><i class="fas fa-arrow-right"></i> Get Started</a>
+                        <a href="#" onclick="scrollToSection('features')"><i class="fas fa-book"></i> Learn more</a>
+                    </div>
                 </div>
+
+                <div class="feature-card">
+                    <div class="icon">🎫</div>
+                    <h4>Tickets</h4>
+                    <p>Our ticketing system can help you and your server manage support requests, questions and other inquiries within your Discord server.</p>
+                    <div class="feature-actions">
+                        <a href="#" onclick="handleGetStarted()"><i class="fas fa-arrow-right"></i> Get Started</a>
+                        <a href="#" onclick="scrollToSection('features')"><i class="fas fa-book"></i> Learn more</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APPLICATION SUBMISSION -->
+            <div class="submission-card">
+                <div class="submission-header">
+                    <h4>📝 8a's 'Staff application' Application Submitted</h4>
+                    <span class="status">● Pending Review</span>
+                </div>
+                <div class="question">
+                    <div class="q">1. Do you like dogs?</div>
+                    <div class="a">Yes!</div>
+                </div>
+                <div class="question">
+                    <div class="q">2. Are capybara the best animal?</div>
+                    <div class="a">Yes</div>
+                </div>
+                <div class="submission-actions">
+                    <button class="accept"><i class="fas fa-check"></i> Accept</button>
+                    <button class="deny"><i class="fas fa-times"></i> Deny</button>
+                    <button class="secondary"><i class="fas fa-pen"></i> Accept with reason</button>
+                    <button class="secondary"><i class="fas fa-pen"></i> Deny with reason</button>
+                    <button class="secondary"><i class="fas fa-history"></i> History</button>
+                    <button class="secondary"><i class="fas fa-ticket"></i> Open ticket with user</button>
+                    <button class="secondary"><i class="fas fa-external-link-alt"></i> View submission on dashboard</button>
+                </div>
+            </div>
+
+            <!-- TICKETS -->
+            <div class="section-header" style="margin-top: 32px;">
+                <h2>Tickets</h2>
+                <p>Our ticketing system can help you and your server manage support requests, questions and other inquiries within your Discord server.</p>
             </div>
 
             <div class="feature-card">
                 <div class="icon">🎫</div>
-                <h4>Tickets</h4>
-                <p>Our ticketing system can help you and your server manage support requests, questions and other inquiries within your Discord server.</p>
+                <h4>Support Tickets</h4>
+                <p>Manage all your support tickets in one place. Close tickets with or without a reason.</p>
                 <div class="feature-actions">
-                    <a href="#"><i class="fas fa-arrow-right"></i> Get Started</a>
-                    <a href="#"><i class="fas fa-book"></i> Learn more</a>
+                    <a href="#" onclick="handleGetStarted()"><i class="fas fa-arrow-right"></i> Get Started</a>
+                    <a href="#" onclick="scrollToSection('features')"><i class="fas fa-book"></i> Learn more</a>
+                </div>
+                <div class="ticket-actions">
+                    <button class="close"><i class="fas fa-times"></i> Close</button>
+                    <button><i class="fas fa-pen"></i> Close with reason</button>
                 </div>
             </div>
-        </div>
 
-        <!-- APPLICATION SUBMISSION -->
-        <div class="submission-card">
-            <div class="submission-header">
-                <h4>📝 8a's 'Staff application' Application Submitted</h4>
-                <span class="status">● Pending Review</span>
+            <!-- GIVEAWAY -->
+            <div class="section-header" style="margin-top: 32px;">
+                <h2>Giveaways</h2>
+                <p>Host giveaways and contests in your Discord server with Sentinal's built-in Discord giveaway system.</p>
             </div>
-            <div class="question">
-                <div class="q">1. Do you like dogs?</div>
-                <div class="a">Yes!</div>
-            </div>
-            <div class="question">
-                <div class="q">2. Are capybara the best animal?</div>
-                <div class="a">Yes</div>
-            </div>
-            <div class="submission-actions">
-                <button class="accept"><i class="fas fa-check"></i> Accept</button>
-                <button class="deny"><i class="fas fa-times"></i> Deny</button>
-                <button class="secondary"><i class="fas fa-pen"></i> Accept with reason</button>
-                <button class="secondary"><i class="fas fa-pen"></i> Deny with reason</button>
-                <button class="secondary"><i class="fas fa-history"></i> History</button>
-                <button class="secondary"><i class="fas fa-ticket"></i> Open ticket with user</button>
-                <button class="secondary"><i class="fas fa-external-link-alt"></i> View submission on dashboard</button>
-            </div>
-        </div>
 
-        <!-- TICKETS -->
-        <div class="section-header" style="margin-top: 32px;">
-            <h2>Tickets</h2>
-            <p>Our ticketing system can help you and your server manage support requests, questions and other inquiries within your Discord server.</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="icon">🎫</div>
-            <h4>Support Tickets</h4>
-            <p>Manage all your support tickets in one place. Close tickets with or without a reason.</p>
-            <div class="feature-actions">
-                <a href="#"><i class="fas fa-arrow-right"></i> Get Started</a>
-                <a href="#"><i class="fas fa-book"></i> Learn more</a>
-            </div>
-            <div class="ticket-actions">
-                <button class="close"><i class="fas fa-times"></i> Close</button>
-                <button><i class="fas fa-pen"></i> Close with reason</button>
-            </div>
-        </div>
-
-        <!-- GIVEAWAY -->
-        <div class="section-header" style="margin-top: 32px;">
-            <h2>Giveaways</h2>
-            <p>Host giveaways and contests in your Discord server with Sentinal's built-in Discord giveaway system.</p>
-        </div>
-
-        <div class="giveaway-card">
-            <div class="giveaway-info">
-                <div class="prize">
-                    🎁 nitro
-                    <span class="badge-giveaway">Total Winners: 1</span>
+            <div class="giveaway-card">
+                <div class="giveaway-info">
+                    <div class="prize">
+                        🎁 nitro
+                        <span class="badge-giveaway">Total Winners: 1</span>
+                    </div>
+                    <div class="meta">Ends in: <span>in a day</span> • Hosted By: <span>@8au</span></div>
+                    <div style="color: #5A6B85; font-size: 13px;">
+                        <i class="fas fa-users"></i> Entrants: 2
+                    </div>
                 </div>
-                <div class="meta">Ends in: <span>in a day</span> • Hosted By: <span>@8au</span></div>
-                <div style="color: #5A6B85; font-size: 13px;">
-                    <i class="fas fa-users"></i> Entrants: 2
+                <div class="giveaway-actions">
+                    <button class="enter-btn"><i class="fas fa-gift"></i> Enter Giveaway</button>
+                    <div class="entrants">👥 Entrants (2)</div>
                 </div>
             </div>
-            <div class="giveaway-actions">
-                <button class="enter-btn"><i class="fas fa-gift"></i> Enter Giveaway</button>
-                <div class="entrants">👥 Entrants (2)</div>
+
+            <!-- VERIFICATION -->
+            <div class="section-header" style="margin-top: 32px;">
+                <h2>Verification</h2>
+                <p>Having problems with spam bots and low quality users in your Discord server? Enable Sentinal's verification captcha system to ensure that only real users can access your Discord server.</p>
             </div>
-        </div>
 
-        <!-- VERIFICATION -->
-        <div class="section-header" style="margin-top: 32px;">
-            <h2>Verification</h2>
-            <p>Having problems with spam bots and low quality users in your Discord server? Enable Sentinal's verification captcha system to ensure that only real users can access your Discord server.</p>
-        </div>
-
-        <div class="verification-card">
-            <div class="verification-info">
-                <h4>🔒 Verify your identity</h4>
-                <p>To gain access to the contents of this server you must verify yourself by completing the captcha below.</p>
-                <div class="feature-actions">
-                    <a href="#"><i class="fas fa-arrow-right"></i> Get Started</a>
-                    <a href="#"><i class="fas fa-book"></i> Learn more</a>
+            <div class="verification-card">
+                <div class="verification-info">
+                    <h4>🔒 Verify your identity</h4>
+                    <p>To gain access to the contents of this server you must verify yourself by completing the captcha below.</p>
+                    <div class="feature-actions">
+                        <a href="#" onclick="handleGetStarted()"><i class="fas fa-arrow-right"></i> Get Started</a>
+                        <a href="#" onclick="scrollToSection('features')"><i class="fas fa-book"></i> Learn more</a>
+                    </div>
                 </div>
-            </div>
-            <div class="captcha-box">
-                <div class="captcha-display">A7K2P</div>
-                <input type="text" placeholder="Enter the code above" />
-                <button class="verify-btn"><i class="fas fa-shield-alt"></i> Verify</button>
+                <div class="captcha-box">
+                    <div class="captcha-display">A7K2P</div>
+                    <input type="text" placeholder="Enter the code above" />
+                    <button class="verify-btn"><i class="fas fa-shield-alt"></i> Verify</button>
+                </div>
             </div>
         </div>
 
@@ -1213,17 +1371,46 @@
             </div>
         </div>
 
-        <!-- PREMIUM -->
-        <div class="premium-section">
-            <h2>Unlock the full power of <span>Sentinal Premium</span></h2>
-            <p>Unlock additional features and support the continued development of Sentinal.</p>
-            <div class="premium-features">
-                <div class="pf-item"><i class="fas fa-check"></i> Customizable application manager roles</div>
-                <div class="pf-item"><i class="fas fa-check"></i> Customizable application tickets</div>
-                <div class="pf-item"><i class="fas fa-check"></i> Customizable completion messages</div>
-                <div class="pf-item"><i class="fas fa-check"></i> and much more...</div>
+        <!-- PREMIUM SECTION -->
+        <div id="premium">
+            <div class="premium-section">
+                <h2>Unlock the full power of <span>Sentinal Premium</span></h2>
+                <p>Unlock additional features and support the continued development of Sentinal.</p>
+
+                <div class="premium-plans">
+                    <div class="premium-plan">
+                        <div class="plan-name">Sentinal+</div>
+                        <div class="plan-price">$7.99 <span>/ month</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Customizable application manager roles</li>
+                            <li><i class="fas fa-check"></i> Customizable application tickets</li>
+                            <li><i class="fas fa-check"></i> Priority support</li>
+                            <li><i class="fas fa-check"></i> 5 servers included</li>
+                        </ul>
+                        <button class="plan-btn" onclick="handleUpgrade('plus')">Upgrade to Plus</button>
+                    </div>
+
+                    <div class="premium-plan featured">
+                        <div class="plan-name">Sentinal++</div>
+                        <div class="plan-price">$13.99 <span>/ month</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Everything in Plus</li>
+                            <li><i class="fas fa-check"></i> Customizable completion messages</li>
+                            <li><i class="fas fa-check"></i> Unlimited servers</li>
+                            <li><i class="fas fa-check"></i> Early access to features</li>
+                            <li><i class="fas fa-check"></i> Dedicated support channel</li>
+                        </ul>
+                        <button class="plan-btn" onclick="handleUpgrade('pro')">Upgrade to Pro</button>
+                    </div>
+                </div>
+
+                <div class="premium-features">
+                    <div class="pf-item"><i class="fas fa-check"></i> Customizable application manager roles</div>
+                    <div class="pf-item"><i class="fas fa-check"></i> Customizable application tickets</div>
+                    <div class="pf-item"><i class="fas fa-check"></i> Customizable completion messages</div>
+                    <div class="pf-item"><i class="fas fa-check"></i> and much more...</div>
+                </div>
             </div>
-            <button class="upgrade-btn"><i class="fas fa-crown"></i> Upgrade Now</button>
         </div>
     </div>
 
@@ -1238,17 +1425,17 @@
                 </div>
                 <div class="footer-col">
                     <h5>Features</h5>
-                    <a href="#">Tickets</a>
-                    <a href="#">Applications</a>
-                    <a href="#">Giveaways</a>
-                    <a href="#">Verification</a>
+                    <a href="#" onclick="scrollToSection('features')">Tickets</a>
+                    <a href="#" onclick="scrollToSection('features')">Applications</a>
+                    <a href="#" onclick="scrollToSection('features')">Giveaways</a>
+                    <a href="#" onclick="scrollToSection('features')">Verification</a>
                 </div>
                 <div class="footer-col">
                     <h5>Useful links</h5>
-                    <a href="#">Home</a>
-                    <a href="#">Support</a>
-                    <a href="#">Premium</a>
-                    <a href="#">Documentation</a>
+                    <a href="#" onclick="scrollToTop()">Home</a>
+                    <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd', '_blank')">Support</a>
+                    <a href="#" onclick="scrollToSection('premium')">Premium</a>
+                    <a href="#" onclick="scrollToSection('features')">Documentation</a>
                 </div>
                 <div class="footer-col">
                     <h5>Policies</h5>
@@ -1264,44 +1451,46 @@
         </div>
     </footer>
 
-    <!-- ===== LOGOUT CONFIRMATION SCRIPT ===== -->
+    <!-- ===== SCRIPTS ===== -->
     <script>
-        // Handle logout with confirmation
-        document.querySelector('.logout-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (confirm('Are you sure you want to logout?')) {
-                window.location.href = '/logout';
+        // ===== SCROLL FUNCTIONS =====
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-        });
+        }
 
-        // Handle "Get Started" buttons to redirect to login
-        document.querySelectorAll('.btn-primary, .feature-actions a:first-child').forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Check if user is logged in (you can add your own logic here)
-                // For demo purposes, we'll redirect to login
+        // ===== HANDLE GET STARTED =====
+        function handleGetStarted() {
+            <% if (isAuthenticated) { %>
+                // If logged in, scroll to features
+                scrollToSection('features');
+            <% } else { %>
+                // If not logged in, redirect to login
                 window.location.href = '/login';
-            });
-        });
+            <% } %>
+        }
 
-        // Handle "Learn more" buttons
-        document.querySelectorAll('.btn-secondary, .feature-actions a:last-child').forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = '/docs';
-            });
-        });
+        // ===== HANDLE UPGRADE =====
+        function handleUpgrade(plan) {
+            <% if (isAuthenticated) { %>
+                alert(`Thank you for choosing Sentinal ${plan.toUpperCase()}! 🎉\nYou will be redirected to checkout.`);
+                // Here you would redirect to payment page
+                // window.location.href = `/checkout?plan=${plan}`;
+            <% } else { %>
+                alert('Please login first to upgrade to Premium! 🔐');
+                window.location.href = '/login';
+            <% } %>
+        }
 
-        // Premium button redirect
-        document.querySelector('.premium-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = '/premium';
-        });
-
-        // Navigation links
+        // ===== NAVIGATION CLICKS =====
         document.querySelectorAll('.nav-links a').forEach(function(link) {
             link.addEventListener('click', function(e) {
-                e.preventDefault();
                 document.querySelectorAll('.nav-links a').forEach(function(l) {
                     l.classList.remove('active');
                 });
@@ -1309,25 +1498,21 @@
             });
         });
 
-        // Enter Giveaway button
-        document.querySelector('.enter-btn').addEventListener('click', function() {
-            alert('You have entered the giveaway! Good luck! 🎉');
-        });
-
-        // Accept/Deny buttons
+        // ===== ACCEPT BUTTONS =====
         document.querySelectorAll('.accept').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 alert('Application accepted! ✅');
             });
         });
 
+        // ===== DENY BUTTONS =====
         document.querySelectorAll('.deny').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 alert('Application denied. ❌');
             });
         });
 
-        // Verify button
+        // ===== VERIFY BUTTON =====
         document.querySelector('.verify-btn').addEventListener('click', function() {
             const input = document.querySelector('.captcha-box input');
             if (input.value.toUpperCase() === 'A7K2P') {
@@ -1337,7 +1522,12 @@
             }
         });
 
-        // Close ticket buttons
+        // ===== ENTER GIVEAWAY =====
+        document.querySelector('.enter-btn').addEventListener('click', function() {
+            alert('You have entered the giveaway! Good luck! 🎉');
+        });
+
+        // ===== CLOSE TICKET =====
         document.querySelectorAll('.ticket-actions .close').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 if (confirm('Are you sure you want to close this ticket?')) {
@@ -1346,9 +1536,9 @@
             });
         });
 
-        // Upgrade button
-        document.querySelector('.upgrade-btn').addEventListener('click', function() {
-            window.location.href = '/premium';
+        // ===== STATUS BADGE CLICK =====
+        document.querySelector('.status-badge').addEventListener('click', function() {
+            alert('🟢 Sentinal is currently ONLINE and operational.\nAll systems running smoothly.');
         });
     </script>
 </body>
