@@ -3,21 +3,11 @@ const router = express.Router();
 const axios = require('axios');
 const GuildConfig = require('../models/GuildConfig');
 
-// ─── Auth Middleware ──────────────────────────────────────────────
 function ensureAuth(req, res, next) {
-  console.log('🔍 Checking session...');
-  console.log('🔍 User:', req.session?.user?.username || 'None');
-  
-  if (req.session.user) {
-    console.log('✅ User is logged in!');
-    return next();
-  }
-  
-  console.log('❌ Not logged in, redirecting to /login');
+  if (req.session.user) return next();
   res.redirect('/login');
 }
 
-// ─── Home ──────────────────────────────────────────────────────────
 router.get('/', (req, res) => {
   if (req.session.user) {
     res.redirect('/servers');
@@ -26,20 +16,26 @@ router.get('/', (req, res) => {
   }
 });
 
-// ─── Servers List ──────────────────────────────────────────────────
+// ─── THIS IS THE FIX ──────────────────────────────────────────────
 router.get('/servers', ensureAuth, async (req, res) => {
   try {
     console.log('📋 Fetching servers for user:', req.session.user.username);
     
     const guilds = req.session.guilds || [];
+    console.log('📋 Total guilds from Discord:', guilds.length);
     
-    // ─── FILTER: Show servers where user is OWNER or ADMIN ────
-    const ownerOrAdminGuilds = guilds.filter(g => {
+    // ─── 🔥 ONLY KEEP SERVERS WHERE USER IS OWNER OR ADMIN ────
+    const filteredGuilds = guilds.filter(g => {
       const perms = g.permissions || 0;
-      return (perms & 0x1) === 0x1 || (perms & 0x8) === 0x8;
+      // Owner = 0x1, Administrator = 0x8
+      const isOwner = (perms & 0x1) === 0x1;
+      const isAdmin = (perms & 0x8) === 0x8;
+      return isOwner || isAdmin;
     });
     
-    // ─── CHECK: Which servers has the bot been added to? ──────
+    console.log('📋 Filtered (Owner/Admin only):', filteredGuilds.length);
+    
+    // ─── Check which servers the bot is in ──────────────────────
     const botToken = process.env.DISCORD_BOT_TOKEN;
     let botGuildIds = [];
     
@@ -51,28 +47,24 @@ router.get('/servers', ensureAuth, async (req, res) => {
         botGuildIds = botGuildsRes.data.map(g => g.id);
         console.log('✅ Bot is in', botGuildIds.length, 'servers');
       } catch (err) {
-        console.log('⚠️ Could not fetch bot guilds. Error:', err.response?.data || err.message);
+        console.log('⚠️ Could not fetch bot guilds:', err.response?.data || err.message);
       }
-    } else {
-      console.log('⚠️ DISCORD_BOT_TOKEN is missing!');
     }
     
-    // ─── BUILD SERVER LIST WITH STATUS ──────────────────────────
-    const serverList = ownerOrAdminGuilds.map(g => ({
+    // ─── Add hasBot status to each server ────────────────────────
+    const serverList = filteredGuilds.map(g => ({
       ...g,
       hasBot: botGuildIds.includes(g.id)
     }));
     
-    console.log('📋 Total guilds:', guilds.length);
-    console.log('📋 Owner/Admin guilds:', ownerOrAdminGuilds.length);
-    console.log('📋 Servers with bot:', botGuildIds.length);
+    console.log('📋 Final list:', serverList.length, 'servers');
     
     res.render('servers', { 
       user: req.session.user, 
       guilds: serverList 
     });
   } catch (err) {
-    console.error('❌ Error fetching servers:', err);
+    console.error('❌ Error:', err);
     res.redirect('/login');
   }
 });
@@ -99,12 +91,10 @@ router.get('/servers/:guildId', ensureAuth, async (req, res) => {
       botInServer = false;
     }
     
-    // If bot is not in server, redirect to invite
     if (!botInServer) {
       return res.redirect(`/invite/${guildId}`);
     }
     
-    // Get config from database
     let config = await GuildConfig.findOne({ guildId });
     if (!config) {
       config = {
@@ -120,7 +110,6 @@ router.get('/servers/:guildId', ensureAuth, async (req, res) => {
       };
     }
     
-    // Get channels from Discord API
     const channelsRes = await axios.get(
       `https://discord.com/api/v10/guilds/${guildId}/channels`,
       { headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` } }
@@ -140,14 +129,12 @@ router.get('/servers/:guildId', ensureAuth, async (req, res) => {
   }
 });
 
-// ─── Invite Redirect ─────────────────────────────────────────────────
 router.get('/invite/:guildId', ensureAuth, (req, res) => {
   const guildId = req.params.guildId;
   const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${guildId}`;
   res.redirect(inviteUrl);
 });
 
-// ─── Save Config ────────────────────────────────────────────────────
 router.post('/api/servers/:guildId/config', ensureAuth, async (req, res) => {
   try {
     const guildId = req.params.guildId;
@@ -170,23 +157,20 @@ router.post('/api/servers/:guildId/config', ensureAuth, async (req, res) => {
       { upsert: true }
     );
     
-    res.json({ success: true, message: 'Settings saved successfully!' });
+    res.json({ success: true, message: 'Settings saved!' });
   } catch (err) {
     console.error('❌ Error saving config:', err);
     res.status(500).json({ success: false, error: 'Failed to save settings' });
   }
 });
 
-// ─── Get Stats ──────────────────────────────────────────────────────
 router.get('/api/servers/:guildId/stats', ensureAuth, async (req, res) => {
   try {
     const guildId = req.params.guildId;
-    
     const guildRes = await axios.get(
       `https://discord.com/api/v10/guilds/${guildId}`,
       { headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` } }
     );
-    
     res.json({
       success: true,
       stats: {
@@ -196,15 +180,10 @@ router.get('/api/servers/:guildId/stats', ensureAuth, async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('❌ Error fetching stats:', err);
-    res.json({ 
-      success: false, 
-      stats: { memberCount: 0, botOnline: false, channelCount: 0 }
-    });
+    res.json({ success: false, stats: { memberCount: 0, botOnline: false, channelCount: 0 } });
   }
 });
 
-// ─── General Invite Link ────────────────────────────────────────────
 router.get('/invite', (req, res) => {
   const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
   res.redirect(inviteUrl);
