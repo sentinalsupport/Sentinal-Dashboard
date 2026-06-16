@@ -188,4 +188,55 @@
                             <a href="/servers/<%= guild.id %>" class="btn-cfg"><i class="ti ti-settings" aria-hidden="true"></i> Configure</a>
                         <% } else { %>
                             <a href="/invite/<%= guild.id %>" class="btn-inv"><i class="ti ti-plus" aria-hidden="true"></i> <span>Invite Bot</span></a>
-                            <span class="btn-cfg disabled">Configure
+                            <span class="btn-cfg disabled">Configure</span>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="empty-state">
+                <i class="ti ti-robot" aria-hidden="true"></i>
+                <h3>No servers found</h3>
+                <p>You don't own or have administrator permissions on any servers.</p>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="hint">
+        <i class="ti ti-shield" aria-hidden="true"></i>
+        Only servers where you are the <strong>Owner</strong> or have <strong>Administrator</strong> permissions are shown.
+    </div>
+</main>
+
+<script>
+    // ─── Search ──────────────────────────────────────────────────────
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.sc');
+
+    searchInput.addEventListener('input', function () {
+        const query = this.value.toLowerCase();
+        cards.forEach(card => {
+            const name = card.dataset?.name || card.querySelector('.nm')?.textContent?.toLowerCase() || '';
+            card.style.display = name.includes(query) ? '' : 'none';
+        });
+    });
+
+    // ─── User Dropdown Toggle ──────────────────────────────────────
+    const userToggle = document.getElementById('userToggle');
+    const userDropdown = document.getElementById('userDropdown');
+    const chevronIcon = document.getElementById('chevronIcon');
+
+    userToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        userDropdown.classList.toggle('open');
+        chevronIcon.style.transform = userDropdown.classList.contains('open') ? 'rotate(180deg)' : '';
+    });
+
+    document.addEventListener('click', function () {
+        userDropdown.classList.remove('open');
+        chevronIcon.style.transform = '';
+    });
+</script>
+
+</body>
+</html>
