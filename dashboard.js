@@ -7,21 +7,20 @@ const path = require('path');
 const app = express();
 
 // ===== CONFIGURATION =====
-// Replace these with your actual Discord OAuth credentials
 const config = {
-    clientID: 'YOUR_DISCORD_CLIENT_ID',
-    clientSecret: 'YOUR_DISCORD_CLIENT_SECRET',
-    callbackURL: 'http://localhost:3000/auth/discord/callback',
-    domain: 'http://localhost:3000'
+    clientID: '1493217033956102215', // Your Discord Client ID
+    clientSecret: 'gZpMsdTlUpo1D0l9jlaynDq1s7oU2W15', // ⚠️ YOU NEED TO ADD THIS!
+    callbackURL: 'https://sentinal-dashboard.onrender.com/auth/discord/callback',
+    domain: 'https://sentinal-dashboard.onrender.com'
 };
 
 // ===== SESSION SETUP =====
 app.use(session({
-    secret: 'your-secret-key-change-this-to-something-secure',
+    secret: '{Secret}',
     resave: false,
     saveUninitialized: false,
     cookie: { 
-        secure: false, // Set to true if using HTTPS
+        secure: true, // Set to true since you're using HTTPS (Render)
         maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
     }
 }));
@@ -142,7 +141,8 @@ app.use((err, req, res, next) => {
 // ===== START SERVER =====
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📝 Login page: http://localhost:${PORT}/login`);
-    console.log(`📊 Dashboard: http://localhost:${PORT}/dashboard`);
+    console.log(`🚀 Server running on ${config.domain}`);
+    console.log(`📝 Login page: ${config.domain}/login`);
+    console.log(`📊 Dashboard: ${config.domain}/dashboard`);
+    console.log(`🔗 OAuth Callback: ${config.callbackURL}`);
 });
