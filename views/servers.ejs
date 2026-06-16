@@ -61,9 +61,7 @@
         .btn-rf:hover { border-color: var(--bord2); color: #fff; background: rgba(212,83,126,.08); }
         .btn-rf i { font-size: 16px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; }
-        .sc { background: var(--bg1); border: 1px solid var(--bord); border-radius: 18px; padding: 20px 22px; transition: all .35s cubic-bezier(.25,.46,.45,.94); cursor: pointer; position: relative; overflow: hidden; animation: fadeUp .4s ease both; }
-        .sc::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(124,58,237,.06), rgba(212,83,126,.04)); opacity: 0; transition: opacity .35s; border-radius: 18px; }
-        .sc:hover::before { opacity: 1; }
+        .sc { background: var(--bg1); border: 1px solid var(--bord); border-radius: 18px; padding: 20px 22px; transition: all .35s cubic-bezier(.25,.46,.45,.94); position: relative; overflow: hidden; animation: fadeUp .4s ease both; }
         .sc:hover { transform: translateY(-5px); border-color: rgba(168,85,247,.35); box-shadow: 0 12px 40px rgba(124,58,237,.18); }
         .sc-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
         .sc-ico { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--pu), var(--pi)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff; flex-shrink: 0; }
@@ -72,23 +70,55 @@
         .sc-role { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin-top: 2px; }
         .role-owner { background: rgba(245,158,11,.15); color: var(--gold-l); border: 1px solid rgba(245,158,11,.2); }
         .role-admin { background: rgba(168,85,247,.15); color: var(--pu-l); border: 1px solid rgba(168,85,247,.2); }
-        .role-none { background: rgba(107,114,128,.15); color: #9CA3AF; border: 1px solid rgba(107,114,128,.2); }
         .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
         .badge-off { background: rgba(239,68,68,.1); color: #FCA5A5; border: 1px solid rgba(239,68,68,.2); }
         .badge-on { background: rgba(16,185,129,.12); color: #34D399; border: 1px solid rgba(16,185,129,.25); }
         .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: #FCA5A5; }
         .badge-on .badge-dot { background: #34D399; animation: pulse 2s infinite; }
         .sc-acts { display: flex; gap: 8px; margin-top: 12px; }
-        .btn-inv { flex: 1; background: linear-gradient(135deg, var(--pu), var(--pi)); color: #fff; border: none; padding: 8px 14px; border-radius: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all .25s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-inv {
+            flex: 1;
+            background: linear-gradient(135deg, var(--pu), var(--pi));
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 9px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .25s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            text-align: center;
+        }
         .btn-inv:hover { box-shadow: 0 4px 20px rgba(212,83,126,.35); filter: brightness(1.1); }
-        .btn-cfg { flex: 1; background: rgba(255,255,255,.04); color: var(--t2); border: 1px solid var(--bord); padding: 8px 14px; border-radius: 9px; font-size: 12.5px; font-weight: 500; cursor: pointer; transition: all .25s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-cfg {
+            flex: 1;
+            background: rgba(255,255,255,.04);
+            color: var(--t2);
+            border: 1px solid var(--bord);
+            padding: 10px 14px;
+            border-radius: 9px;
+            font-size: 12.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .25s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            text-align: center;
+        }
         .btn-cfg:hover { border-color: rgba(168,85,247,.35); color: var(--pu-xl); background: rgba(124,58,237,.08); }
         .btn-cfg.disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
         .hint { margin-top: 20px; font-size: 12.5px; color: var(--t3); display: flex; align-items: center; gap: 6px; }
         .hint i { font-size: 14px; }
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--t2); }
-        .empty-state i { font-size: 48px; color: var(--t3); margin-bottom: 16px; display: block; }
-        .empty-state h3 { color: #fff; margin-bottom: 8px; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
         @media (max-width: 1024px) {
@@ -135,7 +165,7 @@
         </div>
         <div class="user-dropdown" id="userDropdown">
             <a href="/profile" class="di"><i class="ti ti-user" aria-hidden="true"></i><span>Profile</span></a>
-            <div class="di"><i class="ti ti-settings" aria-hidden="true"></i><span>Settings</span></div>
+            <a href="#" class="di"><i class="ti ti-settings" aria-hidden="true"></i><span>Settings</span></a>
             <div class="dd-div"></div>
             <a href="/premium" class="di prem-badge"><i class="ti ti-crown" aria-hidden="true"></i><span>Upgrade to Premium</span></a>
             <div class="dd-div"></div>
@@ -178,16 +208,18 @@
                                 <span class="sc-role role-owner">👑 Owner</span>
                             <% } else if ((guild.permissions & 0x8) === 0x8) { %>
                                 <span class="sc-role role-admin">🛡️ Admin</span>
-                            <% } else { %>
-                                <span class="sc-role role-none">No Admin</span>
                             <% } %>
                         </div>
                     </div>
                     <div class="sc-acts">
                         <% if (guild.hasBot) { %>
-                            <a href="/servers/<%= guild.id %>" class="btn-cfg"><i class="ti ti-settings" aria-hidden="true"></i> Configure</a>
+                            <a href="/servers/<%= guild.id %>" class="btn-cfg">
+                                <i class="ti ti-settings" aria-hidden="true"></i> Configure
+                            </a>
                         <% } else { %>
-                            <a href="/invite/<%= guild.id %>" class="btn-inv"><i class="ti ti-plus" aria-hidden="true"></i> <span>Invite Bot</span></a>
+                            <a href="/invite/<%= guild.id %>" class="btn-inv">
+                                <i class="ti ti-plus" aria-hidden="true"></i> Invite Bot
+                            </a>
                             <span class="btn-cfg disabled">Configure</span>
                         <% } %>
                     </div>
@@ -216,7 +248,7 @@
     searchInput.addEventListener('input', function () {
         const query = this.value.toLowerCase();
         cards.forEach(card => {
-            const name = card.dataset?.name || card.querySelector('.nm')?.textContent?.toLowerCase() || '';
+            const name = card.querySelector('.nm')?.textContent?.toLowerCase() || '';
             card.style.display = name.includes(query) ? '' : 'none';
         });
     });
