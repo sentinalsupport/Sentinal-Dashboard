@@ -1,4 +1,3 @@
-cat > /mnt/user-data/outputs/sentinal.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +7,7 @@ cat > /mnt/user-data/outputs/sentinal.html << 'EOF'
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
     <style>
+        /* ─── SAME STYLES AS YOUR HTML ─── */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --pu: #7C3AED; --pu-l: #A855F7; --pu-xl: #D8B4FE;
@@ -127,20 +127,20 @@ cat > /mnt/user-data/outputs/sentinal.html << 'EOF'
     </nav>
     <div class="sb-user">
         <div class="ui" id="userToggle">
-            <div class="av">JD</div>
+            <div class="av"><%= user.username.charAt(0).toUpperCase() %></div>
             <div>
-                <div class="un">JohnDoe</div>
+                <div class="un"><%= user.username %></div>
                 <div class="up">Free Plan</div>
             </div>
             <i class="ti ti-chevron-down chevron" id="chevronIcon" aria-hidden="true"></i>
         </div>
         <div class="user-dropdown" id="userDropdown">
-            <div class="di"><i class="ti ti-user" aria-hidden="true"></i><span>Profile</span></div>
+            <a href="/profile" class="di"><i class="ti ti-user" aria-hidden="true"></i><span>Profile</span></a>
             <div class="di"><i class="ti ti-settings" aria-hidden="true"></i><span>Settings</span></div>
             <div class="dd-div"></div>
-            <div class="di prem-badge"><i class="ti ti-crown" aria-hidden="true"></i><span>Upgrade to Premium</span></div>
+            <a href="/premium" class="di prem-badge"><i class="ti ti-crown" aria-hidden="true"></i><span>Upgrade to Premium</span></a>
             <div class="dd-div"></div>
-            <div class="di" style="color:#F87171"><i class="ti ti-logout" aria-hidden="true"></i><span>Logout</span></div>
+            <a href="/logout" class="di" style="color:#F87171"><i class="ti ti-logout" aria-hidden="true"></i><span>Logout</span></a>
         </div>
     </div>
 </aside>
@@ -156,10 +156,53 @@ cat > /mnt/user-data/outputs/sentinal.html << 'EOF'
                 <i class="ti ti-search" aria-hidden="true"></i>
                 <input type="text" id="searchInput" placeholder="Search servers…" />
             </div>
-            <button class="btn-rf" id="refreshBtn"><i class="ti ti-refresh" aria-hidden="true"></i> Refresh</button>
+            <button class="btn-rf" onclick="location.reload()"><i class="ti ti-refresh" aria-hidden="true"></i> Refresh</button>
         </div>
     </div>
-    <div class="grid" id="serverGrid"></div>
+
+    <div class="grid" id="serverGrid">
+        <% if (guilds && guilds.length > 0) { %>
+            <% guilds.forEach((guild, index) => { %>
+                <div class="sc" style="animation-delay:<%= index * 0.07 %>s">
+                    <div class="sc-head">
+                        <div class="sc-ico"><%= guild.name.charAt(0).toUpperCase() %></div>
+                        <div class="sc-info">
+                            <div class="nm"><%= guild.name %></div>
+                            <div class="ow">
+                                <% if (guild.hasBot) { %>
+                                    <span class="badge badge-on"><span class="badge-dot"></span> Online</span>
+                                <% } else { %>
+                                    <span class="badge badge-off"><span class="badge-dot"></span> Bot not installed</span>
+                                <% } %>
+                            </div>
+                            <% if ((guild.permissions & 0x1) === 0x1) { %>
+                                <span class="sc-role role-owner">👑 Owner</span>
+                            <% } else if ((guild.permissions & 0x8) === 0x8) { %>
+                                <span class="sc-role role-admin">🛡️ Admin</span>
+                            <% } else { %>
+                                <span class="sc-role role-none">No Admin</span>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="sc-acts">
+                        <% if (guild.hasBot) { %>
+                            <a href="/servers/<%= guild.id %>" class="btn-cfg"><i class="ti ti-settings" aria-hidden="true"></i> Configure</a>
+                        <% } else { %>
+                            <a href="/invite/<%= guild.id %>" class="btn-inv"><i class="ti ti-plus" aria-hidden="true"></i> <span>Invite Bot</span></a>
+                            <span class="btn-cfg disabled">Configure</span>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="empty-state">
+                <i class="ti ti-robot" aria-hidden="true"></i>
+                <h3>No servers found</h3>
+                <p>You don't own or have administrator permissions on any servers.</p>
+            </div>
+        <% } %>
+    </div>
+
     <div class="hint">
         <i class="ti ti-shield" aria-hidden="true"></i>
         Only servers where you are the <strong>Owner</strong> or have <strong>Administrator</strong> permissions are shown.
@@ -167,82 +210,34 @@ cat > /mnt/user-data/outputs/sentinal.html << 'EOF'
 </main>
 
 <script>
-const SERVERS = [
-    {id:'111', name:'Midnight Lounge', hasBot:true,  role:'owner'},
-    {id:'222', name:'Dev Collective',  hasBot:true,  role:'admin'},
-    {id:'333', name:'Gaming Hub',      hasBot:false, role:'owner'},
-    {id:'444', name:'Art Studio',      hasBot:true,  role:'admin'},
-    {id:'555', name:'Music Scene',     hasBot:false, role:'owner'},
-    {id:'666', name:'Tech Talk',       hasBot:true,  role:'owner'},
-];
+    // ─── Search ──────────────────────────────────────────────────────
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.sc');
 
-function roleTag(role) {
-    if (role==='owner') return `<span class="sc-role role-owner">👑 Owner</span>`;
-    if (role==='admin') return `<span class="sc-role role-admin">🛡️ Admin</span>`;
-    return `<span class="sc-role role-none">No Admin</span>`;
-}
+    searchInput.addEventListener('input', function () {
+        const query = this.value.toLowerCase();
+        cards.forEach(card => {
+            const name = card.dataset?.name || card.querySelector('.nm')?.textContent?.toLowerCase() || '';
+            card.style.display = name.includes(query) ? '' : 'none';
+        });
+    });
 
-function renderCards(list) {
-    const grid = document.getElementById('serverGrid');
-    if (!list.length) {
-        grid.innerHTML = `<div class="empty-state"><i class="ti ti-robot" aria-hidden="true"></i><h3>No servers found</h3><p>No servers match your search.</p></div>`;
-        return;
-    }
-    grid.innerHTML = list.map((g, i) => `
-        <div class="sc" style="animation-delay:${i*0.07}s">
-            <div class="sc-head">
-                <div class="sc-ico">${g.name.charAt(0)}</div>
-                <div class="sc-info">
-                    <div class="nm">${g.name}</div>
-                    <div class="ow">
-                        ${g.hasBot
-                            ? `<span class="badge badge-on"><span class="badge-dot"></span> Online</span>`
-                            : `<span class="badge badge-off"><span class="badge-dot"></span> Bot not installed</span>`}
-                    </div>
-                    ${roleTag(g.role)}
-                </div>
-            </div>
-            <div class="sc-acts">
-                ${g.hasBot
-                    ? `<button class="btn-cfg"><i class="ti ti-settings" aria-hidden="true"></i> Configure</button>`
-                    : `<button class="btn-inv"><i class="ti ti-plus" aria-hidden="true"></i> <span>Invite Bot</span></button>
-                       <span class="btn-cfg disabled">Configure</span>`}
-            </div>
-        </div>
-    `).join('');
-}
+    // ─── User Dropdown Toggle ──────────────────────────────────────
+    const userToggle = document.getElementById('userToggle');
+    const userDropdown = document.getElementById('userDropdown');
+    const chevronIcon = document.getElementById('chevronIcon');
 
-renderCards(SERVERS);
+    userToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        userDropdown.classList.toggle('open');
+        chevronIcon.style.transform = userDropdown.classList.contains('open') ? 'rotate(180deg)' : '';
+    });
 
-document.getElementById('searchInput').addEventListener('input', function() {
-    const q = this.value.toLowerCase();
-    renderCards(SERVERS.filter(s => s.name.toLowerCase().includes(q)));
-});
-
-const refreshBtn = document.getElementById('refreshBtn');
-refreshBtn.addEventListener('click', function() {
-    const icon = this.querySelector('i');
-    icon.style.transition = 'transform 0.6s';
-    icon.style.transform = 'rotate(360deg)';
-    setTimeout(() => { icon.style.transition = ''; icon.style.transform = ''; }, 600);
-    renderCards(SERVERS);
-    document.getElementById('searchInput').value = '';
-});
-
-const userToggle = document.getElementById('userToggle');
-const userDropdown = document.getElementById('userDropdown');
-const chevron = document.getElementById('chevronIcon');
-userToggle.addEventListener('click', function(e) {
-    e.stopPropagation();
-    userDropdown.classList.toggle('open');
-    chevron.style.transform = userDropdown.classList.contains('open') ? 'rotate(180deg)' : '';
-});
-document.addEventListener('click', function() {
-    userDropdown.classList.remove('open');
-    chevron.style.transform = '';
-});
+    document.addEventListener('click', function () {
+        userDropdown.classList.remove('open');
+        chevronIcon.style.transform = '';
+    });
 </script>
+
 </body>
 </html>
-EOF
-echo "done"
