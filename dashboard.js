@@ -9,7 +9,7 @@ const app = express();
 // ===== CONFIGURATION =====
 const config = {
     clientID: '1493217033956102215',
-    clientSecret: 'YOUR_DISCORD_CLIENT_SECRET', // ⚠️ ADD YOUR SECRET HERE
+    clientSecret: 'gZpMsdTlUpo1D0l9jlaynDq1s7oU2W15', // ⚠️ ADD YOUR SECRET HERE
     callbackURL: 'https://sentinal-dashboard.onrender.com/auth/discord/callback',
     domain: 'https://sentinal-dashboard.onrender.com'
 };
