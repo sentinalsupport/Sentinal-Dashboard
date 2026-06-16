@@ -20,7 +20,6 @@
             --mg-l: #EC4899;
             --gold: #F59E0B;
             --gold-l: #FBBF24;
-            --gold-xl: #FCD34D;
             --bg0: #0A0812;
             --bg1: #100C1C;
             --bg2: #160F26;
@@ -243,7 +242,6 @@
             margin: 4px 12px;
         }
 
-        /* ─── Premium Badge ────────────────────────────────────────── */
         .premium-badge {
             background: linear-gradient(135deg, var(--gold), var(--gold-l));
             color: #78350F !important;
@@ -341,8 +339,8 @@
         /* ─── Server Grid ─────────────────────────────────────────── */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
         }
 
         /* ─── Server Card ─────────────────────────────────────────── */
@@ -350,7 +348,7 @@
             background: var(--bg1);
             border: 1px solid var(--bord);
             border-radius: 18px;
-            padding: 18px 20px;
+            padding: 20px 22px;
             transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             cursor: pointer;
             position: relative;
@@ -403,19 +401,19 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .sc-ico {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
             background: linear-gradient(135deg, var(--pu), var(--pi));
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 17px;
+            font-size: 18px;
             color: #fff;
             flex-shrink: 0;
             box-shadow: 0 4px 14px rgba(124,58,237,0.3);
@@ -425,7 +423,7 @@
         .sc:hover .sc-ico { box-shadow: 0 4px 20px rgba(168,85,247,0.45); }
 
         .sc-info .nm {
-            font-size: 14.5px;
+            font-size: 15px;
             font-weight: 600;
             color: #fff;
             white-space: nowrap;
@@ -433,7 +431,32 @@
             text-overflow: ellipsis;
         }
 
-        .sc-info .ow { font-size: 11px; color: var(--t3); margin-top: 1px; }
+        .sc-info .ow {
+            font-size: 11px;
+            color: var(--t3);
+            margin-top: 1px;
+        }
+
+        .sc-role {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 2px;
+        }
+
+        .sc-role.owner {
+            background: rgba(245,158,11,0.15);
+            color: var(--gold-l);
+            border: 1px solid rgba(245,158,11,0.2);
+        }
+
+        .sc-role.admin {
+            background: rgba(168,85,247,0.15);
+            color: var(--pu-l);
+            border: 1px solid rgba(168,85,247,0.2);
+        }
 
         .sc-st { margin-bottom: 12px; }
 
@@ -454,9 +477,9 @@
         }
 
         .badge-on {
-            background: rgba(212,83,126,0.12);
-            color: var(--pi-xl);
-            border: 1px solid rgba(212,83,126,0.25);
+            background: rgba(16,185,129,0.12);
+            color: #34D399;
+            border: 1px solid rgba(16,185,129,0.25);
         }
 
         .badge-dot {
@@ -467,10 +490,9 @@
         }
 
         .badge-off .badge-dot { background: #FCA5A5; }
-
         .badge-on .badge-dot {
-            background: var(--pi-l);
-            box-shadow: 0 0 6px var(--pi-l);
+            background: #34D399;
+            box-shadow: 0 0 6px #34D399;
             animation: pulse 2s infinite;
         }
 
@@ -490,6 +512,10 @@
             font-family: 'Inter', sans-serif;
             position: relative;
             overflow: hidden;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-inv::before {
@@ -517,6 +543,10 @@
             cursor: pointer;
             transition: all 0.25s;
             font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-cfg:hover {
@@ -528,6 +558,17 @@
         .btn-cfg a {
             color: inherit;
             text-decoration: none;
+        }
+
+        .btn-cfg.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-cfg.disabled:hover {
+            border-color: var(--bord);
+            color: var(--t2);
+            background: transparent;
         }
 
         /* ─── Empty State ─────────────────────────────────────────── */
@@ -690,22 +731,35 @@
                             </div>
                             <div class="sc-info">
                                 <div class="nm"><%= guild.name %></div>
-                                <div class="ow">Owner</div>
+                                <div class="ow">
+                                    <% if (guild.hasBot) { %>
+                                        <span class="badge badge-on">
+                                            <span class="badge-dot"></span> Online
+                                        </span>
+                                    <% } else { %>
+                                        <span class="badge badge-off">
+                                            <span class="badge-dot"></span> Bot not installed
+                                        </span>
+                                    <% } %>
+                                </div>
+                                <% if ((guild.permissions & 0x1) === 0x1) { %>
+                                    <span class="sc-role owner">👑 Owner</span>
+                                <% } else if ((guild.permissions & 0x8) === 0x8) { %>
+                                    <span class="sc-role admin">🛡️ Admin</span>
+                                <% } %>
                             </div>
                         </div>
-                        <div class="sc-st">
-                            <span class="badge badge-off">
-                                <span class="badge-dot"></span>
-                                Not installed
-                            </span>
-                        </div>
                         <div class="sc-acts">
-                            <button class="btn-inv" onclick="inviteBot('<%= guild.id %>')">
-                                <span>Invite bot</span>
-                            </button>
-                            <button class="btn-cfg">
-                                <a href="/servers/<%= guild.id %>">Configure</a>
-                            </button>
+                            <% if (guild.hasBot) { %>
+                                <a href="/servers/<%= guild.id %>" class="btn-cfg">
+                                    <i class="ti ti-settings" aria-hidden="true"></i> Configure
+                                </a>
+                            <% } else { %>
+                                <a href="/invite/<%= guild.id %>" class="btn-inv">
+                                    <span><i class="ti ti-plus" aria-hidden="true"></i> Invite Bot</span>
+                                </a>
+                                <span class="btn-cfg disabled">Configure</span>
+                            <% } %>
                         </div>
                     </div>
                 <% }) %>
@@ -713,14 +767,14 @@
                 <div class="empty-state">
                     <i class="ti ti-robot" aria-hidden="true"></i>
                     <h3>No servers found</h3>
-                    <p>You don't have administrator permissions on any servers where the bot is installed.</p>
+                    <p>You don't own or have administrator permissions on any servers.</p>
                 </div>
             <% } %>
         </div>
 
         <div class="hint">
             <i class="ti ti-shield" aria-hidden="true"></i>
-            Only servers where you have administrator permissions are shown.
+            Only servers where you are the <strong>Owner</strong> or have <strong>Administrator</strong> permissions are shown.
         </div>
     </main>
 
@@ -735,12 +789,6 @@
                 card.style.display = card.dataset.name.includes(query) ? '' : 'none';
             });
         });
-
-        // ─── Invite Bot ──────────────────────────────────────────────────
-        function inviteBot(guildId) {
-            const inviteUrl = `https://discord.com/oauth2/authorize?client_id=<%= process.env.DISCORD_CLIENT_ID %>&permissions=8&scope=bot%20applications.commands&guild_id=${guildId}`;
-            window.open(inviteUrl, '_blank');
-        }
 
         // ─── User Dropdown Toggle ──────────────────────────────────────
         const userToggle = document.getElementById('userToggle');
