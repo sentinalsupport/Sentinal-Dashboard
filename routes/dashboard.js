@@ -1,4 +1,4 @@
-// FILE: routes/dashboard.js (ROUTE HANDLER)
+// FILE: routes/dashboard.js
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
@@ -29,13 +29,8 @@ router.get('/servers', ensureAuth, async (req, res) => {
     const guilds = req.session.guilds || [];
     console.log('📋 Total guilds:', guilds.length);
     
-    // ─── FILTER: Only Owner (0x1) or Administrator (0x8) ──────
-    const filteredGuilds = guilds.filter(g => {
-      const perms = g.permissions || 0;
-      return (perms & 0x1) === 0x1 || (perms & 0x8) === 0x8;
-    });
-    
-    console.log('📋 Owner/Admin guilds:', filteredGuilds.length);
+    // ─── NO FILTER — SHOW ALL SERVERS ───────────────────────────
+    // const filteredGuilds = guilds; // ← ALL SERVERS
     
     // ─── Check which servers the bot is in ──────────────────────
     const botToken = process.env.DISCORD_BOT_TOKEN;
@@ -54,7 +49,7 @@ router.get('/servers', ensureAuth, async (req, res) => {
     }
     
     // ─── Add hasBot status ────────────────────────────────────────
-    const serverList = filteredGuilds.map(g => ({
+    const serverList = guilds.map(g => ({
       ...g,
       hasBot: botGuildIds.includes(g.id)
     }));
