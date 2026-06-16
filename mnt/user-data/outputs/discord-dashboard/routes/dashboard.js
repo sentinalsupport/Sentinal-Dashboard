@@ -12,9 +12,12 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 // ─── MongoDB Connection ──────────────────────────────────────────
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('✅ Connected to MongoDB'))
+.catch(err => console.error('❌ MongoDB connection error:', err));
 
 // ─── View Engine ──────────────────────────────────────────────────
 app.set('view engine', 'ejs');
@@ -42,14 +45,15 @@ app.use(
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
       collectionName: 'sessions',
-      ttl: 14 * 24 * 60 * 60,
+      ttl: 14 * 24 * 60 * 60, // 14 days
       autoRemove: 'native',
     }),
     cookie: {
-      secure: false,  // ← TEMPORARILY DISABLED FOR DEBUGGING
-      httpOnly: false, // ← TEMPORARILY DISABLED FOR DEBUGGING
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: 'lax',
+      secure: false,      // ✅ ALLOW HTTP (Render's internal network)
+      httpOnly: true,     // ✅ Keep this for security
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      sameSite: 'lax',    // ✅ Allows cross-site requests
+      domain: '.onrender.com', // ✅ Share cookie across subdomains
     },
   })
 );
@@ -58,6 +62,7 @@ app.use(
 app.use((req, res, next) => {
   console.log('📦 Session ID:', req.session?.id || 'None');
   console.log('👤 User in session:', req.session?.user?.username || 'None');
+  console.log('📦 Session data:', req.session);
   next();
 });
 
