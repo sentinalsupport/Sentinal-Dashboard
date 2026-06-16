@@ -12,12 +12,9 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 // ─── MongoDB Connection ──────────────────────────────────────────
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ Connected to MongoDB'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // ─── View Engine ──────────────────────────────────────────────────
 app.set('view engine', 'ejs');
@@ -30,26 +27,39 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ─── Cookie Debugging ─────────────────────────────────────────────
+app.use((req, res, next) => {
+  console.log('🍪 Cookies header:', req.headers.cookie || 'None');
+  next();
+});
+
 // ─── Session Middleware ────────────────────────────────────────────
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key-here',
+    secret: process.env.SESSION_SECRET || 'your-secret-key-here-change-this',
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
       collectionName: 'sessions',
-      ttl: 14 * 24 * 60 * 60, // 14 days
+      ttl: 14 * 24 * 60 * 60,
       autoRemove: 'native',
     }),
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      secure: false,  // ← TEMPORARILY DISABLED FOR DEBUGGING
+      httpOnly: false, // ← TEMPORARILY DISABLED FOR DEBUGGING
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       sameSite: 'lax',
     },
   })
 );
+
+// ─── Session Debugging ────────────────────────────────────────────
+app.use((req, res, next) => {
+  console.log('📦 Session ID:', req.session?.id || 'None');
+  console.log('👤 User in session:', req.session?.user?.username || 'None');
+  next();
+});
 
 // ─── Routes ──────────────────────────────────────────────────────
 app.use('/', authRoutes);
