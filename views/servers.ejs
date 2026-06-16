@@ -18,6 +18,9 @@
             --pi-xl: #FBCFE8;
             --mg: #993556;
             --mg-l: #EC4899;
+            --gold: #F59E0B;
+            --gold-l: #FBBF24;
+            --gold-xl: #FCD34D;
             --bg0: #0A0812;
             --bg1: #100C1C;
             --bg2: #160F26;
@@ -151,10 +154,12 @@
 
         .sb-nav a i { font-size: 17px; flex-shrink: 0; }
 
+        /* ─── User Dropdown ────────────────────────────────────────── */
         .sb-user {
             border-top: 1px solid var(--bord);
             padding-top: 14px;
             margin-top: auto;
+            position: relative;
         }
 
         .sb-user .ui {
@@ -164,7 +169,8 @@
             padding: 8px 10px;
             border-radius: 10px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            position: relative;
         }
 
         .sb-user .ui:hover { background: var(--card); }
@@ -185,6 +191,67 @@
 
         .sb-user .un { font-size: 13px; font-weight: 600; color: #fff; }
         .sb-user .up { font-size: 11px; color: var(--t3); }
+        .sb-user .chevron { margin-left: auto; color: var(--t3); font-size: 16px; transition: transform 0.3s; }
+
+        /* ─── Dropdown Panel ────────────────────────────────────────── */
+        .user-dropdown {
+            position: absolute;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            background: var(--bg2);
+            border: 1px solid var(--bord);
+            border-radius: 14px;
+            padding: 8px 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            z-index: 20;
+        }
+
+        .user-dropdown.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-dropdown .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: var(--t2);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .user-dropdown .dropdown-item:hover {
+            background: var(--card);
+            color: #fff;
+        }
+
+        .user-dropdown .dropdown-item i { font-size: 16px; width: 20px; }
+
+        .user-dropdown .dropdown-divider {
+            height: 1px;
+            background: var(--bord);
+            margin: 4px 12px;
+        }
+
+        /* ─── Premium Badge ────────────────────────────────────────── */
+        .premium-badge {
+            background: linear-gradient(135deg, var(--gold), var(--gold-l));
+            color: #78350F !important;
+            border: none !important;
+            box-shadow: 0 2px 12px rgba(245,158,11,0.3);
+        }
+
+        .premium-badge i { color: #78350F !important; }
 
         /* ─── Main ────────────────────────────────────────────────── */
         .main {
@@ -508,9 +575,12 @@
             .sb-logo .bk,
             .sb-nav a span,
             .sb-user .un,
-            .sb-user .up { display: none; }
+            .sb-user .up,
+            .sb-user .chevron,
+            .user-dropdown .dropdown-item span { display: none; }
             .sb-nav a { justify-content: center; padding: 10px; }
             .sb-user .ui { justify-content: center; }
+            .user-dropdown { left: 10px; right: 10px; }
             .main { padding: 24px 20px; }
             .ph { flex-direction: column; gap: 16px; }
             .srch { width: 100%; }
@@ -558,13 +628,36 @@
             </a>
         </nav>
 
+        <!-- ─── User Dropdown ──────────────────────────────────────── -->
         <div class="sb-user">
-            <div class="ui">
+            <div class="ui" id="userToggle">
                 <div class="av">U</div>
                 <div>
                     <div class="un"><%= user.username %></div>
                     <div class="up">Free Plan</div>
                 </div>
+                <i class="ti ti-chevron-down chevron" id="chevronIcon" aria-hidden="true"></i>
+            </div>
+
+            <div class="user-dropdown" id="userDropdown">
+                <a href="/profile" class="dropdown-item">
+                    <i class="ti ti-user" aria-hidden="true"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="#" class="dropdown-item">
+                    <i class="ti ti-settings" aria-hidden="true"></i>
+                    <span>Settings</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="/premium" class="dropdown-item premium-badge">
+                    <i class="ti ti-crown" aria-hidden="true"></i>
+                    <span>Upgrade to Premium</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="/logout" class="dropdown-item" style="color: #F87171;">
+                    <i class="ti ti-logout" aria-hidden="true"></i>
+                    <span>Logout</span>
+                </a>
             </div>
         </div>
     </aside>
@@ -648,6 +741,23 @@
             const inviteUrl = `https://discord.com/oauth2/authorize?client_id=<%= process.env.DISCORD_CLIENT_ID %>&permissions=8&scope=bot%20applications.commands&guild_id=${guildId}`;
             window.open(inviteUrl, '_blank');
         }
+
+        // ─── User Dropdown Toggle ──────────────────────────────────────
+        const userToggle = document.getElementById('userToggle');
+        const userDropdown = document.getElementById('userDropdown');
+        const chevronIcon = document.getElementById('chevronIcon');
+
+        userToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle('open');
+            chevronIcon.style.transform = userDropdown.classList.contains('open') ? 'rotate(180deg)' : '';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function () {
+            userDropdown.classList.remove('open');
+            chevronIcon.style.transform = '';
+        });
     </script>
 
 </body>
