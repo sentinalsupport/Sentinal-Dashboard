@@ -43,13 +43,18 @@ router.get('/servers', ensureAuth, async (req, res) => {
     const botToken = process.env.DISCORD_BOT_TOKEN;
     let botGuildIds = [];
     
-    try {
-      const botGuildsRes = await axios.get('https://discord.com/api/v10/users/@me/guilds', {
-        headers: { Authorization: `Bot ${botToken}` }
-      });
-      botGuildIds = botGuildsRes.data.map(g => g.id);
-    } catch (err) {
-      console.log('⚠️ Could not fetch bot guilds (bot may be offline or token invalid)');
+    if (botToken) {
+      try {
+        const botGuildsRes = await axios.get('https://discord.com/api/v10/users/@me/guilds', {
+          headers: { Authorization: `Bot ${botToken}` }
+        });
+        botGuildIds = botGuildsRes.data.map(g => g.id);
+        console.log('✅ Bot is in', botGuildIds.length, 'servers');
+      } catch (err) {
+        console.log('⚠️ Could not fetch bot guilds. Error:', err.response?.data || err.message);
+      }
+    } else {
+      console.log('⚠️ DISCORD_BOT_TOKEN is missing!');
     }
     
     // ─── BUILD SERVER LIST WITH STATUS ──────────────────────────
@@ -60,6 +65,7 @@ router.get('/servers', ensureAuth, async (req, res) => {
     
     console.log('📋 Total guilds:', guilds.length);
     console.log('📋 Owner/Admin guilds:', ownerOrAdminGuilds.length);
+    console.log('📋 Servers with bot:', botGuildIds.length);
     
     res.render('servers', { 
       user: req.session.user, 
