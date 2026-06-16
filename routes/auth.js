@@ -19,13 +19,19 @@ router.get('/login', (req, res) => {
 // GET /auth/discord/callback — handle OAuth2 callback
 router.get('/auth/discord/callback', async (req, res) => {
   const { code, error } = req.query;
+  
+  console.log('🔍 Callback received!');
+  console.log('🔍 Code:', code ? '✅ Present' : '❌ Missing');
+  console.log('🔍 Error:', error || 'None');
 
   if (error || !code) {
+    console.log('❌ No code or error, redirecting to /login');
     return res.redirect('/login');
   }
 
   try {
-    // Exchange code for tokens
+    console.log('🔄 Exchanging code for token...');
+    
     const tokenRes = await axios.post(
       `${DISCORD_API}/oauth2/token`,
       new URLSearchParams({
@@ -39,6 +45,7 @@ router.get('/auth/discord/callback', async (req, res) => {
     );
 
     const { access_token, token_type } = tokenRes.data;
+    console.log('✅ Token received!');
 
     // Fetch user info
     const userRes = await axios.get(`${DISCORD_API}/users/@me`, {
@@ -50,13 +57,16 @@ router.get('/auth/discord/callback', async (req, res) => {
       headers: { Authorization: `${token_type} ${access_token}` },
     });
 
+    console.log('✅ User data fetched:', userRes.data.username);
+
     req.session.user = userRes.data;
     req.session.accessToken = access_token;
     req.session.guilds = guildsRes.data;
 
+    console.log('✅ Session saved, redirecting to /servers');
     res.redirect('/servers');
   } catch (err) {
-    console.error('OAuth callback error:', err.response?.data || err.message);
+    console.error('❌ OAuth callback error:', err.response?.data || err.message);
     res.redirect('/login');
   }
 });
