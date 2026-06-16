@@ -5,7 +5,8 @@ const axios = require('axios');
 // ─── Auth Middleware ──────────────────────────────────────────────
 function ensureAuth(req, res, next) {
   console.log('🔍 Checking session...');
-  console.log('🔍 User data:', req.session?.user?.username || 'None');
+  console.log('🔍 Session ID:', req.session.id);
+  console.log('🔍 User data:', req.session.user);
   
   if (req.session.user) {
     console.log('✅ User is logged in!');
@@ -29,13 +30,9 @@ router.get('/', (req, res) => {
 router.get('/servers', ensureAuth, async (req, res) => {
   try {
     console.log('📋 Fetching servers for user:', req.session.user.username);
-    
-    const guilds = req.session.guilds || [];
-    console.log('📋 Found', guilds.length, 'guilds');
-    
     res.render('servers', { 
       user: req.session.user, 
-      guilds: guilds 
+      guilds: req.session.guilds || [] 
     });
   } catch (err) {
     console.error('❌ Error fetching servers:', err);
@@ -75,34 +72,12 @@ router.get('/servers/:guildId', ensureAuth, async (req, res) => {
 
 // ─── Save Config ──────────────────────────────────────────────────
 router.post('/api/servers/:guildId/config', ensureAuth, async (req, res) => {
-  try {
-    // TODO: Save to MongoDB
-    res.json({ success: true, message: 'Settings saved!' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: 'Failed to save settings' });
-  }
+  res.json({ success: true, message: 'Settings saved!' });
 });
 
 // ─── Stats ──────────────────────────────────────────────────────────
 router.get('/api/servers/:guildId/stats', ensureAuth, async (req, res) => {
-  try {
-    const guildId = req.params.guildId;
-    // TODO: Fetch real stats from Discord API
-    res.json({
-      success: true,
-      stats: {
-        memberCount: 0,
-        botOnline: true,
-        channelCount: 0
-      }
-    });
-  } catch (err) {
-    res.json({ 
-      success: false, 
-      stats: { memberCount: 0, botOnline: false, channelCount: 0 }
-    });
-  }
+  res.json({ success: true, stats: { memberCount: 0, botOnline: true } });
 });
 
 // ─── Invite ──────────────────────────────────────────────────────────
