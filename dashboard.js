@@ -6,54 +6,52 @@ const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
 const path = require('path');
 
+const authRoutes = require('./routes/auth');
+const dashboardRoutes = require('./routes/dashboard');
+
 const app = express();
+const PORT = process.env.PORT || 10000;
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+// ─── MongoDB Connection ──────────────────────────────────────────
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('✅ Connected to MongoDB'))
+.catch(err => console.error('❌ MongoDB connection error:', err));
 
-// View engine
+// ─── View Engine ──────────────────────────────────────────────────
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Body parsing
+// ─── Body Parsing ──────────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'change-this-secret-key',
-  resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI,
-    collectionName: 'sessions',
-    ttl: 14 * 24 * 60 * 60,
-  }),
-  cookie: {
-    name: 'sentinal.sid',
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-    httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
-    path: '/',
-  },
-}));
+// ─── Session Middleware ────────────────────────────────────────────
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key-here',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: 'sessions',
+      ttl: 14 * 24 * 60 * 60,
+    }),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    },
+  })
+);
 
-// Debugging
-app.use((req, res, next) => {
-  console.log('🍪 Cookie:', req.headers.cookie || 'None');
-  console.log('📦 Session ID:', req.session?.id || 'None');
-  console.log('👤 User:', req.session?.user?.username || 'None');
-  next();
-});
+// ─── Routes ──────────────────────────────────────────────────────
+app.use('/', authRoutes);
+app.use('/', dashboardRoutes);
 
-// Routes
-app.use('/', require('./routes/auth'));
-app.use('/', require('./routes/dashboard'));
-
-// 404 handler
+// ─── 404 Handler ──────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).render('error', {
     message: 'Page not found.',
@@ -61,7 +59,7 @@ app.use((req, res) => {
   });
 });
 
-// Error handler
+// ─── Error Handler ────────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).render('error', {
@@ -70,7 +68,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 10000;
+// ─── Start Server ──────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`🚀 Dashboard running on port ${PORT}`);
 });
+
+module.exports = app;
