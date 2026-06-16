@@ -51,33 +51,25 @@ router.get('/auth/discord/callback', async (req, res) => {
 
     console.log('✅ User fetched:', userRes.data.username);
 
+    const guildsRes = await axios.get(`${DISCORD_API}/users/@me/guilds`, {
+      headers: { Authorization: `${token_type} ${access_token}` },
+    });
+
     // ─── SET SESSION ──────────────────────────────────────────────
     req.session.user = userRes.data;
     req.session.accessToken = access_token;
+    req.session.guilds = guildsRes.data;
     
-    console.log('👤 User stored in session:', req.session.user.username);
+    console.log('👤 User stored:', req.session.user.username);
     console.log('📦 Session ID:', req.session.id);
     
-    // ─── FORCE SAVE AND MANUALLY SET COOKIE ──────────────────────
+    // ─── SAVE AND REDIRECT ────────────────────────────────────────
     req.session.save((err) => {
       if (err) {
         console.error('❌ Session save error:', err);
         return res.redirect('/login');
       }
-      
       console.log('✅ Session saved!');
-      
-      // ─── MANUALLY SET COOKIE ────────────────────────────────────
-      res.cookie('connect.sid', req.session.id, {
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-        httpOnly: true,
-        secure: false,
-        sameSite: 'lax',
-        path: '/'
-      });
-      
-      console.log('🍪 Cookie manually set!');
-      console.log('✅ Redirecting to /servers');
       res.redirect('/servers');
     });
     
