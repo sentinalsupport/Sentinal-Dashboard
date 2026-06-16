@@ -5,7 +5,7 @@ const router = express.Router();
 const DISCORD_API = 'https://discord.com/api/v10';
 const SCOPES = 'identify guilds';
 
-// GET /login — redirect to Discord OAuth2
+// ─── Login ─────────────────────────────────────────────────────────
 router.get('/login', (req, res) => {
   const params = new URLSearchParams({
     client_id: process.env.DISCORD_CLIENT_ID,
@@ -16,7 +16,7 @@ router.get('/login', (req, res) => {
   res.redirect(`${DISCORD_API}/oauth2/authorize?${params}`);
 });
 
-// GET /auth/discord/callback — handle OAuth2 callback
+// ─── Callback ─────────────────────────────────────────────────────
 router.get('/auth/discord/callback', async (req, res) => {
   const { code, error } = req.query;
   
@@ -59,23 +59,34 @@ router.get('/auth/discord/callback', async (req, res) => {
 
     console.log('✅ User data fetched:', userRes.data.username);
 
+    // Store in session
     req.session.user = userRes.data;
     req.session.accessToken = access_token;
     req.session.guilds = guildsRes.data;
 
-    console.log('✅ Session saved, redirecting to /servers');
-    res.redirect('/servers');
+    // ─── FORCE SAVE SESSION ──────────────────────────────────────
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ Session save error:', err);
+        return res.redirect('/login');
+      }
+      console.log('✅ Session saved successfully!');
+      console.log('✅ Session ID:', req.session.id);
+      console.log('✅ Redirecting to /servers');
+      res.redirect('/servers');
+    });
+    
   } catch (err) {
     console.error('❌ OAuth callback error:', err.response?.data || err.message);
     res.redirect('/login');
   }
 });
 
-// GET /logout — destroy session
+// ─── Logout ────────────────────────────────────────────────────────
 router.get('/logout', (req, res) => {
-  req.session.destroy(err => {
+  req.session.destroy((err) => {
     if (err) console.error('Session destroy error:', err);
-    res.redirect('/login');
+    res.redirect('/');
   });
 });
 
