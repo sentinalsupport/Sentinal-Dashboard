@@ -58,13 +58,26 @@ router.get('/auth/discord/callback', async (req, res) => {
     console.log('👤 User stored in session:', req.session.user.username);
     console.log('📦 Session ID:', req.session.id);
     
-    // ─── FORCE SAVE AND REDIRECT ──────────────────────────────────
+    // ─── FORCE SAVE AND MANUALLY SET COOKIE ──────────────────────
     req.session.save((err) => {
       if (err) {
         console.error('❌ Session save error:', err);
         return res.redirect('/login');
       }
-      console.log('✅ Session saved! Redirecting to /servers');
+      
+      console.log('✅ Session saved!');
+      
+      // ─── MANUALLY SET COOKIE ────────────────────────────────────
+      res.cookie('connect.sid', req.session.id, {
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        path: '/'
+      });
+      
+      console.log('🍪 Cookie manually set!');
+      console.log('✅ Redirecting to /servers');
       res.redirect('/servers');
     });
     
