@@ -1,19 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
 
 // ─── Auth Middleware ──────────────────────────────────────────────
 function ensureAuth(req, res, next) {
   console.log('🔍 Checking session...');
   console.log('🔍 Session ID:', req.session.id);
-  console.log('🔍 User data:', req.session.user);
+  console.log('🔍 User:', req.session.user);
+  console.log('🔍 Cookie:', req.headers.cookie || 'None');
   
   if (req.session.user) {
     console.log('✅ User is logged in!');
     return next();
   }
   
-  console.log('❌ Not logged in, redirecting to /login');
+  console.log('❌ Not logged in');
   res.redirect('/login');
 }
 
@@ -29,13 +29,13 @@ router.get('/', (req, res) => {
 // ─── Servers List ──────────────────────────────────────────────────
 router.get('/servers', ensureAuth, async (req, res) => {
   try {
-    console.log('📋 Fetching servers for user:', req.session.user.username);
+    console.log('📋 Fetching servers for:', req.session.user.username);
     res.render('servers', { 
       user: req.session.user, 
       guilds: req.session.guilds || [] 
     });
   } catch (err) {
-    console.error('❌ Error fetching servers:', err);
+    console.error('❌ Error:', err);
     res.redirect('/login');
   }
 });
@@ -43,26 +43,13 @@ router.get('/servers', ensureAuth, async (req, res) => {
 // ─── Server Config ──────────────────────────────────────────────────
 router.get('/servers/:guildId', ensureAuth, async (req, res) => {
   try {
-    const guildId = req.params.guildId;
-    const guild = req.session.guilds?.find(g => g.id === guildId);
-    
-    if (!guild) {
-      return res.redirect('/servers');
-    }
+    const guild = req.session.guilds?.find(g => g.id === req.params.guildId);
+    if (!guild) return res.redirect('/servers');
     
     res.render('server', {
       user: req.session.user,
       guild: guild,
-      config: {
-        prefix: '!',
-        welcomeChannel: '',
-        welcomeMessage: '',
-        logChannel: '',
-        modLevel: 'off',
-        autoMod: false,
-        logJoinLeave: false,
-        logMessageDelete: false
-      }
+      config: { prefix: '!', welcomeChannel: '', welcomeMessage: '', logChannel: '', modLevel: 'off', autoMod: false, logJoinLeave: false, logMessageDelete: false }
     });
   } catch (err) {
     console.error(err);
