@@ -1,3 +1,4 @@
+// FILE: routes/auth.js
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
@@ -55,7 +56,6 @@ router.get('/auth/discord/callback', async (req, res) => {
       headers: { Authorization: `${token_type} ${access_token}` },
     });
 
-    // ─── SET SESSION ──────────────────────────────────────────────
     req.session.user = userRes.data;
     req.session.accessToken = access_token;
     req.session.guilds = guildsRes.data;
@@ -63,7 +63,6 @@ router.get('/auth/discord/callback', async (req, res) => {
     console.log('👤 User stored:', req.session.user.username);
     console.log('📦 Session ID:', req.session.id);
     
-    // ─── SAVE AND REDIRECT ────────────────────────────────────────
     req.session.save((err) => {
       if (err) {
         console.error('❌ Session save error:', err);
