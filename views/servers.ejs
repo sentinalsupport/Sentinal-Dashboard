@@ -3,272 +3,552 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sentinal — Server Selection</title>
+    <title><%= title || 'Servers — Sentinal' %></title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --pu: #7C3AED; --pu-l: #A855F7; --pu-xl: #D8B4FE;
-            --pi: #D4537E; --pi-l: #F472B6;
-            --gold: #F59E0B; --gold-l: #FBBF24;
-            --bg0: #0A0812; --bg1: #100C1C; --bg2: #160F26;
-            --card: rgba(120,50,200,0.07);
-            --bord: rgba(168,85,247,0.15); --bord2: rgba(236,72,153,0.2);
-            --t1: #F1F5F9; --t2: #C4B5D8; --t3: #7B6C96;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #080E1A;
+            color: #E8EDF5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg0); color: var(--t1); min-height: 100vh; display: flex; overflow-x: hidden; }
-        body::before { content: ''; position: fixed; inset: 0; z-index: 0; background: radial-gradient(ellipse 50% 60% at 15% 50%, rgba(124,58,237,.12) 0%, transparent 70%), radial-gradient(ellipse 40% 50% at 85% 20%, rgba(212,83,126,.1) 0%, transparent 70%), radial-gradient(ellipse 60% 40% at 60% 80%, rgba(168,85,247,.07) 0%, transparent 70%); pointer-events: none; }
-        .sb { width: 220px; min-height: 100vh; background: var(--bg1); border-right: 1px solid var(--bord); padding: 20px 12px; display: flex; flex-direction: column; gap: 6px; position: sticky; top: 0; height: 100vh; z-index: 10; flex-shrink: 0; }
-        .sb-logo { display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin-bottom: 12px; }
-        .sb-logo .ic { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--pu), var(--pi)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; color: #fff; flex-shrink: 0; }
-        .sb-logo .nm { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -.3px; }
-        .sb-logo .bk { font-size: 10px; font-weight: 600; background: rgba(244,114,182,.15); color: var(--pi-l); padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(244,114,182,.2); }
-        .sb-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-        .sb-nav a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; color: var(--t2); text-decoration: none; font-size: 13.5px; font-weight: 500; transition: all .25s; position: relative; overflow: hidden; cursor: pointer; }
-        .sb-nav a::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(124,58,237,.12), rgba(212,83,126,.08)); opacity: 0; transition: opacity .25s; border-radius: 10px; }
-        .sb-nav a:hover::before, .sb-nav a.active::before { opacity: 1; }
-        .sb-nav a:hover { color: #fff; }
-        .sb-nav a.active { color: var(--pu-xl); border: 1px solid rgba(168,85,247,.2); }
-        .sb-nav a i { font-size: 17px; flex-shrink: 0; }
-        .sb-user { border-top: 1px solid var(--bord); padding-top: 14px; margin-top: auto; position: relative; }
-        .sb-user .ui { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer; transition: all .2s; }
-        .sb-user .ui:hover { background: var(--card); }
-        .sb-user .av { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--pu), var(--pi-l)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0; }
-        .sb-user .un { font-size: 13px; font-weight: 600; color: #fff; }
-        .sb-user .up { font-size: 11px; color: var(--t3); }
-        .sb-user .chevron { margin-left: auto; color: var(--t3); font-size: 16px; transition: transform .3s; }
-        .user-dropdown { position: absolute; bottom: 70px; left: 0; right: 0; background: var(--bg2); border: 1px solid var(--bord); border-radius: 14px; padding: 8px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all .3s cubic-bezier(.25,.46,.45,.94); box-shadow: 0 20px 60px rgba(0,0,0,.6); z-index: 20; }
-        .user-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
-        .user-dropdown .di { display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: var(--t2); text-decoration: none; font-size: 13px; font-weight: 500; transition: all .2s; cursor: pointer; }
-        .user-dropdown .di:hover { background: var(--card); color: #fff; }
-        .user-dropdown .di i { font-size: 16px; width: 20px; }
-        .dd-div { height: 1px; background: var(--bord); margin: 4px 12px; }
-        .prem-badge { background: linear-gradient(135deg, var(--gold), var(--gold-l)); color: #78350F !important; }
-        .prem-badge i { color: #78350F !important; }
-        .main { flex: 1; padding: 28px 36px; position: relative; z-index: 1; overflow-y: auto; }
-        .ph { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
-        .ph h1 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
-        .ph h1 span { background: linear-gradient(135deg, var(--pu-l), var(--pi-l), #EC4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .ph p { color: var(--t2); font-size: 14px; margin-top: 3px; }
-        .pa { display: flex; gap: 10px; align-items: center; }
-        .srch { display: flex; align-items: center; gap: 8px; background: var(--bg2); border: 1px solid var(--bord); border-radius: 12px; padding: 8px 14px; width: 240px; transition: all .3s; }
-        .srch:focus-within { border-color: var(--pu-l); box-shadow: 0 0 0 3px rgba(168,85,247,.12); }
-        .srch input { background: none; border: none; color: var(--t1); font-size: 13.5px; width: 100%; outline: none; font-family: inherit; }
-        .srch input::placeholder { color: var(--t3); }
-        .srch i { color: var(--t3); font-size: 16px; }
-        .btn-rf { background: var(--bg2); border: 1px solid var(--bord); color: var(--t2); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 13px; transition: all .2s; font-family: inherit; display: flex; align-items: center; gap: 6px; }
-        .btn-rf:hover { border-color: var(--bord2); color: #fff; background: rgba(212,83,126,.08); }
-        .btn-rf i { font-size: 16px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; }
-        .sc { background: var(--bg1); border: 1px solid var(--bord); border-radius: 18px; padding: 20px 22px; transition: all .35s cubic-bezier(.25,.46,.45,.94); position: relative; overflow: hidden; animation: fadeUp .4s ease both; }
-        .sc:hover { transform: translateY(-5px); border-color: rgba(168,85,247,.35); box-shadow: 0 12px 40px rgba(124,58,237,.18); }
-        .sc-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .sc-ico { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--pu), var(--pi)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff; flex-shrink: 0; }
-        .sc-info .nm { font-size: 15px; font-weight: 600; color: #fff; }
-        .sc-info .ow { font-size: 11px; color: var(--t3); margin-top: 1px; }
-        .sc-role { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin-top: 2px; }
-        .role-owner { background: rgba(245,158,11,.15); color: var(--gold-l); border: 1px solid rgba(245,158,11,.2); }
-        .role-admin { background: rgba(168,85,247,.15); color: var(--pu-l); border: 1px solid rgba(168,85,247,.2); }
-        .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
-        .badge-off { background: rgba(239,68,68,.1); color: #FCA5A5; border: 1px solid rgba(239,68,68,.2); }
-        .badge-on { background: rgba(16,185,129,.12); color: #34D399; border: 1px solid rgba(16,185,129,.25); }
-        .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: #FCA5A5; }
-        .badge-on .badge-dot { background: #34D399; animation: pulse 2s infinite; }
-        .sc-acts { display: flex; gap: 8px; margin-top: 12px; }
-        .btn-inv {
-            flex: 1;
-            background: linear-gradient(135deg, var(--pu), var(--pi));
-            color: #fff;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 9px;
-            font-size: 12.5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all .25s;
-            font-family: inherit;
-            display: inline-flex;
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #080E1A; }
+        ::-webkit-scrollbar-thumb { background: #1E4B8A; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2563EB; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: rgba(8, 14, 26, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-decoration: none;
+            letter-spacing: -0.3px;
+        }
+        .navbar .brand .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            border-radius: 8px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            text-decoration: none;
-            text-align: center;
+            font-size: 15px;
         }
-        .btn-inv:hover { box-shadow: 0 4px 20px rgba(212,83,126,.35); filter: brightness(1.1); }
-        .btn-cfg {
-            flex: 1;
-            background: rgba(255,255,255,.04);
-            color: var(--t2);
-            border: 1px solid var(--bord);
-            padding: 10px 14px;
-            border-radius: 9px;
-            font-size: 12.5px;
+        .navbar .brand span { color: #60A5FA; }
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+        .navbar .nav-links a {
+            color: #8B9BB5;
+            text-decoration: none;
+            font-size: 13px;
             font-weight: 500;
+            transition: color 0.2s ease;
             cursor: pointer;
-            transition: all .25s;
-            font-family: inherit;
-            display: inline-flex;
+        }
+        .navbar .nav-links a:hover { color: #E8EDF5; }
+        .navbar .nav-links a.active {
+            color: #FFFFFF;
+            position: relative;
+        }
+        .navbar .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #2563EB;
+            border-radius: 2px;
+        }
+        .navbar .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .navbar .premium-btn {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: #FFFFFF;
+            padding: 6px 18px;
+            border-radius: 100px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .navbar .premium-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+        }
+        .navbar .logout-btn {
+            background: rgba(255, 255, 255, 0.06);
+            color: #8B9BB5;
+            padding: 6px 16px;
+            border-radius: 100px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .navbar .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+        .navbar .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+        .navbar .login-btn {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFFFFF;
+            padding: 6px 20px;
+            border-radius: 100px;
             text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .navbar .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+        }
+        .navbar .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 100px;
+            background: rgba(34, 197, 94, 0.12);
+            color: #4ADE80;
+            border: 1px solid rgba(34, 197, 94, 0.15);
+        }
+        .navbar .status-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ADE80;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            padding: 32px 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.3px;
+        }
+        .page-header h1 span {
+            color: #60A5FA;
+        }
+        .page-header p {
+            color: #8B9BB5;
+            font-size: 14px;
+        }
+
+        /* ===== SERVER GRID ===== */
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .server-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .server-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2563EB, #60A5FA);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .server-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(96, 165, 250, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .server-card:hover::before {
+            opacity: 1;
+        }
+
+        .server-card .server-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #1E3A5F, #1A365D);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #60A5FA;
+            margin-bottom: 14px;
+            border: 1px solid rgba(96, 165, 250, 0.08);
+            overflow: hidden;
+        }
+
+        .server-card .server-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .server-card .server-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 4px;
+        }
+
+        .server-card .server-members {
+            color: #8B9BB5;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .server-card .server-members i {
+            margin-right: 4px;
+            color: #475569;
+        }
+
+        .server-card .server-stats {
+            display: flex;
+            gap: 16px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .server-card .server-stats .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .server-card .server-stats .stat i {
+            font-size: 13px;
+        }
+
+        .server-card .server-stats .stat .value {
+            color: #8B9BB5;
+            font-weight: 500;
+        }
+
+        .server-card .server-actions {
+            margin-top: 14px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .server-card .server-actions .btn-sm {
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .server-card .server-actions .btn-primary-sm {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFFFFF;
+        }
+
+        .server-card .server-actions .btn-primary-sm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+        }
+
+        .server-card .server-actions .btn-secondary-sm {
+            background: rgba(255, 255, 255, 0.05);
+            color: #8B9BB5;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .server-card .server-actions .btn-secondary-sm:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .server-card .server-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 100px;
+            background: rgba(245, 158, 11, 0.12);
+            color: #FBBF24;
+            border: 1px solid rgba(245, 158, 11, 0.1);
+        }
+
+        .server-card .server-badge.premium {
+            background: rgba(245, 158, 11, 0.15);
+            color: #FBBF24;
+        }
+
+        .server-card .server-badge.free {
+            background: rgba(96, 165, 250, 0.1);
+            color: #60A5FA;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
             text-align: center;
+            padding: 60px 20px;
         }
-        .btn-cfg:hover { border-color: rgba(168,85,247,.35); color: var(--pu-xl); background: rgba(124,58,237,.08); }
-        .btn-cfg.disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
-        .hint { margin-top: 20px; font-size: 12.5px; color: var(--t3); display: flex; align-items: center; gap: 6px; }
-        .hint i { font-size: 14px; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-        @media (max-width: 1024px) {
-            .sb { width: 72px; padding: 16px 8px; }
-            .sb-logo .nm, .sb-logo .bk, .sb-nav a span, .sb-user .un, .sb-user .up, .sb-user .chevron { display: none; }
-            .sb-nav a { justify-content: center; padding: 10px; }
-            .sb-user .ui { justify-content: center; }
-            .main { padding: 24px 20px; }
-            .ph { flex-direction: column; gap: 16px; }
-            .srch { width: 100%; }
-            .grid { grid-template-columns: 1fr; }
+
+        .empty-state .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
         }
-        @media (max-width: 600px) {
-            .sb { width: 56px; padding: 12px 6px; }
-            .main { padding: 16px 12px; }
-            .sc { padding: 16px; }
-            .sc-acts { flex-direction: column; }
+
+        .empty-state h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #8B9BB5;
+            font-size: 15px;
+            max-width: 400px;
+            margin: 0 auto 24px;
+            line-height: 1.7;
+        }
+
+        .empty-state .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFFFFF;
+            padding: 12px 32px;
+            border-radius: 100px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .empty-state .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(37, 99, 235, 0.25);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 24px 0;
+            margin-top: 20px;
+        }
+        .footer .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            color: #5A6B85;
+            font-size: 13px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container { padding: 0 20px; }
+            .navbar { padding: 0 20px; height: 58px; flex-wrap: wrap; gap: 8px; }
+            .navbar .nav-links { gap: 16px; }
+            .navbar .nav-links a { font-size: 12px; }
+            .navbar .nav-links a.active::after { bottom: -17px; }
+            .page-header h1 { font-size: 22px; }
+            .server-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .navbar .nav-links { gap: 12px; }
+            .navbar .nav-links a { font-size: 11px; }
+            .navbar .brand { font-size: 15px; }
+            .navbar .nav-right { gap: 8px; flex-wrap: wrap; }
+            .page-header { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
 <body>
-
-<aside class="sb">
-    <div class="sb-logo">
-        <div class="ic">S</div>
-        <span class="nm">Sentinal</span>
-        <span class="bk">Free</span>
-    </div>
-    <nav class="sb-nav">
-        <a class="active"><i class="ti ti-layout-dashboard" aria-hidden="true"></i><span>Home</span></a>
-        <a><i class="ti ti-chart-bar" aria-hidden="true"></i><span>Status</span></a>
-        <a><i class="ti ti-book" aria-hidden="true"></i><span>Documentation</span></a>
-        <a><i class="ti ti-message-circle" aria-hidden="true"></i><span>Support</span></a>
-        <a><i class="ti ti-star" aria-hidden="true"></i><span>Premium</span></a>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <a href="/dashboard" class="brand">
+            <div class="logo-icon">⚡</div>
+            Sentinal <span>Dashboard</span>
+        </a>
+        <div class="nav-links">
+            <a href="/dashboard">Home</a>
+            <a href="/servers" class="active">Servers</a>
+            <a href="/premium">Premium</a>
+            <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd', '_blank')">Support</a>
+        </div>
+        <div class="nav-right">
+            <span class="status-badge"><span class="dot"></span> Online</span>
+            <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated === true) { %>
+                <div class="user-avatar"><%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %></div>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <% } else { %>
+                <a href="/login" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <% } %>
+        </div>
     </nav>
-    <div class="sb-user">
-        <div class="ui" id="userToggle">
-            <div class="av"><%= user.username.charAt(0).toUpperCase() %></div>
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="container">
+        <div class="page-header">
             <div>
-                <div class="un"><%= user.username %></div>
-                <div class="up">Free Plan</div>
+                <h1>Your <span>Servers</span></h1>
+                <p>Manage all your Discord servers from one place</p>
             </div>
-            <i class="ti ti-chevron-down chevron" id="chevronIcon" aria-hidden="true"></i>
-        </div>
-        <div class="user-dropdown" id="userDropdown">
-            <a href="/profile" class="di"><i class="ti ti-user" aria-hidden="true"></i><span>Profile</span></a>
-            <a href="#" class="di"><i class="ti ti-settings" aria-hidden="true"></i><span>Settings</span></a>
-            <div class="dd-div"></div>
-            <a href="/premium" class="di prem-badge"><i class="ti ti-crown" aria-hidden="true"></i><span>Upgrade to Premium</span></a>
-            <div class="dd-div"></div>
-            <a href="/logout" class="di" style="color:#F87171"><i class="ti ti-logout" aria-hidden="true"></i><span>Logout</span></a>
-        </div>
-    </div>
-</aside>
-
-<main class="main">
-    <div class="ph">
-        <div>
-            <h1>Server <span>Selection</span></h1>
-            <p>Select a server you manage to configure your bot.</p>
-        </div>
-        <div class="pa">
-            <div class="srch">
-                <i class="ti ti-search" aria-hidden="true"></i>
-                <input type="text" id="searchInput" placeholder="Search servers…" />
+            <div>
+                <span style="color:#8B9BB5;font-size:14px;">
+                    <i class="fas fa-server"></i> <%= typeof servers !== 'undefined' ? servers.length : 0 %> servers
+                </span>
             </div>
-            <button class="btn-rf" onclick="location.reload()"><i class="ti ti-refresh" aria-hidden="true"></i> Refresh</button>
         </div>
     </div>
 
-    <div class="grid" id="serverGrid">
-        <% if (guilds && guilds.length > 0) { %>
-            <% guilds.forEach((guild, index) => { %>
-                <div class="sc" style="animation-delay:<%= index * 0.07 %>s">
-                    <div class="sc-head">
-                        <div class="sc-ico"><%= guild.name.charAt(0).toUpperCase() %></div>
-                        <div class="sc-info">
-                            <div class="nm"><%= guild.name %></div>
-                            <div class="ow">
-                                <% if (guild.hasBot) { %>
-                                    <span class="badge badge-on"><span class="badge-dot"></span> Online</span>
-                                <% } else { %>
-                                    <span class="badge badge-off"><span class="badge-dot"></span> Bot not installed</span>
-                                <% } %>
-                            </div>
-                            <% if (guild.owner === true) { %>
-                                <span class="sc-role role-owner">👑 Owner</span>
-                            <% } else if ((guild.permissions & 0x8) === 0x8) { %>
-                                <span class="sc-role role-admin">🛡️ Admin</span>
+    <!-- ===== SERVER GRID ===== -->
+    <div class="container">
+        <% if (typeof servers !== 'undefined' && servers.length > 0) { %>
+            <div class="server-grid">
+                <% servers.forEach(function(server) { %>
+                    <div class="server-card" onclick="window.location.href='/server/<%= server.id %>'">
+                        <div class="server-icon">
+                            <% if (server.icon) { %>
+                                <img src="https://cdn.discordapp.com/icons/<%= server.id %>/<%= server.icon %>.png" alt="<%= server.name %>" />
+                            <% } else { %>
+                                <%= server.name ? server.name.charAt(0).toUpperCase() : '?' %>
                             <% } %>
                         </div>
+                        <div class="server-badge <%= server.premium ? 'premium' : 'free' %>">
+                            <%= server.premium ? '⭐ Premium' : 'Free' %>
+                        </div>
+                        <div class="server-name"><%= server.name %></div>
+                        <div class="server-members"><i class="fas fa-users"></i> <%= server.memberCount || 'N/A' %> members</div>
+                        <div class="server-stats">
+                            <span class="stat"><i class="fas fa-robot"></i> <span class="value"><%= server.botCount || 0 %></span> bots</span>
+                            <span class="stat"><i class="fas fa-hashtag"></i> <span class="value"><%= server.channelCount || 0 %></span> channels</span>
+                            <span class="stat"><i class="fas fa-role"></i> <span class="value"><%= server.roleCount || 0 %></span> roles</span>
+                        </div>
+                        <div class="server-actions">
+                            <a href="/server/<%= server.id %>" class="btn-sm btn-primary-sm"><i class="fas fa-cog"></i> Manage</a>
+                            <button class="btn-sm btn-secondary-sm" onclick="event.stopPropagation();"><i class="fas fa-external-link-alt"></i> View</button>
+                        </div>
                     </div>
-                    <div class="sc-acts">
-                        <% if (guild.hasBot) { %>
-                            <a href="/servers/<%= guild.id %>" class="btn-cfg">
-                                <i class="ti ti-settings" aria-hidden="true"></i> Configure
-                            </a>
-                        <% } else { %>
-                            <a href="/invite/<%= guild.id %>" class="btn-inv">
-                                <i class="ti ti-plus" aria-hidden="true"></i> Invite Bot
-                            </a>
-                            <span class="btn-cfg disabled">Configure</span>
-                        <% } %>
-                    </div>
-                </div>
-            <% }) %>
+                <% }); %>
+            </div>
         <% } else { %>
             <div class="empty-state">
-                <i class="ti ti-robot" aria-hidden="true"></i>
-                <h3>No servers found</h3>
-                <p>You don't own or have administrator permissions on any servers.</p>
+                <div class="empty-icon">🤖</div>
+                <h3>No Servers Found</h3>
+                <p>You don't have any servers that are using Sentinal yet. Invite the bot to get started!</p>
+                <a href="#" class="btn-primary"><i class="fas fa-plus"></i> Invite Sentinal</a>
             </div>
         <% } %>
     </div>
 
-    <div class="hint">
-        <i class="ti ti-shield" aria-hidden="true"></i>
-        Only servers where you are the <strong>Owner</strong> or have <strong>Administrator</strong> permissions are shown.
-    </div>
-</main>
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <span>© 2026 Sentinal — Discord application bot</span>
+                <span>Made with ❤️</span>
+            </div>
+        </div>
+    </footer>
 
-<script>
-    // ─── Search ──────────────────────────────────────────────────────
-    const searchInput = document.getElementById('searchInput');
-    const cards = document.querySelectorAll('.sc');
-
-    searchInput.addEventListener('input', function () {
-        const query = this.value.toLowerCase();
-        cards.forEach(card => {
-            const name = card.querySelector('.nm')?.textContent?.toLowerCase() || '';
-            card.style.display = name.includes(query) ? '' : 'none';
+    <script>
+        // ===== NAVIGATION ACTIVE STATE =====
+        document.querySelectorAll('.nav-links a').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                document.querySelectorAll('.nav-links a').forEach(function(l) {
+                    l.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
         });
-    });
-
-    // ─── User Dropdown Toggle ──────────────────────────────────────
-    const userToggle = document.getElementById('userToggle');
-    const userDropdown = document.getElementById('userDropdown');
-    const chevronIcon = document.getElementById('chevronIcon');
-
-    userToggle.addEventListener('click', function (e) {
-        e.stopPropagation();
-        userDropdown.classList.toggle('open');
-        chevronIcon.style.transform = userDropdown.classList.contains('open') ? 'rotate(180deg)' : '';
-    });
-
-    document.addEventListener('click', function () {
-        userDropdown.classList.remove('open');
-        chevronIcon.style.transform = '';
-    });
-</script>
-
+    </script>
 </body>
 </html>
