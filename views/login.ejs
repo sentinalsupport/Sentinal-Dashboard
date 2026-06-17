@@ -220,26 +220,6 @@
             50% { opacity: 0.3; }
         }
 
-        .navbar .status-badge.maintenance {
-            background: rgba(245, 158, 11, 0.12);
-            color: #FBBF24;
-            border-color: rgba(245, 158, 11, 0.15);
-        }
-
-        .navbar .status-badge.maintenance .dot {
-            background: #FBBF24;
-        }
-
-        .navbar .status-badge.offline {
-            background: rgba(239, 68, 68, 0.12);
-            color: #EF4444;
-            border-color: rgba(239, 68, 68, 0.15);
-        }
-
-        .navbar .status-badge.offline .dot {
-            background: #EF4444;
-        }
-
         /* ===== HERO ===== */
         .hero {
             padding: 48px 0 24px;
@@ -1179,8 +1159,9 @@
                 <span class="dot"></span>
                 Online
             </span>
-            <% if (isAuthenticated) { %>
-                <div class="user-avatar">8a</div>
+            <!-- ⚠️ FIXED: Properly checking if user is authenticated -->
+            <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated === true) { %>
+                <div class="user-avatar"><%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %></div>
                 <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
             <% } else { %>
                 <a href="/login" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
@@ -1467,7 +1448,8 @@
 
         // ===== HANDLE GET STARTED =====
         function handleGetStarted() {
-            <% if (isAuthenticated) { %>
+            // Check if user is logged in (using the isAuthenticated variable from EJS)
+            <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated === true) { %>
                 // If logged in, scroll to features
                 scrollToSection('features');
             <% } else { %>
@@ -1478,7 +1460,7 @@
 
         // ===== HANDLE UPGRADE =====
         function handleUpgrade(plan) {
-            <% if (isAuthenticated) { %>
+            <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated === true) { %>
                 alert(`Thank you for choosing Sentinal ${plan.toUpperCase()}! 🎉\nYou will be redirected to checkout.`);
                 // Here you would redirect to payment page
                 // window.location.href = `/checkout?plan=${plan}`;
