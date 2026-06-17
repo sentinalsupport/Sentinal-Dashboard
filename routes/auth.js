@@ -1,89 +1,51 @@
-// FILE: routes/auth.js
 const express = require('express');
-const axios = require('axios');
 const router = express.Router();
+const passport = require('passport');
 
-const DISCORD_API = 'https://discord.com/api/v10';
-const SCOPES = 'identify guilds';
+// =============================================
+// ====== LOGIN ======
+// =============================================
 
-// ─── Login ─────────────────────────────────────────────────────────
+// Login page
 router.get('/login', (req, res) => {
-  console.log('🔑 Login route hit!');
-  const params = new URLSearchParams({
-    client_id: process.env.DISCORD_CLIENT_ID,
-    redirect_uri: process.env.DISCORD_REDIRECT_URI,
-    response_type: 'code',
-    scope: SCOPES,
-  });
-  res.redirect(`${DISCORD_API}/oauth2/authorize?${params}`);
+    if (req.isAuthenticated()) {
+        return res.redirect('/dashboard');
+    }
+    res.render('login', { 
+        title: 'Login - Sentinal',
+        isAuthenticated: false 
+    });
 });
 
-// ─── Callback ─────────────────────────────────────────────────────
-router.get('/auth/discord/callback', async (req, res) => {
-  console.log('📥 Callback route hit!');
-  const { code, error } = req.query;
-  
-  if (error || !code) {
-    console.log('❌ No code, redirecting to /login');
-    return res.redirect('/login');
-  }
+// Start Discord OAuth
+router.get('/auth/discord', 
+    passport.authenticate('discord', { 
+        scope: ['identify', 'guilds', 'email'] 
+    })
+);
 
-  try {
-    console.log('🔄 Exchanging code for token...');
-    
-    const tokenRes = await axios.post(
-      `${DISCORD_API}/oauth2/token`,
-      new URLSearchParams({
-        client_id: process.env.DISCORD_CLIENT_ID,
-        client_secret: process.env.DISCORD_CLIENT_SECRET,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: process.env.DISCORD_REDIRECT_URI,
-      }),
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-    );
+// Discord OAuth callback
+router.get('/auth/discord/callback', 
+    passport.authenticate('discord', { 
+        failureRedirect: '/login',
+        successRedirect: '/dashboard'
+    })
+);
 
-    const { access_token, token_type } = tokenRes.data;
-    console.log('✅ Token received!');
+// =============================================
+// ====== LOGOUT ======
+// =============================================
 
-    const userRes = await axios.get(`${DISCORD_API}/users/@me`, {
-      headers: { Authorization: `${token_type} ${access_token}` },
-    });
-
-    console.log('✅ User fetched:', userRes.data.username);
-
-    const guildsRes = await axios.get(`${DISCORD_API}/users/@me/guilds`, {
-      headers: { Authorization: `${token_type} ${access_token}` },
-    });
-
-    req.session.user = userRes.data;
-    req.session.accessToken = access_token;
-    req.session.guilds = guildsRes.data;
-    
-    console.log('👤 User stored:', req.session.user.username);
-    console.log('📦 Session ID:', req.session.id);
-    
-    req.session.save((err) => {
-      if (err) {
-        console.error('❌ Session save error:', err);
-        return res.redirect('/login');
-      }
-      console.log('✅ Session saved!');
-      res.redirect('/servers');
-    });
-    
-  } catch (err) {
-    console.error('❌ OAuth error:', err.response?.data || err.message);
-    res.redirect('/login');
-  }
-});
-
-// ─── Logout ────────────────────────────────────────────────────────
 router.get('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) console.error('Session destroy error:', err);
-    res.redirect('/');
-  });
+    req.logout((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+            return res.redirect('/');
+        }
+        req.session.destroy(() => {
+            res.redirect('/login');
+        });
+    });
 });
 
 module.exports = router;
