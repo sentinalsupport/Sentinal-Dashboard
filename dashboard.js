@@ -5,16 +5,12 @@ const DiscordStrategy = require('passport-discord').Strategy;
 const path = require('path');
 const mongoose = require('mongoose');
 
-// Import routes
-const authRoutes = require('./routes/auth');
-const dashboardRoutes = require('./routes/dashboard');
+// Import the GuildConfig model from the models folder
+const GuildConfig = require('./models/GuildConfig'); // ← ADD THIS
 
 const app = express();
 
-// =============================================
-// ====== CONFIGURATION ======
-// =============================================
-
+// ===== CONFIGURATION ======
 const config = {
     clientID: '1493217033956102215',
     clientSecret: 'FvVMn-t9cEXRaRYMzBlYwZLpaVpxLzoW',
@@ -24,10 +20,7 @@ const config = {
     sessionSecret: '8e5f6a7b8c9d0e1f2g3h4i5j6k7l8m9n',
 };
 
-// =============================================
-// ====== MONGODB CONNECTION ======
-// =============================================
-
+// ===== MONGODB CONNECTION =====
 mongoose.connect(config.mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -38,41 +31,11 @@ mongoose.connect(config.mongoURI, {
     console.log('⚠️ Continuing without MongoDB...');
 });
 
-// =============================================
-// ====== GUILD CONFIG SCHEMA ======
-// =============================================
+// ===== REMOVE THIS SECTION - IT'S DUPLICATED IN models/GuildConfig.js =====
+// DELETE THE ENTIRE GuildConfigSchema definition from dashboard.js
+// It should be in models/GuildConfig.js only
 
-const GuildConfigSchema = new mongoose.Schema({
-    guildId: { type: String, required: true, unique: true },
-    prefix: { type: String, default: '!' },
-    modLogChannel: { type: String, default: null },
-    memberLogChannel: { type: String, default: null },
-    welcomeChannel: { type: String, default: null },
-    welcomeMessage: { type: String, default: 'Welcome {user} to {server}!' },
-    autorole: { type: String, default: null },
-    mutedRole: { type: String, default: null },
-    verificationChannel: { type: String, default: null },
-    verificationRole: { type: String, default: null },
-    verificationEnabled: { type: Boolean, default: false },
-    ticketCategory: { type: String, default: null },
-    ticketSupportRole: { type: String, default: null },
-    applicationChannel: { type: String, default: null },
-    giveawayChannel: { type: String, default: null },
-    xpEnabled: { type: Boolean, default: true },
-    xpRate: { type: Number, default: 1.0 },
-    premium: { type: Boolean, default: false },
-    premiumExpires: { type: Date, default: null },
-    enabledFeatures: { type: [String], default: ['applications', 'tickets', 'giveaways', 'verification'] },
-    dashboardEnabled: { type: Boolean, default: true },
-    blacklisted: { type: Boolean, default: false },
-}, { timestamps: true });
-
-const GuildConfig = mongoose.model('GuildConfig', GuildConfigSchema);
-
-// =============================================
-// ====== SESSION SETUP ======
-// =============================================
-
+// ===== SESSION SETUP =====
 app.use(session({
     secret: config.sessionSecret,
     resave: false,
@@ -83,100 +46,4 @@ app.use(session({
     }
 }));
 
-// =============================================
-// ====== PASSPORT SETUP ======
-// =============================================
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((obj, done) => done(null, obj));
-
-passport.use(new DiscordStrategy({
-    clientID: config.clientID,
-    clientSecret: config.clientSecret,
-    callbackURL: config.callbackURL,
-    scope: ['identify', 'guilds', 'email']
-}, (accessToken, refreshToken, profile, done) => {
-    return done(null, profile);
-}));
-
-// =============================================
-// ====== MIDDLEWARE ======
-// =============================================
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
-
-// Make user data available to all views
-app.use((req, res, next) => {
-    res.locals.user = req.user || null;
-    res.locals.isAuthenticated = req.isAuthenticated() || false;
-    console.log('🔍 Auth Status:', req.isAuthenticated());
-    next();
-});
-
-// =============================================
-// ====== VIEW ENGINE ======
-// =============================================
-
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// =============================================
-// ====== ROUTES ======
-// =============================================
-
-// Home
-app.get('/', (req, res) => {
-    if (req.isAuthenticated()) {
-        res.redirect('/dashboard');
-    } else {
-        res.redirect('/login');
-    }
-});
-
-// Auth routes
-app.use('/', authRoutes);
-
-// Dashboard routes (protected)
-app.use('/dashboard', dashboardRoutes);
-
-// =============================================
-// ====== ERROR HANDLING ======
-// =============================================
-
-app.use((req, res, next) => {
-    res.status(404).render('error', {
-        code: 404,
-        message: 'Page not found',
-        error: 'The page you are looking for does not exist.',
-        isAuthenticated: req.isAuthenticated() || false
-    });
-});
-
-app.use((err, req, res, next) => {
-    console.error('❌ Error:', err.stack);
-    res.status(err.status || 500).render('error', {
-        code: err.status || 500,
-        message: err.message || 'Internal Server Error',
-        error: process.env.NODE_ENV === 'development' ? err.stack : 'An unexpected error occurred.',
-        isAuthenticated: req.isAuthenticated() || false
-    });
-});
-
-// =============================================
-// ====== START SERVER ======
-// =============================================
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`\n🚀 Server running on ${config.domain}`);
-    console.log(`📝 Login page: ${config.domain}/login`);
-    console.log(`📊 Dashboard: ${config.domain}/dashboard`);
-    console.log(`🔗 OAuth Callback: ${config.callbackURL}`);
-    console.log(`\n✅ Make sure you have added this Redirect URL in Discord Dev Portal:`);
-    console.log(`   ${config.callbackURL}`);
-});
+// ... rest of your code stays the same
