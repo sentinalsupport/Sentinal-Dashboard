@@ -5,6 +5,10 @@ const DiscordStrategy = require('passport-discord').Strategy;
 const path = require('path');
 const mongoose = require('mongoose');
 
+// Import routes
+const authRoutes = require('./routes/auth');
+const dashboardRoutes = require('./routes/dashboard');
+
 const app = express();
 
 // =============================================
@@ -12,16 +16,11 @@ const app = express();
 // =============================================
 
 const config = {
-    // Discord OAuth
     clientID: '1493217033956102215',
     clientSecret: 'FvVMn-t9cEXRaRYMzBlYwZLpaVpxLzoW',
     callbackURL: 'https://sentinal-dashboard.onrender.com/auth/discord/callback',
     domain: 'https://sentinal-dashboard.onrender.com',
-    
-    // MongoDB
     mongoURI: 'mongodb+srv://sentinalsupport_db_user:MySecurePassword123%21@cluster0.8nlf8kz.mongodb.net/dashboard',
-    
-    // Session
     sessionSecret: '8e5f6a7b8c9d0e1f2g3h4i5j6k7l8m9n',
 };
 
@@ -44,98 +43,29 @@ mongoose.connect(config.mongoURI, {
 // =============================================
 
 const GuildConfigSchema = new mongoose.Schema({
-    guildId: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    prefix: {
-        type: String,
-        default: '!',
-    },
-    modLogChannel: {
-        type: String,
-        default: null,
-    },
-    memberLogChannel: {
-        type: String,
-        default: null,
-    },
-    welcomeChannel: {
-        type: String,
-        default: null,
-    },
-    welcomeMessage: {
-        type: String,
-        default: 'Welcome {user} to {server}!',
-    },
-    autorole: {
-        type: String,
-        default: null,
-    },
-    mutedRole: {
-        type: String,
-        default: null,
-    },
-    verificationChannel: {
-        type: String,
-        default: null,
-    },
-    verificationRole: {
-        type: String,
-        default: null,
-    },
-    verificationEnabled: {
-        type: Boolean,
-        default: false,
-    },
-    ticketCategory: {
-        type: String,
-        default: null,
-    },
-    ticketSupportRole: {
-        type: String,
-        default: null,
-    },
-    applicationChannel: {
-        type: String,
-        default: null,
-    },
-    giveawayChannel: {
-        type: String,
-        default: null,
-    },
-    xpEnabled: {
-        type: Boolean,
-        default: true,
-    },
-    xpRate: {
-        type: Number,
-        default: 1.0,
-    },
-    premium: {
-        type: Boolean,
-        default: false,
-    },
-    premiumExpires: {
-        type: Date,
-        default: null,
-    },
-    enabledFeatures: {
-        type: [String],
-        default: ['applications', 'tickets', 'giveaways', 'verification'],
-    },
-    dashboardEnabled: {
-        type: Boolean,
-        default: true,
-    },
-    blacklisted: {
-        type: Boolean,
-        default: false,
-    },
-}, {
-    timestamps: true,
-});
+    guildId: { type: String, required: true, unique: true },
+    prefix: { type: String, default: '!' },
+    modLogChannel: { type: String, default: null },
+    memberLogChannel: { type: String, default: null },
+    welcomeChannel: { type: String, default: null },
+    welcomeMessage: { type: String, default: 'Welcome {user} to {server}!' },
+    autorole: { type: String, default: null },
+    mutedRole: { type: String, default: null },
+    verificationChannel: { type: String, default: null },
+    verificationRole: { type: String, default: null },
+    verificationEnabled: { type: Boolean, default: false },
+    ticketCategory: { type: String, default: null },
+    ticketSupportRole: { type: String, default: null },
+    applicationChannel: { type: String, default: null },
+    giveawayChannel: { type: String, default: null },
+    xpEnabled: { type: Boolean, default: true },
+    xpRate: { type: Number, default: 1.0 },
+    premium: { type: Boolean, default: false },
+    premiumExpires: { type: Date, default: null },
+    enabledFeatures: { type: [String], default: ['applications', 'tickets', 'giveaways', 'verification'] },
+    dashboardEnabled: { type: Boolean, default: true },
+    blacklisted: { type: Boolean, default: false },
+}, { timestamps: true });
 
 const GuildConfig = mongoose.model('GuildConfig', GuildConfigSchema);
 
@@ -184,7 +114,7 @@ app.use(express.static('public'));
 app.use((req, res, next) => {
     res.locals.user = req.user || null;
     res.locals.isAuthenticated = req.isAuthenticated() || false;
-    console.log('🔍 Auth Status:', req.isAuthenticated()); // Debug log
+    console.log('🔍 Auth Status:', req.isAuthenticated());
     next();
 });
 
@@ -196,10 +126,10 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // =============================================
-// ====== AUTH ROUTES ======
+// ====== ROUTES ======
 // =============================================
 
-// HOME
+// Home
 app.get('/', (req, res) => {
     if (req.isAuthenticated()) {
         res.redirect('/dashboard');
@@ -208,108 +138,11 @@ app.get('/', (req, res) => {
     }
 });
 
-// LOGIN PAGE
-app.get('/login', (req, res) => {
-    if (req.isAuthenticated()) {
-        return res.redirect('/dashboard');
-    }
-    res.render('login', { 
-        title: 'Login - Sentinal',
-        isAuthenticated: false 
-    });
-});
+// Auth routes
+app.use('/', authRoutes);
 
-// START DISCORD OAUTH - THIS IS THE CORRECT ROUTE
-app.get('/auth/discord', 
-    passport.authenticate('discord', { 
-        scope: ['identify', 'guilds', 'email'] 
-    })
-);
-
-// DISCORD OAUTH CALLBACK - DISCORD REDIRECTS HERE
-app.get('/auth/discord/callback', 
-    passport.authenticate('discord', { 
-        failureRedirect: '/login',
-        successRedirect: '/dashboard'
-    })
-);
-
-// LOGOUT
-app.get('/logout', (req, res) => {
-    req.logout((err) => {
-        if (err) {
-            console.error('Logout error:', err);
-            return res.redirect('/');
-        }
-        req.session.destroy(() => {
-            res.redirect('/login');
-        });
-    });
-});
-
-// =============================================
-// ====== PROTECTED ROUTES ======
-// =============================================
-
-function isAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    console.log('🔒 Not authenticated, redirecting to login');
-    res.redirect('/login');
-}
-
-// DASHBOARD
-app.get('/dashboard', isAuthenticated, async (req, res) => {
-    try {
-        let configs = [];
-        if (req.user && req.user.guilds) {
-            const guildIds = req.user.guilds.map(g => g.id);
-            configs = await GuildConfig.find({ guildId: { $in: guildIds } });
-        }
-        
-        res.render('dashboard', { 
-            user: req.user,
-            title: 'Dashboard - Sentinal',
-            isAuthenticated: true,
-            configs: configs
-        });
-    } catch (error) {
-        console.error('Dashboard error:', error);
-        res.render('dashboard', { 
-            user: req.user,
-            title: 'Dashboard - Sentinal',
-            isAuthenticated: true,
-            configs: []
-        });
-    }
-});
-
-// =============================================
-// ====== API ROUTES ======
-// =============================================
-
-app.get('/api/config/:guildId', isAuthenticated, async (req, res) => {
-    try {
-        const config = await GuildConfig.findOne({ guildId: req.params.guildId });
-        res.json(config || {});
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
-    try {
-        const config = await GuildConfig.findOneAndUpdate(
-            { guildId: req.params.guildId },
-            req.body,
-            { new: true, upsert: true }
-        );
-        res.json(config);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+// Dashboard routes (protected)
+app.use('/dashboard', dashboardRoutes);
 
 // =============================================
 // ====== ERROR HANDLING ======
