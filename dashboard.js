@@ -8,22 +8,21 @@ const mongoose = require('mongoose');
 const app = express();
 
 // =============================================
-// ====== CONFIGURATION ======
+// ====== CONFIGURATION (HARDCODED) ======
 // =============================================
 
-// ⚠️ REPLACE THESE WITH YOUR ACTUAL VALUES
 const config = {
     // Discord OAuth
     clientID: '1493217033956102215',
-    clientSecret: 'FvVMn-t9cEXRaRYMzBlYwZLpaVpxLzoW', // ⚠️ GET FROM DISCORD DEV PORTAL
+    clientSecret: 'FvVMn-t9cEXRaRYMzBlYwZLpaVpxLzoW',
     callbackURL: 'https://sentinal-dashboard.onrender.com/auth/discord/callback',
     domain: 'https://sentinal-dashboard.onrender.com',
     
-    // MongoDB - ⚠️ REPLACE WITH YOUR MONGODB URL
-    mongoURI: 'mongodb+srv://username:password@cluster.mongodb.net/sentinal',
+    // MongoDB
+    mongoURI: 'mongodb+srv://sentinalsupport_db_user:MySecurePassword123%21@cluster0.8nlf8kz.mongodb.net/dashboard',
     
     // Session
-    sessionSecret: 'your-super-secret-session-key-change-this',
+    sessionSecret: '8e5f6a7b8c9d0e1f2g3h4i5j6k7l8m9n',
 };
 
 // =============================================
@@ -261,7 +260,6 @@ function isAuthenticated(req, res, next) {
 // DASHBOARD
 app.get('/dashboard', isAuthenticated, async (req, res) => {
     try {
-        // Get user's server configs
         let configs = [];
         if (req.user && req.user.guilds) {
             const guildIds = req.user.guilds.map(g => g.id);
@@ -289,7 +287,6 @@ app.get('/dashboard', isAuthenticated, async (req, res) => {
 // ====== API ROUTES ======
 // =============================================
 
-// Get config for a specific guild
 app.get('/api/config/:guildId', isAuthenticated, async (req, res) => {
     try {
         const config = await GuildConfig.findOne({ guildId: req.params.guildId });
@@ -299,7 +296,6 @@ app.get('/api/config/:guildId', isAuthenticated, async (req, res) => {
     }
 });
 
-// Update config for a specific guild
 app.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
     try {
         const config = await GuildConfig.findOneAndUpdate(
@@ -317,7 +313,6 @@ app.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
 // ====== ERROR HANDLING ======
 // =============================================
 
-// 404
 app.use((req, res, next) => {
     res.status(404).render('error', {
         code: 404,
@@ -327,7 +322,6 @@ app.use((req, res, next) => {
     });
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
     console.error('❌ Error:', err.stack);
     res.status(err.status || 500).render('error', {
