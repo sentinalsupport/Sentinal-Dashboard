@@ -94,4 +94,5 @@ const GuildConfigSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('GuildConfig', GuildConfigSchema);
+// Check if model exists before creating it
+module.exports = mongoose.models.GuildConfig || mongoose.model('GuildConfig', GuildConfigSchema);
