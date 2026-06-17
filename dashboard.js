@@ -3,20 +3,149 @@ const session = require('express-session');
 const passport = require('passport');
 const DiscordStrategy = require('passport-discord').Strategy;
 const path = require('path');
+const mongoose = require('mongoose');
 
 const app = express();
 
-// ===== CONFIGURATION =====
+// =============================================
+// ====== CONFIGURATION ======
+// =============================================
+
+// ⚠️ REPLACE THESE WITH YOUR ACTUAL VALUES
 const config = {
+    // Discord OAuth
     clientID: '1493217033956102215',
-    clientSecret: 'gZpMsdTlUpo1D0l9jlaynDq1s7oU2W15', // ⚠️ ADD YOUR SECRET HERE
+    clientSecret: 'YOUR_DISCORD_CLIENT_SECRET_HERE', // ⚠️ GET FROM DISCORD DEV PORTAL
     callbackURL: 'https://sentinal-dashboard.onrender.com/auth/discord/callback',
-    domain: 'https://sentinal-dashboard.onrender.com'
+    domain: 'https://sentinal-dashboard.onrender.com',
+    
+    // MongoDB
+    mongoURI: 'mongodb://localhost:27017/sentinal', // ⚠️ REPLACE WITH YOUR MONGODB URL
+    
+    // Session
+    sessionSecret: 'your-super-secret-session-key-change-this',
+    
+    // Bot
+    botToken: 'YOUR_BOT_TOKEN_HERE', // ⚠️ GET FROM DISCORD DEV PORTAL
 };
 
-// ===== SESSION SETUP =====
+// =============================================
+// ====== MONGODB CONNECTION ======
+// =============================================
+
+mongoose.connect(config.mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+.then(() => console.log('✅ MongoDB connected'))
+.catch(err => console.error('❌ MongoDB connection error:', err));
+
+// =============================================
+// ====== GUILD CONFIG MODEL ======
+// =============================================
+
+const GuildConfigSchema = new mongoose.Schema({
+    guildId: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    prefix: {
+        type: String,
+        default: '!',
+    },
+    modLogChannel: {
+        type: String,
+        default: null,
+    },
+    memberLogChannel: {
+        type: String,
+        default: null,
+    },
+    welcomeChannel: {
+        type: String,
+        default: null,
+    },
+    welcomeMessage: {
+        type: String,
+        default: 'Welcome {user} to {server}!',
+    },
+    autorole: {
+        type: String,
+        default: null,
+    },
+    mutedRole: {
+        type: String,
+        default: null,
+    },
+    verificationChannel: {
+        type: String,
+        default: null,
+    },
+    verificationRole: {
+        type: String,
+        default: null,
+    },
+    verificationEnabled: {
+        type: Boolean,
+        default: false,
+    },
+    ticketCategory: {
+        type: String,
+        default: null,
+    },
+    ticketSupportRole: {
+        type: String,
+        default: null,
+    },
+    applicationChannel: {
+        type: String,
+        default: null,
+    },
+    giveawayChannel: {
+        type: String,
+        default: null,
+    },
+    xpEnabled: {
+        type: Boolean,
+        default: true,
+    },
+    xpRate: {
+        type: Number,
+        default: 1.0,
+    },
+    premium: {
+        type: Boolean,
+        default: false,
+    },
+    premiumExpires: {
+        type: Date,
+        default: null,
+    },
+    enabledFeatures: {
+        type: [String],
+        default: ['applications', 'tickets', 'giveaways', 'verification'],
+    },
+    dashboardEnabled: {
+        type: Boolean,
+        default: true,
+    },
+    blacklisted: {
+        type: Boolean,
+        default: false,
+    },
+}, {
+    timestamps: true,
+});
+
+const GuildConfig = mongoose.model('GuildConfig', GuildConfigSchema);
+
+// =============================================
+// ====== SESSION SETUP ======
+// =============================================
+
 app.use(session({
-    secret: '{Secret}',
+    secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: { 
@@ -25,7 +154,10 @@ app.use(session({
     }
 }));
 
-// ===== PASSPORT SETUP =====
+// =============================================
+// ====== PASSPORT SETUP ======
+// =============================================
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -36,38 +168,65 @@ passport.use(new DiscordStrategy({
     clientID: config.clientID,
     clientSecret: config.clientSecret,
     callbackURL: config.callbackURL,
-    scope: ['identify', 'guilds']
+    scope: ['identify', 'guilds', 'email']
 }, (accessToken, refreshToken, profile, done) => {
     return done(null, profile);
 }));
 
-// ===== MIDDLEWARE =====
+// =============================================
+// ====== MIDDLEWARE ======
+// =============================================
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// ===== IMPORTANT: Make user available to all templates =====
+// Make user data available to all views
 app.use((req, res, next) => {
     res.locals.user = req.user || null;
     res.locals.isAuthenticated = req.isAuthenticated() || false;
-    console.log('🔍 Auth Status:', req.isAuthenticated()); // Debug log
     next();
 });
 
-// ===== VIEW ENGINE =====
+// =============================================
+// ====== VIEW ENGINE ======
+// =============================================
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// ===== AUTH ROUTES =====
+// =============================================
+// ====== AUTH ROUTES ======
+// =============================================
+
+// HOME
+app.get('/', (req, res) => {
+    if (req.isAuthenticated()) {
+        res.redirect('/dashboard');
+    } else {
+        res.redirect('/login');
+    }
+});
+
+// LOGIN PAGE
 app.get('/login', (req, res) => {
     if (req.isAuthenticated()) {
         return res.redirect('/dashboard');
     }
-    res.render('login');
+    res.render('login', { 
+        title: 'Login - Sentinal',
+        isAuthenticated: false 
+    });
 });
 
-app.get('/auth/discord', passport.authenticate('discord'));
+// START DISCORD OAUTH
+app.get('/auth/discord', 
+    passport.authenticate('discord', { 
+        scope: ['identify', 'guilds', 'email'] 
+    })
+);
 
+// DISCORD OAUTH CALLBACK
 app.get('/auth/discord/callback', 
     passport.authenticate('discord', { 
         failureRedirect: '/login',
@@ -75,6 +234,7 @@ app.get('/auth/discord/callback',
     })
 );
 
+// LOGOUT
 app.get('/logout', (req, res) => {
     req.logout((err) => {
         if (err) {
@@ -87,7 +247,10 @@ app.get('/logout', (req, res) => {
     });
 });
 
-// ===== PROTECTED ROUTES =====
+// =============================================
+// ====== PROTECTED ROUTES ======
+// =============================================
+
 function isAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
@@ -95,47 +258,98 @@ function isAuthenticated(req, res, next) {
     res.redirect('/login');
 }
 
-// ===== DASHBOARD ROUTE =====
-app.get('/dashboard', isAuthenticated, (req, res) => {
-    // Pass the actual authentication status
-    res.render('dashboard', { 
-        user: req.user,
-        title: 'Dashboard',
-        isAuthenticated: req.isAuthenticated() // This is the key fix!
-    });
-});
-
-// ===== HOME ROUTE =====
-app.get('/', (req, res) => {
-    if (req.isAuthenticated()) {
-        res.redirect('/dashboard');
-    } else {
-        res.redirect('/login');
+// DASHBOARD
+app.get('/dashboard', isAuthenticated, async (req, res) => {
+    try {
+        // Get user's server configs
+        let configs = [];
+        if (req.user && req.user.guilds) {
+            const guildIds = req.user.guilds.map(g => g.id);
+            configs = await GuildConfig.find({ guildId: { $in: guildIds } });
+        }
+        
+        res.render('dashboard', { 
+            user: req.user,
+            title: 'Dashboard - Sentinal',
+            isAuthenticated: true,
+            configs: configs
+        });
+    } catch (error) {
+        console.error('Dashboard error:', error);
+        res.render('dashboard', { 
+            user: req.user,
+            title: 'Dashboard - Sentinal',
+            isAuthenticated: true,
+            configs: []
+        });
     }
 });
 
-// ===== ERROR HANDLING =====
+// =============================================
+// ====== API ROUTES ======
+// =============================================
+
+// Get config for a specific guild
+app.get('/api/config/:guildId', isAuthenticated, async (req, res) => {
+    try {
+        const config = await GuildConfig.findOne({ guildId: req.params.guildId });
+        res.json(config || {});
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Update config for a specific guild
+app.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
+    try {
+        const config = await GuildConfig.findOneAndUpdate(
+            { guildId: req.params.guildId },
+            req.body,
+            { new: true, upsert: true }
+        );
+        res.json(config);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// =============================================
+// ====== ERROR HANDLING ======
+// =============================================
+
+// 404
 app.use((req, res, next) => {
     res.status(404).render('error', {
         code: 404,
         message: 'Page not found',
-        error: 'The page you are looking for does not exist.'
+        error: 'The page you are looking for does not exist.',
+        isAuthenticated: req.isAuthenticated() || false
     });
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
-    console.error('Error:', err.stack);
+    console.error('❌ Error:', err.stack);
     res.status(err.status || 500).render('error', {
         code: err.status || 500,
         message: err.message || 'Internal Server Error',
-        error: process.env.NODE_ENV === 'development' ? err.stack : 'An unexpected error occurred.'
+        error: process.env.NODE_ENV === 'development' ? err.stack : 'An unexpected error occurred.',
+        isAuthenticated: req.isAuthenticated() || false
     });
 });
 
-// ===== START SERVER =====
+// =============================================
+// ====== START SERVER ======
+// =============================================
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on ${config.domain}`);
+    console.log(`\n🚀 Server running on ${config.domain}`);
     console.log(`📝 Login page: ${config.domain}/login`);
     console.log(`📊 Dashboard: ${config.domain}/dashboard`);
+    console.log(`🔗 OAuth Callback: ${config.callbackURL}`);
+    console.log(`\n✅ Make sure you have added this Redirect URL in Discord Dev Portal:`);
+    console.log(`   ${config.callbackURL}`);
+    console.log(`\n📋 Discord Client ID: ${config.clientID}`);
+    console.log(`🔑 Discord Client Secret: ${'*'.repeat(config.clientSecret.length)}`);
 });
