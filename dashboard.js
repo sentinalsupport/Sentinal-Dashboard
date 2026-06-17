@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 const app = express();
 
 // =============================================
-// ====== CONFIGURATION (HARDCODED) ======
+// ====== CONFIGURATION ======
 // =============================================
 
 const config = {
