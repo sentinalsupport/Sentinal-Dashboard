@@ -184,6 +184,7 @@ app.use(express.static('public'));
 app.use((req, res, next) => {
     res.locals.user = req.user || null;
     res.locals.isAuthenticated = req.isAuthenticated() || false;
+    console.log('🔍 Auth Status:', req.isAuthenticated()); // Debug log
     next();
 });
 
@@ -218,14 +219,14 @@ app.get('/login', (req, res) => {
     });
 });
 
-// START DISCORD OAUTH
+// START DISCORD OAUTH - THIS IS THE CORRECT ROUTE
 app.get('/auth/discord', 
     passport.authenticate('discord', { 
         scope: ['identify', 'guilds', 'email'] 
     })
 );
 
-// DISCORD OAUTH CALLBACK
+// DISCORD OAUTH CALLBACK - DISCORD REDIRECTS HERE
 app.get('/auth/discord/callback', 
     passport.authenticate('discord', { 
         failureRedirect: '/login',
@@ -254,6 +255,7 @@ function isAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
+    console.log('🔒 Not authenticated, redirecting to login');
     res.redirect('/login');
 }
 
