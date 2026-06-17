@@ -19,14 +19,11 @@ const config = {
     callbackURL: 'https://sentinal-dashboard.onrender.com/auth/discord/callback',
     domain: 'https://sentinal-dashboard.onrender.com',
     
-    // MongoDB
-    mongoURI: 'mongodb://localhost:27017/sentinal', // ⚠️ REPLACE WITH YOUR MONGODB URL
+    // MongoDB - ⚠️ REPLACE WITH YOUR MONGODB URL
+    mongoURI: 'mongodb+srv://username:password@cluster.mongodb.net/sentinal',
     
     // Session
     sessionSecret: 'your-super-secret-session-key-change-this',
-    
-    // Bot
-    botToken: 'YOUR_BOT_TOKEN_HERE', // ⚠️ GET FROM DISCORD DEV PORTAL
 };
 
 // =============================================
@@ -37,11 +34,14 @@ mongoose.connect(config.mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-.then(() => console.log('✅ MongoDB connected'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+.then(() => console.log('✅ MongoDB connected successfully'))
+.catch(err => {
+    console.error('❌ MongoDB connection error:', err);
+    console.log('⚠️ Continuing without MongoDB...');
+});
 
 // =============================================
-// ====== GUILD CONFIG MODEL ======
+// ====== GUILD CONFIG SCHEMA ======
 // =============================================
 
 const GuildConfigSchema = new mongoose.Schema({
@@ -350,6 +350,4 @@ app.listen(PORT, () => {
     console.log(`🔗 OAuth Callback: ${config.callbackURL}`);
     console.log(`\n✅ Make sure you have added this Redirect URL in Discord Dev Portal:`);
     console.log(`   ${config.callbackURL}`);
-    console.log(`\n📋 Discord Client ID: ${config.clientID}`);
-    console.log(`🔑 Discord Client Secret: ${'*'.repeat(config.clientSecret.length)}`);
 });
