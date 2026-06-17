@@ -1,200 +1,212 @@
-// FILE: routes/dashboard.js
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
 const GuildConfig = require('../models/GuildConfig');
 
-// ─── Auth Middleware ──────────────────────────────────────────────
-function ensureAuth(req, res, next) {
-  if (req.session.user) {
-    return next();
-  }
-  res.redirect('/login');
+// =============================================
+// ====== AUTHENTICATION MIDDLEWARE ======
+// =============================================
+
+function isAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login');
 }
 
-// ─── Home ──────────────────────────────────────────────────────────
-router.get('/', (req, res) => {
-  if (req.session.user) {
-    res.redirect('/servers');
-  } else {
-    res.render('login', { user: null });
-  }
-});
+// =============================================
+// ====== DASHBOARD ROUTES ======
+// =============================================
 
-// ─── Servers List ──────────────────────────────────────────────────
-router.get('/servers', ensureAuth, async (req, res) => {
-  try {
-    console.log('📋 Fetching servers for user:', req.session.user.username);
-    
-    const guilds = req.session.guilds || [];
-    console.log('📋 Total guilds:', guilds.length);
-    
-    // ─── CORRECT PERMISSION CHECK ──────────────────────────────
-    // Check if user is OWNER (g.owner === true) OR ADMIN (permissions & 0x8)
-    const filteredGuilds = guilds.filter(g => {
-      const isOwner = g.owner === true;
-      const isAdmin = (g.permissions & 0x8) === 0x8;
-      return isOwner || isAdmin;
-    });
-    
-    console.log('📋 Owner/Admin guilds:', filteredGuilds.length);
-    
-    // ─── Check which servers the bot is in ──────────────────────
-    const botToken = process.env.DISCORD_BOT_TOKEN;
-    let botGuildIds = [];
-    
-    if (botToken) {
-      try {
-        const botGuildsRes = await axios.get('https://discord.com/api/v10/users/@me/guilds', {
-          headers: { Authorization: `Bot ${botToken}` }
-        });
-        botGuildIds = botGuildsRes.data.map(g => g.id);
-        console.log('✅ Bot is in', botGuildIds.length, 'servers');
-      } catch (err) {
-        console.log('⚠️ Could not fetch bot guilds:', err.response?.data || err.message);
-      }
-    }
-    
-    // ─── Add hasBot status ────────────────────────────────────────
-    const serverList = filteredGuilds.map(g => ({
-      ...g,
-      hasBot: botGuildIds.includes(g.id)
-    }));
-    
-    res.render('servers', { 
-      user: req.session.user, 
-      guilds: serverList 
-    });
-  } catch (err) {
-    console.error('❌ Error fetching servers:', err);
-    res.redirect('/login');
-  }
-});
-
-// ─── Server Config Page ────────────────────────────────────────────
-router.get('/servers/:guildId', ensureAuth, async (req, res) => {
-  try {
-    const guildId = req.params.guildId;
-    const guild = req.session.guilds?.find(g => g.id === guildId);
-    
-    if (!guild) {
-      return res.redirect('/servers');
-    }
-    
-    // Check if bot is in the server
-    let botInServer = false;
+// Main Dashboard
+router.get('/', isAuthenticated, async (req, res) => {
     try {
-      const botCheck = await axios.get(
-        `https://discord.com/api/v10/guilds/${guildId}/members/${process.env.DISCORD_CLIENT_ID}`,
-        { headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` } }
-      );
-      botInServer = botCheck.status === 200;
-    } catch (err) {
-      botInServer = false;
+        let configs = [];
+        if (req.user && req.user.guilds) {
+            const guildIds = req.user.guilds.map(g => g.id);
+            configs = await GuildConfig.find({ guildId: { $in: guildIds } });
+        }
+        
+        res.render('dashboard', { 
+            user: req.user,
+            title: 'Dashboard - Sentinal',
+            isAuthenticated: true,
+            configs: configs
+        });
+    } catch (error) {
+        console.error('Dashboard error:', error);
+        res.render('dashboard', { 
+            user: req.user,
+            title: 'Dashboard - Sentinal',
+            isAuthenticated: true,
+            configs: []
+        });
     }
-    
-    if (!botInServer) {
-      return res.redirect(`/invite/${guildId}`);
+});
+
+// Server Settings Page
+router.get('/server/:guildId', isAuthenticated, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        
+        // Check if user has access to this guild
+        const userGuild = req.user.guilds.find(g => g.id === guildId);
+        if (!userGuild) {
+            return res.status(403).render('error', {
+                code: 403,
+                message: 'Access Denied',
+                error: 'You do not have access to this server.',
+                isAuthenticated: true
+            });
+        }
+        
+        const config = await GuildConfig.findOne({ guildId });
+        
+        res.render('server', { 
+            user: req.user,
+            guild: userGuild,
+            config: config || {},
+            title: `Server Settings - ${userGuild.name}`,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Server settings error:', error);
+        res.status(500).render('error', {
+            code: 500,
+            message: 'Server Error',
+            error: 'Failed to load server settings.',
+            isAuthenticated: true
+        });
     }
-    
-    // Get config from database
-    let config = await GuildConfig.findOne({ guildId });
-    if (!config) {
-      config = {
-        guildId: guildId,
-        prefix: '!',
-        welcomeChannel: '',
-        welcomeMessage: 'Welcome {user} to {server}!',
-        logChannel: '',
-        modLevel: 'off',
-        autoMod: false,
-        logJoinLeave: false,
-        logMessageDelete: false
-      };
+});
+
+// Applications Page
+router.get('/applications', isAuthenticated, async (req, res) => {
+    try {
+        // Fetch applications from database
+        const applications = await Application.find({ 
+            guildId: { $in: req.user.guilds.map(g => g.id) } 
+        }).sort({ createdAt: -1 }).limit(50);
+        
+        res.render('applications', { 
+            user: req.user,
+            applications: applications,
+            title: 'Applications - Sentinal',
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Applications error:', error);
+        res.render('applications', { 
+            user: req.user,
+            applications: [],
+            title: 'Applications - Sentinal',
+            isAuthenticated: true
+        });
     }
-    
-    // Get channels from Discord API
-    const channelsRes = await axios.get(
-      `https://discord.com/api/v10/guilds/${guildId}/channels`,
-      { headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` } }
-    );
-    
-    const textChannels = channelsRes.data.filter(c => c.type === 0);
-    
-    res.render('server', {
-      user: req.session.user,
-      guild: guild,
-      config: config,
-      textChannels: textChannels
+});
+
+// Tickets Page
+router.get('/tickets', isAuthenticated, async (req, res) => {
+    try {
+        const tickets = await Ticket.find({ 
+            guildId: { $in: req.user.guilds.map(g => g.id) } 
+        }).sort({ createdAt: -1 }).limit(50);
+        
+        res.render('tickets', { 
+            user: req.user,
+            tickets: tickets,
+            title: 'Tickets - Sentinal',
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Tickets error:', error);
+        res.render('tickets', { 
+            user: req.user,
+            tickets: [],
+            title: 'Tickets - Sentinal',
+            isAuthenticated: true
+        });
+    }
+});
+
+// Giveaways Page
+router.get('/giveaways', isAuthenticated, async (req, res) => {
+    try {
+        const giveaways = await Giveaway.find({ 
+            guildId: { $in: req.user.guilds.map(g => g.id) } 
+        }).sort({ createdAt: -1 }).limit(50);
+        
+        res.render('giveaways', { 
+            user: req.user,
+            giveaways: giveaways,
+            title: 'Giveaways - Sentinal',
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Giveaways error:', error);
+        res.render('giveaways', { 
+            user: req.user,
+            giveaways: [],
+            title: 'Giveaways - Sentinal',
+            isAuthenticated: true
+        });
+    }
+});
+
+// Premium Page
+router.get('/premium', isAuthenticated, (req, res) => {
+    res.render('premium', { 
+        user: req.user,
+        title: 'Premium - Sentinal',
+        isAuthenticated: true
     });
-  } catch (err) {
-    console.error('❌ Error loading server config:', err);
-    res.redirect('/servers');
-  }
 });
 
-// ─── Invite Redirect ─────────────────────────────────────────────────
-router.get('/invite/:guildId', ensureAuth, (req, res) => {
-  const guildId = req.params.guildId;
-  const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${guildId}`;
-  res.redirect(inviteUrl);
+// =============================================
+// ====== API ROUTES ======
+// =============================================
+
+// Get config for a specific guild
+router.get('/api/config/:guildId', isAuthenticated, async (req, res) => {
+    try {
+        const config = await GuildConfig.findOne({ guildId: req.params.guildId });
+        res.json(config || {});
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// ─── Save Config ────────────────────────────────────────────────────
-router.post('/api/servers/:guildId/config', ensureAuth, async (req, res) => {
-  try {
-    const guildId = req.params.guildId;
-    const data = req.body;
-    
-    await GuildConfig.findOneAndUpdate(
-      { guildId },
-      {
-        guildId: guildId,
-        prefix: data.prefix || '!',
-        welcomeChannel: data.welcomeChannel || '',
-        welcomeMessage: data.welcomeMessage || 'Welcome {user} to {server}!',
-        logChannel: data.logChannel || '',
-        modLevel: data.modLevel || 'off',
-        autoMod: data.autoMod === 'true' || data.autoMod === true,
-        logJoinLeave: data.logJoinLeave === 'true' || data.logJoinLeave === true,
-        logMessageDelete: data.logMessageDelete === 'true' || data.logMessageDelete === true,
-        updatedAt: new Date()
-      },
-      { upsert: true }
-    );
-    
-    res.json({ success: true, message: 'Settings saved!' });
-  } catch (err) {
-    console.error('❌ Error saving config:', err);
-    res.status(500).json({ success: false, error: 'Failed to save settings' });
-  }
+// Update config for a specific guild
+router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
+    try {
+        const config = await GuildConfig.findOneAndUpdate(
+            { guildId: req.params.guildId },
+            req.body,
+            { new: true, upsert: true }
+        );
+        res.json(config);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// ─── Get Stats ──────────────────────────────────────────────────────
-router.get('/api/servers/:guildId/stats', ensureAuth, async (req, res) => {
-  try {
-    const guildId = req.params.guildId;
-    const guildRes = await axios.get(
-      `https://discord.com/api/v10/guilds/${guildId}`,
-      { headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` } }
-    );
-    res.json({
-      success: true,
-      stats: {
-        memberCount: guildRes.data.approximate_member_count || 0,
-        botOnline: true,
-        channelCount: 0
-      }
-    });
-  } catch (err) {
-    res.json({ success: false, stats: { memberCount: 0, botOnline: false, channelCount: 0 } });
-  }
-});
-
-// ─── General Invite Link ────────────────────────────────────────────
-router.get('/invite', (req, res) => {
-  const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands`;
-  res.redirect(inviteUrl);
+// Get server stats
+router.get('/api/stats', isAuthenticated, async (req, res) => {
+    try {
+        const guildIds = req.user.guilds.map(g => g.id);
+        const totalServers = guildIds.length;
+        const totalApplications = await Application.countDocuments({ guildId: { $in: guildIds } });
+        const totalApplicants = await Application.distinct('userId', { guildId: { $in: guildIds } });
+        const totalTickets = await Ticket.countDocuments({ guildId: { $in: guildIds } });
+        
+        res.json({
+            totalServers,
+            totalApplications,
+            totalApplicants: totalApplicants.length,
+            totalTickets
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 module.exports = router;
