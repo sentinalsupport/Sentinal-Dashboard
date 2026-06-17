@@ -15,7 +15,7 @@ const app = express();
 const config = {
     // Discord OAuth
     clientID: '1493217033956102215',
-    clientSecret: 'YOUR_DISCORD_CLIENT_SECRET_HERE', // ⚠️ GET FROM DISCORD DEV PORTAL
+    clientSecret: 'FvVMn-t9cEXRaRYMzBlYwZLpaVpxLzoW', // ⚠️ GET FROM DISCORD DEV PORTAL
     callbackURL: 'https://sentinal-dashboard.onrender.com/auth/discord/callback',
     domain: 'https://sentinal-dashboard.onrender.com',
     
