@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title || 'Sentinel Dashboard' %></title>
+    <title><%= title || 'Sentinal Dashboard' %></title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -196,7 +196,7 @@
     <nav class="navbar">
         <a href="/" class="brand">
             <div class="logo-icon">⚡</div>
-            Sentinel <span>Dashboard</span>
+            Sentinal <span>Dashboard</span>
         </a>
         <div class="nav-links">
             <a href="/">Home</a>
@@ -208,18 +208,18 @@
                 <div class="user-avatar"><%= user.username ? user.username.charAt(0).toUpperCase() : 'U' %></div>
                 <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
             <% } else { %>
-                <a href="/login" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="/auth/login" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
             <% } %>
         </div>
     </nav>
 
     <section class="hero">
-        <h1>🛡️ Sentinel</h1>
+        <h1>🛡️ Sentinal</h1>
         <p>The most advanced Discord bot management dashboard. Secure, powerful, and built for your community.</p>
         <% if (user) { %>
             <a href="/dashboard" class="cta-btn">Go to Dashboard →</a>
         <% } else { %>
-            <a href="/login" class="cta-btn"><i class="fab fa-discord"></i> Login with Discord</a>
+            <a href="/auth/login" class="cta-btn"><i class="fab fa-discord"></i> Login with Discord</a>
         <% } %>
     </section>
 
@@ -247,7 +247,7 @@
     </section>
 
     <footer class="footer">
-        © 2026 Sentinel — Made with ❤️
+        © 2026 Sentinal — Made with ❤️
     </footer>
 </body>
 </html>
