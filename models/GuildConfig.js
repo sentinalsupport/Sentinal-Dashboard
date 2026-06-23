@@ -1,98 +1,25 @@
 const mongoose = require('mongoose');
 
 const GuildConfigSchema = new mongoose.Schema({
-    guildId: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    prefix: {
-        type: String,
-        default: '!',
-    },
-    modLogChannel: {
-        type: String,
-        default: null,
-    },
-    memberLogChannel: {
-        type: String,
-        default: null,
-    },
-    welcomeChannel: {
-        type: String,
-        default: null,
-    },
-    welcomeMessage: {
-        type: String,
-        default: 'Welcome {user} to {server}!',
-    },
-    autorole: {
-        type: String,
-        default: null,
-    },
-    mutedRole: {
-        type: String,
-        default: null,
-    },
-    verificationChannel: {
-        type: String,
-        default: null,
-    },
-    verificationRole: {
-        type: String,
-        default: null,
-    },
-    verificationEnabled: {
-        type: Boolean,
-        default: false,
-    },
-    ticketCategory: {
-        type: String,
-        default: null,
-    },
-    ticketSupportRole: {
-        type: String,
-        default: null,
-    },
-    applicationChannel: {
-        type: String,
-        default: null,
-    },
-    giveawayChannel: {
-        type: String,
-        default: null,
-    },
-    xpEnabled: {
-        type: Boolean,
-        default: true,
-    },
-    xpRate: {
-        type: Number,
-        default: 1.0,
-    },
-    premium: {
-        type: Boolean,
-        default: false,
-    },
-    premiumExpires: {
-        type: Date,
-        default: null,
-    },
-    enabledFeatures: {
-        type: [String],
-        default: ['applications', 'tickets', 'giveaways', 'verification'],
-    },
-    dashboardEnabled: {
-        type: Boolean,
-        default: true,
-    },
-    blacklisted: {
-        type: Boolean,
-        default: false,
-    },
-}, {
-    timestamps: true,
+    guildId: { type: String, required: true, unique: true },
+    prefix: { type: String, default: '!' },
+    language: { type: String, default: 'en' },
+    modLogChannel: { type: String, default: '' },
+    memberLogChannel: { type: String, default: '' },
+    mutedRole: { type: String, default: '' },
+    adminRoles: { type: [String], default: [] },
+    applicationChannel: { type: String, default: '' },
+    ticketCategory: { type: String, default: '' },
+    ticketSupportRole: { type: String, default: '' },
+    giveawayChannel: { type: String, default: '' },
+    verificationChannel: { type: String, default: '' },
+    verificationRole: { type: String, default: '' },
+    verificationEnabled: { type: Boolean, default: false },
+    dashboardEnabled: { type: Boolean, default: true },
+    enabledFeatures: { type: [String], default: ['tickets', 'applications'] },
+    premium: { type: Boolean, default: false },
+    premiumExpiry: { type: Date, default: null },
+    updatedAt: { type: Date, default: Date.now }
 });
 
-// Check if model exists before creating it
-module.exports = mongoose.models.GuildConfig || mongoose.model('GuildConfig', GuildConfigSchema);
+module.exports = mongoose.model('GuildConfig', GuildConfigSchema);
