@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Dashboard — Sentinel' %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #080E1A;
+            color: #E8EDF5;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(8, 14, 26, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+        .navbar .brand .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+        }
+        .navbar .brand span { color: #60A5FA; }
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+        .navbar .nav-links a {
+            color: #8B9BB5;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        .navbar .nav-links a:hover { color: #E8EDF5; }
+        .navbar .nav-links a.active {
+            color: #FFFFFF;
+            position: relative;
+        }
+        .navbar .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #2563EB;
+            border-radius: 2px;
+        }
+        .navbar .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .navbar .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+        .navbar .logout-btn {
+            background: rgba(255, 255, 255, 0.06);
+            color: #8B9BB5;
+            padding: 6px 16px;
+            border-radius: 100px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .navbar .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+        .welcome {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .welcome span { color: #60A5FA; }
+        .welcome-sub {
+            color: #8B9BB5;
+            font-size: 15px;
+            margin-bottom: 28px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: 800;
+            color: #60A5FA;
+        }
+        .stat-card .label {
+            font-size: 13px;
+            color: #8B9BB5;
+            margin-top: 4px;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #E8EDF5;
+        }
+        .card:hover {
+            border-color: rgba(37, 99, 235, 0.2);
+            transform: translateY(-4px);
+        }
+        .card i {
+            font-size: 28px;
+            color: #2563EB;
+            margin-bottom: 12px;
+        }
+        .card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .card p {
+            font-size: 13px;
+            color: #8B9BB5;
+        }
+        .card .arrow {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #2563EB;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/dashboard" class="brand">
+            <div class="logo-icon">⚡</div>
+            Sentinel <span>Dashboard</span>
+        </a>
+        <div class="nav-links">
+            <a href="/dashboard" class="active">Home</a>
+            <a href="/servers">Servers</a>
+            <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd', '_blank')">Support</a>
+        </div>
+        <div class="nav-right">
+            <div class="user-avatar"><%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %></div>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="welcome">👋 Welcome back, <span><%= user ? user.global_name || user.username : 'User' %></span>!</h1>
+        <p class="welcome-sub">Manage your servers and bot settings from one place.</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number"><%= servers ? servers.length : 0 %></div>
+                <div class="label">Servers</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">0</div>
+                <div class="label">Active Tickets</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">🟢</div>
+                <div class="label">Bot Status</div>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <a href="/servers" class="card">
+                <i class="fas fa-server"></i>
+                <h3>My Servers</h3>
+                <p>View and manage all your Discord servers</p>
+                <div class="arrow">Manage →</div>
+            </a>
+            <a href="#" class="card" onclick="alert('Coming soon!')">
+                <i class="fas fa-ticket"></i>
+                <h3>Tickets</h3>
+                <p>View and manage support tickets</p>
+                <div class="arrow">Coming soon →</div>
+            </a>
+            <a href="#" class="card" onclick="alert('Coming soon!')">
+                <i class="fas fa-shield-halved"></i>
+                <h3>Security</h3>
+                <p>Security settings and audit logs</p>
+                <div class="arrow">Coming soon →</div>
+            </a>
+            <a href="#" class="card" onclick="alert('Coming soon!')">
+                <i class="fas fa-crown"></i>
+                <h3>Premium</h3>
+                <p>Unlock advanced features</p>
+                <div class="arrow">Upgrade →</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
