@@ -1,7 +1,7 @@
 const express = require('express');
-const router = express.Router();  // ✅ CRITICAL FIX
+const router = express.Router();  // <-- THIS MUST BE HERE
 
-// Middleware to check if user is authenticated
+// ============ MIDDLEWARE ============
 function isAuthenticated(req, res, next) {
     if (req.session.user) {
         return next();
@@ -9,22 +9,42 @@ function isAuthenticated(req, res, next) {
     res.redirect('/auth/login');
 }
 
-// Dashboard home
-router.get('/dashboard', isAuthenticated, (req, res) => {
-    res.render('dashboard', {
-        user: req.session.user,
-        title: 'Dashboard'
-    });
+// ============ SERVERS LIST ============
+router.get('/servers', isAuthenticated, async (req, res) => {
+    try {
+        const axios = require('axios');
+        const response = await axios.get('https://discord.com/api/users/@me/guilds', {
+            headers: {
+                Authorization: `Bearer ${req.session.user.access_token}`
+            }
+        });
+        
+        const guilds = response.data.filter(g => 
+            (g.permissions & 0x8) || (g.permissions & 0x20)
+        );
+        
+        res.render('servers', {
+            title: 'My Servers — Sentinal',
+            user: req.session.user,
+            guilds: guilds,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error fetching guilds:', error);
+        res.status(500).render('error', {
+            message: 'Failed to load servers',
+            title: 'Error'
+        });
+    }
 });
 
-// Server settings page
+// ============ SERVER SETTINGS ============
 router.get('/server/:id', isAuthenticated, async (req, res) => {
     try {
         const guildId = req.params.id;
         const GuildConfig = require('../models/GuildConfig');
         const config = await GuildConfig.findOne({ guildId });
         
-        // Fetch guild from Discord API
         const axios = require('axios');
         const response = await axios.get(`https://discord.com/api/guilds/${guildId}`, {
             headers: {
@@ -35,7 +55,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         const guild = response.data;
         
         res.render('server', {
-            title: 'Server Settings — Sentinel',
+            title: 'Server Settings — Sentinal',
             user: req.session.user,
             isAuthenticated: true,
             guild: {
@@ -56,7 +76,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
     }
 });
 
-// API endpoint to save settings
+// ============ API: SAVE SETTINGS ============
 router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
     try {
         const guildId = req.params.guildId;
@@ -76,35 +96,4 @@ router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
     }
 });
 
-// Servers list page
-router.get('/servers', isAuthenticated, async (req, res) => {
-    try {
-        const axios = require('axios');
-        const response = await axios.get('https://discord.com/api/users/@me/guilds', {
-            headers: {
-                Authorization: `Bearer ${req.session.user.access_token}`
-            }
-        });
-        
-        // Filter guilds where user has admin or manage server permissions
-        const guilds = response.data.filter(g => 
-            (g.permissions & 0x8) || // Administrator
-            (g.permissions & 0x20)    // Manage Server
-        );
-        
-        res.render('servers', {
-            title: 'My Servers — Sentinel',
-            user: req.session.user,
-            guilds: guilds,
-            isAuthenticated: true
-        });
-    } catch (error) {
-        console.error('Error fetching guilds:', error);
-        res.status(500).render('error', {
-            message: 'Failed to load servers',
-            title: 'Error'
-        });
-    }
-});
-
-module.exports = router;  // ✅ CRITICAL - Export the router
+module.exports = router;  // <-- THIS MUST BE HERE
