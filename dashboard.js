@@ -1,49 +1,79 @@
+require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-const passport = require('passport');
-const DiscordStrategy = require('passport-discord').Strategy;
+const MongoStore = require('connect-mongo');
 const path = require('path');
 const mongoose = require('mongoose');
 
-// Import the GuildConfig model from the models folder
-const GuildConfig = require('./models/GuildConfig'); // ← ADD THIS
+// Import routes
+const authRoutes = require('./routes/auth');
+const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
 
-// ===== CONFIGURATION ======
-const config = {
-    clientID: '1493217033956102215',
-    clientSecret: 'FvVMn-t9cEXRaRYMzBlYwZLpaVpxLzoW',
-    callbackURL: 'https://sentinal-dashboard.onrender.com/auth/discord/callback',
-    domain: 'https://sentinal-dashboard.onrender.com',
-    mongoURI: 'mongodb+srv://sentinalsupport_db_user:MySecurePassword123%21@cluster0.8nlf8kz.mongodb.net/dashboard',
-    sessionSecret: '8e5f6a7b8c9d0e1f2g3h4i5j6k7l8m9n',
-};
+// ============ CONFIGURATION ============
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/sentinel';
 
-// ===== MONGODB CONNECTION =====
-mongoose.connect(config.mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-.then(() => console.log('✅ MongoDB connected successfully'))
-.catch(err => {
-    console.error('❌ MongoDB connection error:', err);
-    console.log('⚠️ Continuing without MongoDB...');
-});
+// ============ MIDDLEWARE ============
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// ===== REMOVE THIS SECTION - IT'S DUPLICATED IN models/GuildConfig.js =====
-// DELETE THE ENTIRE GuildConfigSchema definition from dashboard.js
-// It should be in models/GuildConfig.js only
-
-// ===== SESSION SETUP =====
+// Session configuration (production ready)
 app.use(session({
-    secret: config.sessionSecret,
+    secret: process.env.SESSION_SECRET || 'your-secret-key-change-this',
     resave: false,
     saveUninitialized: false,
-    cookie: { 
-        secure: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7
+    store: MongoStore.create({
+        mongoUrl: MONGO_URI,
+        touchAfter: 24 * 3600 // lazy session update
+    }),
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
     }
 }));
 
-// ... rest of your code stays the same
+// ============ VIEW ENGINE ============
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// ============ DATABASE CONNECTION ============
+mongoose.connect(MONGO_URI)
+    .then(() => console.log('✅ MongoDB connected successfully'))
+    .catch(err => console.error('❌ MongoDB connection error:', err));
+
+// ============ ROUTES ============
+app.use('/auth', authRoutes);
+app.use('/', dashboardRoutes);
+
+// ============ HOME ROUTE ============
+app.get('/', (req, res) => {
+    res.render('index', { 
+        user: req.session.user || null,
+        title: 'Sentinel Dashboard'
+    });
+});
+
+// ============ ERROR HANDLING ============
+app.use((req, res) => {
+    res.status(404).render('error', { 
+        message: 'Page not found',
+        title: '404 - Not Found'
+    });
+});
+
+app.use((err, req, res, next) => {
+    console.error('❌ Server error:', err);
+    res.status(500).render('error', {
+        message: 'Something went wrong!',
+        title: '500 - Server Error'
+    });
+});
+
+// ============ START SERVER ============
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Sentinel Dashboard running on port ${PORT}`);
+    console.log(`🔗 Access at: http://localhost:${PORT}`);
+});
