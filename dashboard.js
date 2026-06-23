@@ -4,6 +4,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const path = require('path');
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -13,21 +14,21 @@ const app = express();
 
 // ============ CONFIGURATION ============
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/sentinel';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/sentinal';
 
 // ============ MIDDLEWARE ============
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session configuration (production ready)
+// Session configuration
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-this',
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: MONGO_URI,
-        touchAfter: 24 * 3600 // lazy session update
+        touchAfter: 24 * 3600
     }),
     cookie: {
         secure: process.env.NODE_ENV === 'production',
@@ -50,15 +51,52 @@ app.use('/', dashboardRoutes);
 
 // ============ HOME ROUTE ============
 app.get('/', (req, res) => {
-    res.render('index', { 
-        user: req.session.user || null,
-        title: 'Sentinel Dashboard'
+    res.render('index', {
+        title: 'Sentinal Dashboard',
+        user: req.session.user || null
+    });
+});
+
+// ============ DASHBOARD ROUTE ============
+app.get('/dashboard', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/auth/login');
+    }
+    
+    try {
+        const response = await axios.get('https://discord.com/api/users/@me/guilds', {
+            headers: {
+                Authorization: `Bearer ${req.session.user.access_token}`
+            }
+        });
+        
+        res.render('dashboard', {
+            title: 'Dashboard — Sentinal',
+            user: req.session.user,
+            servers: response.data || [],
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error fetching guilds:', error);
+        res.render('dashboard', {
+            title: 'Dashboard — Sentinal',
+            user: req.session.user,
+            servers: [],
+            isAuthenticated: true
+        });
+    }
+});
+
+// ============ LOGOUT ============
+app.get('/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.redirect('/');
     });
 });
 
 // ============ ERROR HANDLING ============
 app.use((req, res) => {
-    res.status(404).render('error', { 
+    res.status(404).render('error', {
         message: 'Page not found',
         title: '404 - Not Found'
     });
@@ -74,6 +112,6 @@ app.use((err, req, res, next) => {
 
 // ============ START SERVER ============
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Sentinel Dashboard running on port ${PORT}`);
+    console.log(`✅ Sentinal Dashboard running on port ${PORT}`);
     console.log(`🔗 Access at: http://localhost:${PORT}`);
 });
