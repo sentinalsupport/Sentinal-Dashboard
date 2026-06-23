@@ -39,6 +39,7 @@
             color: #8B9BB5;
             font-size: 14px;
             margin-bottom: 32px;
+            line-height: 1.6;
         }
         .login-btn {
             display: inline-flex;
@@ -52,6 +53,55 @@
             font-weight: 600;
             font-size: 16px;
             transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
         }
         .login-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.3);
+        }
+        .login-btn i {
+            font-size: 20px;
+        }
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            color: #EF4444;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        .footer-text {
+            margin-top: 24px;
+            color: #5A6B85;
+            font-size: 12px;
+        }
+        .footer-text a {
+            color: #5865F2;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🛡️</div>
+        <h1>Welcome to Sentinal</h1>
+        <p>Sign in with Discord to manage your servers and bot settings.</p>
+
+        <% if (locals.error) { %>
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> <%= error %>
+            </div>
+        <% } %>
+
+        <a href="<%= discordAuthUrl %>" class="login-btn">
+            <i class="fab fa-discord"></i> Login with Discord
+        </a>
+
+        <div class="footer-text">
+            By logging in, you agree to our <a href="#">Terms of Service</a>
+        </div>
+    </div>
+</body>
+</html>
