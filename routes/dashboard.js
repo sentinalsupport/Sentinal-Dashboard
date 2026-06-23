@@ -1,5 +1,6 @@
 const express = require('express');
-const router = express.Router();  // <-- THIS MUST BE HERE
+const router = express.Router();
+const axios = require('axios');
 
 // ============ MIDDLEWARE ============
 function isAuthenticated(req, res, next) {
@@ -12,7 +13,6 @@ function isAuthenticated(req, res, next) {
 // ============ SERVERS LIST ============
 router.get('/servers', isAuthenticated, async (req, res) => {
     try {
-        const axios = require('axios');
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
                 Authorization: `Bearer ${req.session.user.access_token}`
@@ -45,7 +45,6 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         const GuildConfig = require('../models/GuildConfig');
         const config = await GuildConfig.findOne({ guildId });
         
-        const axios = require('axios');
         const response = await axios.get(`https://discord.com/api/guilds/${guildId}`, {
             headers: {
                 Authorization: `Bearer ${req.session.user.access_token}`
@@ -96,4 +95,4 @@ router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
     }
 });
 
-module.exports = router;  // <-- THIS MUST BE HERE
+module.exports = router;
