@@ -6,13 +6,15 @@ const axios = require('axios');
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://your-app.onrender.com/auth/discord/callback';
+const GUILD_ID = process.env.GUILD_ID;
 
 // Login page
 router.get('/login', (req, res) => {
     const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
-    res.render('login', { 
+    res.render('login', {
         discordAuthUrl,
-        title: 'Login'
+        title: 'Login — Sentinal',
+        user: req.session.user || null
     });
 });
 
@@ -60,7 +62,7 @@ router.get('/discord/callback', async (req, res) => {
         });
         
         const guilds = guildsResponse.data;
-        const adminGuild = guilds.find(g => g.id === process.env.GUILD_ID && (g.permissions & 0x8));
+        const adminGuild = guilds.find(g => g.id === GUILD_ID && (g.permissions & 0x8));
         
         if (!adminGuild) {
             return res.render('error', {
@@ -88,13 +90,6 @@ router.get('/discord/callback', async (req, res) => {
             title: 'Login Error'
         });
     }
-});
-
-// Logout
-router.get('/logout', (req, res) => {
-    req.session.destroy(() => {
-        res.redirect('/');
-    });
 });
 
 module.exports = router;
