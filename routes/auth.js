@@ -1,3 +1,24 @@
+const express = require('express');
+const router = express.Router();  // ✅ CRITICAL FIX - This was missing!
+const axios = require('axios');
+
+// ============ CONFIGURATION ============
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI || 'https://sentinal-dashboard.onrender.com/auth/discord/callback';
+
+// ============ LOGIN PAGE ============
+router.get('/login', (req, res) => {
+    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
+    
+    res.render('login', {
+        title: 'Login — Sentinal',
+        discordAuthUrl: discordAuthUrl,
+        user: req.session.user || null,
+        error: req.query.error || null
+    });
+});
+
 // ============ DISCORD OAUTH2 CALLBACK ============
 router.get('/discord/callback', async (req, res) => {
     const { code } = req.query;
@@ -61,3 +82,15 @@ router.get('/discord/callback', async (req, res) => {
         return res.redirect(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
     }
 });
+
+// ============ LOGOUT ============
+router.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+        }
+        res.redirect('/');
+    });
+});
+
+module.exports = router;  // ✅ Make sure this is here
