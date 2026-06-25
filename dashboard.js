@@ -32,7 +32,9 @@ app.use(session({
     }),
     cookie: {
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        sameSite: 'lax'
     }
 }));
 
@@ -47,7 +49,7 @@ mongoose.connect(MONGO_URI)
 
 // ============ ROUTES ============
 app.use('/auth', authRoutes);
-app.use('/', dashboardRoutes);
+app.use('/', dashboardRoutes); // Handles /dashboard, /servers, /server/:id
 
 // ============ HOME ROUTE ============
 app.get('/', (req, res) => {
@@ -55,42 +57,6 @@ app.get('/', (req, res) => {
         title: 'Sentinal Dashboard',
         user: req.session.user || null
     });
-});
-
-// ============ DASHBOARD ROUTE ============
-app.get('/dashboard', async (req, res) => {
-    if (!req.session.user) {
-        return res.redirect('/auth/login');
-    }
-    
-    try {
-        const response = await axios.get('https://discord.com/api/users/@me/guilds', {
-            headers: {
-                Authorization: `Bearer ${req.session.user.access_token}`
-            }
-        });
-        
-        // Only show servers where user has admin or manage server permissions
-        const guilds = response.data.filter(g => 
-            (g.permissions & 0x8) || (g.permissions & 0x20)
-        );
-        
-        res.render('dashboard', {
-            title: 'Dashboard — Sentinal',
-            user: req.session.user,
-            servers: guilds,
-            isAuthenticated: true
-        });
-    } catch (error) {
-        console.error('Error fetching guilds:', error);
-        res.render('dashboard', {
-            title: 'Dashboard — Sentinal',
-            user: req.session.user,
-            servers: [],
-            isAuthenticated: true,
-            error: 'Failed to load your servers. Please try again.'
-        });
-    }
 });
 
 // ============ LOGOUT ============
