@@ -9,6 +9,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI || 'https://sentinal-dashboard.onr
 
 // ============ LOGIN PAGE ============
 router.get('/login', (req, res) => {
+    // Clear any existing session on login page
     if (req.session.user) {
         req.session.destroy(() => {});
     }
@@ -32,6 +33,8 @@ router.get('/discord/callback', async (req, res) => {
     }
     
     try {
+        console.log('🔄 Exchanging code for token...');
+        
         const tokenResponse = await axios.post(
             'https://discord.com/api/oauth2/token',
             new URLSearchParams({
@@ -49,7 +52,9 @@ router.get('/discord/callback', async (req, res) => {
         );
         
         const { access_token, refresh_token, expires_in } = tokenResponse.data;
+        console.log('✅ Token received, expires in:', expires_in, 'seconds');
         
+        // Get user info
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
             headers: {
                 Authorization: `Bearer ${access_token}`
@@ -57,6 +62,11 @@ router.get('/discord/callback', async (req, res) => {
         });
         
         const user = userResponse.data;
+        console.log('👤 User:', user.username);
+        
+        // ✅ Store user in session with CORRECT expiry
+        const tokenExpiry = Date.now() + (expires_in * 1000);
+        console.log('📝 Token expires at:', new Date(tokenExpiry).toLocaleString());
         
         req.session.user = {
             id: user.id,
@@ -66,23 +76,23 @@ router.get('/discord/callback', async (req, res) => {
             global_name: user.global_name,
             access_token: access_token,
             refresh_token: refresh_token,
-            token_expires: Date.now() + (expires_in * 1000)
+            token_expires: tokenExpiry
         };
         
-        console.log('👤 User logged in:', req.session.user.username);
-        console.log('📝 Token expires:', new Date(req.session.user.token_expires).toLocaleString());
-        
+        // ✅ Save session and redirect
         req.session.save((err) => {
             if (err) {
                 console.error('❌ Session save error:', err);
                 return res.redirect('/auth/login?error=session_failed');
             }
-            console.log('✅ Session saved, redirecting to dashboard');
+            console.log('✅ Session saved successfully');
+            console.log('📝 Session ID:', req.session.id);
+            console.log('🔗 Redirecting to /dashboard');
             return res.redirect('/dashboard');
         });
         
     } catch (error) {
-        console.error('OAuth error:', error.response?.data || error.message);
+        console.error('❌ OAuth error:', error.response?.data || error.message);
         const errorMessage = error.response?.data?.error_description || 'Authentication failed. Please try again.';
         return res.redirect(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
     }
