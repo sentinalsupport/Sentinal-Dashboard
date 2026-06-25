@@ -32,7 +32,6 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
     } catch (error) {
         console.error('Error fetching guilds:', error);
         
-        // If token expired, clear session and redirect to login
         if (error.response?.status === 401) {
             req.session.destroy(() => {
                 res.redirect('/auth/login?error=session_expired');
@@ -106,18 +105,49 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         
         const config = await GuildConfig.findOne({ guildId }).catch(() => null);
         
-        // Fetch guild details from Discord API
-        const response = await axios.get(`https://discord.com/api/guilds/${guildId}`, {
-            headers: {
-                Authorization: `Bearer ${req.session.user.access_token}`
-            }
-        });
+        // ✅ Try to fetch guild details from Discord API
+        let guild = null;
+        let botInServer = false;
+        const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
         
-        const guild = response.data;
-        console.log('✅ Guild found:', guild.name);
+        try {
+            const response = await axios.get(`https://discord.com/api/guilds/${guildId}`, {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            guild = response.data;
+            console.log('✅ Guild found:', guild.name);
+            botInServer = true;
+        } catch (apiError) {
+            console.warn('⚠️ Could not fetch guild from Discord API:', apiError.message);
+            
+            // ✅ If API fails, still show the settings page with basic info
+            guild = {
+                id: guildId,
+                name: 'Unknown Server',
+                icon: null,
+                approximate_member_count: 0,
+                approximate_presence_count: 0
+            };
+            
+            // ✅ Check if user has admin perms for this server
+            try {
+                const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                    headers: {
+                        Authorization: `Bearer ${req.session.user.access_token}`
+                    }
+                });
+                const userGuild = guildsResponse.data.find(g => g.id === guildId);
+                if (userGuild && (userGuild.permissions & 0x8)) {
+                    botInServer = true;
+                }
+            } catch (guildsError) {
+                console.warn('⚠️ Could not check user guilds:', guildsError.message);
+            }
+        }
         
         // Generate bot invite link
-        const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
         const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot+applications.commands`;
         
         res.render('server', {
@@ -126,29 +156,47 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
             isAuthenticated: true,
             guild: {
                 id: guild.id,
-                name: guild.name,
-                icon: guild.icon,
+                name: guild.name || 'Unknown Server',
+                icon: guild.icon || null,
                 memberCount: guild.approximate_member_count || 0,
                 channelCount: guild.approximate_presence_count || 0
             },
             config: config || {},
-            inviteLink: inviteLink
+            inviteLink: inviteLink,
+            botInServer: botInServer
         });
         
     } catch (error) {
         console.error('❌ Error loading server settings:', error.message);
         
-        if (error.response?.status === 401) {
-            console.log('🔄 Token expired, redirecting to login');
-            req.session.destroy(() => {
-                res.redirect('/auth/login?error=session_expired');
-            });
-            return;
+        // ✅ Even if there's an error, try to show the settings page
+        const guildId = req.params.id;
+        const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
+        const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot+applications.commands`;
+        
+        let config = null;
+        try {
+            const GuildConfig = require('../models/GuildConfig');
+            config = await GuildConfig.findOne({ guildId }).catch(() => null);
+        } catch (dbError) {
+            console.warn('⚠️ Could not fetch config from DB:', dbError.message);
         }
         
-        res.status(500).render('error', {
-            message: 'Failed to load server settings: ' + error.message,
-            title: 'Error'
+        res.render('server', {
+            title: 'Server Settings — Sentinal',
+            user: req.session.user,
+            isAuthenticated: true,
+            guild: {
+                id: guildId,
+                name: 'Server',
+                icon: null,
+                memberCount: 0,
+                channelCount: 0
+            },
+            config: config || {},
+            inviteLink: inviteLink,
+            botInServer: false,
+            error: 'Could not fetch server details, but you can still configure settings.'
         });
     }
 });
