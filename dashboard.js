@@ -31,9 +31,9 @@ app.use(session({
         touchAfter: 24 * 3600
     }),
     cookie: {
-        secure: false,
+        secure: false, // MUST be false for Render (HTTP)
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         sameSite: 'lax'
     }
 }));
