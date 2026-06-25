@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 
 // Import routes
-const authRoutes = require('./routes/auth');
+const { router: authRoutes } = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
