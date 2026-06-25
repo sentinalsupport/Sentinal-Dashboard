@@ -23,6 +23,7 @@ router.get('/login', (req, res) => {
 router.get('/discord/callback', async (req, res) => {
     const { code } = req.query;
     
+    // If no code, redirect to login
     if (!code) {
         return res.redirect('/auth/login');
     }
@@ -56,7 +57,7 @@ router.get('/discord/callback', async (req, res) => {
         
         const user = userResponse.data;
         
-        // Step 3: Store user in session (NO ADMIN CHECK!)
+        // Step 3: Store user in session
         req.session.user = {
             id: user.id,
             username: user.username,
@@ -67,19 +68,15 @@ router.get('/discord/callback', async (req, res) => {
         };
         
         // Step 4: Redirect to dashboard
-        res.redirect('/dashboard');
+        return res.redirect('/dashboard');
         
     } catch (error) {
         console.error('OAuth error:', error.response?.data || error.message);
         
         const errorMessage = error.response?.data?.error_description || 'Authentication failed. Please try again.';
         
-        res.render('login', {
-            title: 'Login — Sentinal',
-            discordAuthUrl: `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`,
-            error: errorMessage,
-            user: null
-        });
+        // Redirect to login with error parameter instead of rendering directly
+        return res.redirect(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
     }
 });
 
