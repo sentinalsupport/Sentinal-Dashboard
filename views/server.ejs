@@ -160,6 +160,7 @@
             gap: 12px;
             margin-bottom: 24px;
             flex-wrap: wrap;
+            align-items: center;
         }
         .btn-invite {
             display: inline-flex;
@@ -197,6 +198,18 @@
         .btn-back:hover {
             background: rgba(255, 255, 255, 0.08);
             color: #E8EDF5;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: #4ADE80;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+        .status-badge.in-server {
+            background: rgba(34, 197, 94, 0.1);
         }
         .settings-group {
             background: rgba(255, 255, 255, 0.02);
@@ -262,47 +275,6 @@
         .form-group select option {
             background: #0A1628;
         }
-        .toggle-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 0;
-        }
-        .toggle {
-            width: 44px;
-            height: 24px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            flex-shrink: 0;
-        }
-        .toggle.active {
-            background: #2563EB;
-        }
-        .toggle .toggle-slider {
-            width: 18px;
-            height: 18px;
-            background: #FFFFFF;
-            border-radius: 50%;
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            transition: all 0.3s ease;
-        }
-        .toggle.active .toggle-slider {
-            left: 23px;
-        }
-        .toggle-label {
-            color: #E8EDF5;
-            font-size: 13px;
-            font-weight: 500;
-        }
-        .toggle-desc {
-            color: #5A6B85;
-            font-size: 12px;
-        }
         .form-actions {
             display: flex;
             gap: 12px;
@@ -361,6 +333,15 @@
             font-size: 14px;
             margin-bottom: 20px;
         }
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #EF4444;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; height: 58px; flex-wrap: wrap; gap: 8px; }
             .navbar .nav-links { gap: 16px; }
@@ -368,7 +349,7 @@
             .container { padding: 16px; }
             .server-header { flex-wrap: wrap; }
             .server-actions { flex-direction: column; }
-            .btn-invite, .btn-back { width: 100%; justify-content: center; }
+            .server-actions .btn-invite, .server-actions .btn-back { width: 100%; justify-content: center; }
             .settings-group { padding: 16px; }
             .form-actions { flex-direction: column; }
             .form-actions button { width: 100%; justify-content: center; }
@@ -405,6 +386,12 @@
             </div>
         <% } %>
 
+        <% if (locals.error) { %>
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> <%= error %>
+            </div>
+        <% } %>
+
         <div class="server-header">
             <div class="icon">
                 <% if (guild && guild.icon) { %>
@@ -421,9 +408,15 @@
 
         <!-- ========== ACTION BUTTONS ========== -->
         <div class="server-actions">
-            <a href="<%= inviteLink %>" target="_blank" class="btn-invite">
-                <i class="fab fa-discord"></i> Invite Bot to Server
-            </a>
+            <% if (botInServer) { %>
+                <span class="status-badge in-server">
+                    <i class="fas fa-check-circle"></i> Bot is in this server
+                </span>
+            <% } else { %>
+                <a href="<%= inviteLink %>" target="_blank" class="btn-invite">
+                    <i class="fab fa-discord"></i> Invite Bot to Server
+                </a>
+            <% } %>
             <a href="/servers" class="btn-back">
                 <i class="fas fa-arrow-left"></i> Back to Servers
             </a>
