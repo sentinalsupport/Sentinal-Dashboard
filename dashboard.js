@@ -31,7 +31,7 @@ app.use(session({
         touchAfter: 24 * 3600
     }),
     cookie: {
-        secure: false, // ⚠️ Temporarily set to false for testing
+        secure: false, // Set to true in production with HTTPS
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,
         sameSite: 'lax'
@@ -49,7 +49,7 @@ mongoose.connect(MONGO_URI)
 
 // ============ ROUTES ============
 app.use('/auth', authRoutes);
-app.use('/', dashboardRoutes); // Handles /dashboard, /servers, /server/:id
+app.use('/', dashboardRoutes);
 
 // ============ HOME ROUTE ============
 app.get('/', (req, res) => {
