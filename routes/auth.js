@@ -64,7 +64,7 @@ router.get('/discord/callback', async (req, res) => {
         const user = userResponse.data;
         console.log('👤 User:', user.username);
         
-        // ✅ Store user in session with CORRECT expiry
+        // Store user in session with CORRECT expiry
         const tokenExpiry = Date.now() + (expires_in * 1000);
         console.log('📝 Token expires at:', new Date(tokenExpiry).toLocaleString());
         
@@ -79,7 +79,7 @@ router.get('/discord/callback', async (req, res) => {
             token_expires: tokenExpiry
         };
         
-        // ✅ Save session and redirect
+        // Save session and redirect
         req.session.save((err) => {
             if (err) {
                 console.error('❌ Session save error:', err);
