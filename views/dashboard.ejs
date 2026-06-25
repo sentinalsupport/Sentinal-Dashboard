@@ -250,4 +250,148 @@
         </div>
         <div class="nav-right">
             <div class="user-avatar">
-                <%
+                <% if (user && user.avatar) { %>
+                    <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
+                <% } else { %>
+                    <%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %>
+                <% } %>
+            </div>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="welcome">👋 Welcome back, <span><%= user ? user.global_name || user.username : 'User' %></span>!</h1>
+        <p class="welcome-sub">Manage your servers and bot settings from one place.</p>
+
+        <% if (locals.error) { %>
+            <div style="background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.2); border-radius:8px; padding:12px 16px; color:#FF6B6B; margin-bottom:20px;">
+                <i class="fas fa-exclamation-circle"></i> <%= error %>
+            </div>
+        <% } %>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number"><%= servers ? servers.length : 0 %></div>
+                <div class="label">Servers</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">0</div>
+                <div class="label">Active Tickets</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">🟢</div>
+                <div class="label">Bot Status</div>
+            </div>
+        </div>
+
+        <h3 style="font-size:18px; font-weight:700; margin-bottom:16px;"><i class="fas fa-server" style="color:#3DFFB8; margin-right:8px;"></i> Your Servers</h3>
+        <% if (servers && servers.length > 0) { %>
+            <div class="server-grid">
+                <% servers.forEach(function(guild) { %>
+                    <a href="/server/<%= guild.id %>" class="server-card">
+                        <div class="icon">
+                            <% if (guild.icon) { %>
+                                <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
+                            <% } else { %>
+                                <%= guild.name ? guild.name.charAt(0).toUpperCase() : '?' %>
+                            <% } %>
+                        </div>
+                        <div class="info">
+                            <div class="name"><%= guild.name %></div>
+                            <div class="role"><i class="fas fa-crown" style="color:#FBBF24; font-size:11px;"></i> Owner</div>
+                        </div>
+                        <div class="action">Manage →</div>
+                    </a>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div style="text-align:center; padding:40px 20px; color:#6C7588;">
+                <i class="fas fa-server" style="font-size:48px; color:#3DFFB8; margin-bottom:16px; display:block;"></i>
+                <h3 style="color:#E9EDF6; margin-bottom:8px;">No Servers Found</h3>
+                <p>You don't have administrator access to any servers.</p>
+            </div>
+        <% } %>
+
+        <h3 style="font-size:18px; font-weight:700; margin:32px 0 16px;"><i class="fas fa-puzzle-piece" style="color:#3DFFB8; margin-right:8px;"></i> Modules</h3>
+        <div class="modules-grid">
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-file-alt"></i>
+                    <h4>Applications</h4>
+                    <span class="status live">Live</span>
+                </div>
+                <p>Create custom application forms for staff, partners, or events. Review and manage submissions.</p>
+                <div class="actions">
+                    <a href="#" class="btn primary">Configure</a>
+                    <a href="#" class="btn">Manage</a>
+                </div>
+            </div>
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-ticket"></i>
+                    <h4>Tickets</h4>
+                    <span class="status live">Live</span>
+                </div>
+                <p>Create support tickets for users to open in your server. Manage transcripts and quick responses.</p>
+                <div class="actions">
+                    <a href="#" class="btn primary">Configure</a>
+                    <a href="#" class="btn">Templates</a>
+                </div>
+            </div>
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-shield-halved"></i>
+                    <h4>Verification</h4>
+                    <span class="status live">Live</span>
+                </div>
+                <p>Set up verification with auto-roles, welcome messages, and advanced security settings.</p>
+                <div class="actions">
+                    <a href="#" class="btn primary">Configure</a>
+                    <a href="#" class="btn">Welcome</a>
+                </div>
+            </div>
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-robot"></i>
+                    <h4>Automation</h4>
+                    <span class="status coming">Coming Soon</span>
+                </div>
+                <p>Auto-moderation, reaction roles, and scheduled tasks to automate your server management.</p>
+                <div class="actions">
+                    <a href="#" class="btn" style="opacity:0.5; cursor:not-allowed;">Configure</a>
+                    <a href="#" class="btn" style="opacity:0.5; cursor:not-allowed;">Auto-Mod</a>
+                </div>
+            </div>
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-users"></i>
+                    <h4>Community</h4>
+                    <span class="status coming">Coming Soon</span>
+                </div>
+                <p>Leveling system, giveaways, and community engagement features to grow your server.</p>
+                <div class="actions">
+                    <a href="#" class="btn" style="opacity:0.5; cursor:not-allowed;">Configure</a>
+                    <a href="#" class="btn" style="opacity:0.5; cursor:not-allowed;">Giveaways</a>
+                </div>
+            </div>
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h4>Audit & Logs</h4>
+                    <span class="status coming">Coming Soon</span>
+                </div>
+                <p>View all moderation actions, member events, and system logs in one place.</p>
+                <div class="actions">
+                    <a href="#" class="btn" style="opacity:0.5; cursor:not-allowed;">View Logs</a>
+                    <a href="#" class="btn" style="opacity:0.5; cursor:not-allowed;">Settings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        © 2026 SENTINAL — STATUS: OPERATIONAL
+    </footer>
+</body>
+</html>
