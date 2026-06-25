@@ -14,6 +14,8 @@
             color: #E8EDF5;
             min-height: 100vh;
         }
+
+        /* ========== NAVBAR ========== */
         .navbar {
             background: rgba(8, 14, 26, 0.92);
             backdrop-filter: blur(16px);
@@ -90,6 +92,17 @@
             font-size: 14px;
             font-weight: 600;
             color: #FFFFFF;
+            overflow: hidden;
+        }
+        .navbar .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .navbar .username {
+            color: #E8EDF5;
+            font-size: 13px;
+            font-weight: 500;
         }
         .navbar .logout-btn {
             background: rgba(255, 255, 255, 0.06);
@@ -110,11 +123,15 @@
             color: #EF4444;
             border-color: rgba(239, 68, 68, 0.2);
         }
+
+        /* ========== CONTAINER ========== */
         .container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 32px;
         }
+
+        /* ========== WELCOME ========== */
         .welcome {
             font-size: 28px;
             font-weight: 800;
@@ -126,6 +143,8 @@
             font-size: 15px;
             margin-bottom: 28px;
         }
+
+        /* ========== STATS ========== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -149,6 +168,8 @@
             color: #8B9BB5;
             margin-top: 4px;
         }
+
+        /* ========== CARDS ========== */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -162,10 +183,12 @@
             transition: all 0.3s ease;
             text-decoration: none;
             color: #E8EDF5;
+            cursor: pointer;
         }
         .card:hover {
             border-color: rgba(37, 99, 235, 0.2);
             transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         }
         .card i {
             font-size: 28px;
@@ -187,9 +210,50 @@
             color: #2563EB;
             font-weight: 500;
         }
+
+        /* ========== ERROR ========== */
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #EF4444;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 24px 32px;
+            text-align: center;
+            color: #5A6B85;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 16px; height: 58px; flex-wrap: wrap; gap: 8px; }
+            .navbar .nav-links { gap: 16px; }
+            .navbar .nav-links a { font-size: 12px; }
+            .navbar .username { display: none; }
+            .container { padding: 16px; }
+            .welcome { font-size: 22px; }
+        }
+
+        @media (max-width: 480px) {
+            .navbar .nav-links { gap: 12px; }
+            .navbar .nav-links a { font-size: 11px; }
+            .navbar .brand { font-size: 15px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- ========== NAVBAR ========== -->
     <nav class="navbar">
         <a href="/dashboard" class="brand">
             <div class="logo-icon">⚡</div>
@@ -201,15 +265,33 @@
             <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd', '_blank')">Support</a>
         </div>
         <div class="nav-right">
-            <div class="user-avatar"><%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %></div>
+            <div class="user-avatar">
+                <% if (user && user.avatar) { %>
+                    <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
+                <% } else { %>
+                    <%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %>
+                <% } %>
+            </div>
+            <span class="username"><%= user ? user.global_name || user.username : 'User' %></span>
             <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
 
+    <!-- ========== MAIN CONTENT ========== -->
     <div class="container">
+
+        <!-- ===== WELCOME ===== -->
         <h1 class="welcome">👋 Welcome back, <span><%= user ? user.global_name || user.username : 'User' %></span>!</h1>
         <p class="welcome-sub">Manage your servers and bot settings from one place.</p>
 
+        <!-- ===== ERROR ===== -->
+        <% if (locals.error) { %>
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> <%= error %>
+            </div>
+        <% } %>
+
+        <!-- ===== STATS ===== -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="number"><%= servers ? servers.length : 0 %></div>
@@ -225,6 +307,7 @@
             </div>
         </div>
 
+        <!-- ===== QUICK LINKS ===== -->
         <div class="card-grid">
             <a href="/servers" class="card">
                 <i class="fas fa-server"></i>
@@ -232,19 +315,19 @@
                 <p>View and manage all your Discord servers</p>
                 <div class="arrow">Manage →</div>
             </a>
-            <a href="#" class="card" onclick="alert('Coming soon!')">
+            <a href="#" class="card" onclick="alert('Coming soon! 🚀')">
                 <i class="fas fa-ticket"></i>
                 <h3>Tickets</h3>
                 <p>View and manage support tickets</p>
                 <div class="arrow">Coming soon →</div>
             </a>
-            <a href="#" class="card" onclick="alert('Coming soon!')">
+            <a href="#" class="card" onclick="alert('Coming soon! 🚀')">
                 <i class="fas fa-shield-halved"></i>
                 <h3>Security</h3>
                 <p>Security settings and audit logs</p>
                 <div class="arrow">Coming soon →</div>
             </a>
-            <a href="#" class="card" onclick="alert('Coming soon!')">
+            <a href="#" class="card" onclick="alert('Coming soon! 🚀')">
                 <i class="fas fa-crown"></i>
                 <h3>Premium</h3>
                 <p>Unlock advanced features</p>
@@ -252,5 +335,11 @@
             </a>
         </div>
     </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer">
+        © 2026 Sentinal — Made with ❤️
+    </footer>
+
 </body>
 </html>
