@@ -30,7 +30,7 @@ app.use(session({
         touchAfter: 24 * 3600
     }),
     cookie: {
-        secure: false, // Set to true in production with HTTPS
+        secure: false,
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,
         sameSite: 'lax'
