@@ -14,6 +14,7 @@ router.get('/login', (req, res) => {
         req.session.destroy(() => {});
     }
     
+    // ✅ IMPORTANT: scope must include 'identify' and 'guilds'
     const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
     
     res.render('login', {
@@ -35,6 +36,7 @@ router.get('/discord/callback', async (req, res) => {
     try {
         console.log('🔄 Exchanging code for token...');
         
+        // Exchange code for access token
         const tokenResponse = await axios.post(
             'https://discord.com/api/oauth2/token',
             new URLSearchParams({
@@ -62,9 +64,9 @@ router.get('/discord/callback', async (req, res) => {
         });
         
         const user = userResponse.data;
-        console.log('👤 User:', user.username);
+        console.log('👤 User logged in:', user.username);
         
-        // Store user in session with CORRECT expiry
+        // ✅ Store user in session with CORRECT expiry
         const tokenExpiry = Date.now() + (expires_in * 1000);
         console.log('📝 Token expires at:', new Date(tokenExpiry).toLocaleString());
         
@@ -79,7 +81,7 @@ router.get('/discord/callback', async (req, res) => {
             token_expires: tokenExpiry
         };
         
-        // Save session and redirect
+        // ✅ Save session and redirect
         req.session.save((err) => {
             if (err) {
                 console.error('❌ Session save error:', err);
@@ -93,7 +95,17 @@ router.get('/discord/callback', async (req, res) => {
         
     } catch (error) {
         console.error('❌ OAuth error:', error.response?.data || error.message);
-        const errorMessage = error.response?.data?.error_description || 'Authentication failed. Please try again.';
+        
+        // Handle specific errors
+        let errorMessage = 'Authentication failed. Please try again.';
+        if (error.response?.data?.error === 'invalid_grant') {
+            errorMessage = 'Invalid authorization code. Please try again.';
+        } else if (error.response?.data?.error === 'invalid_client') {
+            errorMessage = 'Invalid client credentials. Please contact support.';
+        } else if (error.response?.data?.error_description) {
+            errorMessage = error.response.data.error_description;
+        }
+        
         return res.redirect(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
     }
 });
@@ -108,4 +120,33 @@ router.get('/logout', (req, res) => {
     });
 });
 
-module.exports = router;
+// ============ TOKEN REFRESH FUNCTION ============
+async function refreshAccessToken(refresh_token) {
+    try {
+        console.log('🔄 Refreshing access token...');
+        
+        const response = await axios.post(
+            'https://discord.com/api/oauth2/token',
+            new URLSearchParams({
+                client_id: DISCORD_CLIENT_ID,
+                client_secret: DISCORD_CLIENT_SECRET,
+                refresh_token: refresh_token,
+                grant_type: 'refresh_token'
+            }),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+        
+        console.log('✅ Token refreshed successfully');
+        return response.data;
+    } catch (error) {
+        console.error('❌ Token refresh error:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+// ============ EXPORT ============
+module.exports = { router, refreshAccessToken };
