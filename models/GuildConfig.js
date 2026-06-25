@@ -16,7 +16,7 @@ const GuildConfigSchema = new mongoose.Schema({
     verificationRole: { type: String, default: '' },
     verificationEnabled: { type: Boolean, default: false },
     dashboardEnabled: { type: Boolean, default: true },
-    enabledFeatures: { type: [String], default: ['tickets', 'applications'] },
+    enabledFeatures: { type: [String], default: ['applications', 'tickets', 'verification'] },
     premium: { type: Boolean, default: false },
     premiumExpiry: { type: Date, default: null },
     updatedAt: { type: Date, default: Date.now }
