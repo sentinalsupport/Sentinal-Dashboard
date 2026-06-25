@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ============ SESSION CONFIGURATION ============
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key-change-this',
+    secret: process.env.SESSION_SECRET || 'random_secret_string_here_12345',
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
