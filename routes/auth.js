@@ -9,12 +9,17 @@ const REDIRECT_URI = process.env.REDIRECT_URI || 'https://sentinal-dashboard.onr
 
 // ============ LOGIN PAGE ============
 router.get('/login', (req, res) => {
+    // Clear any existing session on login page
+    if (req.session.user) {
+        req.session.destroy(() => {});
+    }
+    
     const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
     
     res.render('login', {
         title: 'Login — Sentinal',
         discordAuthUrl: discordAuthUrl,
-        user: req.session.user || null,
+        user: null,
         error: req.query.error || null
     });
 });
@@ -28,7 +33,6 @@ router.get('/discord/callback', async (req, res) => {
     }
     
     try {
-        // Step 1: Exchange code for access token
         const tokenResponse = await axios.post(
             'https://discord.com/api/oauth2/token',
             new URLSearchParams({
@@ -47,7 +51,6 @@ router.get('/discord/callback', async (req, res) => {
         
         const { access_token, refresh_token, expires_in } = tokenResponse.data;
         
-        // Step 2: Get user info
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
             headers: {
                 Authorization: `Bearer ${access_token}`
@@ -56,7 +59,7 @@ router.get('/discord/callback', async (req, res) => {
         
         const user = userResponse.data;
         
-        // Step 3: Store user in session with token expiry info
+        // Store user in session with token expiry info
         req.session.user = {
             id: user.id,
             username: user.username,
@@ -65,13 +68,12 @@ router.get('/discord/callback', async (req, res) => {
             global_name: user.global_name,
             access_token: access_token,
             refresh_token: refresh_token,
-            token_expires: Date.now() + (expires_in * 1000) // When token expires
+            token_expires: Date.now() + (expires_in * 1000)
         };
         
-        console.log('👤 User set in session:', req.session.user.username);
+        console.log('👤 User logged in:', req.session.user.username);
         console.log('📝 Token expires:', new Date(req.session.user.token_expires).toLocaleString());
         
-        // Step 4: Save session before redirect
         req.session.save((err) => {
             if (err) {
                 console.error('❌ Session save error:', err);
@@ -97,30 +99,5 @@ router.get('/logout', (req, res) => {
         res.redirect('/');
     });
 });
-
-// ============ HELPER: Refresh Token ============
-async function refreshAccessToken(refresh_token) {
-    try {
-        const response = await axios.post(
-            'https://discord.com/api/oauth2/token',
-            new URLSearchParams({
-                client_id: DISCORD_CLIENT_ID,
-                client_secret: DISCORD_CLIENT_SECRET,
-                refresh_token: refresh_token,
-                grant_type: 'refresh_token'
-            }),
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-        );
-        
-        return response.data;
-    } catch (error) {
-        console.error('❌ Token refresh error:', error.response?.data || error.message);
-        throw error;
-    }
-}
 
 module.exports = router;
