@@ -4,14 +4,23 @@ const axios = require('axios');
 
 // ============ MIDDLEWARE ============
 function isAuthenticated(req, res, next) {
+    console.log('🔍 isAuthenticated called');
+    console.log('📝 Session ID:', req.session.id);
+    console.log('👤 Session user:', req.session.user ? req.session.user.username : 'None');
+    
     if (req.session.user) {
+        console.log('✅ User authenticated, proceeding');
         return next();
     }
+    console.log('❌ No session, redirecting to login');
     return res.redirect('/auth/login');
 }
 
 // ============ DASHBOARD HOME ============
 router.get('/dashboard', isAuthenticated, async (req, res) => {
+    console.log('📊 Dashboard route accessed');
+    console.log('👤 User:', req.session.user.username);
+    
     try {
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
@@ -23,6 +32,7 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
             (g.permissions & 0x8) || (g.permissions & 0x20)
         );
         
+        console.log('✅ Rendering dashboard with', guilds.length, 'servers');
         return res.render('dashboard', {
             title: 'Dashboard — Sentinal',
             user: req.session.user,
@@ -43,6 +53,8 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
 
 // ============ SERVERS LIST ============
 router.get('/servers', isAuthenticated, async (req, res) => {
+    console.log('📋 Servers route accessed');
+    
     try {
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
