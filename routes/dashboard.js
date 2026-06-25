@@ -10,6 +10,40 @@ function isAuthenticated(req, res, next) {
     res.redirect('/auth/login');
 }
 
+// ============ DASHBOARD HOME ============
+router.get('/dashboard', isAuthenticated, async (req, res) => {
+    try {
+        // Fetch user's guilds from Discord API
+        const response = await axios.get('https://discord.com/api/users/@me/guilds', {
+            headers: {
+                Authorization: `Bearer ${req.session.user.access_token}`
+            }
+        });
+        
+        // Only show servers where user has admin or manage server permissions
+        const guilds = response.data.filter(g => 
+            (g.permissions & 0x8) || // Administrator
+            (g.permissions & 0x20)    // Manage Server
+        );
+        
+        res.render('dashboard', {
+            title: 'Dashboard — Sentinal',
+            user: req.session.user,
+            servers: guilds,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error fetching guilds:', error);
+        res.render('dashboard', {
+            title: 'Dashboard — Sentinal',
+            user: req.session.user,
+            servers: [],
+            isAuthenticated: true,
+            error: 'Failed to load your servers. Please try again.'
+        });
+    }
+});
+
 // ============ SERVERS LIST ============
 router.get('/servers', isAuthenticated, async (req, res) => {
     try {
@@ -19,6 +53,7 @@ router.get('/servers', isAuthenticated, async (req, res) => {
             }
         });
         
+        // Only show servers where user has admin or manage server permissions
         const guilds = response.data.filter(g => 
             (g.permissions & 0x8) || (g.permissions & 0x20)
         );
@@ -32,7 +67,7 @@ router.get('/servers', isAuthenticated, async (req, res) => {
     } catch (error) {
         console.error('Error fetching guilds:', error);
         res.status(500).render('error', {
-            message: 'Failed to load servers',
+            message: 'Failed to load your servers. Please try again later.',
             title: 'Error'
         });
     }
@@ -45,6 +80,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         const GuildConfig = require('../models/GuildConfig');
         const config = await GuildConfig.findOne({ guildId });
         
+        // Fetch guild details from Discord API
         const response = await axios.get(`https://discord.com/api/guilds/${guildId}`, {
             headers: {
                 Authorization: `Bearer ${req.session.user.access_token}`
@@ -52,6 +88,22 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         });
         
         const guild = response.data;
+        
+        // Check if user has admin permissions for this specific server
+        const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+            headers: {
+                Authorization: `Bearer ${req.session.user.access_token}`
+            }
+        });
+        
+        const userGuild = guildsResponse.data.find(g => g.id === guildId);
+        
+        if (!userGuild || !(userGuild.permissions & 0x8)) {
+            return res.status(403).render('error', {
+                message: 'You do not have administrator access to this server.',
+                title: 'Access Denied'
+            });
+        }
         
         res.render('server', {
             title: 'Server Settings — Sentinal',
@@ -80,6 +132,22 @@ router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
     try {
         const guildId = req.params.guildId;
         const settings = req.body;
+        
+        // Verify user has admin permissions
+        const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+            headers: {
+                Authorization: `Bearer ${req.session.user.access_token}`
+            }
+        });
+        
+        const userGuild = guildsResponse.data.find(g => g.id === guildId);
+        
+        if (!userGuild || !(userGuild.permissions & 0x8)) {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'You do not have administrator access to this server.' 
+            });
+        }
         
         const GuildConfig = require('../models/GuildConfig');
         await GuildConfig.findOneAndUpdate(
