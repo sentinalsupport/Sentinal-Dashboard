@@ -33,6 +33,7 @@ router.get('/discord/callback', async (req, res) => {
     }
     
     try {
+        // Exchange code for access token
         const tokenResponse = await axios.post(
             'https://discord.com/api/oauth2/token',
             new URLSearchParams({
@@ -51,6 +52,7 @@ router.get('/discord/callback', async (req, res) => {
         
         const { access_token, refresh_token, expires_in } = tokenResponse.data;
         
+        // Get user info
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
             headers: {
                 Authorization: `Bearer ${access_token}`
@@ -59,7 +61,7 @@ router.get('/discord/callback', async (req, res) => {
         
         const user = userResponse.data;
         
-        // Store user in session with token expiry info
+        // Store user in session
         req.session.user = {
             id: user.id,
             username: user.username,
@@ -100,29 +102,4 @@ router.get('/logout', (req, res) => {
     });
 });
 
-// ============ EXPORT REFRESH FUNCTION ============
-async function refreshAccessToken(refresh_token) {
-    try {
-        const response = await axios.post(
-            'https://discord.com/api/oauth2/token',
-            new URLSearchParams({
-                client_id: DISCORD_CLIENT_ID,
-                client_secret: DISCORD_CLIENT_SECRET,
-                refresh_token: refresh_token,
-                grant_type: 'refresh_token'
-            }),
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-        );
-        
-        return response.data;
-    } catch (error) {
-        console.error('❌ Token refresh error:', error.response?.data || error.message);
-        throw error;
-    }
-}
-
-module.exports = { router, refreshAccessToken };
+module.exports = router;
