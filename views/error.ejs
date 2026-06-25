@@ -1,249 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Error <%= typeof code !== 'undefined' ? code : '500' %> — Sentinal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Error — Sentinal' %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background: #080E1A;
             color: #E8EDF5;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-        }
-
-        .bg-gradient {
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(ellipse at 20% 50%, rgba(239, 68, 68, 0.10) 0%, transparent 60%),
-                        radial-gradient(ellipse at 80% 50%, rgba(239, 68, 68, 0.05) 0%, transparent 60%);
-            animation: rotateBg 30s linear infinite;
-            z-index: 0;
-        }
-
-        @keyframes rotateBg {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(100px);
-            z-index: 0;
-            animation: orbFloat 12s ease-in-out infinite;
-        }
-
-        .orb-1 {
-            top: -10%;
-            right: -5%;
-            width: 400px;
-            height: 400px;
-            background: rgba(239, 68, 68, 0.10);
-            animation-delay: 0s;
-        }
-
-        .orb-2 {
-            bottom: -15%;
-            left: -10%;
-            width: 350px;
-            height: 350px;
-            background: rgba(239, 68, 68, 0.05);
-            animation-delay: -4s;
-        }
-
-        @keyframes orbFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -40px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-
-        .error-container {
-            position: relative;
-            z-index: 1;
             text-align: center;
-            padding: 40px;
+            padding: 20px;
+        }
+        .error-container {
             max-width: 500px;
-            width: 100%;
         }
-
-        .error-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: bounce 2s ease-in-out infinite;
+        .error-container .icon {
+            font-size: 64px;
+            margin-bottom: 16px;
         }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
         .error-container h1 {
-            font-size: 72px;
-            font-weight: 900;
-            color: #FFFFFF;
-            margin-bottom: 4px;
-            letter-spacing: -2px;
-        }
-
-        .error-container h1 span {
-            background: linear-gradient(135deg, #EF4444, #DC2626);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .error-container .error-subtitle {
-            font-size: 18px;
-            font-weight: 600;
-            color: #E8EDF5;
+            font-size: 36px;
+            font-weight: 800;
             margin-bottom: 8px;
         }
-
         .error-container p {
             color: #8B9BB5;
-            font-size: 15px;
-            line-height: 1.7;
-            margin-bottom: 28px;
+            font-size: 16px;
+            margin-bottom: 24px;
+            line-height: 1.6;
         }
-
-        .error-container .btn-group {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .error-container .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+        .error-container .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 8px;
+            background: #2563EB;
             color: #FFFFFF;
-            padding: 12px 32px;
-            border-radius: 100px;
             text-decoration: none;
             font-weight: 600;
             font-size: 14px;
             transition: all 0.2s ease;
+            margin: 4px;
         }
-
-        .error-container .btn-primary:hover {
+        .error-container .btn:hover {
+            background: #1D4ED8;
             transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(37, 99, 235, 0.25);
-        }
-
-        .error-container .btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.04);
-            color: #E8EDF5;
-            padding: 12px 32px;
-            border-radius: 100px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.2s ease;
-        }
-
-        .error-container .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .error-details {
-            margin-top: 20px;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            color: #5A6B85;
-            font-size: 13px;
-            font-family: 'Courier New', monospace;
-            text-align: left;
-            word-break: break-word;
-            max-height: 200px;
-            overflow-y: auto;
-            display: <% if (typeof error !== 'undefined' && error) { %>block<% } else { %>none<% } %>;
-        }
-
-        .error-details strong {
-            color: #8B9BB5;
-        }
-
-        @media (max-width: 640px) {
-            .error-container { padding: 20px; }
-            .error-container h1 { font-size: 48px; }
-            .error-icon { font-size: 60px; }
-            .error-container .error-subtitle { font-size: 16px; }
-            .error-container .btn-group { flex-direction: column; }
-            .error-container .btn-primary,
-            .error-container .btn-secondary { justify-content: center; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-gradient"></div>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-
     <div class="error-container">
-        <div class="error-icon">
-            <% if (typeof code !== 'undefined' && code === 404) { %>
-                🔍
-            <% } else if (typeof code !== 'undefined' && code === 403) { %>
-                🚫
-            <% } else if (typeof code !== 'undefined' && code === 429) { %>
-                ⏳
-            <% } else { %>
-                ⚠️
-            <% } %>
-        </div>
-
-        <h1><span><%= typeof code !== 'undefined' ? code : '500' %></span></h1>
-
-        <div class="error-subtitle">
-            <% if (typeof code !== 'undefined' && code === 404) { %>
-                Page Not Found
-            <% } else if (typeof code !== 'undefined' && code === 403) { %>
-                Access Denied
-            <% } else if (typeof code !== 'undefined' && code === 429) { %>
-                Too Many Requests
-            <% } else { %>
-                Something Went Wrong
-            <% } %>
-        </div>
-
-        <p><%= typeof message !== 'undefined' ? message : 'An unexpected error occurred. Please try again later.' %></p>
-
-        <div class="btn-group">
-            <a href="/dashboard" class="btn-primary"><i class="fas fa-home"></i> Go to Dashboard</a>
-            <a href="#" class="btn-secondary" onclick="history.back()"><i class="fas fa-arrow-left"></i> Go Back</a>
-        </div>
-
-        <% if (typeof error !== 'undefined' && error) { %>
-        <div class="error-details">
-            <strong>Details:</strong><br />
-            <%= error %>
-        </div>
-        <% } %>
+        <div class="icon">⚠️</div>
+        <h1><%= title || 'Something Went Wrong' %></h1>
+        <p><%= message || 'An unexpected error occurred. Please try again later.' %></p>
+        <a href="/dashboard" class="btn">Go to Dashboard</a>
+        <a href="javascript:history.back()" class="btn" style="background: rgba(255,255,255,0.1);">Go Back</a>
     </div>
 </body>
 </html>
