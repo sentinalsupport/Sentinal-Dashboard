@@ -1,29 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const axios = require('axios');
-
-// ============ CONFIGURATION ============
-const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
-const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI || 'https://sentinal-dashboard.onrender.com/auth/discord/callback';
-
-// ============ LOGIN PAGE ============
-router.get('/login', (req, res) => {
-    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
-    
-    res.render('login', {
-        title: 'Login — Sentinal',
-        discordAuthUrl: discordAuthUrl,
-        user: req.session.user || null,
-        error: req.query.error || null
-    });
-});
-
 // ============ DISCORD OAUTH2 CALLBACK ============
 router.get('/discord/callback', async (req, res) => {
     const { code } = req.query;
     
-    // If no code, redirect to login
     if (!code) {
         return res.redirect('/auth/login');
     }
@@ -67,27 +45,19 @@ router.get('/discord/callback', async (req, res) => {
             access_token: access_token
         };
         
-        // Step 4: Redirect to dashboard
-        return res.redirect('/dashboard');
+        // Step 4: ✅ SAVE SESSION BEFORE REDIRECT
+        req.session.save((err) => {
+            if (err) {
+                console.error('❌ Session save error:', err);
+                return res.redirect('/auth/login?error=session_failed');
+            }
+            console.log('✅ Session saved, redirecting to dashboard');
+            return res.redirect('/dashboard');
+        });
         
     } catch (error) {
         console.error('OAuth error:', error.response?.data || error.message);
-        
         const errorMessage = error.response?.data?.error_description || 'Authentication failed. Please try again.';
-        
-        // Redirect to login with error parameter instead of rendering directly
         return res.redirect(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
     }
 });
-
-// ============ LOGOUT ============
-router.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Logout error:', err);
-        }
-        res.redirect('/');
-    });
-});
-
-module.exports = router;
