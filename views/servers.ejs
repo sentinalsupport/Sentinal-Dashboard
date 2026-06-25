@@ -1,27 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title || 'Servers — Sentinal' %></title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'My Servers — Sentinal' %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background: #080E1A;
             color: #E8EDF5;
             min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
         }
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #080E1A; }
-        ::-webkit-scrollbar-thumb { background: #1E4B8A; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #2563EB; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
-
-        /* ===== NAVBAR ===== */
         .navbar {
             background: rgba(8, 14, 26, 0.92);
             backdrop-filter: blur(16px);
@@ -43,7 +35,6 @@
             font-weight: 700;
             color: #FFFFFF;
             text-decoration: none;
-            letter-spacing: -0.3px;
         }
         .navbar .brand .logo-icon {
             width: 32px;
@@ -67,7 +58,6 @@
             font-size: 13px;
             font-weight: 500;
             transition: color 0.2s ease;
-            cursor: pointer;
         }
         .navbar .nav-links a:hover { color: #E8EDF5; }
         .navbar .nav-links a.active {
@@ -89,20 +79,23 @@
             align-items: center;
             gap: 16px;
         }
-        .navbar .premium-btn {
-            background: linear-gradient(135deg, #F59E0B, #D97706);
-            color: #FFFFFF;
-            padding: 6px 18px;
-            border-radius: 100px;
-            text-decoration: none;
-            font-size: 12px;
+        .navbar .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
             font-weight: 600;
-            transition: all 0.2s ease;
-            cursor: pointer;
+            color: #FFFFFF;
+            overflow: hidden;
         }
-        .navbar .premium-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+        .navbar .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .navbar .logout-btn {
             background: rgba(255, 255, 255, 0.06);
@@ -117,341 +110,123 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            cursor: pointer;
         }
         .navbar .logout-btn:hover {
             background: rgba(239, 68, 68, 0.1);
             color: #EF4444;
             border-color: rgba(239, 68, 68, 0.2);
         }
-        .navbar .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: #FFFFFF;
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px;
         }
-        .navbar .login-btn {
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            color: #FFFFFF;
-            padding: 6px 20px;
-            border-radius: 100px;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            border: none;
-            cursor: pointer;
-        }
-        .navbar .login-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
-        }
-        .navbar .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            padding: 4px 12px;
-            border-radius: 100px;
-            background: rgba(34, 197, 94, 0.12);
-            color: #4ADE80;
-            border: 1px solid rgba(34, 197, 94, 0.15);
-        }
-        .navbar .status-badge .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #4ADE80;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* ===== PAGE HEADER ===== */
         .page-header {
-            padding: 32px 0 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 24px;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 12px;
         }
         .page-header h1 {
             font-size: 28px;
             font-weight: 800;
-            color: #FFFFFF;
-            letter-spacing: -0.3px;
         }
-        .page-header h1 span {
-            color: #60A5FA;
-        }
-        .page-header p {
+        .page-header h1 span { color: #60A5FA; }
+        .page-header .subtitle {
             color: #8B9BB5;
             font-size: 14px;
         }
-
-        /* ===== SERVER GRID ===== */
         .server-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            padding-bottom: 40px;
+            gap: 16px;
         }
-
         .server-card {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .server-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #2563EB, #60A5FA);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .server-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(96, 165, 250, 0.15);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .server-card:hover::before {
-            opacity: 1;
-        }
-
-        .server-card .server-icon {
-            width: 56px;
-            height: 56px;
             border-radius: 14px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #E8EDF5;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .server-card:hover {
+            border-color: rgba(37, 99, 235, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        .server-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
             background: linear-gradient(135deg, #1E3A5F, #1A365D);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             color: #60A5FA;
-            margin-bottom: 14px;
-            border: 1px solid rgba(96, 165, 250, 0.08);
+            flex-shrink: 0;
             overflow: hidden;
         }
-
-        .server-card .server-icon img {
+        .server-card .icon img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
-        .server-card .server-name {
-            font-size: 17px;
+        .server-card .info h3 {
+            font-size: 16px;
             font-weight: 600;
-            color: #FFFFFF;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
-
-        .server-card .server-members {
-            color: #8B9BB5;
+        .server-card .info p {
             font-size: 13px;
-            margin-bottom: 12px;
-        }
-
-        .server-card .server-members i {
-            margin-right: 4px;
-            color: #475569;
-        }
-
-        .server-card .server-stats {
-            display: flex;
-            gap: 16px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .server-card .server-stats .stat {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            color: #475569;
-        }
-
-        .server-card .server-stats .stat i {
-            font-size: 13px;
-        }
-
-        .server-card .server-stats .stat .value {
             color: #8B9BB5;
-            font-weight: 500;
         }
-
-        .server-card .server-actions {
-            margin-top: 14px;
-            display: flex;
-            gap: 8px;
+        .server-card .arrow {
+            margin-left: auto;
+            color: #2563EB;
+            font-size: 14px;
         }
-
-        .server-card .server-actions .btn-sm {
-            padding: 6px 16px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .server-card .server-actions .btn-primary-sm {
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            color: #FFFFFF;
-        }
-
-        .server-card .server-actions .btn-primary-sm:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
-        }
-
-        .server-card .server-actions .btn-secondary-sm {
-            background: rgba(255, 255, 255, 0.05);
-            color: #8B9BB5;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .server-card .server-actions .btn-secondary-sm:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .server-card .server-badge {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            font-size: 10px;
-            font-weight: 600;
-            padding: 3px 10px;
-            border-radius: 100px;
-            background: rgba(245, 158, 11, 0.12);
-            color: #FBBF24;
-            border: 1px solid rgba(245, 158, 11, 0.1);
-        }
-
-        .server-card .server-badge.premium {
-            background: rgba(245, 158, 11, 0.15);
-            color: #FBBF24;
-        }
-
-        .server-card .server-badge.free {
-            background: rgba(96, 165, 250, 0.1);
-            color: #60A5FA;
-        }
-
-        /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
+            color: #8B9BB5;
         }
-
-        .empty-state .empty-icon {
-            font-size: 64px;
+        .empty-state i {
+            font-size: 48px;
+            color: #2563EB;
             margin-bottom: 16px;
         }
-
         .empty-state h3 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #FFFFFF;
+            font-size: 20px;
+            color: #E8EDF5;
             margin-bottom: 8px;
         }
-
-        .empty-state p {
-            color: #8B9BB5;
-            font-size: 15px;
-            max-width: 400px;
-            margin: 0 auto 24px;
-            line-height: 1.7;
-        }
-
-        .empty-state .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            color: #FFFFFF;
-            padding: 12px 32px;
-            border-radius: 100px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .empty-state .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(37, 99, 235, 0.25);
-        }
-
-        /* ===== FOOTER ===== */
         .footer {
             border-top: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 24px 0;
-            margin-top: 20px;
-        }
-        .footer .footer-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
+            padding: 24px 32px;
+            text-align: center;
             color: #5A6B85;
             font-size: 13px;
+            margin-top: 20px;
         }
-
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .container { padding: 0 20px; }
-            .navbar { padding: 0 20px; height: 58px; flex-wrap: wrap; gap: 8px; }
+            .navbar { padding: 0 16px; height: 58px; flex-wrap: wrap; gap: 8px; }
             .navbar .nav-links { gap: 16px; }
             .navbar .nav-links a { font-size: 12px; }
-            .navbar .nav-links a.active::after { bottom: -17px; }
+            .container { padding: 16px; }
             .page-header h1 { font-size: 22px; }
             .server-grid { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 480px) {
-            .navbar .nav-links { gap: 12px; }
-            .navbar .nav-links a { font-size: 11px; }
-            .navbar .brand { font-size: 15px; }
-            .navbar .nav-right { gap: 8px; flex-wrap: wrap; }
-            .page-header { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
 <body>
-    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <a href="/dashboard" class="brand">
             <div class="logo-icon">⚡</div>
@@ -460,95 +235,58 @@
         <div class="nav-links">
             <a href="/dashboard">Home</a>
             <a href="/servers" class="active">Servers</a>
-            <a href="/premium">Premium</a>
             <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd', '_blank')">Support</a>
         </div>
         <div class="nav-right">
-            <span class="status-badge"><span class="dot"></span> Online</span>
-            <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated === true) { %>
-                <div class="user-avatar"><%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %></div>
-                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            <% } else { %>
-                <a href="/login" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
-            <% } %>
+            <div class="user-avatar">
+                <% if (user && user.avatar) { %>
+                    <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
+                <% } else { %>
+                    <%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %>
+                <% } %>
+            </div>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
 
-    <!-- ===== PAGE HEADER ===== -->
     <div class="container">
         <div class="page-header">
             <div>
-                <h1>Your <span>Servers</span></h1>
-                <p>Manage all your Discord servers from one place</p>
-            </div>
-            <div>
-                <span style="color:#8B9BB5;font-size:14px;">
-                    <i class="fas fa-server"></i> <%= typeof servers !== 'undefined' ? servers.length : 0 %> servers
-                </span>
+                <h1>My <span>Servers</span></h1>
+                <div class="subtitle">Select a server to manage its settings</div>
             </div>
         </div>
-    </div>
 
-    <!-- ===== SERVER GRID ===== -->
-    <div class="container">
-        <% if (typeof servers !== 'undefined' && servers.length > 0) { %>
+        <% if (guilds && guilds.length > 0) { %>
             <div class="server-grid">
-                <% servers.forEach(function(server) { %>
-                    <div class="server-card" onclick="window.location.href='/server/<%= server.id %>'">
-                        <div class="server-icon">
-                            <% if (server.icon) { %>
-                                <img src="https://cdn.discordapp.com/icons/<%= server.id %>/<%= server.icon %>.png" alt="<%= server.name %>" />
+                <% guilds.forEach(function(guild) { %>
+                    <a href="/server/<%= guild.id %>" class="server-card">
+                        <div class="icon">
+                            <% if (guild.icon) { %>
+                                <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
                             <% } else { %>
-                                <%= server.name ? server.name.charAt(0).toUpperCase() : '?' %>
+                                <%= guild.name ? guild.name.charAt(0).toUpperCase() : '?' %>
                             <% } %>
                         </div>
-                        <div class="server-badge <%= server.premium ? 'premium' : 'free' %>">
-                            <%= server.premium ? '⭐ Premium' : 'Free' %>
+                        <div class="info">
+                            <h3><%= guild.name %></h3>
+                            <p><i class="fas fa-users"></i> <%= guild.approximate_member_count || 'N/A' %> members</p>
                         </div>
-                        <div class="server-name"><%= server.name %></div>
-                        <div class="server-members"><i class="fas fa-users"></i> <%= server.memberCount || 'N/A' %> members</div>
-                        <div class="server-stats">
-                            <span class="stat"><i class="fas fa-robot"></i> <span class="value"><%= server.botCount || 0 %></span> bots</span>
-                            <span class="stat"><i class="fas fa-hashtag"></i> <span class="value"><%= server.channelCount || 0 %></span> channels</span>
-                            <span class="stat"><i class="fas fa-role"></i> <span class="value"><%= server.roleCount || 0 %></span> roles</span>
-                        </div>
-                        <div class="server-actions">
-                            <a href="/server/<%= server.id %>" class="btn-sm btn-primary-sm"><i class="fas fa-cog"></i> Manage</a>
-                            <button class="btn-sm btn-secondary-sm" onclick="event.stopPropagation();"><i class="fas fa-external-link-alt"></i> View</button>
-                        </div>
-                    </div>
+                        <div class="arrow"><i class="fas fa-chevron-right"></i></div>
+                    </a>
                 <% }); %>
             </div>
         <% } else { %>
             <div class="empty-state">
-                <div class="empty-icon">🤖</div>
+                <i class="fas fa-server"></i>
                 <h3>No Servers Found</h3>
-                <p>You don't have any servers that are using Sentinal yet. Invite the bot to get started!</p>
-                <a href="#" class="btn-primary"><i class="fas fa-plus"></i> Invite Sentinal</a>
+                <p>You don't have administrator access to any servers.</p>
             </div>
         <% } %>
     </div>
 
-    <!-- ===== FOOTER ===== -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-bottom">
-                <span>© 2026 Sentinal — Discord application bot</span>
-                <span>Made with ❤️</span>
-            </div>
-        </div>
+        © 2026 Sentinal — Made with ❤️
     </footer>
-
-    <script>
-        // ===== NAVIGATION ACTIVE STATE =====
-        document.querySelectorAll('.nav-links a').forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                document.querySelectorAll('.nav-links a').forEach(function(l) {
-                    l.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
-    </script>
 </body>
 </html>
