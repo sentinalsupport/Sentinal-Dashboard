@@ -22,6 +22,7 @@
             --signal-glow: rgba(61, 255, 184, 0.18);
             --violet: #8B93FF;
             --danger: #FF6B6B;
+            --gold: #FBBF24;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -299,7 +300,7 @@
             margin-top: 2px;
         }
 
-        /* ---------- SIGNATURE: LIVE LOG CONSOLE ---------- */
+        /* ---------- CONSOLE ---------- */
         .console {
             background: var(--panel);
             border: 1px solid var(--line);
@@ -391,7 +392,7 @@
             .log-line { animation: none; opacity: 1; }
         }
 
-        /* ---------- SECTION SCAFFOLDING ---------- */
+        /* ---------- FEATURES ---------- */
         .section-head {
             max-width: 1180px;
             margin: 0 auto;
@@ -421,7 +422,6 @@
             max-width: 460px;
         }
 
-        /* ---------- FEATURES ---------- */
         .features {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -497,6 +497,107 @@
         }
         .feature-card:hover .go { color: var(--signal); gap: 8px; }
 
+        /* ---------- PREMIUM SECTION ---------- */
+        .premium-section {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 32px 80px;
+        }
+        .premium-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .premium-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 28px 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .premium-card:hover {
+            border-color: var(--line-bright);
+            transform: translateY(-3px);
+        }
+        .premium-card.popular {
+            border-color: var(--gold);
+            background: rgba(251, 191, 36, 0.04);
+        }
+        .premium-card.popular .badge {
+            display: inline-block;
+            background: var(--gold);
+            color: #04140F;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 2px 12px;
+            border-radius: 100px;
+            margin-bottom: 12px;
+        }
+        .premium-card .price {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+        .premium-card .price span {
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 400;
+        }
+        .premium-card .plan-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 4px 0 8px;
+        }
+        .premium-card .plan-desc {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        .premium-card .features {
+            list-style: none;
+            text-align: left;
+            margin: 16px 0;
+            padding: 0;
+            display: block;
+        }
+        .premium-card .features li {
+            padding: 6px 0;
+            color: var(--muted);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .premium-card .features li i {
+            color: var(--signal);
+            font-size: 14px;
+            width: 20px;
+        }
+        .premium-card .btn-upgrade {
+            padding: 10px 32px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: #FFFFFF;
+            width: 100%;
+        }
+        .premium-card .btn-upgrade:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+        }
+        .premium-card.free {
+            border-color: var(--muted-dim);
+        }
+
         .footer {
             border-top: 1px solid var(--line);
             padding: 28px 32px;
@@ -513,6 +614,7 @@
             .hero h1 { font-size: 38px; }
             .console { max-width: 560px; }
             .features { grid-template-columns: repeat(2, 1fr); }
+            .premium-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 600px) {
             .navbar { padding: 0 18px; }
@@ -524,6 +626,8 @@
             .hero .stat-row { gap: 18px; flex-wrap: wrap; }
             .section-head { padding: 0 18px; }
             .features { grid-template-columns: 1fr; padding: 28px 18px 64px; }
+            .premium-grid { grid-template-columns: 1fr; padding: 0 18px; }
+            .premium-section { padding: 0 0 60px; }
         }
     </style>
 </head>
@@ -561,6 +665,7 @@
         </div>
     </nav>
 
+    <!-- ===== HERO ===== -->
     <section class="hero">
         <div class="copy reveal">
             <span class="eyebrow"><span class="dot"></span> Online &amp; moderating</span>
@@ -600,6 +705,7 @@
         </div>
     </section>
 
+    <!-- ===== FEATURES ===== -->
     <div class="section-head reveal" id="features">
         <span class="eyebrow">What it watches</span>
         <h2>Four jobs, one bot.</h2>
@@ -607,23 +713,23 @@
     </div>
 
     <section class="features">
+        <a href="/dashboard/applications" class="feature-card reveal">
+            <div class="icon-wrap"><i class="fas fa-file-alt"></i></div>
+            <h3>Applications</h3>
+            <p>Create custom application forms for staff, partners, or events. Review and manage submissions.</p>
+            <span class="go">Manage applications <i class="fas fa-arrow-right"></i></span>
+        </a>
         <a href="/dashboard/tickets" class="feature-card reveal">
             <div class="icon-wrap"><i class="fas fa-ticket"></i></div>
             <h3>Tickets</h3>
             <p>Members open a ticket, your team gets pinged, the thread stays organized until it's closed.</p>
             <span class="go">Manage tickets <i class="fas fa-arrow-right"></i></span>
         </a>
-        <a href="/dashboard/moderation" class="feature-card reveal">
+        <a href="/dashboard/verification" class="feature-card reveal">
             <div class="icon-wrap"><i class="fas fa-shield-halved"></i></div>
-            <h3>Moderation</h3>
-            <p>Spam, raids, and banned words get caught and handled before a human ever sees them.</p>
-            <span class="go">Configure rules <i class="fas fa-arrow-right"></i></span>
-        </a>
-        <a href="/dashboard/analytics" class="feature-card reveal">
-            <div class="icon-wrap"><i class="fas fa-chart-line"></i></div>
-            <h3>Analytics</h3>
-            <p>Member growth, message activity, and mod actions, tracked without you asking for it.</p>
-            <span class="go">View analytics <i class="fas fa-arrow-right"></i></span>
+            <h3>Verification</h3>
+            <p>Ensure only humans are allowed into your server with button-based verification and auto-roles.</p>
+            <span class="go">Configure verification <i class="fas fa-arrow-right"></i></span>
         </a>
         <a href="/dashboard/premium" class="feature-card reveal">
             <div class="icon-wrap"><i class="fas fa-crown"></i></div>
@@ -631,6 +737,61 @@
             <p>Custom auto-mod rules, longer log history, and priority support for servers that need more.</p>
             <span class="go">Compare plans <i class="fas fa-arrow-right"></i></span>
         </a>
+    </section>
+
+    <!-- ===== PREMIUM SECTION ===== -->
+    <div class="section-head reveal">
+        <span class="eyebrow">Upgrade</span>
+        <h2>Choose your plan.</h2>
+        <p>Start free, upgrade when you need more.</p>
+    </div>
+
+    <section class="premium-section">
+        <div class="premium-grid">
+            <div class="premium-card free reveal">
+                <div class="price">$0 <span>/ month</span></div>
+                <div class="plan-name">Free</div>
+                <div class="plan-desc">For small communities getting started</div>
+                <ul class="features">
+                    <li><i class="fas fa-check"></i> 1 server</li>
+                    <li><i class="fas fa-check"></i> Basic application forms</li>
+                    <li><i class="fas fa-check"></i> Ticket system</li>
+                    <li><i class="fas fa-check"></i> Verification with auto-roles</li>
+                    <li><i class="fas fa-check"></i> Community support</li>
+                </ul>
+                <button class="btn-upgrade" style="background: var(--muted-dim);" disabled>Current Plan</button>
+            </div>
+
+            <div class="premium-card popular reveal">
+                <div class="badge">⭐ Most Popular</div>
+                <div class="price">$7.99 <span>/ month</span></div>
+                <div class="plan-name">Sentinal+</div>
+                <div class="plan-desc">Perfect for growing communities</div>
+                <ul class="features">
+                    <li><i class="fas fa-check"></i> Up to 5 servers</li>
+                    <li><i class="fas fa-check"></i> Custom application forms</li>
+                    <li><i class="fas fa-check"></i> Advanced ticket system</li>
+                    <li><i class="fas fa-check"></i> Verification with auto-roles</li>
+                    <li><i class="fas fa-check"></i> Priority support</li>
+                </ul>
+                <button class="btn-upgrade" onclick="alert('⭐ Upgrade to Sentinal+ for $7.99/month')">Upgrade Now</button>
+            </div>
+
+            <div class="premium-card reveal">
+                <div class="price">$13.99 <span>/ month</span></div>
+                <div class="plan-name">Sentinal++</div>
+                <div class="plan-desc">For large communities with advanced needs</div>
+                <ul class="features">
+                    <li><i class="fas fa-check"></i> Unlimited servers</li>
+                    <li><i class="fas fa-check"></i> Everything in Sentinal+</li>
+                    <li><i class="fas fa-check"></i> Custom bot branding</li>
+                    <li><i class="fas fa-check"></i> Advanced analytics</li>
+                    <li><i class="fas fa-check"></i> 24/7 priority support</li>
+                    <li><i class="fas fa-check"></i> Early access to features</li>
+                </ul>
+                <button class="btn-upgrade" onclick="alert('⭐ Upgrade to Sentinal++ for $13.99/month')">Upgrade Now</button>
+            </div>
+        </div>
     </section>
 
     <footer class="footer">
@@ -656,7 +817,7 @@
         }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
         revealEls.forEach(el => io.observe(el));
 
-        // live log feed — signature element
+        // live log feed
         const feed = [
             { tag: 'mod', tagLabel: 'MOD', msg: 'Muted <span class="who">@drift_king</span> in #general — spam (3 msgs/2s)' },
             { tag: 'info', tagLabel: 'TICKET', msg: 'New ticket opened by <span class="who">@kestrel</span> — "role not assigned"' },
