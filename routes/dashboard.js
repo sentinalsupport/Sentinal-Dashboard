@@ -16,20 +16,90 @@ function isAuthenticated(req, res, next) {
     return res.redirect('/auth/login');
 }
 
-// ============ DASHBOARD HOME ============
-router.get('/dashboard', isAuthenticated, async (req, res) => {
+// ============ REFRESH TOKEN FUNCTION ============
+async function refreshAccessToken(refresh_token) {
     try {
-        // Check token expiry
-        const tokenExpires = req.session.user.token_expires || 0;
-        const now = Date.now();
+        const response = await axios.post(
+            'https://discord.com/api/oauth2/token',
+            new URLSearchParams({
+                client_id: process.env.DISCORD_CLIENT_ID,
+                client_secret: process.env.DISCORD_CLIENT_SECRET,
+                refresh_token: refresh_token,
+                grant_type: 'refresh_token'
+            }),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
         
-        if (now > tokenExpires) {
-            console.log('🔄 Token expired, redirecting to login');
+        return response.data;
+    } catch (error) {
+        console.error('❌ Token refresh error:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+// ============ MIDDLEWARE: Ensure Valid Token ============
+async function ensureValidToken(req, res, next) {
+    if (!req.session.user) {
+        return res.redirect('/auth/login');
+    }
+    
+    // Check if token is expired
+    const tokenExpires = req.session.user.token_expires || 0;
+    const now = Date.now();
+    
+    if (now > tokenExpires) {
+        console.log('🔄 Token expired, refreshing...');
+        
+        try {
+            const refreshToken = req.session.user.refresh_token;
+            if (!refreshToken) {
+                console.log('❌ No refresh token, redirecting to login');
+                req.session.destroy(() => {
+                    res.redirect('/auth/login?error=session_expired');
+                });
+                return;
+            }
+            
+            const tokenData = await refreshAccessToken(refreshToken);
+            
+            // Update session with new tokens
+            req.session.user.access_token = tokenData.access_token;
+            req.session.user.token_expires = Date.now() + (tokenData.expires_in * 1000);
+            
+            if (tokenData.refresh_token) {
+                req.session.user.refresh_token = tokenData.refresh_token;
+            }
+            
+            console.log('✅ Token refreshed successfully');
+            console.log('📝 New token expires:', new Date(req.session.user.token_expires).toLocaleString());
+            
+            req.session.save((err) => {
+                if (err) {
+                    console.error('❌ Session save error:', err);
+                    return res.redirect('/auth/login');
+                }
+                next();
+            });
+            
+        } catch (error) {
+            console.error('❌ Token refresh failed:', error.message);
             req.session.destroy(() => {
                 res.redirect('/auth/login?error=session_expired');
             });
-            return;
         }
+    } else {
+        next();
+    }
+}
+
+// ============ DASHBOARD HOME ============
+router.get('/dashboard', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        console.log('📤 Making API request with token:', req.session.user.access_token.substring(0, 20) + '...');
         
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
@@ -49,11 +119,68 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching guilds:', error);
+        console.error('Error response:', error.response?.data || 'No response data');
         
         if (error.response?.status === 401) {
-            req.session.destroy(() => {
-                res.redirect('/auth/login?error=session_expired');
-            });
+            console.log('🔄 Token invalid, trying to refresh...');
+            
+            try {
+                const refreshToken = req.session.user.refresh_token;
+                if (refreshToken) {
+                    const tokenData = await refreshAccessToken(refreshToken);
+                    
+                    req.session.user.access_token = tokenData.access_token;
+                    req.session.user.token_expires = Date.now() + (tokenData.expires_in * 1000);
+                    
+                    if (tokenData.refresh_token) {
+                        req.session.user.refresh_token = tokenData.refresh_token;
+                    }
+                    
+                    req.session.save(async (err) => {
+                        if (err) {
+                            console.error('❌ Session save error:', err);
+                            req.session.destroy(() => {
+                                res.redirect('/auth/login?error=session_expired');
+                            });
+                            return;
+                        }
+                        
+                        // Retry the request with new token
+                        try {
+                            const retryResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                                headers: {
+                                    Authorization: `Bearer ${req.session.user.access_token}`
+                                }
+                            });
+                            
+                            const guilds = retryResponse.data.filter(g => 
+                                (g.permissions & 0x8) || (g.permissions & 0x20)
+                            );
+                            
+                            return res.render('dashboard', {
+                                title: 'Dashboard — Sentinal',
+                                user: req.session.user,
+                                servers: guilds,
+                                isAuthenticated: true
+                            });
+                        } catch (retryError) {
+                            console.error('Retry failed:', retryError.message);
+                            req.session.destroy(() => {
+                                res.redirect('/auth/login?error=session_expired');
+                            });
+                        }
+                    });
+                } else {
+                    req.session.destroy(() => {
+                        res.redirect('/auth/login?error=session_expired');
+                    });
+                }
+            } catch (refreshError) {
+                console.error('Refresh failed:', refreshError.message);
+                req.session.destroy(() => {
+                    res.redirect('/auth/login?error=session_expired');
+                });
+            }
             return;
         }
         
@@ -68,20 +195,8 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
 });
 
 // ============ SERVERS LIST ============
-router.get('/servers', isAuthenticated, async (req, res) => {
+router.get('/servers', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
-        // Check token expiry
-        const tokenExpires = req.session.user.token_expires || 0;
-        const now = Date.now();
-        
-        if (now > tokenExpires) {
-            console.log('🔄 Token expired, redirecting to login');
-            req.session.destroy(() => {
-                res.redirect('/auth/login?error=session_expired');
-            });
-            return;
-        }
-        
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
                 Authorization: `Bearer ${req.session.user.access_token}`
@@ -116,25 +231,10 @@ router.get('/servers', isAuthenticated, async (req, res) => {
 });
 
 // ============ SERVER SETTINGS ============
-router.get('/server/:id', isAuthenticated, async (req, res) => {
+router.get('/server/:id', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const guildId = req.params.id;
         console.log('🔍 Loading server settings for guild:', guildId);
-        
-        // Check if token is valid
-        const tokenExpires = req.session.user.token_expires || 0;
-        const now = Date.now();
-        console.log('📝 Current time:', new Date(now).toLocaleString());
-        console.log('📝 Token expires:', new Date(tokenExpires).toLocaleString());
-        console.log('⏳ Time until expiry:', Math.round((tokenExpires - now) / 1000), 'seconds');
-        
-        if (now > tokenExpires) {
-            console.log('🔄 Token expired, redirecting to login');
-            req.session.destroy(() => {
-                res.redirect('/auth/login?error=session_expired');
-            });
-            return;
-        }
         
         // Try to load GuildConfig model
         let GuildConfig;
@@ -202,17 +302,6 @@ router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
     try {
         const guildId = req.params.guildId;
         const settings = req.body;
-        
-        // Check token expiry
-        const tokenExpires = req.session.user.token_expires || 0;
-        const now = Date.now();
-        
-        if (now > tokenExpires) {
-            return res.status(401).json({ 
-                success: false, 
-                error: 'Session expired. Please log in again.' 
-            });
-        }
         
         // Verify user has admin permissions
         const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
