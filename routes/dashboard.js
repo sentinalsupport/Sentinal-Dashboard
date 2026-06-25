@@ -2,7 +2,60 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-// ============ MIDDLEWARE ============
+// Import the refresh function from auth.js
+const { refreshAccessToken } = require('./auth');
+
+// ============ MIDDLEWARE: Check & Refresh Token ============
+async function ensureValidToken(req, res, next) {
+    if (!req.session.user) {
+        return res.redirect('/auth/login');
+    }
+    
+    // Check if token is expired or about to expire (within 5 minutes)
+    const tokenExpires = req.session.user.token_expires || 0;
+    const now = Date.now();
+    const fiveMinutes = 5 * 60 * 1000;
+    
+    if (now > tokenExpires - fiveMinutes) {
+        console.log('🔄 Token expired or about to expire, refreshing...');
+        
+        try {
+            const refreshToken = req.session.user.refresh_token;
+            if (!refreshToken) {
+                console.log('❌ No refresh token, redirecting to login');
+                return res.redirect('/auth/login');
+            }
+            
+            const tokenData = await refreshAccessToken(refreshToken);
+            
+            // Update session with new tokens
+            req.session.user.access_token = tokenData.access_token;
+            req.session.user.token_expires = Date.now() + (tokenData.expires_in * 1000);
+            
+            if (tokenData.refresh_token) {
+                req.session.user.refresh_token = tokenData.refresh_token;
+            }
+            
+            console.log('✅ Token refreshed successfully');
+            
+            // Save session before continuing
+            req.session.save((err) => {
+                if (err) {
+                    console.error('❌ Session save error:', err);
+                    return res.redirect('/auth/login');
+                }
+                next();
+            });
+            
+        } catch (error) {
+            console.error('❌ Token refresh failed:', error.message);
+            return res.redirect('/auth/login');
+        }
+    } else {
+        next();
+    }
+}
+
 function isAuthenticated(req, res, next) {
     if (req.session.user) {
         return next();
@@ -11,7 +64,7 @@ function isAuthenticated(req, res, next) {
 }
 
 // ============ DASHBOARD HOME ============
-router.get('/dashboard', isAuthenticated, async (req, res) => {
+router.get('/dashboard', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
@@ -42,7 +95,7 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
 });
 
 // ============ SERVERS LIST ============
-router.get('/servers', isAuthenticated, async (req, res) => {
+router.get('/servers', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
@@ -70,18 +123,16 @@ router.get('/servers', isAuthenticated, async (req, res) => {
 });
 
 // ============ SERVER SETTINGS ============
-router.get('/server/:id', isAuthenticated, async (req, res) => {
+router.get('/server/:id', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const guildId = req.params.id;
         console.log('🔍 Loading server settings for guild:', guildId);
         
-        // Try to load GuildConfig model
         let GuildConfig;
         try {
             GuildConfig = require('../models/GuildConfig');
         } catch (err) {
             console.warn('⚠️ GuildConfig model not found, creating fallback');
-            // Fallback if model doesn't exist
             GuildConfig = {
                 findOne: async () => null,
                 findOneAndUpdate: async () => ({})
@@ -123,6 +174,14 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         console.error('❌ Error loading server settings:', error.message);
         console.error('❌ Full error:', error);
         
+        if (error.response?.status === 401) {
+            // Token expired, clear session and redirect to login
+            req.session.destroy(() => {
+                res.redirect('/auth/login?error=session_expired');
+            });
+            return;
+        }
+        
         res.status(500).render('error', {
             message: 'Failed to load server settings: ' + error.message,
             title: 'Error'
@@ -131,7 +190,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
 });
 
 // ============ API: SAVE SETTINGS ============
-router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
+router.post('/api/config/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const guildId = req.params.guildId;
         const settings = req.body;
