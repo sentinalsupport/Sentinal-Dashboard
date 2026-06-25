@@ -4,40 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title || 'Login — Sentinal' %></title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background: #080E1A;
-            color: #E8EDF5;
+            background: #05070C;
+            color: #E9EDF6;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: -25%; left: 50%;
+            width: 800px; height: 800px;
+            transform: translateX(-50%);
+            background: radial-gradient(circle, rgba(61, 255, 184, 0.06) 0%, rgba(61, 255, 184, 0) 60%);
+            pointer-events: none;
         }
         .login-container {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(11, 16, 24, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.07);
             border-radius: 20px;
             padding: 48px;
             max-width: 420px;
             width: 100%;
             text-align: center;
+            position: relative;
+            backdrop-filter: blur(10px);
         }
         .login-container .logo {
             font-size: 48px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .login-container h1 {
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 28px;
-            font-weight: 800;
+            font-weight: 700;
             margin-bottom: 8px;
+            color: #FFFFFF;
         }
         .login-container p {
-            color: #8B9BB5;
+            color: #6C7588;
             font-size: 14px;
             margin-bottom: 32px;
             line-height: 1.6;
@@ -48,40 +63,41 @@
             gap: 12px;
             padding: 14px 36px;
             border-radius: 100px;
-            background: #5865F2;
-            color: #FFFFFF;
+            background: #3DFFB8;
+            color: #04140F;
             text-decoration: none;
             font-weight: 600;
             font-size: 16px;
             transition: all 0.2s ease;
             border: none;
             cursor: pointer;
+            width: 100%;
+            justify-content: center;
         }
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.3);
+            box-shadow: 0 8px 24px rgba(61, 255, 184, 0.3);
         }
-        .login-btn i {
-            font-size: 20px;
-        }
+        .login-btn i { font-size: 20px; }
         .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.2);
             border-radius: 8px;
             padding: 12px;
-            color: #EF4444;
+            color: #FF6B6B;
             font-size: 13px;
             margin-bottom: 16px;
         }
         .footer-text {
             margin-top: 24px;
-            color: #5A6B85;
+            color: #444C5E;
             font-size: 12px;
         }
         .footer-text a {
-            color: #5865F2;
+            color: #3DFFB8;
             text-decoration: none;
         }
+        .footer-text a:hover { text-decoration: underline; }
         @media (max-width: 480px) {
             .login-container { padding: 32px 24px; }
             .login-container h1 { font-size: 22px; }
