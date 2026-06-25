@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();  // ✅ CRITICAL FIX - This was missing!
+const router = express.Router();
 const axios = require('axios');
 
 // ============ CONFIGURATION ============
@@ -45,7 +45,7 @@ router.get('/discord/callback', async (req, res) => {
             }
         );
         
-        const { access_token } = tokenResponse.data;
+        const { access_token, refresh_token, expires_in } = tokenResponse.data;
         
         // Step 2: Get user info
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
@@ -56,17 +56,22 @@ router.get('/discord/callback', async (req, res) => {
         
         const user = userResponse.data;
         
-        // Step 3: Store user in session
+        // Step 3: Store user in session with token expiry info
         req.session.user = {
             id: user.id,
             username: user.username,
             discriminator: user.discriminator,
             avatar: user.avatar,
             global_name: user.global_name,
-            access_token: access_token
+            access_token: access_token,
+            refresh_token: refresh_token,
+            token_expires: Date.now() + (expires_in * 1000) // When token expires
         };
         
-        // Step 4: ✅ SAVE SESSION BEFORE REDIRECT
+        console.log('👤 User set in session:', req.session.user.username);
+        console.log('📝 Token expires:', new Date(req.session.user.token_expires).toLocaleString());
+        
+        // Step 4: Save session before redirect
         req.session.save((err) => {
             if (err) {
                 console.error('❌ Session save error:', err);
@@ -93,4 +98,29 @@ router.get('/logout', (req, res) => {
     });
 });
 
-module.exports = router;  // ✅ Make sure this is here
+// ============ HELPER: Refresh Token ============
+async function refreshAccessToken(refresh_token) {
+    try {
+        const response = await axios.post(
+            'https://discord.com/api/oauth2/token',
+            new URLSearchParams({
+                client_id: DISCORD_CLIENT_ID,
+                client_secret: DISCORD_CLIENT_SECRET,
+                refresh_token: refresh_token,
+                grant_type: 'refresh_token'
+            }),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+        
+        return response.data;
+    } catch (error) {
+        console.error('❌ Token refresh error:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+module.exports = router;
