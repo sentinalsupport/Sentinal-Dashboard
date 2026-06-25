@@ -88,6 +88,15 @@
             font-size: 12px;
             color: #8B9BB5;
         }
+        .sidebar .server-context .back-link {
+            margin-left: auto;
+            color: #5A6B85;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .sidebar .server-context .back-link:hover {
+            color: #E8EDF5;
+        }
 
         .sidebar .nav-section {
             margin-bottom: 24px;
@@ -132,19 +141,17 @@
         }
         .sidebar .nav-item .badge {
             margin-left: auto;
-            background: rgba(239, 68, 68, 0.15);
-            color: #EF4444;
             font-size: 11px;
             padding: 2px 8px;
             border-radius: 12px;
         }
-        .sidebar .nav-item .badge.coming {
-            background: rgba(245, 158, 11, 0.15);
-            color: #FBBF24;
-        }
         .sidebar .nav-item .badge.live {
             background: rgba(34, 197, 94, 0.15);
             color: #4ADE80;
+        }
+        .sidebar .nav-item .badge.coming {
+            background: rgba(245, 158, 11, 0.15);
+            color: #FBBF24;
         }
 
         .sidebar .user-section {
@@ -189,12 +196,12 @@
             overflow-y: auto;
         }
 
-        /* ========== SETTINGS AREA ========== */
-        .settings-area {
-            max-width: 800px;
+        /* ========== MODULES PANEL ========== */
+        .modules-panel {
+            max-width: 1100px;
             margin: 0 auto;
         }
-        .settings-area .page-header {
+        .modules-panel .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -202,57 +209,140 @@
             flex-wrap: wrap;
             gap: 16px;
         }
-        .settings-area .page-header h1 {
+        .modules-panel .panel-header h1 {
             font-size: 28px;
             font-weight: 800;
         }
-        .settings-area .page-header h1 span { color: #60A5FA; }
-        .settings-area .page-header .subtitle {
+        .modules-panel .panel-header h1 span { color: #60A5FA; }
+        .modules-panel .panel-header .subtitle {
             color: #8B9BB5;
             font-size: 14px;
         }
 
-        .settings-group {
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .module-card {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 14px;
             padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .module-card:hover {
+            border-color: rgba(37, 99, 235, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        .module-card .module-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
             margin-bottom: 16px;
         }
-        .settings-group .group-header {
+        .module-card .module-icon.applications { background: rgba(37, 99, 235, 0.15); color: #2563EB; }
+        .module-card .module-icon.tickets { background: rgba(245, 158, 11, 0.15); color: #FBBF24; }
+        .module-card .module-icon.verification { background: rgba(34, 197, 94, 0.15); color: #4ADE80; }
+        .module-card .module-icon.automation { background: rgba(139, 92, 246, 0.15); color: #8B5CF6; }
+        .module-card .module-icon.community { background: rgba(236, 72, 153, 0.15); color: #EC4899; }
+        .module-card .module-icon.logs { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+        .module-card .module-icon.giveaways { background: rgba(251, 191, 36, 0.15); color: #FBBF24; }
+
+        .module-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .module-card p {
+            color: #8B9BB5;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        .module-card .module-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
             flex-wrap: wrap;
             gap: 8px;
         }
-        .settings-group .group-header h4 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #FFFFFF;
-        }
-        .settings-group .group-header .status {
-            font-size: 11px;
-            padding: 2px 10px;
-            border-radius: 12px;
+        .module-card .module-footer .status {
+            font-size: 12px;
             font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 12px;
         }
-        .settings-group .group-header .status.live {
-            background: rgba(34, 197, 94, 0.15);
+        .module-card .module-footer .status.live {
+            background: rgba(34, 197, 94, 0.12);
             color: #4ADE80;
         }
-        .settings-group .group-header .status.coming {
-            background: rgba(245, 158, 11, 0.15);
+        .module-card .module-footer .status.coming {
+            background: rgba(245, 158, 11, 0.12);
             color: #FBBF24;
         }
-        .settings-group .group-desc {
-            color: #8B9BB5;
+        .module-card .module-footer .btn-config {
+            padding: 6px 18px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
             font-size: 13px;
-            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(37, 99, 235, 0.12);
+            color: #60A5FA;
+            text-decoration: none;
         }
+        .module-card .module-footer .btn-config:hover {
+            background: rgba(37, 99, 235, 0.25);
+        }
+        .module-card .module-footer .btn-config.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ========== MODULE CONTENT AREA ========== */
+        .module-content {
+            display: none;
+            margin-top: 32px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 32px;
+        }
+        .module-content.active {
+            display: block;
+        }
+        .module-content .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .module-content .content-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .module-content .content-header h2 i { color: #2563EB; margin-right: 10px; }
+        .module-content .content-header .close-btn {
+            background: none;
+            border: none;
+            color: #5A6B85;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .module-content .content-header .close-btn:hover { color: #E8EDF5; }
+
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
         .form-group label {
             display: block;
@@ -267,7 +357,8 @@
             margin-top: 2px;
         }
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 10px 14px;
             border-radius: 8px;
@@ -280,16 +371,19 @@
             outline: none;
         }
         .form-group input:focus,
-        .form-group select:focus {
+        .form-group select:focus,
+        .form-group textarea:focus {
             border-color: #2563EB;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
-        .form-group input::placeholder {
-            color: #475569;
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
         }
         .form-group select option {
             background: #0A1628;
         }
+
         .form-actions {
             display: flex;
             gap: 12px;
@@ -311,20 +405,10 @@
             transform: translateY(-1px);
             box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
         }
-        .btn-reset {
-            padding: 10px 32px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: transparent;
-            color: #8B9BB5;
-        }
-        .btn-reset:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: #E8EDF5;
+        .btn-save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .success-message {
@@ -333,15 +417,6 @@
             border-radius: 8px;
             padding: 12px 16px;
             color: #4ADE80;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 8px;
-            padding: 12px 16px;
-            color: #EF4444;
             font-size: 14px;
             margin-bottom: 20px;
         }
@@ -373,15 +448,15 @@
             .sidebar .nav-section .section-title { display: none; }
             .sidebar .nav-item { padding: 8px 12px; font-size: 13px; }
             .sidebar .user-section { display: none; }
-            .sidebar .server-context { display: none; }
+            .sidebar .server-context { margin-bottom: 12px; }
             .main-content { padding: 16px; }
-            .settings-area .page-header h1 { font-size: 22px; }
-            .settings-group { padding: 16px; }
-            .form-actions { flex-direction: column; }
-            .form-actions button { width: 100%; justify-content: center; }
+            .modules-grid { grid-template-columns: 1fr; }
+            .modules-panel .panel-header h1 { font-size: 22px; }
+            .module-content { padding: 20px; }
         }
         @media (max-width: 480px) {
-            .settings-group { padding: 12px; }
+            .module-card { padding: 16px; }
+            .module-content { padding: 16px; }
         }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -399,7 +474,7 @@
             Sentinal <span>Dashboard</span>
         </div>
 
-        <!-- ===== SERVER CONTEXT (Shows which server you're managing) ===== -->
+        <!-- ===== SERVER CONTEXT ===== -->
         <div class="server-context">
             <div class="icon">
                 <% if (guild && guild.icon) { %>
@@ -412,37 +487,35 @@
                 <div class="name"><%= guild ? guild.name : 'Server' %></div>
                 <div class="members"><i class="fas fa-users"></i> <%= guild ? guild.memberCount || 'N/A' : 'N/A' %> members</div>
             </div>
-            <a href="/servers" style="margin-left: auto; color: #5A6B85; text-decoration: none; font-size: 12px;">
-                <i class="fas fa-arrow-left"></i>
-            </a>
+            <a href="/servers" class="back-link"><i class="fas fa-arrow-left"></i></a>
         </div>
 
         <div class="nav-section">
             <div class="section-title">Modules</div>
-            <a href="#" class="nav-item active" onclick="showModule('general')">
-                <i class="fas fa-sliders-h"></i> General
-                <span class="badge live">Live</span>
-            </a>
-            <a href="#" class="nav-item" onclick="showModule('applications')">
+            <button class="nav-item active" onclick="showModule('applications')">
                 <i class="fas fa-file-alt"></i> Applications
                 <span class="badge live">Live</span>
-            </a>
-            <a href="#" class="nav-item" onclick="showModule('tickets')">
+            </button>
+            <button class="nav-item" onclick="showModule('tickets')">
                 <i class="fas fa-ticket"></i> Tickets
                 <span class="badge live">Live</span>
-            </a>
-            <a href="#" class="nav-item" onclick="showModule('verification')">
+            </button>
+            <button class="nav-item" onclick="showModule('verification')">
                 <i class="fas fa-shield-halved"></i> Verification
                 <span class="badge live">Live</span>
-            </a>
-            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+            </button>
+            <button class="nav-item" onclick="showModule('automation')">
                 <i class="fas fa-robot"></i> Automation
                 <span class="badge coming">Soon</span>
-            </a>
-            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+            </button>
+            <button class="nav-item" onclick="showModule('giveaways')">
                 <i class="fas fa-gift"></i> Giveaways
                 <span class="badge coming">Soon</span>
-            </a>
+            </button>
+            <button class="nav-item" onclick="showModule('logs')">
+                <i class="fas fa-clipboard-list"></i> Audit & Logs
+                <span class="badge coming">Soon</span>
+            </button>
         </div>
 
         <div class="user-section">
@@ -467,127 +540,191 @@
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="main-content">
-        <div class="settings-area">
+        <div class="modules-panel">
 
             <!-- ===== HEADER ===== -->
-            <div class="page-header">
+            <div class="panel-header">
                 <div>
-                    <h1>⚙️ <span><%= guild ? guild.name : 'Server' %></span> Settings</h1>
-                    <div class="subtitle">Configure modules for this server.</div>
+                    <h1>⚙️ <span><%= guild ? guild.name : 'Server' %></span></h1>
+                    <div class="subtitle">Select a module to configure.</div>
                 </div>
             </div>
 
-            <% if (locals.success) { %>
-                <div class="success-message"><i class="fas fa-check-circle"></i> Settings saved successfully!</div>
-            <% } %>
-            <% if (locals.error) { %>
-                <div class="error-message"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
-            <% } %>
+            <!-- ===== MODULES GRID ===== -->
+            <div class="modules-grid" id="modulesGrid">
 
-            <!-- ===== GENERAL SETTINGS (Default View) ===== -->
-            <div id="module-general">
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4><i class="fas fa-sliders-h" style="color: #2563EB;"></i> General Settings</h4>
-                        <span class="status live">Live</span>
+                <!-- Applications -->
+                <div class="module-card" onclick="showModule('applications')">
+                    <div class="module-icon applications"><i class="fas fa-file-alt"></i></div>
+                    <h3>Applications</h3>
+                    <p>Create custom application forms for staff, partners, or events. Review and manage submissions.</p>
+                    <div class="module-footer">
+                        <span class="status live">● Live</span>
+                        <button class="btn-config">Configure →</button>
                     </div>
-                    <p class="group-desc">Configure basic server settings for Sentinal</p>
-                    <div class="form-group">
-                        <label for="prefix">Command Prefix</label>
-                        <input type="text" id="prefix" value="<%= config ? config.prefix || '!' : '!' %>" placeholder="!">
-                        <div class="form-hint">Example: !, ?, $, etc.</div>
+                </div>
+
+                <!-- Tickets -->
+                <div class="module-card" onclick="showModule('tickets')">
+                    <div class="module-icon tickets"><i class="fas fa-ticket"></i></div>
+                    <h3>Tickets</h3>
+                    <p>Create support tickets for users to open in your server. Manage transcripts and quick responses.</p>
+                    <div class="module-footer">
+                        <span class="status live">● Live</span>
+                        <button class="btn-config">Configure →</button>
                     </div>
-                    <div class="form-group">
-                        <label for="language">Language</label>
-                        <select id="language">
-                            <option value="en" <%= config && config.language === 'en' ? 'selected' : '' %>>English</option>
-                            <option value="es" <%= config && config.language === 'es' ? 'selected' : '' %>>Español</option>
-                            <option value="fr" <%= config && config.language === 'fr' ? 'selected' : '' %>>Français</option>
-                            <option value="de" <%= config && config.language === 'de' ? 'selected' : '' %>>Deutsch</option>
-                            <option value="pt" <%= config && config.language === 'pt' ? 'selected' : '' %>>Português</option>
-                        </select>
+                </div>
+
+                <!-- Verification -->
+                <div class="module-card" onclick="showModule('verification')">
+                    <div class="module-icon verification"><i class="fas fa-shield-halved"></i></div>
+                    <h3>Verification</h3>
+                    <p>Set up verification with auto-roles, welcome messages, and advanced security settings.</p>
+                    <div class="module-footer">
+                        <span class="status live">● Live</span>
+                        <button class="btn-config">Configure →</button>
                     </div>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-                        <button class="btn-reset" onclick="resetSettings()"><i class="fas fa-undo"></i> Reset</button>
+                </div>
+
+                <!-- Automation -->
+                <div class="module-card" onclick="showModule('automation')">
+                    <div class="module-icon automation"><i class="fas fa-robot"></i></div>
+                    <h3>Automation</h3>
+                    <p>Auto-moderation, reaction roles, and scheduled tasks to automate your server management.</p>
+                    <div class="module-footer">
+                        <span class="status coming">● Coming Soon</span>
+                        <button class="btn-config disabled" disabled>Coming Soon</button>
                     </div>
+                </div>
+
+                <!-- Giveaways -->
+                <div class="module-card" onclick="showModule('giveaways')">
+                    <div class="module-icon giveaways"><i class="fas fa-gift"></i></div>
+                    <h3>Giveaways</h3>
+                    <p>Create and manage giveaways with custom prizes, winners, and entry requirements.</p>
+                    <div class="module-footer">
+                        <span class="status coming">● Coming Soon</span>
+                        <button class="btn-config disabled" disabled>Coming Soon</button>
+                    </div>
+                </div>
+
+                <!-- Audit & Logs -->
+                <div class="module-card" onclick="showModule('logs')">
+                    <div class="module-icon logs"><i class="fas fa-clipboard-list"></i></div>
+                    <h3>Audit & Logs</h3>
+                    <p>View all moderation actions, member events, and system logs in one place.</p>
+                    <div class="module-footer">
+                        <span class="status coming">● Coming Soon</span>
+                        <button class="btn-config disabled" disabled>Coming Soon</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== MODULE CONTENT (Hidden until module is clicked) ===== -->
+
+            <!-- Applications Content -->
+            <div class="module-content" id="content-applications">
+                <div class="content-header">
+                    <h2><i class="fas fa-file-alt"></i> Applications Settings</h2>
+                    <button class="close-btn" onclick="closeModule()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="form-group">
+                    <label for="appChannel">Application Channel</label>
+                    <input type="text" id="appChannel" placeholder="#channel-name or channel ID">
+                    <div class="form-hint">Channel where applications will be sent</div>
+                </div>
+                <div class="form-group">
+                    <label for="appRole">Reviewer Role</label>
+                    <input type="text" id="appRole" placeholder="@role-name or role ID">
+                    <div class="form-hint">Role that can review applications</div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-save" onclick="saveModuleSettings('applications')"><i class="fas fa-save"></i> Save Changes</button>
                 </div>
             </div>
 
-            <!-- ===== APPLICATIONS SETTINGS ===== -->
-            <div id="module-applications" style="display: none;">
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4><i class="fas fa-file-alt" style="color: #2563EB;"></i> Applications</h4>
-                        <span class="status live">Live</span>
-                    </div>
-                    <p class="group-desc">Create and manage application forms for your server.</p>
-                    <div class="form-group">
-                        <label for="appChannel">Application Channel</label>
-                        <input type="text" id="appChannel" placeholder="#channel-name or channel ID">
-                        <div class="form-hint">Channel where applications will be sent</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="appRole">Reviewer Role</label>
-                        <input type="text" id="appRole" placeholder="@role-name or role ID">
-                        <div class="form-hint">Role that can review applications</div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-                    </div>
+            <!-- Tickets Content -->
+            <div class="module-content" id="content-tickets">
+                <div class="content-header">
+                    <h2><i class="fas fa-ticket"></i> Tickets Settings</h2>
+                    <button class="close-btn" onclick="closeModule()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="form-group">
+                    <label for="ticketCategory">Ticket Category</label>
+                    <input type="text" id="ticketCategory" placeholder="Category ID">
+                    <div class="form-hint">Category where ticket channels will be created</div>
+                </div>
+                <div class="form-group">
+                    <label for="ticketSupportRole">Support Role</label>
+                    <input type="text" id="ticketSupportRole" placeholder="@role-name or role ID">
+                    <div class="form-hint">Role that can view and manage tickets</div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-save" onclick="saveModuleSettings('tickets')"><i class="fas fa-save"></i> Save Changes</button>
                 </div>
             </div>
 
-            <!-- ===== TICKETS SETTINGS ===== -->
-            <div id="module-tickets" style="display: none;">
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4><i class="fas fa-ticket" style="color: #2563EB;"></i> Tickets</h4>
-                        <span class="status live">Live</span>
-                    </div>
-                    <p class="group-desc">Configure the ticket system for support requests.</p>
-                    <div class="form-group">
-                        <label for="ticketCategory">Ticket Category</label>
-                        <input type="text" id="ticketCategory" placeholder="Category ID">
-                        <div class="form-hint">Category where ticket channels will be created</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="ticketSupportRole">Support Role</label>
-                        <input type="text" id="ticketSupportRole" placeholder="@role-name or role ID">
-                        <div class="form-hint">Role that can view and manage tickets</div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-                    </div>
+            <!-- Verification Content -->
+            <div class="module-content" id="content-verification">
+                <div class="content-header">
+                    <h2><i class="fas fa-shield-halved"></i> Verification Settings</h2>
+                    <button class="close-btn" onclick="closeModule()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="form-group">
+                    <label for="verificationChannel">Verification Channel</label>
+                    <input type="text" id="verificationChannel" placeholder="#channel-name or channel ID">
+                    <div class="form-hint">Channel where verification will take place</div>
+                </div>
+                <div class="form-group">
+                    <label for="verificationRole">Verified Role</label>
+                    <input type="text" id="verificationRole" placeholder="@role-name or role ID">
+                    <div class="form-hint">Role assigned after successful verification</div>
+                </div>
+                <div class="form-group">
+                    <label for="autorole">Auto-Role</label>
+                    <input type="text" id="autorole" placeholder="@role-name or role ID">
+                    <div class="form-hint">Role automatically assigned to new members</div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-save" onclick="saveModuleSettings('verification')"><i class="fas fa-save"></i> Save Changes</button>
                 </div>
             </div>
 
-            <!-- ===== VERIFICATION SETTINGS ===== -->
-            <div id="module-verification" style="display: none;">
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4><i class="fas fa-shield-halved" style="color: #2563EB;"></i> Verification</h4>
-                        <span class="status live">Live</span>
-                    </div>
-                    <p class="group-desc">Set up verification, auto-roles, and welcome messages.</p>
-                    <div class="form-group">
-                        <label for="verificationChannel">Verification Channel</label>
-                        <input type="text" id="verificationChannel" placeholder="#channel-name or channel ID">
-                        <div class="form-hint">Channel where verification will take place</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="verificationRole">Verified Role</label>
-                        <input type="text" id="verificationRole" placeholder="@role-name or role ID">
-                        <div class="form-hint">Role assigned after successful verification</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="autorole">Auto-Role</label>
-                        <input type="text" id="autorole" placeholder="@role-name or role ID">
-                        <div class="form-hint">Role automatically assigned to new members</div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-                    </div>
+            <!-- Coming Soon Content -->
+            <div class="module-content" id="content-automation">
+                <div class="content-header">
+                    <h2><i class="fas fa-robot"></i> Automation</h2>
+                    <button class="close-btn" onclick="closeModule()"><i class="fas fa-times"></i></button>
+                </div>
+                <div style="text-align: center; padding: 40px 20px; color: #8B9BB5;">
+                    <i class="fas fa-robot" style="font-size: 48px; color: #8B5CF6; margin-bottom: 16px; display: block;"></i>
+                    <h3 style="color: #E8EDF5; margin-bottom: 8px;">Coming Soon! 🚀</h3>
+                    <p>Automation features including auto-moderation, reaction roles, and scheduled tasks are under development.</p>
+                </div>
+            </div>
+
+            <div class="module-content" id="content-giveaways">
+                <div class="content-header">
+                    <h2><i class="fas fa-gift"></i> Giveaways</h2>
+                    <button class="close-btn" onclick="closeModule()"><i class="fas fa-times"></i></button>
+                </div>
+                <div style="text-align: center; padding: 40px 20px; color: #8B9BB5;">
+                    <i class="fas fa-gift" style="font-size: 48px; color: #FBBF24; margin-bottom: 16px; display: block;"></i>
+                    <h3 style="color: #E8EDF5; margin-bottom: 8px;">Coming Soon! 🚀</h3>
+                    <p>Giveaway features with custom prizes, winners, and entry requirements are under development.</p>
+                </div>
+            </div>
+
+            <div class="module-content" id="content-logs">
+                <div class="content-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Audit & Logs</h2>
+                    <button class="close-btn" onclick="closeModule()"><i class="fas fa-times"></i></button>
+                </div>
+                <div style="text-align: center; padding: 40px 20px; color: #8B9BB5;">
+                    <i class="fas fa-clipboard-list" style="font-size: 48px; color: #EF4444; margin-bottom: 16px; display: block;"></i>
+                    <h3 style="color: #E8EDF5; margin-bottom: 8px;">Coming Soon! 🚀</h3>
+                    <p>Audit logs and moderation history features are under development.</p>
                 </div>
             </div>
 
@@ -609,38 +746,37 @@
                 }
             });
 
-            // Hide all modules
-            const modules = ['general', 'applications', 'tickets', 'verification'];
-            modules.forEach(m => {
-                const el = document.getElementById('module-' + m);
-                if (el) el.style.display = 'none';
-            });
+            // Hide all module content
+            document.querySelectorAll('.module-content').forEach(el => el.classList.remove('active'));
 
-            // Show selected module
-            const target = document.getElementById('module-' + module);
+            // Show selected module content
+            const target = document.getElementById('content-' + module);
             if (target) {
-                target.style.display = 'block';
-                target.scrollIntoView({ behavior: 'smooth' });
+                target.classList.add('active');
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
 
-        // ===== SAVE SETTINGS =====
-        function saveSettings() {
-            const prefix = document.getElementById('prefix')?.value || '';
-            const language = document.getElementById('language')?.value || '';
-            const appChannel = document.getElementById('appChannel')?.value || '';
-            const appRole = document.getElementById('appRole')?.value || '';
-            const ticketCategory = document.getElementById('ticketCategory')?.value || '';
-            const ticketSupportRole = document.getElementById('ticketSupportRole')?.value || '';
-            const verificationChannel = document.getElementById('verificationChannel')?.value || '';
-            const verificationRole = document.getElementById('verificationRole')?.value || '';
-            const autorole = document.getElementById('autorole')?.value || '';
+        function closeModule() {
+            document.querySelectorAll('.module-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('modulesGrid').scrollIntoView({ behavior: 'smooth' });
+        }
 
-            const data = { 
-                prefix, language, appChannel, appRole, 
-                ticketCategory, ticketSupportRole,
-                verificationChannel, verificationRole, autorole
-            };
+        // ===== SAVE SETTINGS =====
+        function saveModuleSettings(module) {
+            let data = { guildId: '<%= guild ? guild.id : "" %>' };
+
+            if (module === 'applications') {
+                data.appChannel = document.getElementById('appChannel')?.value || '';
+                data.appRole = document.getElementById('appRole')?.value || '';
+            } else if (module === 'tickets') {
+                data.ticketCategory = document.getElementById('ticketCategory')?.value || '';
+                data.ticketSupportRole = document.getElementById('ticketSupportRole')?.value || '';
+            } else if (module === 'verification') {
+                data.verificationChannel = document.getElementById('verificationChannel')?.value || '';
+                data.verificationRole = document.getElementById('verificationRole')?.value || '';
+                data.autorole = document.getElementById('autorole')?.value || '';
+            }
 
             fetch(`/api/config/<%= guild ? guild.id : '' %>`, {
                 method: 'POST',
@@ -651,7 +787,6 @@
             .then(data => {
                 if (data.success) {
                     alert('✅ Settings saved successfully!');
-                    location.reload();
                 } else {
                     alert('❌ Error: ' + data.error);
                 }
@@ -659,19 +794,6 @@
             .catch(error => {
                 alert('❌ Error saving settings: ' + error.message);
             });
-        }
-
-        function resetSettings() {
-            if (confirm('Are you sure you want to reset all settings to default?')) {
-                location.reload();
-            }
-        }
-
-        // ===== INVITE BOT =====
-        function inviteBot() {
-            const clientId = '<%= process.env.DISCORD_CLIENT_ID || "1493217033956102215" %>';
-            const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot+applications.commands`;
-            window.open(inviteLink, '_blank');
         }
     </script>
 
