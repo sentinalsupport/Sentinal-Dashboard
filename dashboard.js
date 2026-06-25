@@ -21,14 +21,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session configuration
+// ============ SESSION CONFIGURATION ============
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-this',
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: MONGO_URI,
-        touchAfter: 24 * 3600
+        touchAfter: 24 * 3600 // lazy session update
     }),
     cookie: {
         secure: process.env.NODE_ENV === 'production',
@@ -70,10 +70,15 @@ app.get('/dashboard', async (req, res) => {
             }
         });
         
+        // Only show servers where user has admin or manage server permissions
+        const guilds = response.data.filter(g => 
+            (g.permissions & 0x8) || (g.permissions & 0x20)
+        );
+        
         res.render('dashboard', {
             title: 'Dashboard — Sentinal',
             user: req.session.user,
-            servers: response.data || [],
+            servers: guilds,
             isAuthenticated: true
         });
     } catch (error) {
@@ -82,14 +87,18 @@ app.get('/dashboard', async (req, res) => {
             title: 'Dashboard — Sentinal',
             user: req.session.user,
             servers: [],
-            isAuthenticated: true
+            isAuthenticated: true,
+            error: 'Failed to load your servers. Please try again.'
         });
     }
 });
 
 // ============ LOGOUT ============
 app.get('/logout', (req, res) => {
-    req.session.destroy(() => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+        }
         res.redirect('/');
     });
 });
