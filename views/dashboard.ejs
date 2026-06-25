@@ -10,336 +10,544 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background: #080E1A;
+            background: #0A0E17;
             color: #E8EDF5;
             min-height: 100vh;
+            display: flex;
         }
 
-        /* ========== NAVBAR ========== */
-        .navbar {
-            background: rgba(8, 14, 26, 0.92);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 0 32px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            width: 280px;
+            background: rgba(14, 20, 34, 0.95);
+            border-right: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 24px 16px;
+            height: 100vh;
             position: sticky;
             top: 0;
-            z-index: 100;
+            overflow-y: auto;
+            flex-shrink: 0;
         }
-        .navbar .brand {
+        .sidebar .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFFFFF;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 18px;
-            font-weight: 700;
-            color: #FFFFFF;
-            text-decoration: none;
+            padding: 0 12px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            margin-bottom: 20px;
         }
-        .navbar .brand .logo-icon {
-            width: 32px;
-            height: 32px;
+        .sidebar .logo .logo-icon {
+            width: 36px;
+            height: 36px;
             background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 18px;
         }
-        .navbar .brand span { color: #60A5FA; }
-        .navbar .nav-links {
+        .sidebar .logo span { color: #60A5FA; }
+        
+        .sidebar .nav-section {
+            margin-bottom: 24px;
+        }
+        .sidebar .nav-section .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #5A6B85;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        .sidebar .nav-item {
             display: flex;
             align-items: center;
-            gap: 28px;
-        }
-        .navbar .nav-links a {
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
             color: #8B9BB5;
             text-decoration: none;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
-            transition: color 0.2s ease;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
-        .navbar .nav-links a:hover { color: #E8EDF5; }
-        .navbar .nav-links a.active {
-            color: #FFFFFF;
-            position: relative;
+        .sidebar .nav-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: #E8EDF5;
         }
-        .navbar .nav-links a.active::after {
-            content: '';
-            position: absolute;
-            bottom: -20px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #2563EB;
-            border-radius: 2px;
+        .sidebar .nav-item.active {
+            background: rgba(37, 99, 235, 0.12);
+            color: #60A5FA;
         }
-        .navbar .nav-right {
+        .sidebar .nav-item i {
+            width: 20px;
+            font-size: 16px;
+        }
+        .sidebar .nav-item .badge {
+            margin-left: auto;
+            background: rgba(239, 68, 68, 0.15);
+            color: #EF4444;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .sidebar .user-section {
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+        .sidebar .user-section .user-info {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
         }
-        .navbar .user-avatar {
-            width: 32px;
-            height: 32px;
+        .sidebar .user-section .user-info .avatar {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: #FFFFFF;
             overflow: hidden;
+            flex-shrink: 0;
         }
-        .navbar .user-avatar img {
+        .sidebar .user-section .user-info .avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        .navbar .username {
-            color: #E8EDF5;
+        .sidebar .user-section .user-info .name {
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
+            color: #E8EDF5;
         }
-        .navbar .logout-btn {
-            background: rgba(255, 255, 255, 0.06);
-            color: #8B9BB5;
-            padding: 6px 16px;
-            border-radius: 100px;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 500;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.2s ease;
+        .sidebar .user-section .user-info .plan {
+            font-size: 11px;
+            color: #5A6B85;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            flex: 1;
+            padding: 32px 40px;
+            overflow-y: auto;
+        }
+        .main-content .page-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 6px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
         }
-        .navbar .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.1);
-            color: #EF4444;
-            border-color: rgba(239, 68, 68, 0.2);
-        }
-
-        /* ========== CONTAINER ========== */
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 32px;
-        }
-
-        /* ========== WELCOME ========== */
-        .welcome {
+        .main-content .page-header h1 {
             font-size: 28px;
             font-weight: 800;
-            margin-bottom: 4px;
         }
-        .welcome span { color: #60A5FA; }
-        .welcome-sub {
+        .main-content .page-header h1 span { color: #60A5FA; }
+        .main-content .page-header .subtitle {
             color: #8B9BB5;
-            font-size: 15px;
-            margin-bottom: 28px;
+            font-size: 14px;
         }
 
-        /* ========== STATS ========== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-        .stat-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-        }
-        .stat-card .number {
-            font-size: 32px;
-            font-weight: 800;
-            color: #60A5FA;
-        }
-        .stat-card .label {
-            font-size: 13px;
-            color: #8B9BB5;
-            margin-top: 4px;
-        }
-
-        /* ========== CARDS ========== */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .card {
+        /* ========== SERVER SELECTOR ========== */
+        .server-selector {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 14px;
-            padding: 24px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: #E8EDF5;
-            cursor: pointer;
+            padding: 20px 24px;
+            margin-bottom: 32px;
         }
-        .card:hover {
-            border-color: rgba(37, 99, 235, 0.2);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        .server-selector .selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .card i {
-            font-size: 28px;
-            color: #2563EB;
-            margin-bottom: 12px;
-        }
-        .card h3 {
+        .server-selector .selector-header h3 {
             font-size: 16px;
             font-weight: 600;
-            margin-bottom: 4px;
         }
-        .card p {
-            font-size: 13px;
+        .server-selector .selector-header .server-count {
             color: #8B9BB5;
-        }
-        .card .arrow {
-            margin-top: 12px;
             font-size: 13px;
+        }
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .server-grid .server-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            text-decoration: none;
+            color: #E8EDF5;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .server-grid .server-card:hover {
+            border-color: rgba(37, 99, 235, 0.2);
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateY(-2px);
+        }
+        .server-grid .server-card .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1E3A5F, #1A365D);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #60A5FA;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .server-grid .server-card .icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .server-grid .server-card .info {
+            flex: 1;
+            min-width: 0;
+        }
+        .server-grid .server-card .info .name {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .server-grid .server-card .info .role {
+            font-size: 12px;
+            color: #5A6B85;
+        }
+        .server-grid .server-card .action {
+            font-size: 12px;
             color: #2563EB;
             font-weight: 500;
         }
 
-        /* ========== ERROR ========== */
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 8px;
-            padding: 12px 16px;
-            color: #EF4444;
-            font-size: 14px;
-            margin-bottom: 20px;
+        /* ========== MODULES ========== */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 8px;
         }
-
-        /* ========== FOOTER ========== */
-        .footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 24px 32px;
-            text-align: center;
-            color: #5A6B85;
+        .module-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 20px 24px;
+            transition: all 0.3s ease;
+        }
+        .module-card:hover {
+            border-color: rgba(37, 99, 235, 0.15);
+            transform: translateY(-2px);
+        }
+        .module-card .module-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .module-card .module-header i {
+            font-size: 20px;
+            color: #2563EB;
+        }
+        .module-card .module-header h4 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .module-card p {
+            color: #8B9BB5;
             font-size: 13px;
-            margin-top: 20px;
+            line-height: 1.5;
+        }
+        .module-card .module-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .module-card .module-actions .btn-module {
+            padding: 6px 16px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #8B9BB5;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.2s ease;
+        }
+        .module-card .module-actions .btn-module:hover {
+            background: rgba(37, 99, 235, 0.1);
+            color: #60A5FA;
+            border-color: rgba(37, 99, 235, 0.2);
+        }
+        .module-card .module-actions .btn-module.primary {
+            background: rgba(37, 99, 235, 0.15);
+            color: #60A5FA;
+            border-color: rgba(37, 99, 235, 0.2);
+        }
+        .module-card .module-actions .btn-module.primary:hover {
+            background: rgba(37, 99, 235, 0.25);
         }
 
         /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .sidebar { width: 240px; padding: 16px 12px; }
+            .main-content { padding: 24px 24px; }
+        }
         @media (max-width: 768px) {
-            .navbar { padding: 0 16px; height: 58px; flex-wrap: wrap; gap: 8px; }
-            .navbar .nav-links { gap: 16px; }
-            .navbar .nav-links a { font-size: 12px; }
-            .navbar .username { display: none; }
-            .container { padding: 16px; }
-            .welcome { font-size: 22px; }
+            body { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 16px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            }
+            .sidebar .nav-section { display: flex; flex-wrap: wrap; gap: 4px; }
+            .sidebar .nav-section .section-title { display: none; }
+            .sidebar .nav-item { padding: 8px 12px; font-size: 13px; }
+            .sidebar .user-section { display: none; }
+            .main-content { padding: 16px; }
+            .server-grid { grid-template-columns: 1fr; }
+            .modules-grid { grid-template-columns: 1fr; }
+            .main-content .page-header h1 { font-size: 22px; }
+        }
+        @media (max-width: 480px) {
+            .server-selector { padding: 16px; }
+            .module-card { padding: 16px; }
         }
 
-        @media (max-width: 480px) {
-            .navbar .nav-links { gap: 12px; }
-            .navbar .nav-links a { font-size: 11px; }
-            .navbar .brand { font-size: 15px; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .card-grid { grid-template-columns: 1fr; }
-        }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #0A0E17; }
+        ::-webkit-scrollbar-thumb { background: #1E4B8A; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2563EB; }
     </style>
 </head>
 <body>
 
-    <!-- ========== NAVBAR ========== -->
-    <nav class="navbar">
-        <a href="/dashboard" class="brand">
+    <!-- ========== SIDEBAR ========== -->
+    <nav class="sidebar">
+        <div class="logo">
             <div class="logo-icon">⚡</div>
             Sentinal <span>Dashboard</span>
-        </a>
-        <div class="nav-links">
-            <a href="/dashboard" class="active">Home</a>
-            <a href="/servers">Servers</a>
-            <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd', '_blank')">Support</a>
         </div>
-        <div class="nav-right">
-            <div class="user-avatar">
-                <% if (user && user.avatar) { %>
-                    <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
-                <% } else { %>
-                    <%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %>
-                <% } %>
+
+        <div class="nav-section">
+            <div class="section-title">Navigation</div>
+            <a href="/dashboard" class="nav-item active">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="/servers" class="nav-item">
+                <i class="fas fa-server"></i> Servers
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+                <i class="fas fa-chart-bar"></i> Analytics
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+                <i class="fas fa-crown"></i> Premium
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="section-title">Modules</div>
+            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+                <i class="fas fa-file-alt"></i> Applications
+                <span class="badge">New</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+                <i class="fas fa-ticket"></i> Tickets
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+                <i class="fas fa-shield-halved"></i> Security
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+                <i class="fas fa-robot"></i> Automation
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+                <i class="fas fa-users"></i> Community
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+                <i class="fas fa-clipboard-list"></i> Audit & Logs
+            </a>
+        </div>
+
+        <div class="user-section">
+            <div class="user-info">
+                <div class="avatar">
+                    <% if (user && user.avatar) { %>
+                        <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
+                    <% } else { %>
+                        <%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %>
+                    <% } %>
+                </div>
+                <div>
+                    <div class="name"><%= user ? user.global_name || user.username : 'User' %></div>
+                    <div class="plan"><i class="fas fa-circle" style="color: #4ADE80; font-size: 8px; margin-right: 4px;"></i> Free</div>
+                </div>
+                <a href="/logout" style="margin-left: auto; color: #5A6B85; text-decoration: none; font-size: 14px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
             </div>
-            <span class="username"><%= user ? user.global_name || user.username : 'User' %></span>
-            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
 
     <!-- ========== MAIN CONTENT ========== -->
-    <div class="container">
+    <main class="main-content">
 
-        <!-- ===== WELCOME ===== -->
-        <h1 class="welcome">👋 Welcome back, <span><%= user ? user.global_name || user.username : 'User' %></span>!</h1>
-        <p class="welcome-sub">Manage your servers and bot settings from one place.</p>
-
-        <!-- ===== ERROR ===== -->
-        <% if (locals.error) { %>
-            <div class="error-message">
-                <i class="fas fa-exclamation-circle"></i> <%= error %>
+        <!-- ===== HEADER ===== -->
+        <div class="page-header">
+            <div>
+                <h1>Welcome back, <span><%= user ? user.global_name || user.username : 'User' %></span>!</h1>
+                <div class="subtitle">Manage your servers and bot settings from one place.</div>
             </div>
-        <% } %>
-
-        <!-- ===== STATS ===== -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="number"><%= servers ? servers.length : 0 %></div>
-                <div class="label">Servers</div>
-            </div>
-            <div class="stat-card">
-                <div class="number">0</div>
-                <div class="label">Active Tickets</div>
-            </div>
-            <div class="stat-card">
-                <div class="number">🟢</div>
-                <div class="label">Bot Status</div>
-            </div>
-        </div>
-
-        <!-- ===== QUICK LINKS ===== -->
-        <div class="card-grid">
-            <a href="/servers" class="card">
-                <i class="fas fa-server"></i>
-                <h3>My Servers</h3>
-                <p>View and manage all your Discord servers</p>
-                <div class="arrow">Manage →</div>
-            </a>
-            <a href="#" class="card" onclick="alert('Coming soon! 🚀')">
-                <i class="fas fa-ticket"></i>
-                <h3>Tickets</h3>
-                <p>View and manage support tickets</p>
-                <div class="arrow">Coming soon →</div>
-            </a>
-            <a href="#" class="card" onclick="alert('Coming soon! 🚀')">
-                <i class="fas fa-shield-halved"></i>
-                <h3>Security</h3>
-                <p>Security settings and audit logs</p>
-                <div class="arrow">Coming soon →</div>
-            </a>
-            <a href="#" class="card" onclick="alert('Coming soon! 🚀')">
-                <i class="fas fa-crown"></i>
-                <h3>Premium</h3>
-                <p>Unlock advanced features</p>
-                <div class="arrow">Upgrade →</div>
+            <a href="/servers" class="btn-module primary" style="padding: 10px 20px; border-radius: 8px; background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-plus"></i> Add Server
             </a>
         </div>
-    </div>
 
-    <!-- ========== FOOTER ========== -->
-    <footer class="footer">
-        © 2026 Sentinal — Made with ❤️
-    </footer>
+        <!-- ===== SERVER SELECTOR ===== -->
+        <div class="server-selector">
+            <div class="selector-header">
+                <h3><i class="fas fa-server" style="color: #2563EB; margin-right: 8px;"></i> Select a Server</h3>
+                <span class="server-count"><%= servers ? servers.length : 0 %> servers with admin access</span>
+            </div>
+
+            <% if (servers && servers.length > 0) { %>
+                <div class="server-grid">
+                    <% servers.forEach(function(guild) { %>
+                        <a href="/server/<%= guild.id %>" class="server-card">
+                            <div class="icon">
+                                <% if (guild.icon) { %>
+                                    <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
+                                <% } else { %>
+                                    <%= guild.name ? guild.name.charAt(0).toUpperCase() : '?' %>
+                                <% } %>
+                            </div>
+                            <div class="info">
+                                <div class="name"><%= guild.name %></div>
+                                <div class="role"><i class="fas fa-crown" style="color: #FBBF24; font-size: 11px;"></i> Owner</div>
+                            </div>
+                            <div class="action">Configure →</div>
+                        </a>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div style="text-align: center; padding: 40px 20px; color: #5A6B85;">
+                    <i class="fas fa-server" style="font-size: 48px; color: #2563EB; margin-bottom: 16px; display: block;"></i>
+                    <h3 style="color: #E8EDF5; margin-bottom: 8px;">No Servers Found</h3>
+                    <p>You don't have administrator access to any servers.</p>
+                    <a href="#" class="btn-module primary" style="display: inline-block; margin-top: 12px; padding: 10px 24px; border-radius: 8px; background: #2563EB; color: #FFFFFF; text-decoration: none; font-weight: 600;">Invite Bot to a Server</a>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- ===== MODULES ===== -->
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-puzzle-piece" style="color: #2563EB; margin-right: 8px;"></i> Modules</h3>
+        <div class="modules-grid">
+
+            <div class="module-card">
+                <div class="module-header">
+                    <i class="fas fa-file-alt"></i>
+                    <h4>Applications</h4>
+                </div>
+                <p>Create forms for your members to fill out and manage submissions.</p>
+                <div class="module-actions">
+                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">Configure</a>
+                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Manage</a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <i class="fas fa-ticket"></i>
+                    <h4>Tickets</h4>
+                </div>
+                <p>Create tickets for users to open support requests in your server.</p>
+                <div class="module-actions">
+                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">Configure</a>
+                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Templates</a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <i class="fas fa-shield-halved"></i>
+                    <h4>Security</h4>
+                </div>
+                <p>Verification, auto-roles, welcome messages, and moderation tools.</p>
+                <div class="module-actions">
+                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">Configure</a>
+                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Verification</a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <i class="fas fa-robot"></i>
+                    <h4>Automation</h4>
+                </div>
+                <p>Auto-moderation, reaction roles, and scheduled tasks.</p>
+                <div class="module-actions">
+                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">Configure</a>
+                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Auto-Mod</a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <i class="fas fa-users"></i>
+                    <h4>Community</h4>
+                </div>
+                <p>Leveling, giveaways, and community engagement features.</p>
+                <div class="module-actions">
+                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">Configure</a>
+                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Giveaways</a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h4>Audit & Logs</h4>
+                </div>
+                <p>View all moderation actions, member events, and system logs.</p>
+                <div class="module-actions">
+                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">View Logs</a>
+                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Settings</a>
+                </div>
+            </div>
+
+        </div>
+
+        <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.04); text-align: center; color: #5A6B85; font-size: 13px;">
+            © 2026 Sentinal — Made with ❤️
+        </footer>
+
+    </main>
 
 </body>
 </html>
