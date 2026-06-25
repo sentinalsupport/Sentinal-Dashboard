@@ -4,6 +4,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const path = require('path');
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 // Import routes
 const authRoutes = require('./routes/auth');
