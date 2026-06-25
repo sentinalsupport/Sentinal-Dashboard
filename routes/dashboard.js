@@ -105,12 +105,13 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         
         const config = await GuildConfig.findOne({ guildId }).catch(() => null);
         
-        // ✅ Try to fetch guild details from Discord API
+        // ✅ Fetch guild details from Discord API
         let guild = null;
         let botInServer = false;
         const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
         
         try {
+            // ✅ Get guild details
             const response = await axios.get(`https://discord.com/api/guilds/${guildId}`, {
                 headers: {
                     Authorization: `Bearer ${req.session.user.access_token}`
@@ -118,20 +119,33 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
             });
             guild = response.data;
             console.log('✅ Guild found:', guild.name);
-            botInServer = true;
+            
+            // ✅ Check if bot is in the server by trying to get the bot's member info
+            try {
+                const botMember = await axios.get(`https://discord.com/api/guilds/${guildId}/members/${clientId}`, {
+                    headers: {
+                        Authorization: `Bearer ${req.session.user.access_token}`
+                    }
+                });
+                // If we get here, bot is in the server (we got member data)
+                botInServer = true;
+                console.log('✅ Bot is in this server');
+            } catch (botError) {
+                // If we get a 404, the bot is not in the server
+                if (botError.response?.status === 404) {
+                    console.log('⚠️ Bot is NOT in this server');
+                    botInServer = false;
+                } else {
+                    // Other error (e.g., 401, 403) - assume bot is not in server
+                    console.warn('⚠️ Could not check bot membership:', botError.message);
+                    botInServer = false;
+                }
+            }
+            
         } catch (apiError) {
             console.warn('⚠️ Could not fetch guild from Discord API:', apiError.message);
             
-            // ✅ If API fails, still show the settings page with basic info
-            guild = {
-                id: guildId,
-                name: 'Unknown Server',
-                icon: null,
-                approximate_member_count: 0,
-                approximate_presence_count: 0
-            };
-            
-            // ✅ Check if user has admin perms for this server
+            // ✅ Fallback: try to get guild from user's guild list
             try {
                 const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
                     headers: {
@@ -139,12 +153,31 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
                     }
                 });
                 const userGuild = guildsResponse.data.find(g => g.id === guildId);
-                if (userGuild && (userGuild.permissions & 0x8)) {
-                    botInServer = true;
+                if (userGuild) {
+                    guild = {
+                        id: userGuild.id,
+                        name: userGuild.name,
+                        icon: userGuild.icon,
+                        approximate_member_count: userGuild.approximate_member_count || 0,
+                        approximate_presence_count: userGuild.approximate_presence_count || 0
+                    };
+                    // We can't check bot membership from user guild list, so assume false
+                    botInServer = false;
                 }
             } catch (guildsError) {
                 console.warn('⚠️ Could not check user guilds:', guildsError.message);
             }
+        }
+        
+        // ✅ If we still don't have guild data, create fallback
+        if (!guild) {
+            guild = {
+                id: guildId,
+                name: 'Unknown Server',
+                icon: null,
+                approximate_member_count: 0,
+                approximate_presence_count: 0
+            };
         }
         
         // Generate bot invite link
@@ -169,7 +202,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
     } catch (error) {
         console.error('❌ Error loading server settings:', error.message);
         
-        // ✅ Even if there's an error, try to show the settings page
+        // ✅ Fallback error handling - show the page anyway
         const guildId = req.params.id;
         const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
         const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot+applications.commands`;
@@ -182,21 +215,38 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
             console.warn('⚠️ Could not fetch config from DB:', dbError.message);
         }
         
+        // Try to get guild from user's guild list as last resort
+        let guildName = 'Server';
+        let memberCount = 0;
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildName = userGuild.name;
+                memberCount = userGuild.approximate_member_count || 0;
+            }
+        } catch (guildsError) {
+            console.warn('⚠️ Could not check user guilds:', guildsError.message);
+        }
+        
         res.render('server', {
             title: 'Server Settings — Sentinal',
             user: req.session.user,
             isAuthenticated: true,
             guild: {
                 id: guildId,
-                name: 'Server',
+                name: guildName,
                 icon: null,
-                memberCount: 0,
+                memberCount: memberCount,
                 channelCount: 0
             },
             config: config || {},
             inviteLink: inviteLink,
-            botInServer: false,
-            error: 'Could not fetch server details, but you can still configure settings.'
+            botInServer: false
         });
     }
 });
