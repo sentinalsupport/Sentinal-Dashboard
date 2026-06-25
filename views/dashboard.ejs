@@ -75,6 +75,10 @@
             font-weight: 500;
             transition: all 0.2s ease;
             cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
         }
         .sidebar .nav-item:hover {
             background: rgba(255, 255, 255, 0.04);
@@ -95,6 +99,14 @@
             font-size: 11px;
             padding: 2px 8px;
             border-radius: 12px;
+        }
+        .sidebar .nav-item .badge.coming {
+            background: rgba(245, 158, 11, 0.15);
+            color: #FBBF24;
+        }
+        .sidebar .nav-item .badge.live {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ADE80;
         }
 
         .sidebar .user-section {
@@ -130,6 +142,9 @@
         .sidebar .user-section .user-info .plan {
             font-size: 11px;
             color: #5A6B85;
+        }
+        .sidebar .user-section .user-info .plan .premium-badge {
+            color: #FBBF24;
         }
 
         /* ========== MAIN CONTENT ========== */
@@ -243,6 +258,72 @@
             font-weight: 500;
         }
 
+        /* ========== SERVER CONTEXT BAR ========== */
+        .server-context {
+            background: rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(37, 99, 235, 0.15);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .server-context .server-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .server-context .server-info .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1E3A5F, #1A365D);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #60A5FA;
+            overflow: hidden;
+        }
+        .server-context .server-info .icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .server-context .server-info .details .name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .server-context .server-info .details .members {
+            font-size: 13px;
+            color: #8B9BB5;
+        }
+        .server-context .server-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .server-context .server-actions .btn-sm {
+            padding: 6px 16px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #8B9BB5;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .server-context .server-actions .btn-sm:hover {
+            background: rgba(37, 99, 235, 0.1);
+            color: #60A5FA;
+            border-color: rgba(37, 99, 235, 0.2);
+        }
+
         /* ========== MODULES ========== */
         .modules-grid {
             display: grid;
@@ -275,6 +356,22 @@
             font-size: 15px;
             font-weight: 600;
         }
+        .module-card .module-header .status-live {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ADE80;
+            font-weight: 500;
+        }
+        .module-card .module-header .status-coming {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(245, 158, 11, 0.15);
+            color: #FBBF24;
+            font-weight: 500;
+        }
         .module-card p {
             color: #8B9BB5;
             font-size: 13px;
@@ -296,6 +393,7 @@
             font-weight: 500;
             border: 1px solid rgba(255, 255, 255, 0.04);
             transition: all 0.2s ease;
+            cursor: pointer;
         }
         .module-card .module-actions .btn-module:hover {
             background: rgba(37, 99, 235, 0.1);
@@ -309,6 +407,84 @@
         }
         .module-card .module-actions .btn-module.primary:hover {
             background: rgba(37, 99, 235, 0.25);
+        }
+
+        /* ========== PREMIUM ========== */
+        .premium-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 8px;
+        }
+        .premium-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .premium-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+        .premium-card.popular {
+            border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(245, 158, 11, 0.04);
+        }
+        .premium-card .price {
+            font-size: 36px;
+            font-weight: 800;
+            color: #FBBF24;
+        }
+        .premium-card .price span {
+            font-size: 16px;
+            color: #8B9BB5;
+            font-weight: 400;
+        }
+        .premium-card .plan-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 8px 0 4px;
+        }
+        .premium-card .plan-desc {
+            color: #8B9BB5;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        .premium-card .features {
+            list-style: none;
+            text-align: left;
+            margin: 16px 0;
+        }
+        .premium-card .features li {
+            padding: 6px 0;
+            color: #8B9BB5;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .premium-card .features li i {
+            color: #4ADE80;
+            font-size: 14px;
+            width: 20px;
+        }
+        .premium-card .btn-upgrade {
+            padding: 10px 32px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: #FFFFFF;
+            width: 100%;
+        }
+        .premium-card .btn-upgrade:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
         }
 
         /* ========== RESPONSIVE ========== */
@@ -333,14 +509,17 @@
             .main-content { padding: 16px; }
             .server-grid { grid-template-columns: 1fr; }
             .modules-grid { grid-template-columns: 1fr; }
+            .premium-grid { grid-template-columns: 1fr; }
+            .server-context { flex-direction: column; align-items: stretch; }
             .main-content .page-header h1 { font-size: 22px; }
         }
         @media (max-width: 480px) {
             .server-selector { padding: 16px; }
             .module-card { padding: 16px; }
+            .premium-card { padding: 16px; }
+            .server-context { padding: 12px 16px; }
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #0A0E17; }
         ::-webkit-scrollbar-thumb { background: #1E4B8A; border-radius: 4px; }
@@ -366,32 +545,47 @@
             </a>
             <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
                 <i class="fas fa-chart-bar"></i> Analytics
-            </a>
-            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
-                <i class="fas fa-crown"></i> Premium
+                <span class="badge coming">Soon</span>
             </a>
         </div>
 
         <div class="nav-section">
             <div class="section-title">Modules</div>
-            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+            <a href="#" class="nav-item active" onclick="showModule('applications')">
                 <i class="fas fa-file-alt"></i> Applications
-                <span class="badge">New</span>
+                <span class="badge live">Live</span>
             </a>
-            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+            <a href="#" class="nav-item active" onclick="showModule('tickets')">
                 <i class="fas fa-ticket"></i> Tickets
+                <span class="badge live">Live</span>
             </a>
-            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
-                <i class="fas fa-shield-halved"></i> Security
+            <a href="#" class="nav-item active" onclick="showModule('verification')">
+                <i class="fas fa-shield-halved"></i> Verification
+                <span class="badge live">Live</span>
             </a>
             <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
                 <i class="fas fa-robot"></i> Automation
+                <span class="badge coming">Soon</span>
             </a>
             <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
                 <i class="fas fa-users"></i> Community
+                <span class="badge coming">Soon</span>
             </a>
             <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
                 <i class="fas fa-clipboard-list"></i> Audit & Logs
+                <span class="badge coming">Soon</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Coming soon! 🚀')">
+                <i class="fas fa-gift"></i> Giveaways
+                <span class="badge coming">Soon</span>
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="section-title">Premium</div>
+            <a href="#" class="nav-item" onclick="showModule('premium')">
+                <i class="fas fa-crown" style="color: #FBBF24;"></i> Upgrade
+                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #FBBF24;">⭐</span>
             </a>
         </div>
 
@@ -406,7 +600,7 @@
                 </div>
                 <div>
                     <div class="name"><%= user ? user.global_name || user.username : 'User' %></div>
-                    <div class="plan"><i class="fas fa-circle" style="color: #4ADE80; font-size: 8px; margin-right: 4px;"></i> Free</div>
+                    <div class="plan"><i class="fas fa-circle" style="color: #4ADE80; font-size: 8px; margin-right: 4px;"></i> <span class="premium-badge">Free</span></div>
                 </div>
                 <a href="/logout" style="margin-left: auto; color: #5A6B85; text-decoration: none; font-size: 14px;">
                     <i class="fas fa-sign-out-alt"></i>
@@ -416,17 +610,14 @@
     </nav>
 
     <!-- ========== MAIN CONTENT ========== -->
-    <main class="main-content">
+    <main class="main-content" id="mainContent">
 
         <!-- ===== HEADER ===== -->
         <div class="page-header">
             <div>
                 <h1>Welcome back, <span><%= user ? user.global_name || user.username : 'User' %></span>!</h1>
-                <div class="subtitle">Manage your servers and bot settings from one place.</div>
+                <div class="subtitle">Select a server to start managing it.</div>
             </div>
-            <a href="/servers" class="btn-module primary" style="padding: 10px 20px; border-radius: 8px; background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
-                <i class="fas fa-plus"></i> Add Server
-            </a>
         </div>
 
         <!-- ===== SERVER SELECTOR ===== -->
@@ -451,7 +642,7 @@
                                 <div class="name"><%= guild.name %></div>
                                 <div class="role"><i class="fas fa-crown" style="color: #FBBF24; font-size: 11px;"></i> Owner</div>
                             </div>
-                            <div class="action">Configure →</div>
+                            <div class="action">Manage →</div>
                         </a>
                     <% }); %>
                 </div>
@@ -466,81 +657,129 @@
         </div>
 
         <!-- ===== MODULES ===== -->
-        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-puzzle-piece" style="color: #2563EB; margin-right: 8px;"></i> Modules</h3>
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-puzzle-piece" style="color: #2563EB; margin-right: 8px;"></i> Available Modules</h3>
         <div class="modules-grid">
 
-            <div class="module-card">
+            <!-- Applications -->
+            <div class="module-card" id="module-applications">
                 <div class="module-header">
                     <i class="fas fa-file-alt"></i>
                     <h4>Applications</h4>
+                    <span class="status-live">Live</span>
                 </div>
-                <p>Create forms for your members to fill out and manage submissions.</p>
+                <p>Create custom application forms for staff, partners, or events. Review submissions and manage applicants.</p>
                 <div class="module-actions">
-                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">Configure</a>
-                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Manage</a>
+                    <a href="#" class="btn-module primary" onclick="alert('📋 Applications module coming soon! Select a server first to configure.')">Configure</a>
+                    <a href="#" class="btn-module" onclick="alert('📋 View submissions coming soon!')">Manage</a>
                 </div>
             </div>
 
-            <div class="module-card">
+            <!-- Tickets -->
+            <div class="module-card" id="module-tickets">
                 <div class="module-header">
                     <i class="fas fa-ticket"></i>
                     <h4>Tickets</h4>
+                    <span class="status-live">Live</span>
                 </div>
-                <p>Create tickets for users to open support requests in your server.</p>
+                <p>Create support tickets for users to open in your server. Manage transcripts and quick responses.</p>
                 <div class="module-actions">
-                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">Configure</a>
-                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Templates</a>
+                    <a href="#" class="btn-module primary" onclick="alert('🎫 Tickets module coming soon! Select a server first to configure.')">Configure</a>
+                    <a href="#" class="btn-module" onclick="alert('📝 Ticket templates coming soon!')">Templates</a>
                 </div>
             </div>
 
-            <div class="module-card">
+            <!-- Verification -->
+            <div class="module-card" id="module-verification">
                 <div class="module-header">
                     <i class="fas fa-shield-halved"></i>
-                    <h4>Security</h4>
+                    <h4>Verification</h4>
+                    <span class="status-live">Live</span>
                 </div>
-                <p>Verification, auto-roles, welcome messages, and moderation tools.</p>
+                <p>Set up verification with auto-roles, welcome messages, and advanced security settings.</p>
                 <div class="module-actions">
-                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">Configure</a>
-                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Verification</a>
+                    <a href="#" class="btn-module primary" onclick="alert('🔒 Verification module coming soon! Select a server first to configure.')">Configure</a>
+                    <a href="#" class="btn-module" onclick="alert('👋 Welcome messages coming soon!')">Welcome</a>
                 </div>
             </div>
 
-            <div class="module-card">
+            <!-- Automation -->
+            <div class="module-card" id="module-automation">
                 <div class="module-header">
                     <i class="fas fa-robot"></i>
                     <h4>Automation</h4>
+                    <span class="status-coming">Coming Soon</span>
                 </div>
-                <p>Auto-moderation, reaction roles, and scheduled tasks.</p>
+                <p>Auto-moderation, reaction roles, and scheduled tasks to automate your server management.</p>
                 <div class="module-actions">
-                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">Configure</a>
-                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Auto-Mod</a>
+                    <a href="#" class="btn-module coming" onclick="alert('🚀 Coming soon!')">Configure</a>
+                    <a href="#" class="btn-module coming" onclick="alert('🚀 Coming soon!')">Auto-Mod</a>
                 </div>
             </div>
 
-            <div class="module-card">
+            <!-- Community -->
+            <div class="module-card" id="module-community">
                 <div class="module-header">
                     <i class="fas fa-users"></i>
                     <h4>Community</h4>
+                    <span class="status-coming">Coming Soon</span>
                 </div>
-                <p>Leveling, giveaways, and community engagement features.</p>
+                <p>Leveling system, giveaways, and community engagement features to grow your server.</p>
                 <div class="module-actions">
-                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">Configure</a>
-                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Giveaways</a>
+                    <a href="#" class="btn-module coming" onclick="alert('🚀 Coming soon!')">Configure</a>
+                    <a href="#" class="btn-module coming" onclick="alert('🚀 Coming soon!')">Giveaways</a>
                 </div>
             </div>
 
-            <div class="module-card">
+            <!-- Audit & Logs -->
+            <div class="module-card" id="module-audit">
                 <div class="module-header">
                     <i class="fas fa-clipboard-list"></i>
                     <h4>Audit & Logs</h4>
+                    <span class="status-coming">Coming Soon</span>
                 </div>
-                <p>View all moderation actions, member events, and system logs.</p>
+                <p>View all moderation actions, member events, and system logs in one place.</p>
                 <div class="module-actions">
-                    <a href="#" class="btn-module primary" onclick="alert('Coming soon! 🚀')">View Logs</a>
-                    <a href="#" class="btn-module" onclick="alert('Coming soon! 🚀')">Settings</a>
+                    <a href="#" class="btn-module coming" onclick="alert('🚀 Coming soon!')">View Logs</a>
+                    <a href="#" class="btn-module coming" onclick="alert('🚀 Coming soon!')">Settings</a>
                 </div>
             </div>
 
+        </div>
+
+        <!-- ===== PREMIUM SECTION ===== -->
+        <div id="premium-section" style="display: none; margin-top: 32px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;"><i class="fas fa-crown" style="color: #FBBF24; margin-right: 8px;"></i> Premium Plans</h3>
+            <div class="premium-grid">
+                <div class="premium-card">
+                    <div class="price">$7.99 <span>/ month</span></div>
+                    <div class="plan-name">Sentinal+</div>
+                    <div class="plan-desc">Perfect for small communities</div>
+                    <ul class="features">
+                        <li><i class="fas fa-check"></i> Up to 5 servers</li>
+                        <li><i class="fas fa-check"></i> Custom application forms</li>
+                        <li><i class="fas fa-check"></i> Advanced ticket system</li>
+                        <li><i class="fas fa-check"></i> Verification with auto-roles</li>
+                        <li><i class="fas fa-check"></i> Priority support</li>
+                    </ul>
+                    <button class="btn-upgrade" onclick="alert('⭐ Upgrade to Sentinal+ for $7.99/month')">Upgrade Now</button>
+                </div>
+
+                <div class="premium-card popular">
+                    <div style="font-size: 12px; color: #FBBF24; font-weight: 600; margin-bottom: 8px;">⭐ MOST POPULAR</div>
+                    <div class="price">$13.99 <span>/ month</span></div>
+                    <div class="plan-name">Sentinal++</div>
+                    <div class="plan-desc">For growing communities</div>
+                    <ul class="features">
+                        <li><i class="fas fa-check"></i> Unlimited servers</li>
+                        <li><i class="fas fa-check"></i> Everything in Sentinal+</li>
+                        <li><i class="fas fa-check"></i> Custom bot branding</li>
+                        <li><i class="fas fa-check"></i> Advanced analytics</li>
+                        <li><i class="fas fa-check"></i> 24/7 priority support</li>
+                        <li><i class="fas fa-check"></i> Early access to features</li>
+                    </ul>
+                    <button class="btn-upgrade" onclick="alert('⭐ Upgrade to Sentinal++ for $13.99/month')">Upgrade Now</button>
+                </div>
+            </div>
         </div>
 
         <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.04); text-align: center; color: #5A6B85; font-size: 13px;">
@@ -548,6 +787,37 @@
         </footer>
 
     </main>
+
+    <script>
+        // Simple module navigation
+        function showModule(module) {
+            document.querySelectorAll('.nav-item.active').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => {
+                if (el.textContent.trim().toLowerCase().includes(module)) {
+                    el.classList.add('active');
+                }
+            });
+            
+            if (module === 'premium') {
+                document.getElementById('premium-section').style.display = 'block';
+                document.getElementById('premium-section').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                document.getElementById('premium-section').style.display = 'none';
+                const moduleMap = {
+                    'applications': 'module-applications',
+                    'tickets': 'module-tickets',
+                    'verification': 'module-verification',
+                    'automation': 'module-automation',
+                    'community': 'module-community',
+                    'audit': 'module-audit'
+                };
+                const target = document.getElementById(moduleMap[module]);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+    </script>
 
 </body>
 </html>
