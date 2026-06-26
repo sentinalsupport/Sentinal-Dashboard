@@ -7,18 +7,42 @@ const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://sentinal-dashboard.onrender.com/auth/discord/callback';
 
+// ============ TOKEN REFRESH FUNCTION ============
+async function refreshAccessToken(refresh_token) {
+    try {
+        console.log('🔄 Refreshing access token...');
+        
+        const response = await axios.post(
+            'https://discord.com/api/oauth2/token',
+            new URLSearchParams({
+                client_id: DISCORD_CLIENT_ID,
+                client_secret: DISCORD_CLIENT_SECRET,
+                refresh_token: refresh_token,
+                grant_type: 'refresh_token'
+            }),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+        
+        console.log('✅ Token refreshed successfully');
+        return response.data;
+    } catch (error) {
+        console.error('❌ Token refresh error:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
 // ============ LOGIN PAGE ============
 router.get('/login', (req, res) => {
-    // Clear any existing session on login page
     if (req.session.user) {
         req.session.destroy(() => {});
     }
     
     // ✅ IMPORTANT: Must include 'identify' AND 'guilds' scopes
-    // 'guilds' scope is required to fetch the user's servers
     const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
-    
-    console.log('🔗 Login URL generated with scopes: identify guilds');
     
     res.render('login', {
         title: 'Login — Sentinal',
@@ -58,25 +82,6 @@ router.get('/discord/callback', async (req, res) => {
         const { access_token, refresh_token, expires_in } = tokenResponse.data;
         console.log('✅ Token received, expires in:', expires_in, 'seconds');
         
-        // ✅ Test the token immediately to verify scopes
-        console.log('🔍 Testing token with Discord API...');
-        try {
-            const testResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
-                headers: {
-                    Authorization: `Bearer ${access_token}`
-                }
-            });
-            console.log('✅ Token test successful! Found', testResponse.data.length, 'servers');
-        } catch (testError) {
-            console.error('❌ Token test failed:', testError.response?.data || testError.message);
-            // Check if it's a scope error
-            if (testError.response?.data?.message?.includes('scope')) {
-                console.error('⚠️ Missing required scope! Make sure you have "guilds" scope.');
-            }
-            // Still continue - the token might still work for user info
-        }
-        
-        // Get user info
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
             headers: {
                 Authorization: `Bearer ${access_token}`
@@ -86,7 +91,6 @@ router.get('/discord/callback', async (req, res) => {
         const user = userResponse.data;
         console.log('👤 User logged in:', user.username);
         
-        // ✅ Store user in session with CORRECT expiry
         const tokenExpiry = Date.now() + (expires_in * 1000);
         console.log('📝 Token expires at:', new Date(tokenExpiry).toLocaleString());
         
@@ -101,7 +105,6 @@ router.get('/discord/callback', async (req, res) => {
             token_expires: tokenExpiry
         };
         
-        // ✅ Save session and redirect
         req.session.save((err) => {
             if (err) {
                 console.error('❌ Session save error:', err);
@@ -115,16 +118,7 @@ router.get('/discord/callback', async (req, res) => {
         
     } catch (error) {
         console.error('❌ OAuth error:', error.response?.data || error.message);
-        
-        let errorMessage = 'Authentication failed. Please try again.';
-        if (error.response?.data?.error === 'invalid_grant') {
-            errorMessage = 'Invalid authorization code. Please try again.';
-        } else if (error.response?.data?.error === 'invalid_client') {
-            errorMessage = 'Invalid client credentials. Please contact support.';
-        } else if (error.response?.data?.error_description) {
-            errorMessage = error.response.data.error_description;
-        }
-        
+        const errorMessage = error.response?.data?.error_description || 'Authentication failed. Please try again.';
         return res.redirect(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
     }
 });
@@ -138,34 +132,6 @@ router.get('/logout', (req, res) => {
         res.redirect('/');
     });
 });
-
-// ============ TOKEN REFRESH FUNCTION ============
-async function refreshAccessToken(refresh_token) {
-    try {
-        console.log('🔄 Refreshing access token...');
-        
-        const response = await axios.post(
-            'https://discord.com/api/oauth2/token',
-            new URLSearchParams({
-                client_id: DISCORD_CLIENT_ID,
-                client_secret: DISCORD_CLIENT_SECRET,
-                refresh_token: refresh_token,
-                grant_type: 'refresh_token'
-            }),
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-        );
-        
-        console.log('✅ Token refreshed successfully');
-        return response.data;
-    } catch (error) {
-        console.error('❌ Token refresh error:', error.response?.data || error.message);
-        throw error;
-    }
-}
 
 // ============ EXPORT ============
 module.exports = { router, refreshAccessToken };
