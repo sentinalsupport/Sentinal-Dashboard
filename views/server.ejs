@@ -128,20 +128,21 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 24px; font-weight: 700;
             overflow: hidden;
+            flex-shrink: 0;
         }
         .server-header .icon img { width: 100%; height: 100%; object-fit: cover; }
         .server-header .info h1 { font-size: 26px; font-weight: 800; }
         .server-header .info p { color: var(--muted); font-size: 14px; }
         .server-actions { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
-        .server-actions .btn-invite {
+        .btn-invite {
             display: inline-flex; align-items: center; gap: 8px;
             padding: 10px 24px; border-radius: 8px;
             background: linear-gradient(135deg, #5865F2, #4752C4);
             color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px;
             transition: all 0.2s ease;
         }
-        .server-actions .btn-invite:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(88,101,242,0.3); }
-        .server-actions .btn-back {
+        .btn-invite:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(88,101,242,0.3); }
+        .btn-back {
             display: inline-flex; align-items: center; gap: 8px;
             padding: 10px 24px; border-radius: 8px;
             background: rgba(255,255,255,0.04);
@@ -149,7 +150,7 @@
             border: 1px solid var(--line);
             transition: all 0.2s ease;
         }
-        .server-actions .btn-back:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        .btn-back:hover { background: rgba(255,255,255,0.08); color: var(--text); }
         .status-badge {
             display: inline-flex; align-items: center; gap: 8px;
             padding: 8px 16px; border-radius: 8px;
@@ -245,10 +246,10 @@
         </div>
         <div class="nav-right">
             <div class="user-avatar">
-                <% if (user && user.avatar) { %>
+                <% if (locals.user && user.avatar) { %>
                     <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
                 <% } else { %>
-                    <%= user ? user.username ? user.username.charAt(0).toUpperCase() : 'U' : 'U' %>
+                    <%= locals.user ? (user.username ? user.username.charAt(0).toUpperCase() : 'U') : 'U' %>
                 <% } %>
             </div>
             <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -265,23 +266,23 @@
 
         <div class="server-header">
             <div class="icon">
-                <% if (guild && guild.icon) { %>
+                <% if (locals.guild && guild.icon) { %>
                     <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
                 <% } else { %>
-                    <%= guild ? guild.name ? guild.name.charAt(0).toUpperCase() : '?' : '?' %>
+                    <%= locals.guild ? (guild.name ? guild.name.charAt(0).toUpperCase() : '?') : '?' %>
                 <% } %>
             </div>
             <div class="info">
-                <h1><%= guild ? guild.name : 'Server' %></h1>
-                <p><i class="fas fa-users"></i> <%= guild ? guild.memberCount || 'N/A' : 'N/A' %> members</p>
+                <h1><%= locals.guild ? guild.name : 'Server' %></h1>
+                <p><i class="fas fa-users"></i> <%= locals.guild ? (guild.memberCount || 'N/A') : 'N/A' %> members</p>
             </div>
         </div>
 
         <div class="server-actions">
-            <% if (botInServer) { %>
+            <% if (locals.botInServer) { %>
                 <span class="status-badge"><i class="fas fa-check-circle"></i> Bot is in this server</span>
             <% } else { %>
-                <a href="<%= inviteLink %>" target="_blank" class="btn-invite"><i class="fab fa-discord"></i> Invite Bot to Server</a>
+                <a href="<%= locals.inviteLink || '#' %>" target="_blank" class="btn-invite"><i class="fab fa-discord"></i> Invite Bot to Server</a>
             <% } %>
             <a href="/servers" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Servers</a>
         </div>
@@ -295,17 +296,17 @@
             <p class="group-desc">Configure basic server settings for Sentinal</p>
             <div class="form-group">
                 <label for="prefix">Command Prefix</label>
-                <input type="text" id="prefix" value="<%= config ? config.prefix || '!' : '!' %>" placeholder="!">
+                <input type="text" id="prefix" value="<%= locals.config ? (config.prefix || '!') : '!' %>" placeholder="!">
                 <div class="form-hint">Example: !, ?, $, etc.</div>
             </div>
             <div class="form-group">
                 <label for="language">Language</label>
                 <select id="language">
-                    <option value="en" <%= config && config.language === 'en' ? 'selected' : '' %>>English</option>
-                    <option value="es" <%= config && config.language === 'es' ? 'selected' : '' %>>Español</option>
-                    <option value="fr" <%= config && config.language === 'fr' ? 'selected' : '' %>>Français</option>
-                    <option value="de" <%= config && config.language === 'de' ? 'selected' : '' %>>Deutsch</option>
-                    <option value="pt" <%= config && config.language === 'pt' ? 'selected' : '' %>>Português</option>
+                    <option value="en" <%= (locals.config && config.language === 'en') ? 'selected' : '' %>>English</option>
+                    <option value="es" <%= (locals.config && config.language === 'es') ? 'selected' : '' %>>Español</option>
+                    <option value="fr" <%= (locals.config && config.language === 'fr') ? 'selected' : '' %>>Français</option>
+                    <option value="de" <%= (locals.config && config.language === 'de') ? 'selected' : '' %>>Deutsch</option>
+                    <option value="pt" <%= (locals.config && config.language === 'pt') ? 'selected' : '' %>>Português</option>
                 </select>
             </div>
             <div class="form-actions">
@@ -323,7 +324,7 @@
             <p class="group-desc">Create and manage application forms for your server.</p>
             <div class="form-group">
                 <label for="appChannel">Application Channel</label>
-                <input type="text" id="appChannel" value="<%= config ? config.applicationChannel || '' : '' %>" placeholder="#channel-name or channel ID">
+                <input type="text" id="appChannel" value="<%= locals.config ? (config.applicationChannel || '') : '' %>" placeholder="#channel-name or channel ID">
                 <div class="form-hint">Channel where applications will be sent</div>
             </div>
             <div class="form-group">
@@ -345,12 +346,12 @@
             <p class="group-desc">Configure the ticket system for support requests.</p>
             <div class="form-group">
                 <label for="ticketCategory">Ticket Category</label>
-                <input type="text" id="ticketCategory" value="<%= config ? config.ticketCategory || '' : '' %>" placeholder="Category ID">
+                <input type="text" id="ticketCategory" value="<%= locals.config ? (config.ticketCategory || '') : '' %>" placeholder="Category ID">
                 <div class="form-hint">Category where ticket channels will be created</div>
             </div>
             <div class="form-group">
                 <label for="ticketSupportRole">Support Role</label>
-                <input type="text" id="ticketSupportRole" value="<%= config ? config.ticketSupportRole || '' : '' %>" placeholder="@role-name or role ID">
+                <input type="text" id="ticketSupportRole" value="<%= locals.config ? (config.ticketSupportRole || '') : '' %>" placeholder="@role-name or role ID">
                 <div class="form-hint">Role that can view and manage tickets</div>
             </div>
             <div class="form-actions">
@@ -367,17 +368,17 @@
             <p class="group-desc">Set up verification, auto-roles, and welcome messages.</p>
             <div class="form-group">
                 <label for="verificationChannel">Verification Channel</label>
-                <input type="text" id="verificationChannel" value="<%= config ? config.verificationChannel || '' : '' %>" placeholder="#channel-name or channel ID">
+                <input type="text" id="verificationChannel" value="<%= locals.config ? (config.verificationChannel || '') : '' %>" placeholder="#channel-name or channel ID">
                 <div class="form-hint">Channel where verification will take place</div>
             </div>
             <div class="form-group">
                 <label for="verificationRole">Verified Role</label>
-                <input type="text" id="verificationRole" value="<%= config ? config.verificationRole || '' : '' %>" placeholder="@role-name or role ID">
+                <input type="text" id="verificationRole" value="<%= locals.config ? (config.verificationRole || '') : '' %>" placeholder="@role-name or role ID">
                 <div class="form-hint">Role assigned after successful verification</div>
             </div>
             <div class="form-group">
                 <label for="autorole">Auto-Role</label>
-                <input type="text" id="autorole" value="<%= config ? config.autorole || '' : '' %>" placeholder="@role-name or role ID">
+                <input type="text" id="autorole" value="<%= locals.config ? (config.autorole || '') : '' %>" placeholder="@role-name or role ID">
                 <div class="form-hint">Role automatically assigned to new members</div>
             </div>
             <div class="form-actions">
@@ -403,7 +404,7 @@
                 autorole: document.getElementById('autorole')?.value || ''
             };
 
-            fetch(`/api/config/<%= guild ? guild.id : '' %>`, {
+            fetch(`/api/config/<%= locals.guild ? guild.id : '' %>`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
