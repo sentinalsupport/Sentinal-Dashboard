@@ -14,8 +14,11 @@ router.get('/login', (req, res) => {
         req.session.destroy(() => {});
     }
     
-    // ✅ IMPORTANT: scope must include 'identify' and 'guilds'
+    // ✅ IMPORTANT: Must include 'identify' AND 'guilds' scopes
+    // 'guilds' scope is required to fetch the user's servers
     const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
+    
+    console.log('🔗 Login URL generated with scopes: identify guilds');
     
     res.render('login', {
         title: 'Login — Sentinal',
@@ -36,7 +39,6 @@ router.get('/discord/callback', async (req, res) => {
     try {
         console.log('🔄 Exchanging code for token...');
         
-        // Exchange code for access token
         const tokenResponse = await axios.post(
             'https://discord.com/api/oauth2/token',
             new URLSearchParams({
@@ -55,6 +57,24 @@ router.get('/discord/callback', async (req, res) => {
         
         const { access_token, refresh_token, expires_in } = tokenResponse.data;
         console.log('✅ Token received, expires in:', expires_in, 'seconds');
+        
+        // ✅ Test the token immediately to verify scopes
+        console.log('🔍 Testing token with Discord API...');
+        try {
+            const testResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${access_token}`
+                }
+            });
+            console.log('✅ Token test successful! Found', testResponse.data.length, 'servers');
+        } catch (testError) {
+            console.error('❌ Token test failed:', testError.response?.data || testError.message);
+            // Check if it's a scope error
+            if (testError.response?.data?.message?.includes('scope')) {
+                console.error('⚠️ Missing required scope! Make sure you have "guilds" scope.');
+            }
+            // Still continue - the token might still work for user info
+        }
         
         // Get user info
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
@@ -96,7 +116,6 @@ router.get('/discord/callback', async (req, res) => {
     } catch (error) {
         console.error('❌ OAuth error:', error.response?.data || error.message);
         
-        // Handle specific errors
         let errorMessage = 'Authentication failed. Please try again.';
         if (error.response?.data?.error === 'invalid_grant') {
             errorMessage = 'Invalid authorization code. Please try again.';
