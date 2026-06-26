@@ -4,7 +4,6 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const path = require('path');
 const mongoose = require('mongoose');
-const axios = require('axios');
 
 // Import routes
 const { router: authRoutes } = require('./routes/auth');
@@ -31,9 +30,9 @@ app.use(session({
         touchAfter: 24 * 3600
     }),
     cookie: {
-        secure: false, // MUST be false for Render (HTTP)
+        secure: false,
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        maxAge: 1000 * 60 * 60 * 24 * 7,
         sameSite: 'lax'
     }
 }));
