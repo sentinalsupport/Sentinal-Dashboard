@@ -19,7 +19,7 @@
             --muted: #6C7A90;
             --muted-dim: #3E4A5C;
             --signal: #3DFFB8;
-            --signal-tab: rgba(61,255,184,0.10);
+            --signal-tab: rgba(61,255,184,0.08);
             --signal-glow: rgba(61,255,184,0.15);
             --gold: #F5C842;
             --gold-tab: rgba(245,200,66,0.12);
@@ -28,7 +28,10 @@
             --red: #F87171;
             --red-bg: rgba(248,113,113,0.08);
             --red-border: rgba(248,113,113,0.22);
+            --blue: #5865F2;
+            --blue-tab: rgba(88,101,242,0.12);
             --discord: #5865F2;
+            --discord-hover: #4752C4;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -36,67 +39,122 @@
             background: var(--ink);
             color: var(--text);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
+        /* ─── NAVBAR ─── */
         .navbar {
             background: rgba(6,10,16,0.9);
             backdrop-filter: blur(28px) saturate(160%);
             border-bottom: 1px solid var(--line);
-            padding: 0 40px;
-            height: 64px;
+            padding: 0 48px;
+            height: 72px;
             display: flex; align-items: center; justify-content: space-between;
             position: sticky; top: 0; z-index: 200;
         }
-        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .brand-logo {
-            width: 36px; height: 36px; border-radius: 10px;
+            width: 40px; height: 40px; border-radius: 12px;
             background: var(--panel-raised); border: 1px solid var(--line-bright);
             display: flex; align-items: center; justify-content: center;
         }
-        .brand-logo svg { width: 20px; height: 20px; }
+        .brand-logo svg { width: 22px; height: 22px; }
         .brand-name {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+            font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
         }
-        .nav-center { display: flex; align-items: center; gap: 4px; }
+        .nav-center { display: flex; align-items: center; gap: 8px; }
         .nav-center a {
-            color: var(--muted); text-decoration: none; font-size: 13.5px; font-weight: 500;
-            padding: 6px 14px; border-radius: 8px; transition: all 0.18s ease;
+            color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
+            padding: 8px 18px; border-radius: 10px; transition: all 0.18s ease;
         }
         .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
         .nav-center a.active { color: #fff; }
-        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
         .user-pill {
-            display: flex; align-items: center; gap: 9px;
+            display: flex; align-items: center; gap: 12px;
             background: var(--panel); border: 1px solid var(--line);
-            border-radius: 100px; padding: 5px 14px 5px 6px;
+            border-radius: 100px; padding: 6px 18px 6px 8px;
         }
         .user-avatar {
-            width: 28px; height: 28px; border-radius: 50%;
+            width: 32px; height: 32px; border-radius: 50%;
             background: var(--panel-raised); overflow: hidden;
             display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700;
+            font-size: 14px; font-weight: 700;
         }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .user-name { font-size: 13px; font-weight: 500; color: var(--text); }
+        .user-name { font-size: 14px; font-weight: 500; color: var(--text); }
         .user-plan {
-            font-size: 10px; font-weight: 600; color: var(--signal);
+            font-size: 11px; font-weight: 600; color: var(--signal);
             background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.22);
-            border-radius: 100px; padding: 2px 8px; letter-spacing: 0.3px;
+            border-radius: 100px; padding: 3px 10px; letter-spacing: 0.3px;
         }
         .logout-btn {
-            background: transparent; border: 1px solid var(--line); border-radius: 8px;
-            padding: 7px 12px; color: var(--muted); cursor: pointer; font-size: 13px;
+            background: transparent; border: 1px solid var(--line); border-radius: 10px;
+            padding: 8px 14px; color: var(--muted); cursor: pointer; font-size: 14px;
             transition: all 0.18s ease; text-decoration: none;
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; gap: 8px;
         }
         .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
-        .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 0 32px 60px; }
+        /* ─── PAGE ─── */
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 48px 60px;
+        }
 
+        /* ─── TOAST ─── */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            width: 100%;
+        }
+        .toast {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--signal);
+        }
+        .toast .toast-icon { color: var(--signal); font-size: 18px; flex-shrink: 0; }
+        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
+        .toast .toast-close {
+            background: none; border: none;
+            color: var(--muted-dim); cursor: pointer;
+            font-size: 14px; padding: 4px;
+        }
+        .toast .toast-close:hover { color: var(--text); }
+        .toast.error { border-left-color: var(--red); }
+        .toast.error .toast-icon { color: var(--red); }
+        .toast.success { border-left-color: var(--signal); }
+        .toast.success .toast-icon { color: var(--signal); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(40px); }
+        }
+        .toast.hiding { animation: slideOut 0.3s ease forwards; }
+
+        /* ─── PAGE HEADER ─── */
         .page-header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 28px 0 20px;
+            padding: 20px 0 16px;
             border-bottom: 1px solid var(--line);
             margin-bottom: 28px;
             flex-wrap: wrap;
@@ -107,245 +165,346 @@
             font-size: 24px; font-weight: 700; color: #fff;
         }
         .page-header .left p {
-            font-size: 13px; color: var(--muted);
+            font-size: 14px; color: var(--muted);
         }
         .page-header .left h1 i {
             color: var(--signal);
             margin-right: 10px;
         }
 
-        .btn-primary {
+        /* ─── GETTING STARTED ─── */
+        .getting-started {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+        }
+        .getting-started h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px; font-weight: 700; color: #fff;
+            margin-bottom: 12px;
+        }
+        .getting-started ol {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 12px 0;
+        }
+        .getting-started ol li {
+            font-size: 14px; color: var(--muted);
+            padding: 4px 0;
+            display: flex; align-items: flex-start;
+            gap: 10px;
+            line-height: 1.6;
+        }
+        .getting-started ol li .num { color: var(--signal); font-weight: 700; font-size: 14px; min-width: 20px; }
+        .getting-started .help-link { color: var(--signal); text-decoration: none; font-size: 13px; font-weight: 500; }
+        .getting-started .help-link:hover { text-decoration: underline; }
+
+        /* ─── PANELS HEADER ─── */
+        .panels-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+        }
+        .panels-header .left h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px; font-weight: 700; color: #fff;
+        }
+        .panels-header .left .count { font-size: 13px; color: var(--muted); }
+        .btn-new {
             padding: 10px 24px; border-radius: 10px;
             background: var(--signal); color: #04140F;
             border: none; font-weight: 700; font-size: 13px;
             cursor: pointer; transition: all 0.18s ease;
             text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+            white-space: nowrap;
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--signal-glow); }
+        .btn-new:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--signal-glow); }
 
-        .btn-secondary {
-            padding: 8px 20px; border-radius: 8px;
-            background: transparent; color: var(--muted);
-            border: 1px solid var(--line); font-weight: 600; font-size: 13px;
-            cursor: pointer; transition: all 0.18s ease;
-            text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
+        /* ─── PANELS GRID ─── */
+        .panels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+            margin-bottom: 8px;
         }
-        .btn-secondary:hover { background: rgba(255,255,255,0.04); color: var(--text); }
 
-        .btn-danger {
-            padding: 8px 20px; border-radius: 8px;
-            background: var(--red-bg); color: var(--red);
-            border: 1px solid var(--red-border); font-weight: 600; font-size: 13px;
-            cursor: pointer; transition: all 0.18s ease;
-            text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
-        }
-        .btn-danger:hover { background: var(--red); color: #fff; }
-
-        .section-card {
+        /* ─── PANEL CARD ─── */
+        .panel-card {
             background: var(--panel);
             border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 16px;
-        }
-        .section-card .section-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 6px; flex-wrap: wrap; gap: 8px;
-        }
-        .section-card .section-header h3 {
-            font-size: 15px; font-weight: 600; color: #fff;
-        }
-        .section-card .section-header .badge {
-            font-size: 10px; font-weight: 600;
-            padding: 2px 10px; border-radius: 100px;
-            background: var(--signal-tab); color: var(--signal);
-            border: 1px solid rgba(61,255,184,0.2);
-        }
-        .section-card .section-desc {
-            font-size: 13px; color: var(--muted);
-            margin-bottom: 16px;
-        }
-
-        .panel-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 14px;
-            margin-bottom: 16px;
-        }
-
-        .panel-item {
-            background: var(--panel-raised);
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            padding: 18px 20px;
+            border-radius: 14px;
+            padding: 20px 24px;
+            transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            transition: all 0.2s ease;
         }
-        .panel-item:hover {
+        .panel-card:hover {
             border-color: var(--line-bright);
         }
-        .panel-item .panel-header {
+        .panel-card .panel-card-header {
             display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 6px;
         }
-        .panel-item .panel-header .panel-name {
+        .panel-card .panel-card-header .panel-name {
             font-weight: 600;
-            font-size: 15px;
+            font-size: 16px;
+            color: #fff;
         }
-        .panel-item .panel-header .panel-status {
+        .panel-card .panel-card-header .panel-status {
             font-size: 10px; font-weight: 600;
-            padding: 2px 10px; border-radius: 100px;
+            padding: 2px 12px; border-radius: 100px;
         }
-        .panel-item .panel-header .panel-status.active {
+        .panel-card .panel-card-header .panel-status.enabled {
             background: var(--signal-tab); color: var(--signal);
             border: 1px solid rgba(61,255,184,0.2);
         }
-        .panel-item .panel-header .panel-status.inactive {
+        .panel-card .panel-card-header .panel-status.disabled {
             background: var(--muted-dim); color: var(--muted);
             border: 1px solid var(--line);
         }
-        .panel-item .panel-desc {
-            font-size: 13px; color: var(--muted);
+        .panel-card .panel-card-desc {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 14px;
+            line-height: 1.5;
+            flex: 1;
         }
-        .panel-item .panel-actions {
+        .panel-card .panel-card-actions {
             display: flex; gap: 8px; flex-wrap: wrap;
-            margin-top: 4px;
+            margin-top: auto;
         }
-        .panel-item .panel-actions .btn-sm {
-            padding: 5px 14px; border-radius: 6px;
-            font-size: 12px; font-weight: 600;
-            cursor: pointer; border: 1px solid var(--line);
-            background: transparent; color: var(--muted);
-            text-decoration: none; transition: all 0.18s ease;
+        .panel-card .panel-card-actions .btn-edit {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: var(--blue);
+            color: #fff;
+            transition: all 0.18s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .panel-item .panel-actions .btn-sm:hover {
-            background: rgba(255,255,255,0.04); color: var(--text);
+        .panel-card .panel-card-actions .btn-edit:hover {
+            background: var(--discord-hover);
+            transform: translateY(-1px);
         }
-        .panel-item .panel-actions .btn-sm.primary {
-            background: var(--signal-tab); border-color: rgba(61,255,184,0.3);
-            color: var(--signal);
-        }
-        .panel-item .panel-actions .btn-sm.primary:hover {
-            background: rgba(61,255,184,0.2);
-        }
-        .panel-item .panel-actions .btn-sm.danger {
-            color: var(--red); border-color: var(--red-border);
-        }
-        .panel-item .panel-actions .btn-sm.danger:hover {
+        .panel-card .panel-card-actions .btn-delete {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
             background: var(--red-bg);
+            color: var(--red);
+            border: 1px solid var(--red-border);
+            transition: all 0.18s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .panel-card .panel-card-actions .btn-delete:hover {
+            background: var(--red);
+            color: #fff;
         }
 
+        /* ─── EMPTY STATE ─── */
         .empty-state {
-            text-align: center; padding: 60px 20px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 60px 20px;
+            text-align: center;
             color: var(--muted);
         }
-        .empty-state i {
-            font-size: 40px; color: var(--signal);
-            margin-bottom: 16px; display: block;
-        }
-        .empty-state h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 17px; color: #fff; margin-bottom: 4px;
-        }
-        .empty-state p { font-size: 13px; }
+        .empty-state i { font-size: 40px; color: var(--signal); margin-bottom: 16px; display: block; }
+        .empty-state h3 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; color: #fff; margin-bottom: 4px; }
+        .empty-state p { font-size: 14px; }
+        .empty-state .btn-new { margin-top: 16px; }
 
-        .form-group { margin-bottom: 14px; }
-        .form-group label {
-            display: block; font-size: 12px; font-weight: 600;
-            margin-bottom: 4px; color: var(--text);
-        }
-        .form-group .form-hint {
-            font-size: 11px; color: var(--muted-dim); margin-top: 2px;
-        }
-        .form-group input, .form-group select {
-            width: 100%; padding: 9px 14px;
-            border-radius: 8px; border: 1px solid var(--line);
-            background: rgba(0,0,0,0.3); color: var(--text);
-            font-size: 13px; font-family: 'Inter', sans-serif;
-            transition: all 0.18s ease; outline: none;
-        }
-        .form-group input:focus, .form-group select:focus {
-            border-color: var(--signal);
-            box-shadow: 0 0 0 3px var(--signal-glow);
-        }
-        .form-group select option { background: var(--ink); }
-
+        /* ─── MODAL ─── */
         .modal-overlay {
             display: none;
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            z-index: 300;
-            align-items: center; justify-content: center;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
         }
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
         .modal {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 16px;
             padding: 32px;
-            max-width: 500px;
+            max-width: 640px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
+            animation: fadeIn 0.25s ease;
         }
+        .modal::-webkit-scrollbar { width: 4px; }
+        .modal::-webkit-scrollbar-track { background: transparent; }
+        .modal::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
         .modal .modal-header {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 20px;
         }
         .modal .modal-header h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px; font-weight: 700; color: #fff;
+            font-size: 22px; font-weight: 700; color: #fff;
         }
         .modal .modal-header .close-btn {
             background: none; border: none;
-            color: var(--muted); font-size: 20px; cursor: pointer;
+            color: var(--muted); font-size: 24px; cursor: pointer;
+            padding: 4px 8px; border-radius: 8px;
+            transition: all 0.18s ease;
         }
-        .modal .modal-header .close-btn:hover { color: var(--text); }
+        .modal .modal-header .close-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+        .modal .form-group { margin-bottom: 16px; }
+        .modal .form-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            margin-bottom: 4px; color: var(--text);
+        }
+        .modal .form-group .form-hint {
+            font-size: 11px; color: var(--muted-dim); margin-top: 2px;
+        }
+        .modal .form-group input, .modal .form-group select, .modal .form-group textarea {
+            width: 100%; padding: 10px 14px;
+            border-radius: 10px; border: 1px solid var(--line);
+            background: rgba(0,0,0,0.3); color: var(--text);
+            font-size: 13px; font-family: 'Inter', sans-serif;
+            transition: all 0.18s ease; outline: none;
+        }
+        .modal .form-group input:focus, .modal .form-group select:focus, .modal .form-group textarea:focus {
+            border-color: var(--signal);
+            box-shadow: 0 0 0 3px var(--signal-glow);
+        }
+        .modal .form-group textarea { resize: vertical; min-height: 60px; }
+        .modal .form-group select option { background: var(--ink); }
+        .modal .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
         .modal .form-actions {
-            display: flex; gap: 10px; flex-wrap: wrap;
-            margin-top: 16px;
+            display: flex; gap: 12px; flex-wrap: wrap;
+            margin-top: 20px;
+            border-top: 1px solid var(--line);
+            padding-top: 20px;
         }
         .modal .btn-save {
-            padding: 8px 28px; border-radius: 8px; border: none;
-            font-weight: 600; font-size: 13px; cursor: pointer;
+            padding: 10px 32px; border-radius: 10px;
+            border: none; font-weight: 700; font-size: 14px;
+            cursor: pointer; transition: all 0.18s ease;
             background: var(--signal); color: #04140F;
-            transition: all 0.18s ease;
         }
-        .modal .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 18px var(--signal-glow); }
+        .modal .btn-save:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--signal-glow); }
+        .modal .btn-save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
         .modal .btn-cancel {
-            padding: 8px 28px; border-radius: 8px;
+            padding: 10px 32px; border-radius: 10px;
             border: 1px solid var(--line); background: transparent;
-            color: var(--muted); font-weight: 600; font-size: 13px; cursor: pointer;
-            transition: all 0.18s ease;
+            color: var(--muted); font-weight: 600; font-size: 14px;
+            cursor: pointer; transition: all 0.18s ease;
         }
         .modal .btn-cancel:hover { background: rgba(255,255,255,0.04); color: var(--text); }
 
+        /* ─── EMBED PREVIEW ─── */
+        .embed-preview {
+            background: var(--panel-raised);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 8px;
+        }
+        .embed-preview .embed-header {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 8px;
+        }
+        .embed-preview .embed-header .embed-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--blue);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700; color: #fff;
+        }
+        .embed-preview .embed-header .embed-name {
+            font-weight: 600; font-size: 14px; color: #fff;
+        }
+        .embed-preview .embed-header .embed-tag {
+            font-size: 11px; color: var(--muted);
+        }
+        .embed-preview .embed-body {
+            border-left: 4px solid var(--blue);
+            padding-left: 12px;
+            margin-top: 4px;
+        }
+        .embed-preview .embed-body .embed-title {
+            font-weight: 600; font-size: 15px; color: #fff;
+            margin-bottom: 2px;
+        }
+        .embed-preview .embed-body .embed-desc {
+            font-size: 13px; color: var(--muted);
+        }
+        .embed-preview .embed-body .embed-select {
+            margin-top: 8px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: rgba(0,0,0,0.3);
+            color: var(--muted);
+            font-size: 13px;
+            width: 100%;
+            cursor: default;
+        }
+        .embed-preview .embed-body .embed-select option { color: var(--muted); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .footer {
-            border-top: 1px solid var(--line); margin-top: 60px;
-            padding: 24px 40px; text-align: center;
-            color: var(--muted-dim); font-size: 12px;
-            font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px;
+            border-top: 1px solid var(--line);
+            margin-top: 60px;
+            padding: 28px 48px;
+            text-align: center;
+            color: var(--muted-dim);
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.5px;
         }
 
         @media (max-width: 768px) {
-            .navbar { padding: 0 16px; }
+            .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
             .nav-center { display: none; }
-            .page-wrapper { padding: 0 16px 48px; }
-            .section-card { padding: 16px; }
-            .panel-grid { grid-template-columns: 1fr; }
+            .page-wrapper { padding: 16px; }
             .page-header { flex-direction: column; align-items: stretch; }
-            .page-header .btn-primary { width: 100%; justify-content: center; }
-            .modal { padding: 20px; }
+            .panels-header { flex-direction: column; align-items: stretch; }
+            .btn-new { justify-content: center; }
+            .panels-grid { grid-template-columns: 1fr; }
+            .panel-card { padding: 16px 18px; }
+            .modal { padding: 24px; }
+            .modal .form-row { grid-template-columns: 1fr; }
+            .footer { padding: 20px 16px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- ─── NAVBAR ─── -->
     <nav class="navbar">
         <a href="/dashboard" class="brand">
             <div class="brand-logo">
@@ -358,7 +517,7 @@
         </a>
         <div class="nav-center">
             <a href="/dashboard">Home</a>
-            <a href="/servers">Servers</a>
+            <a href="/servers" class="active">Servers</a>
             <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
             <a href="#">Premium</a>
         </div>
@@ -380,92 +539,155 @@
 
     <div class="page-wrapper">
 
+        <!-- ─── TOAST CONTAINER ─── -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <!-- ─── MODAL ─── -->
+        <div class="modal-overlay" id="panelModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2><i class="fas fa-layer-group" style="color:var(--signal); margin-right:10px;"></i> <span id="modalTitle">New Panel</span></h2>
+                    <button class="close-btn" onclick="closePanelModal()">&times;</button>
+                </div>
+                <form id="panelForm" onsubmit="savePanel(event)">
+                    <input type="hidden" id="panelId" value="">
+
+                    <div class="form-group">
+                        <label for="panelName">Panel Name</label>
+                        <input type="text" id="panelName" placeholder="e.g. Staff Applications" required>
+                        <div class="form-hint">The name of your application panel</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="panelChannel">Channel</label>
+                            <select id="panelChannel">
+                                <option value="">Select a channel...</option>
+                                <option value="#general">#general</option>
+                                <option value="#applications">#applications</option>
+                                <option value="#staff-applications">#staff-applications</option>
+                            </select>
+                            <div class="form-hint">The channel that the panel will be sent to.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="panelApplication">Linked Applications</label>
+                            <select id="panelApplication">
+                                <option value="">Select an application...</option>
+                                <% if (locals.applications && applications.length > 0) { %>
+                                    <% applications.forEach(function(app) { %>
+                                        <option value="<%= app._id %>"><%= app.name %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                            <div class="form-hint">The applications that are linked to this panel.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Panel Appearance</label>
+                        <div class="form-row">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label for="panelType">Panel type</label>
+                                <select id="panelType">
+                                    <option value="button">Button</option>
+                                    <option value="select_menu">Select Menu</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Embed Preview</label>
+                        <div class="embed-preview">
+                            <div class="embed-header">
+                                <div class="embed-avatar">S</div>
+                                <span class="embed-name">Sentinal</span>
+                                <span class="embed-tag">Today at 12:00 PM</span>
+                            </div>
+                            <div class="embed-body">
+                                <div class="embed-title" id="previewTitle">New Panel</div>
+                                <div class="embed-desc" id="previewDesc">Select an option to begin!</div>
+                                <div class="embed-select" id="previewSelect">
+                                    <span id="previewSelectText">Make a selection</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-hint">This is a non-functional example of how the embed will appear in Discord. Buttons and dropdowns will not work in this preview.</div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save" id="savePanelBtn"><i class="fas fa-save"></i> Save Panel</button>
+                        <button type="button" class="btn-cancel" onclick="closePanelModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ─── PAGE HEADER ─── -->
         <div class="page-header">
             <div class="left">
                 <h1><i class="fas fa-layer-group"></i> Panels</h1>
                 <p>Manage your application panels</p>
             </div>
-            <button class="btn-primary" onclick="openCreatePanel()">
+        </div>
+
+        <!-- ─── GETTING STARTED ─── -->
+        <div class="getting-started">
+            <h2>Getting started</h2>
+            <ol>
+                <li><span class="num">1.</span> A panel is a message that is sent in your server that members can use to start their application</li>
+                <li><span class="num">2.</span> Create a new panel and give it a name</li>
+                <li><span class="num">3.</span> Open it by clicking the edit button</li>
+                <li><span class="num">4.</span> Configure your panels settings</li>
+            </ol>
+            <a href="#" class="help-link" onclick="showToast('Support server coming soon!', 'info')">Need help? Join our support server.</a>
+        </div>
+
+        <!-- ─── PANELS HEADER ─── -->
+        <div class="panels-header">
+            <div class="left">
+                <h3>Application Panels: <span class="count" id="panelCount"><%= locals.panels ? panels.length : 0 %>/3</span></h3>
+            </div>
+            <button class="btn-new" onclick="openPanelModal()">
                 <i class="fas fa-plus"></i> New Panel
             </button>
         </div>
 
-        <!-- Panel Grid -->
-        <div class="panel-grid">
-            <% if (locals.panels && panels.length > 0) { %>
+        <!-- ─── PANELS GRID ─── -->
+        <% if (locals.panels && panels.length > 0) { %>
+            <div class="panels-grid" id="panelsList">
                 <% panels.forEach(function(panel) { %>
-                    <div class="panel-item">
-                        <div class="panel-header">
+                    <div class="panel-card" data-id="<%= panel._id %>">
+                        <div class="panel-card-header">
                             <span class="panel-name"><%= panel.name || 'Untitled Panel' %></span>
-                            <span class="panel-status <%= panel.enabled ? 'active' : 'inactive' %>">
-                                <%= panel.enabled ? 'Active' : 'Inactive' %>
+                            <span class="panel-status <%= panel.enabled ? 'enabled' : 'disabled' %>">
+                                <%= panel.enabled ? '● Enabled' : '● Disabled' %>
                             </span>
                         </div>
-                        <div class="panel-desc"><%= panel.description || 'No description' %></div>
-                        <div class="panel-actions">
-                            <a href="/panels/edit/<%= panel._id %>?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-sm primary">
+                        <div class="panel-card-desc"><%= panel.description || 'No description' %></div>
+                        <div class="panel-card-actions">
+                            <button class="btn-edit" onclick="editPanel('<%= panel._id %>')">
                                 <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <button class="btn-sm" onclick="togglePanel('<%= panel._id %>')">
-                                <i class="fas fa-<%= panel.enabled ? 'pause' : 'play' %>"></i> <%= panel.enabled ? 'Disable' : 'Enable' %>
                             </button>
-                            <button class="btn-sm danger" onclick="deletePanel('<%= panel._id %>')">
+                            <button class="btn-delete" onclick="deletePanel('<%= panel._id %>')">
                                 <i class="fas fa-trash"></i> Delete
                             </button>
                         </div>
                     </div>
                 <% }); %>
-            <% } else { %>
-                <div class="empty-state">
-                    <i class="fas fa-layer-group"></i>
-                    <h3>No Panels Created</h3>
-                    <p>Create your first application panel to get started.</p>
-                    <button class="btn-primary" onclick="openCreatePanel()" style="margin-top:12px;">
-                        <i class="fas fa-plus"></i> Create Panel
-                    </button>
-                </div>
-            <% } %>
-        </div>
+            </div>
+        <% } else { %>
+            <!-- ─── EMPTY STATE ─── -->
+            <div class="empty-state" id="panelsList">
+                <i class="fas fa-layer-group"></i>
+                <h3>No Application panels created</h3>
+                <p>You have created an application but you have not setup any panels yet.<br>Create a panel to start collecting responses.</p>
+                <button class="btn-new" onclick="openPanelModal()">
+                    <i class="fas fa-plus"></i> New Panel
+                </button>
+            </div>
+        <% } %>
 
-    </div>
-
-    <!-- Create Panel Modal -->
-    <div class="modal-overlay" id="createPanelModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Create New Panel</h2>
-                <button class="close-btn" onclick="closeModal('createPanelModal')">&times;</button>
-            </div>
-            <div class="form-group">
-                <label for="panelName">Panel Name</label>
-                <input type="text" id="panelName" placeholder="Staff Applications" value="Staff Applications">
-                <div class="form-hint">The name of your application panel</div>
-            </div>
-            <div class="form-group">
-                <label for="panelDescription">Description</label>
-                <input type="text" id="panelDescription" placeholder="Apply for staff positions" value="Apply for staff positions">
-                <div class="form-hint">A brief description of this panel</div>
-            </div>
-            <div class="form-group">
-                <label for="panelChannel">Channel</label>
-                <input type="text" id="panelChannel" placeholder="#applications" value="#applications">
-                <div class="form-hint">Channel where the panel will be displayed</div>
-            </div>
-            <div class="form-group">
-                <label for="panelApplication">Application Form</label>
-                <select id="panelApplication">
-                    <option value="">Select an application form...</option>
-                    <option value="staff">Staff Application</option>
-                    <option value="partner">Partner Application</option>
-                    <option value="event">Event Application</option>
-                </select>
-                <div class="form-hint">The application form this panel will use</div>
-            </div>
-            <div class="form-actions">
-                <button class="btn-save" onclick="createPanel()">Create Panel</button>
-                <button class="btn-cancel" onclick="closeModal('createPanelModal')">Cancel</button>
-            </div>
-        </div>
     </div>
 
     <footer class="footer">
@@ -473,61 +695,118 @@
     </footer>
 
     <script>
-        function openCreatePanel() {
-            document.getElementById('createPanelModal').classList.add('active');
+        // ─── TOAST ───
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i></span>
+                <span class="toast-content">${message}</span>
+                <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+                }
+            }, 4000);
         }
 
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
+        // ─── PANEL MODAL ───
+        let editingPanelId = null;
+
+        function openPanelModal() {
+            editingPanelId = null;
+            document.getElementById('modalTitle').textContent = 'New Panel';
+            document.getElementById('panelId').value = '';
+            document.getElementById('panelForm').reset();
+            document.getElementById('panelName').value = '';
+            document.getElementById('previewTitle').textContent = 'New Panel';
+            document.getElementById('panelModal').classList.add('active');
+            setTimeout(() => document.getElementById('panelName').focus(), 100);
         }
 
-        function createPanel() {
+        function closePanelModal() {
+            document.getElementById('panelModal').classList.remove('active');
+            editingPanelId = null;
+        }
+
+        function editPanel(panelId) {
+            // Fetch panel data
+            fetch(`/api/panels/${panelId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const panel = data.panel;
+                        editingPanelId = panelId;
+                        document.getElementById('modalTitle').textContent = 'Edit Panel';
+                        document.getElementById('panelId').value = panelId;
+                        document.getElementById('panelName').value = panel.name || '';
+                        document.getElementById('panelChannel').value = panel.channel || '';
+                        document.getElementById('panelApplication').value = panel.applicationId || '';
+                        document.getElementById('panelType').value = panel.type || 'button';
+                        document.getElementById('previewTitle').textContent = panel.name || 'New Panel';
+                        document.getElementById('panelModal').classList.add('active');
+                    }
+                })
+                .catch(error => {
+                    showToast('❌ Error loading panel: ' + error.message, 'error');
+                });
+        }
+
+        // ─── SAVE PANEL ───
+        function savePanel(event) {
+            event.preventDefault();
+            
+            const panelId = document.getElementById('panelId').value;
+            const name = document.getElementById('panelName').value.trim();
+            const channel = document.getElementById('panelChannel').value;
+            const applicationId = document.getElementById('panelApplication').value;
+            const type = document.getElementById('panelType').value;
+
+            if (!name) {
+                showToast('❌ Please enter a panel name.', 'error');
+                return;
+            }
+
             const data = {
-                name: document.getElementById('panelName').value,
-                description: document.getElementById('panelDescription').value,
-                channel: document.getElementById('panelChannel').value,
-                applicationId: document.getElementById('panelApplication').value,
+                name: name,
+                description: `${name} panel`,
+                channel: channel,
+                applicationId: applicationId,
+                type: type,
                 enabled: true,
                 guildId: '<%= locals.guild ? guild.id : "" %>'
             };
 
-            fetch('/api/panels', {
-                method: 'POST',
+            const url = panelId ? `/api/panels/${panelId}` : '/api/panels';
+            const method = panelId ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('✅ Panel created successfully!');
-                    location.reload();
+                    showToast('✅ Panel ' + (panelId ? 'updated' : 'created') + ' successfully!', 'success');
+                    closePanelModal();
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    alert('❌ Error: ' + data.error);
+                    showToast('❌ Error: ' + data.error, 'error');
                 }
             })
             .catch(error => {
-                alert('❌ Error creating panel: ' + error.message);
+                showToast('❌ Error saving panel: ' + error.message, 'error');
             });
         }
 
-        function togglePanel(panelId) {
-            fetch(`/api/panels/${panelId}/toggle`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                alert('❌ Error toggling panel: ' + error.message);
-            });
-        }
-
+        // ─── DELETE PANEL ───
         function deletePanel(panelId) {
             if (confirm('Are you sure you want to delete this panel?')) {
                 fetch(`/api/panels/${panelId}`, {
@@ -536,17 +815,45 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('✅ Panel deleted successfully!');
-                        location.reload();
+                        showToast('✅ Panel deleted successfully!', 'success');
+                        setTimeout(() => location.reload(), 1000);
                     } else {
-                        alert('❌ Error: ' + data.error);
+                        showToast('❌ Error: ' + data.error, 'error');
                     }
                 })
                 .catch(error => {
-                    alert('❌ Error deleting panel: ' + error.message);
+                    showToast('❌ Error deleting panel: ' + error.message, 'error');
                 });
             }
         }
+
+        // ─── LIVE PREVIEW ───
+        document.getElementById('panelName').addEventListener('input', function() {
+            document.getElementById('previewTitle').textContent = this.value || 'New Panel';
+        });
+
+        document.getElementById('panelType').addEventListener('change', function() {
+            const selectText = document.getElementById('previewSelectText');
+            if (this.value === 'button') {
+                selectText.textContent = 'Apply →';
+                document.getElementById('previewSelect').style.borderColor = 'var(--signal)';
+                document.getElementById('previewSelect').style.color = 'var(--signal)';
+            } else {
+                selectText.textContent = 'Make a selection';
+                document.getElementById('previewSelect').style.borderColor = 'var(--line)';
+                document.getElementById('previewSelect').style.color = 'var(--muted)';
+            }
+        });
+
+        // ─── CLOSE MODAL ON ESC ───
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closePanelModal();
+        });
+
+        // ─── CLOSE MODAL ON OVERLAY CLICK ───
+        document.querySelector('.modal-overlay').addEventListener('click', function(e) {
+            if (e.target === this) closePanelModal();
+        });
     </script>
 
 </body>
