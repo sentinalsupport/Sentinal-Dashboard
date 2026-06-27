@@ -246,7 +246,7 @@
         .create-app-card .info .watch-link { color: var(--signal); text-decoration: none; font-size: 13px; font-weight: 500; }
         .create-app-card .info .watch-link:hover { text-decoration: underline; }
 
-        /* ─── APPLICATIONS LIST ─── */
+        /* ─── APPLICATIONS HEADER ─── */
         .apps-header {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
@@ -274,6 +274,92 @@
             white-space: nowrap;
         }
         .btn-new:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--signal-glow); }
+
+        /* ─── APP CARDS GRID ─── */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        /* ─── APP CARD ─── */
+        .app-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 20px 24px;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .app-card:hover {
+            border-color: var(--line-bright);
+        }
+        .app-card .app-card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 6px;
+        }
+        .app-card .app-card-header .app-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #fff;
+        }
+        .app-card .app-card-header .app-status {
+            font-size: 10px; font-weight: 600;
+            padding: 2px 12px; border-radius: 100px;
+        }
+        .app-card .app-card-header .app-status.enabled {
+            background: var(--signal-tab); color: var(--signal);
+            border: 1px solid rgba(61,255,184,0.2);
+        }
+        .app-card .app-card-header .app-status.disabled {
+            background: var(--muted-dim); color: var(--muted);
+            border: 1px solid var(--line);
+        }
+        .app-card .app-card-desc {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 14px;
+            line-height: 1.5;
+            flex: 1;
+        }
+        .app-card .app-card-actions {
+            display: flex; gap: 8px; flex-wrap: wrap;
+            margin-top: auto;
+        }
+        .app-card .app-card-actions .btn-edit,
+        .app-card .app-card-actions .btn-toggle,
+        .app-card .app-card-actions .btn-delete {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--muted);
+            transition: all 0.18s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .app-card .app-card-actions .btn-edit:hover {
+            background: rgba(61,255,184,0.1);
+            color: var(--signal);
+            border-color: rgba(61,255,184,0.2);
+        }
+        .app-card .app-card-actions .btn-toggle:hover {
+            background: rgba(245,200,66,0.1);
+            color: var(--gold);
+            border-color: rgba(245,200,66,0.2);
+        }
+        .app-card .app-card-actions .btn-delete:hover {
+            background: var(--red-bg);
+            color: var(--red);
+            border-color: var(--red-border);
+        }
 
         /* ─── EMPTY STATE ─── */
         .empty-state {
@@ -410,6 +496,8 @@
             .create-app-section { flex-direction: column; }
             .create-app-card { flex-direction: column; text-align: center; }
             .getting-started, .key-features { padding: 20px; }
+            .apps-grid { grid-template-columns: 1fr; }
+            .app-card { padding: 16px 18px; }
             .modal { padding: 24px; }
             .footer { padding: 20px 16px; }
         }
@@ -527,10 +615,10 @@
             </div>
         </div>
 
-        <!-- ─── APPLICATIONS LIST ─── -->
+        <!-- ─── APPLICATIONS HEADER ─── -->
         <div class="apps-header">
             <div class="left">
-                <h3>Applications: <span class="count" id="appCount">0/5</span></h3>
+                <h3>Applications: <span class="count" id="appCount"><%= locals.applications ? applications.length : 0 %>/5</span></h3>
             </div>
             <div class="right">
                 <input type="text" class="search-apps" placeholder="Search applications..." id="searchApps" onkeyup="filterApps()">
@@ -540,12 +628,41 @@
             </div>
         </div>
 
-        <!-- ─── EMPTY STATE ─── -->
-        <div class="empty-state" id="appsList">
-            <i class="fas fa-file-alt"></i>
-            <h3>No applications yet</h3>
-            <p>Create your first application to get started.</p>
-        </div>
+        <!-- ─── APPLICATIONS GRID ─── -->
+        <% if (locals.applications && applications.length > 0) { %>
+            <div class="apps-grid" id="appsList">
+                <% applications.forEach(function(app) { %>
+                    <div class="app-card" data-name="<%= app.name.toLowerCase() %>">
+                        <div class="app-card-header">
+                            <span class="app-name"><%= app.name %></span>
+                            <span class="app-status <%= app.enabled ? 'enabled' : 'disabled' %>">
+                                <%= app.enabled ? '● Enabled' : '● Disabled' %>
+                            </span>
+                        </div>
+                        <div class="app-card-desc"><%= app.description || 'No description' %></div>
+                        <div class="app-card-actions">
+                            <a href="/applications/edit/<%= app._id %>?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-edit">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button class="btn-toggle" onclick="toggleApplication('<%= app._id %>')">
+                                <i class="fas fa-<%= app.enabled ? 'pause' : 'play' %>"></i>
+                                <%= app.enabled ? 'Disable' : 'Enable' %>
+                            </button>
+                            <button class="btn-delete" onclick="deleteApplication('<%= app._id %>')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <!-- ─── EMPTY STATE ─── -->
+            <div class="empty-state" id="appsList">
+                <i class="fas fa-file-alt"></i>
+                <h3>No applications yet</h3>
+                <p>Create your first application to get started.</p>
+            </div>
+        <% } %>
 
     </div>
 
@@ -568,13 +685,9 @@
 
         function containsProfanity(text) {
             const lower = text.toLowerCase().trim();
-            // Check for exact matches or words containing banned terms
             for (const word of BANNED_WORDS) {
-                // Check if the word is a whole word or part of a word
                 const regex = new RegExp('\\b' + word + '\\b|' + word, 'i');
-                if (regex.test(lower)) {
-                    return true;
-                }
+                if (regex.test(lower)) return true;
             }
             return false;
         }
@@ -650,7 +763,6 @@
             const name = document.getElementById('appName').value.trim();
             const btn = document.getElementById('createBtn');
             
-            // Double-check profanity
             if (containsProfanity(name)) {
                 document.getElementById('appName').classList.add('error');
                 document.getElementById('nameError').textContent = '❌ Application name contains inappropriate language. Please choose a different name.';
@@ -695,9 +807,56 @@
             });
         }
 
+        // ─── TOGGLE APPLICATION ───
+        function toggleApplication(appId) {
+            fetch(`/api/applications/${appId}/toggle`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('✅ Application toggled successfully!', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast('❌ Error: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                showToast('❌ Error toggling application: ' + error.message, 'error');
+            });
+        }
+
+        // ─── DELETE APPLICATION ───
+        function deleteApplication(appId) {
+            if (confirm('Are you sure you want to delete this application?')) {
+                fetch(`/api/applications/${appId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('✅ Application deleted successfully!', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showToast('❌ Error: ' + data.error, 'error');
+                    }
+                })
+                .catch(error => {
+                    showToast('❌ Error deleting application: ' + error.message, 'error');
+                });
+            }
+        }
+
         // ─── SEARCH ───
         function filterApps() {
-            // Placeholder for search functionality
+            const query = document.getElementById('searchApps').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.app-card');
+            
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                card.style.display = name.includes(query) ? '' : 'none';
+            });
         }
 
         // ─── CLOSE MODAL ON ESC ───
