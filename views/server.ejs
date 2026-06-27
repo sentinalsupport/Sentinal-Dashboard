@@ -99,7 +99,7 @@
 
         /* ─── LEFT SIDEBAR ─── */
         .sidebar {
-            width: 240px;
+            width: 220px;
             flex-shrink: 0;
             background: var(--panel);
             border: 1px solid var(--line);
@@ -154,7 +154,7 @@
             display: flex; align-items: center; gap: 10px;
             padding: 7px 12px; border-radius: 8px;
             color: var(--muted); text-decoration: none;
-            font-size: 13px; font-weight: 500;
+            font-size: 12.5px; font-weight: 500;
             transition: all 0.18s ease; cursor: pointer; border: none;
             background: none; width: 100%; text-align: left;
         }
@@ -163,8 +163,8 @@
         .sidebar .nav-item i { width: 18px; font-size: 14px; color: var(--muted-dim); }
         .sidebar .nav-item.active i { color: var(--signal); }
         .sidebar .nav-item .badge {
-            margin-left: auto; font-size: 9px; font-weight: 700;
-            padding: 1px 8px; border-radius: 100px; text-transform: uppercase;
+            margin-left: auto; font-size: 8px; font-weight: 700;
+            padding: 1px 6px; border-radius: 100px; text-transform: uppercase;
         }
         .sidebar .nav-item .badge.live { background: var(--signal-tab); color: var(--signal); }
         .sidebar .nav-item .badge.coming { background: var(--gold-tab); color: var(--gold); }
@@ -225,92 +225,56 @@
             font-size: 20px; font-weight: 700; color: #fff;
         }
         .panel-header h2 i { color: var(--signal); margin-right: 10px; }
-        .panel-header .panel-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .panel-header .panel-actions .btn-sm {
-            padding: 6px 16px; border-radius: 8px;
-            font-size: 12px; font-weight: 600; cursor: pointer;
-            border: 1px solid var(--line); background: transparent;
-            color: var(--muted); transition: all 0.18s ease;
-            text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
-        }
-        .panel-header .panel-actions .btn-sm:hover {
-            background: rgba(255,255,255,0.04); color: var(--text);
-        }
-        .panel-header .panel-actions .btn-sm.primary {
-            background: var(--signal-tab); border-color: rgba(61,255,184,0.3);
-            color: var(--signal);
-        }
-        .panel-header .panel-actions .btn-sm.primary:hover {
-            background: rgba(61,255,184,0.18);
-        }
 
-        .panel-desc {
-            font-size: 13px; color: var(--muted);
-            margin-bottom: 20px;
-        }
-
-        .settings-group {
+        /* ─── MODULE CARDS ─── */
+        .module-card {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 12px;
-            padding: 20px 24px;
-            margin-bottom: 14px;
+            padding: 18px 22px;
+            margin-bottom: 12px;
         }
-        .settings-group .group-header {
+        .module-card .card-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 6px; flex-wrap: wrap; gap: 8px;
+            margin-bottom: 4px;
         }
-        .settings-group .group-header h4 {
-            font-size: 14px; font-weight: 600; color: #fff;
+        .module-card .card-header .card-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
         }
-        .settings-group .group-header .status-tag {
-            font-size: 9px; font-weight: 700; text-transform: uppercase;
-            padding: 2px 10px; border-radius: 100px;
+        .module-card .card-header .card-badge {
+            font-size: 9px; font-weight: 700;
+            padding: 1px 8px; border-radius: 100px;
+            text-transform: uppercase;
+        }
+        .module-card .card-header .card-badge.new {
+            background: var(--violet-tab); color: var(--violet);
+        }
+        .module-card .card-header .card-badge.live {
+            background: var(--signal-tab); color: var(--signal);
+        }
+        .module-card .card-desc {
+            font-size: 12.5px;
+            color: var(--muted);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .module-card .card-actions {
+            display: flex; gap: 8px; flex-wrap: wrap;
+        }
+        .module-card .card-actions .btn-config {
+            padding: 5px 16px; border-radius: 6px;
+            font-size: 12px; font-weight: 600;
+            cursor: pointer; border: none;
             background: var(--signal-tab); color: var(--signal);
             border: 1px solid rgba(61,255,184,0.2);
-        }
-        .settings-group .group-desc {
-            font-size: 12.5px; color: var(--muted);
-            margin-bottom: 14px;
-        }
-        .form-group { margin-bottom: 14px; }
-        .form-group:last-child { margin-bottom: 0; }
-        .form-group label {
-            display: block; font-size: 12px; font-weight: 600;
-            margin-bottom: 4px; color: var(--text);
-        }
-        .form-group .form-hint {
-            font-size: 11px; color: var(--muted-dim); margin-top: 2px;
-        }
-        .form-group input, .form-group select {
-            width: 100%; padding: 9px 14px;
-            border-radius: 8px; border: 1px solid var(--line);
-            background: rgba(0,0,0,0.3); color: var(--text);
-            font-size: 13px; font-family: 'Inter', sans-serif;
-            transition: all 0.18s ease; outline: none;
-        }
-        .form-group input:focus, .form-group select:focus {
-            border-color: var(--signal);
-            box-shadow: 0 0 0 3px var(--signal-glow);
-        }
-        .form-group select option { background: var(--ink); }
-        .form-actions {
-            display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;
-        }
-        .btn-save {
-            padding: 8px 28px; border-radius: 8px; border: none;
-            font-weight: 600; font-size: 13px; cursor: pointer;
-            background: var(--signal); color: #04140F;
             transition: all 0.18s ease;
+            text-decoration: none;
         }
-        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 18px var(--signal-glow); }
-        .btn-reset {
-            padding: 8px 28px; border-radius: 8px;
-            border: 1px solid var(--line); background: transparent;
-            color: var(--muted); font-weight: 600; font-size: 13px; cursor: pointer;
-            transition: all 0.18s ease;
+        .module-card .card-actions .btn-config:hover {
+            background: rgba(61,255,184,0.18);
         }
-        .btn-reset:hover { background: rgba(255,255,255,0.04); color: var(--text); }
 
         .coming-soon {
             text-align: center; padding: 60px 20px;
@@ -362,9 +326,7 @@
             .sidebar .nav-item { padding: 6px 12px; font-size: 12px; width: auto; }
             .sidebar .divider { display: none; }
             .server-header { flex-wrap: wrap; }
-            .settings-group { padding: 16px; }
-            .form-actions { flex-direction: column; }
-            .form-actions button { width: 100%; justify-content: center; }
+            .module-card { padding: 14px 16px; }
         }
     </style>
 </head>
@@ -429,47 +391,42 @@
 
                 <button class="nav-item active" onclick="showModule('overview')">
                     <i class="fas fa-th-large"></i> Overview
-                    <span class="badge live">Live</span>
                 </button>
 
                 <button class="nav-item" onclick="showModule('applications')">
                     <i class="fas fa-file-alt"></i> Applications
-                    <span class="badge live">Live</span>
                 </button>
 
                 <button class="nav-item" onclick="showModule('tickets')">
                     <i class="fas fa-ticket"></i> Tickets
-                    <span class="badge live">Live</span>
                 </button>
 
                 <button class="nav-item" onclick="showModule('security')">
                     <i class="fas fa-shield-halved"></i> Security
-                    <span class="badge live">Live</span>
                 </button>
 
                 <button class="nav-item" onclick="showModule('automation')">
                     <i class="fas fa-robot"></i> Automation
-                    <span class="badge coming">Soon</span>
+                    <span class="badge new">New</span>
                 </button>
 
                 <button class="nav-item" onclick="showModule('community')">
                     <i class="fas fa-users"></i> Community
-                    <span class="badge coming">Soon</span>
+                    <span class="badge new">New</span>
                 </button>
 
                 <button class="nav-item" onclick="showModule('audit')">
                     <i class="fas fa-clipboard-list"></i> Audit & Logs
-                    <span class="badge coming">Soon</span>
                 </button>
             </div>
 
             <div class="divider"></div>
 
             <div class="nav-section">
-                <div class="section-title">Search</div>
-                <div style="padding: 0 12px;">
-                    <input type="text" placeholder="Search for a feature..." style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--line); background:rgba(0,0,0,0.3); color:var(--text); font-size:12px; font-family:'Inter',sans-serif; outline:none;">
-                </div>
+                <div class="section-title">Support</div>
+                <button class="nav-item" onclick="alert('Support server coming soon!')">
+                    <i class="fas fa-headset"></i> Support Server
+                </button>
             </div>
 
         </aside>
@@ -506,42 +463,17 @@
             <div class="module-panel active" id="module-overview">
                 <div class="panel-header">
                     <h2><i class="fas fa-th-large"></i> Overview</h2>
-                    <div class="panel-actions">
-                        <a href="#" class="btn-sm primary" onclick="saveSettings()">Save All</a>
-                    </div>
-                </div>
-                <p class="panel-desc">Configure basic server settings for Sentinal</p>
-
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Command Prefix</h4>
-                        <span class="status-tag">Live</span>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="prefix" value="<%= locals.config ? (config.prefix || '!') : '!' %>" placeholder="!">
-                        <div class="form-hint">Example: !, ?, $, etc.</div>
-                    </div>
                 </div>
 
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Language</h4>
-                        <span class="status-tag">Live</span>
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">General Settings</span>
+                        <span class="card-badge live">Live</span>
                     </div>
-                    <div class="form-group">
-                        <select id="language">
-                            <option value="en" <%= (locals.config && config.language === 'en') ? 'selected' : '' %>>English</option>
-                            <option value="es" <%= (locals.config && config.language === 'es') ? 'selected' : '' %>>Español</option>
-                            <option value="fr" <%= (locals.config && config.language === 'fr') ? 'selected' : '' %>>Français</option>
-                            <option value="de" <%= (locals.config && config.language === 'de') ? 'selected' : '' %>>Deutsch</option>
-                            <option value="pt" <%= (locals.config && config.language === 'pt') ? 'selected' : '' %>>Português</option>
-                        </select>
+                    <div class="card-desc">Configure basic server settings for Sentinal</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('General settings coming soon!')">Configure</button>
                     </div>
-                </div>
-
-                <div class="form-actions">
-                    <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-                    <button class="btn-reset" onclick="resetSettings()"><i class="fas fa-undo"></i> Reset</button>
                 </div>
             </div>
 
@@ -549,52 +481,38 @@
             <div class="module-panel" id="module-applications">
                 <div class="panel-header">
                     <h2><i class="fas fa-file-alt"></i> Applications</h2>
-                    <div class="panel-actions">
-                        <a href="#" class="btn-sm primary" onclick="alert('Create new application form')">+ New</a>
-                    </div>
                 </div>
-                <p class="panel-desc">Create forms for your members to fill out</p>
 
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Applications</h4>
-                        <span class="status-tag">Live</span>
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Applications</span>
+                        <span class="card-badge live">Live</span>
                     </div>
-                    <p class="group-desc">Create forms for your members to fill out</p>
-                    <div class="form-group">
-                        <label for="appChannel">Application Channel</label>
-                        <input type="text" id="appChannel" value="<%= locals.config ? (config.applicationChannel || '') : '' %>" placeholder="#channel-name or channel ID">
-                        <div class="form-hint">Channel where applications will be sent</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="appRole">Reviewer Role</label>
-                        <input type="text" id="appRole" placeholder="@role-name or role ID">
-                        <div class="form-hint">Role that can review applications</div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                    <div class="card-desc">Create forms for your members to fill out</div>
+                    <div class="card-actions">
+                        <a href="/applications?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">Configure</a>
                     </div>
                 </div>
 
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Panels</h4>
-                        <span class="status-tag">Live</span>
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Panels</span>
+                        <span class="card-badge live">Live</span>
                     </div>
-                    <p class="group-desc">Manage your application panels</p>
-                    <div class="form-actions">
-                        <a href="/panels?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-save"><i class="fas fa-cog"></i> Configure</a>
+                    <div class="card-desc">Manage your application panels</div>
+                    <div class="card-actions">
+                        <a href="/panels?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">Configure</a>
                     </div>
                 </div>
 
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Submissions</h4>
-                        <span class="status-tag">Live</span>
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Submissions</span>
+                        <span class="card-badge live">Live</span>
                     </div>
-                    <p class="group-desc">View and manage all application submissions</p>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="alert('View submissions coming soon!')"><i class="fas fa-list"></i> View All</button>
+                    <div class="card-desc">View and manage all application submissions</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('View submissions coming soon!')">Configure</button>
                     </div>
                 </div>
             </div>
@@ -603,54 +521,49 @@
             <div class="module-panel" id="module-tickets">
                 <div class="panel-header">
                     <h2><i class="fas fa-ticket"></i> Tickets</h2>
-                    <div class="panel-actions">
-                        <a href="#" class="btn-sm primary" onclick="alert('Create new ticket template')">+ New</a>
-                    </div>
                 </div>
-                <p class="panel-desc">Create tickets for users to open in your server</p>
 
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Templates</h4>
-                        <span class="status-tag">Live</span>
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Templates</span>
+                        <span class="card-badge live">Live</span>
                     </div>
-                    <p class="group-desc">Create tickets for users to open in your server</p>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="alert('Ticket templates coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                    <div class="card-desc">Create tickets for users to open in your server</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('Ticket templates coming soon!')">Configure</button>
                     </div>
                 </div>
 
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Panels</h4>
-                        <span class="status-tag">Live</span>
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Panels</span>
+                        <span class="card-badge live">Live</span>
                     </div>
-                    <p class="group-desc">Organize your tickets into panels</p>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="alert('Ticket panels coming soon!')"><i class="fas fa-cog"></i> Configure</button>
-                    </div>
-                </div>
-
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Quick Responses</h4>
-                        <span class="status-tag">Live</span>
-                    </div>
-                    <p class="group-desc">Create some quick responses to respond to common questions</p>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="alert('Quick responses coming soon!')"><i class="fas fa-plus"></i> New</button>
-                        <button class="btn-save" onclick="alert('Configure quick responses coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                    <div class="card-desc">Organize your tickets into panels</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('Ticket panels coming soon!')">Configure</button>
                     </div>
                 </div>
 
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Transcripts</h4>
-                        <span class="status-tag">Live</span>
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Quick Responses</span>
+                        <span class="card-badge live">Live</span>
                     </div>
-                    <p class="group-desc">Get a comprehensive view of all open and closed tickets</p>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="alert('Transcripts coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                    <div class="card-desc">Create some quick responses to respond to common questions</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('Quick responses coming soon!')">Configure</button>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Transcripts</span>
+                        <span class="card-badge live">Live</span>
+                    </div>
+                    <div class="card-desc">Get a comprehensive view of all open and closed tickets</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('Transcripts coming soon!')">Configure</button>
                     </div>
                 </div>
             </div>
@@ -659,197 +572,95 @@
             <div class="module-panel" id="module-security">
                 <div class="panel-header">
                     <h2><i class="fas fa-shield-halved"></i> Security</h2>
-                    <div class="panel-actions">
-                        <a href="#" class="btn-sm primary" onclick="alert('Setup verification')">Setup</a>
-                    </div>
-                </div>
-                <p class="panel-desc">Ensure only humans are allowed into your server</p>
-
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Verification</h4>
-                        <span class="status-tag">Live</span>
-                    </div>
-                    <p class="group-desc">Ensure only humans are allowed into your server</p>
-                    <div class="form-group">
-                        <label for="verificationChannel">Verification Channel</label>
-                        <input type="text" id="verificationChannel" value="<%= locals.config ? (config.verificationChannel || '') : '' %>" placeholder="#channel-name or channel ID">
-                        <div class="form-hint">Channel where verification will take place</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="verificationRole">Verified Role</label>
-                        <input type="text" id="verificationRole" value="<%= locals.config ? (config.verificationRole || '') : '' %>" placeholder="@role-name or role ID">
-                        <div class="form-hint">Role assigned after successful verification</div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-                    </div>
                 </div>
 
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Auto Roles</h4>
-                        <span class="status-tag">Live</span>
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Verification</span>
+                        <span class="card-badge live">Live</span>
                     </div>
-                    <p class="group-desc">Automatically assign roles to users when they join your server</p>
-                    <div class="form-group">
-                        <label for="autorole">Auto-Role</label>
-                        <input type="text" id="autorole" value="<%= locals.config ? (config.autorole || '') : '' %>" placeholder="@role-name or role ID">
-                        <div class="form-hint">Role automatically assigned to new members</div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-                    </div>
-                </div>
-
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Welcome Messages</h4>
-                        <span class="status-tag">Live</span>
-                    </div>
-                    <p class="group-desc">Automatically greet new users with a personalized message</p>
-                    <div class="form-group">
-                        <label for="welcomeChannel">Welcome Channel</label>
-                        <input type="text" id="welcomeChannel" value="<%= locals.config ? (config.welcomeChannel || '') : '' %>" placeholder="#channel-name or channel ID">
-                        <div class="form-hint">Channel where welcome messages will be sent</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="welcomeMessage">Welcome Message</label>
-                        <input type="text" id="welcomeMessage" value="<%= locals.config ? (config.welcomeMessage || 'Welcome {user} to {server}!') : 'Welcome {user} to {server}!' %>" placeholder="Welcome {user} to {server}!">
-                        <div class="form-hint">Use {user} for member mention, {server} for server name</div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-                    </div>
-                </div>
-
-                <div class="settings-group">
-                    <div class="group-header">
-                        <h4>Leave Messages</h4>
-                        <span class="status-tag">Live</span>
-                    </div>
-                    <p class="group-desc">Automatically say goodbye to users who leave your server</p>
-                    <div class="form-group">
-                        <label for="memberLogChannel">Leave Log Channel</label>
-                        <input type="text" id="memberLogChannel" value="<%= locals.config ? (config.memberLogChannel || '') : '' %>" placeholder="#channel-name or channel ID">
-                        <div class="form-hint">Channel where member leave logs will be sent</div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                    <div class="card-desc">Ensure only humans are allowed into your server</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('Verification settings coming soon!')">Configure</button>
                     </div>
                 </div>
             </div>
 
-            <!-- ─── AUTOMATION (Coming Soon) ─── -->
+            <!-- ─── AUTOMATION ─── -->
             <div class="module-panel" id="module-automation">
                 <div class="panel-header">
                     <h2><i class="fas fa-robot"></i> Automation</h2>
                 </div>
-                <div class="coming-soon">
-                    <i class="fas fa-robot"></i>
-                    <h3>Coming Soon! 🚀</h3>
-                    <p>Auto-moderation, reaction roles, and scheduled tasks are under development.</p>
+
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Auto Roles</span>
+                        <span class="card-badge new">New</span>
+                    </div>
+                    <div class="card-desc">Automatically assign roles to users when they join your server</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('Auto roles coming soon!')">Configure</button>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Welcome Messages</span>
+                        <span class="card-badge new">New</span>
+                    </div>
+                    <div class="card-desc">Automatically greet new users with a personalized message</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('Welcome messages coming soon!')">Configure</button>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Leave Messages</span>
+                        <span class="card-badge new">New</span>
+                    </div>
+                    <div class="card-desc">Automatically say goodbye to users who leave your server</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('Leave messages coming soon!')">Configure</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- ─── COMMUNITY (Coming Soon) ─── -->
+            <!-- ─── COMMUNITY ─── -->
             <div class="module-panel" id="module-community">
                 <div class="panel-header">
                     <h2><i class="fas fa-users"></i> Community</h2>
                 </div>
-                <div class="coming-soon">
-                    <i class="fas fa-users"></i>
-                    <h3>Coming Soon! 🚀</h3>
-                    <p>Leveling, giveaways, and community engagement features are under development.</p>
+
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Polls</span>
+                        <span class="card-badge new">New</span>
+                    </div>
+                    <div class="card-desc">Create and manage polls for your server members to vote on.</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('Polls coming soon!')">Configure</button>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="card-header">
+                        <span class="card-title">Giveaways</span>
+                        <span class="card-badge new">New</span>
+                    </div>
+                    <div class="card-desc">Create and manage giveaways for your server members to enter.</div>
+                    <div class="card-actions">
+                        <button class="btn-config" onclick="alert('Giveaways coming soon!')">Configure</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- ─── AUDIT & LOGS (Coming Soon) ─── -->
+            <!-- ─── AUDIT & LOGS ─── -->
             <div class="module-panel" id="module-audit">
                 <div class="panel-header">
                     <h2><i class="fas fa-clipboard-list"></i> Audit & Logs</h2>
                 </div>
-                <div class="coming-soon">
-                    <i class="fas fa-clipboard-list"></i>
-                    <h3>Coming Soon! 🚀</h3>
-                    <p>Audit logs and moderation history features are under development.</p>
-                </div>
-            </div>
 
-        </div><!-- /content -->
-    </div><!-- /page-wrapper -->
-
-    <footer class="footer">
-        © 2026 SENTINAL — STATUS: OPERATIONAL
-    </footer>
-
-    <script>
-        // ─── MODULE NAVIGATION ───
-        function showModule(module) {
-            // Update sidebar active state
-            document.querySelectorAll('.sidebar .nav-item').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.querySelectorAll('.sidebar .nav-item').forEach(el => {
-                if (el.textContent.trim().toLowerCase().includes(module)) {
-                    el.classList.add('active');
-                }
-            });
-
-            // Hide all panels
-            document.querySelectorAll('.module-panel').forEach(el => {
-                el.classList.remove('active');
-            });
-
-            // Show selected panel
-            const target = document.getElementById('module-' + module);
-            if (target) {
-                target.classList.add('active');
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-
-        // ─── SAVE SETTINGS ───
-        function saveSettings() {
-            const data = {
-                prefix: document.getElementById('prefix')?.value || '',
-                language: document.getElementById('language')?.value || '',
-                applicationChannel: document.getElementById('appChannel')?.value || '',
-                ticketCategory: document.getElementById('ticketCategory')?.value || '',
-                ticketSupportRole: document.getElementById('ticketSupportRole')?.value || '',
-                verificationChannel: document.getElementById('verificationChannel')?.value || '',
-                verificationRole: document.getElementById('verificationRole')?.value || '',
-                autorole: document.getElementById('autorole')?.value || '',
-                welcomeChannel: document.getElementById('welcomeChannel')?.value || '',
-                welcomeMessage: document.getElementById('welcomeMessage')?.value || '',
-                memberLogChannel: document.getElementById('memberLogChannel')?.value || ''
-            };
-
-            fetch(`/api/config/<%= locals.guild ? guild.id : '' %>`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('✅ Settings saved successfully!');
-                    location.reload();
-                } else {
-                    alert('❌ Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                alert('❌ Error saving settings: ' + error.message);
-            });
-        }
-
-        function resetSettings() {
-            if (confirm('Are you sure you want to reset all settings to default?')) {
-                location.reload();
-            }
-        }
-    </script>
-
-</body>
-</html>
+                <div class="module-card">
+                    <div class="card-header">
+                        <
