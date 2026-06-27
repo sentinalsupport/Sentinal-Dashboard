@@ -48,7 +48,7 @@ mongoose.connect(MONGO_URI)
 
 // ============ ROUTES ============
 app.use('/auth', authRoutes);
-app.use('/', dashboardRoutes);
+app.use('/', dashboardRoutes); // Handles /dashboard, /servers, /server/:id
 
 // ============ HOME ROUTE ============
 app.get('/', (req, res) => {
