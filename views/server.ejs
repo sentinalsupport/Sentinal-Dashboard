@@ -37,6 +37,7 @@
             background: var(--ink);
             color: var(--text);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* ─── NAVBAR ─── */
@@ -44,140 +45,141 @@
             background: rgba(6,10,16,0.9);
             backdrop-filter: blur(28px) saturate(160%);
             border-bottom: 1px solid var(--line);
-            padding: 0 40px;
-            height: 64px;
+            padding: 0 48px;
+            height: 72px;
             display: flex; align-items: center; justify-content: space-between;
             position: sticky; top: 0; z-index: 200;
         }
-        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .brand-logo {
-            width: 36px; height: 36px; border-radius: 10px;
+            width: 40px; height: 40px; border-radius: 12px;
             background: var(--panel-raised); border: 1px solid var(--line-bright);
             display: flex; align-items: center; justify-content: center;
         }
-        .brand-logo svg { width: 20px; height: 20px; }
+        .brand-logo svg { width: 22px; height: 22px; }
         .brand-name {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+            font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
         }
-        .nav-center { display: flex; align-items: center; gap: 4px; }
+        .nav-center { display: flex; align-items: center; gap: 8px; }
         .nav-center a {
-            color: var(--muted); text-decoration: none; font-size: 13.5px; font-weight: 500;
-            padding: 6px 14px; border-radius: 8px; transition: all 0.18s ease;
+            color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
+            padding: 8px 18px; border-radius: 10px; transition: all 0.18s ease;
         }
         .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
         .nav-center a.active { color: #fff; }
-        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
         .user-pill {
-            display: flex; align-items: center; gap: 9px;
+            display: flex; align-items: center; gap: 12px;
             background: var(--panel); border: 1px solid var(--line);
-            border-radius: 100px; padding: 5px 14px 5px 6px;
+            border-radius: 100px; padding: 6px 18px 6px 8px;
         }
         .user-avatar {
-            width: 28px; height: 28px; border-radius: 50%;
+            width: 32px; height: 32px; border-radius: 50%;
             background: var(--panel-raised); overflow: hidden;
             display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700;
+            font-size: 14px; font-weight: 700;
         }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .user-name { font-size: 13px; font-weight: 500; color: var(--text); }
+        .user-name { font-size: 14px; font-weight: 500; color: var(--text); }
         .user-plan {
-            font-size: 10px; font-weight: 600; color: var(--signal);
+            font-size: 11px; font-weight: 600; color: var(--signal);
             background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.22);
-            border-radius: 100px; padding: 2px 8px; letter-spacing: 0.3px;
+            border-radius: 100px; padding: 3px 10px; letter-spacing: 0.3px;
         }
         .logout-btn {
-            background: transparent; border: 1px solid var(--line); border-radius: 8px;
-            padding: 7px 12px; color: var(--muted); cursor: pointer; font-size: 13px;
+            background: transparent; border: 1px solid var(--line); border-radius: 10px;
+            padding: 8px 14px; color: var(--muted); cursor: pointer; font-size: 14px;
             transition: all 0.18s ease; text-decoration: none;
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; gap: 8px;
         }
         .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
         /* ─── PAGE LAYOUT ─── */
         .page-wrapper {
-            max-width: 1200px;
+            max-width: 1440px;
             margin: 0 auto;
-            padding: 0 32px 60px;
+            padding: 32px 48px 60px;
             display: flex;
-            gap: 24px;
+            gap: 32px;
             align-items: flex-start;
+            min-height: calc(100vh - 72px);
         }
 
         /* ─── LEFT SIDEBAR ─── */
         .sidebar {
-            width: 220px;
+            width: 260px;
             flex-shrink: 0;
             background: var(--panel);
             border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 16px 0;
+            border-radius: 16px;
+            padding: 20px 0;
             position: sticky;
-            top: 80px;
-            max-height: calc(100vh - 100px);
+            top: 100px;
+            max-height: calc(100vh - 120px);
             overflow-y: auto;
         }
-        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar { width: 4px; }
         .sidebar::-webkit-scrollbar-track { background: transparent; }
         .sidebar::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
 
         .sidebar .server-info {
-            padding: 0 16px 14px;
+            padding: 0 20px 18px;
             border-bottom: 1px solid var(--line);
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
         .sidebar .server-info .icon {
-            width: 44px; height: 44px; border-radius: 12px;
+            width: 52px; height: 52px; border-radius: 14px;
             background: var(--panel-raised); border: 1px solid var(--line);
             display: flex; align-items: center; justify-content: center;
-            font-size: 18px; font-weight: 700; overflow: hidden;
-            color: var(--signal); margin-bottom: 8px;
+            font-size: 22px; font-weight: 700; overflow: hidden;
+            color: var(--signal); margin-bottom: 10px;
         }
         .sidebar .server-info .icon img { width: 100%; height: 100%; object-fit: cover; }
         .sidebar .server-info .name {
-            font-weight: 600; font-size: 14px; color: #fff;
+            font-weight: 600; font-size: 16px; color: #fff;
         }
         .sidebar .server-info .plan {
-            font-size: 11px; color: var(--signal);
+            font-size: 12px; color: var(--signal);
             font-weight: 500;
         }
         .sidebar .server-info .upgrade {
-            display: block; margin-top: 8px;
-            padding: 4px 12px; border-radius: 6px;
+            display: block; margin-top: 10px;
+            padding: 6px 16px; border-radius: 8px;
             background: var(--gold-tab); color: var(--gold);
-            font-size: 11px; font-weight: 600; text-decoration: none;
+            font-size: 12px; font-weight: 600; text-decoration: none;
             text-align: center; border: 1px solid rgba(245,200,66,0.2);
             transition: all 0.18s ease;
         }
         .sidebar .server-info .upgrade:hover { background: rgba(245,200,66,0.18); }
 
-        .sidebar .nav-section { padding: 0 12px; }
+        .sidebar .nav-section { padding: 0 16px; }
         .sidebar .section-title {
-            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
             letter-spacing: 0.8px; color: var(--muted-dim);
-            padding: 6px 12px 4px;
+            padding: 8px 12px 6px;
         }
         .sidebar .nav-item {
-            display: flex; align-items: center; gap: 10px;
-            padding: 6px 12px; border-radius: 8px;
+            display: flex; align-items: center; gap: 12px;
+            padding: 8px 14px; border-radius: 10px;
             color: var(--muted); text-decoration: none;
-            font-size: 12.5px; font-weight: 500;
+            font-size: 14px; font-weight: 500;
             transition: all 0.18s ease; cursor: pointer; border: none;
             background: none; width: 100%; text-align: left;
         }
         .sidebar .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
         .sidebar .nav-item.active { background: var(--signal-tab); color: var(--signal); }
-        .sidebar .nav-item i { width: 18px; font-size: 14px; color: var(--muted-dim); }
+        .sidebar .nav-item i { width: 20px; font-size: 16px; color: var(--muted-dim); }
         .sidebar .nav-item.active i { color: var(--signal); }
         .sidebar .nav-item .badge {
-            margin-left: auto; font-size: 8px; font-weight: 700;
-            padding: 1px 6px; border-radius: 100px; text-transform: uppercase;
+            margin-left: auto; font-size: 9px; font-weight: 700;
+            padding: 2px 8px; border-radius: 100px; text-transform: uppercase;
         }
         .sidebar .nav-item .badge.live { background: var(--signal-tab); color: var(--signal); }
         .sidebar .nav-item .badge.coming { background: var(--gold-tab); color: var(--gold); }
         .sidebar .nav-item .badge.new { background: var(--violet-tab); color: var(--violet); }
 
-        .sidebar .divider { height: 1px; background: var(--line); margin: 8px 16px; }
+        .sidebar .divider { height: 1px; background: var(--line); margin: 12px 20px; }
 
         /* ─── RIGHT CONTENT ─── */
         .content {
@@ -187,51 +189,76 @@
 
         /* ─── SERVER HEADER ─── */
         .server-header {
-            display: flex; align-items: center; gap: 16px;
-            padding: 20px 0 16px;
+            display: flex; align-items: center; gap: 20px;
+            padding: 24px 0 20px;
             border-bottom: 1px solid var(--line);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         .server-header .icon {
-            width: 48px; height: 48px; border-radius: 12px;
+            width: 56px; height: 56px; border-radius: 14px;
             background: var(--panel-raised); border: 1px solid var(--line);
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; font-weight: 700; overflow: hidden;
+            font-size: 24px; font-weight: 700; overflow: hidden;
             flex-shrink: 0; color: var(--signal);
         }
         .server-header .icon img { width: 100%; height: 100%; object-fit: cover; }
         .server-header .info h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px; font-weight: 700; color: #fff;
+            font-size: 24px; font-weight: 700; color: #fff;
         }
         .server-header .info p {
-            font-size: 13px; color: var(--muted);
+            font-size: 14px; color: var(--muted);
         }
-        .server-header .info p i { color: var(--signal); margin-right: 4px; }
+        .server-header .info p i { color: var(--signal); margin-right: 6px; }
 
         /* ─── TOP TABS ─── */
         .top-tabs {
-            display: flex; gap: 4px;
+            display: flex; gap: 6px;
             border-bottom: 1px solid var(--line);
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             flex-wrap: wrap;
+            padding-bottom: 2px;
         }
         .top-tabs .tab {
-            padding: 8px 16px;
-            border-radius: 8px 8px 0 0;
+            padding: 10px 22px;
+            border-radius: 10px 10px 0 0;
             color: var(--muted);
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.18s ease;
-            border-bottom: 2px solid transparent;
+            border-bottom: 3px solid transparent;
         }
         .top-tabs .tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
         .top-tabs .tab.active {
             color: var(--signal);
             border-bottom-color: var(--signal);
             background: var(--signal-tab);
+        }
+
+        /* ─── SEARCH BOX ─── */
+        .search-box {
+            margin-bottom: 24px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: var(--text);
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.18s ease;
+        }
+        .search-box input:focus {
+            border-color: var(--signal);
+            box-shadow: 0 0 0 4px var(--signal-glow);
+        }
+        .search-box input::placeholder {
+            color: var(--muted-dim);
         }
 
         /* ─── MODULE PANELS ─── */
@@ -244,7 +271,7 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -252,9 +279,9 @@
         .module-card {
             background: var(--panel);
             border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 18px 22px;
-            margin-bottom: 12px;
+            border-radius: 14px;
+            padding: 24px 28px;
+            margin-bottom: 16px;
             transition: all 0.2s ease;
         }
         .module-card:hover {
@@ -262,16 +289,16 @@
         }
         .module-card .card-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
         .module-card .card-header .card-title {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 17px;
             color: #fff;
         }
         .module-card .card-header .card-badge {
-            font-size: 9px; font-weight: 700;
-            padding: 1px 8px; border-radius: 100px;
+            font-size: 10px; font-weight: 700;
+            padding: 2px 12px; border-radius: 100px;
             text-transform: uppercase;
         }
         .module-card .card-header .card-badge.new {
@@ -281,91 +308,67 @@
             background: var(--signal-tab); color: var(--signal);
         }
         .module-card .card-desc {
-            font-size: 12.5px;
+            font-size: 14px;
             color: var(--muted);
-            margin-bottom: 10px;
-            line-height: 1.5;
+            margin-bottom: 14px;
+            line-height: 1.6;
         }
         .module-card .card-actions {
-            display: flex; gap: 8px; flex-wrap: wrap;
+            display: flex; gap: 10px; flex-wrap: wrap;
         }
         .module-card .card-actions .btn-config {
-            padding: 5px 16px; border-radius: 6px;
-            font-size: 12px; font-weight: 600;
+            padding: 8px 22px; border-radius: 8px;
+            font-size: 13px; font-weight: 600;
             cursor: pointer; border: none;
             background: var(--signal-tab); color: var(--signal);
             border: 1px solid rgba(61,255,184,0.2);
             transition: all 0.18s ease;
             text-decoration: none;
-            display: inline-flex; align-items: center; gap: 6px;
+            display: inline-flex; align-items: center; gap: 8px;
         }
         .module-card .card-actions .btn-config:hover {
             background: rgba(61,255,184,0.18);
         }
 
         .coming-soon {
-            text-align: center; padding: 60px 20px;
+            text-align: center; padding: 80px 20px;
             color: var(--muted);
         }
         .coming-soon i {
-            font-size: 40px; color: var(--gold); margin-bottom: 16px; display: block;
+            font-size: 48px; color: var(--gold); margin-bottom: 20px; display: block;
         }
         .coming-soon h3 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px; color: #fff; margin-bottom: 6px;
+            font-size: 22px; color: #fff; margin-bottom: 8px;
         }
-        .coming-soon p { font-size: 13px; }
+        .coming-soon p { font-size: 15px; }
 
         .success-message {
             background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.2);
-            border-radius: 8px; padding: 10px 16px; color: var(--signal);
-            font-size: 13px; margin-bottom: 16px;
+            border-radius: 10px; padding: 14px 20px; color: var(--signal);
+            font-size: 14px; margin-bottom: 20px;
         }
         .error-message {
             background: var(--red-bg); border: 1px solid var(--red-border);
-            border-radius: 8px; padding: 10px 16px; color: var(--red);
-            font-size: 13px; margin-bottom: 16px;
-        }
-
-        /* ─── SEARCH BOX ─── */
-        .search-box {
-            margin-bottom: 16px;
-        }
-        .search-box input {
-            width: 100%;
-            padding: 10px 16px;
-            border-radius: 10px;
-            border: 1px solid var(--line);
-            background: var(--panel);
-            color: var(--text);
-            font-size: 13px;
-            font-family: 'Inter', sans-serif;
-            outline: none;
-            transition: all 0.18s ease;
-        }
-        .search-box input:focus {
-            border-color: var(--signal);
-            box-shadow: 0 0 0 3px var(--signal-glow);
-        }
-        .search-box input::placeholder {
-            color: var(--muted-dim);
+            border-radius: 10px; padding: 14px 20px; color: var(--red);
+            font-size: 14px; margin-bottom: 20px;
         }
 
         .footer {
             border-top: 1px solid var(--line); margin-top: 60px;
-            padding: 24px 40px; text-align: center;
-            color: var(--muted-dim); font-size: 12px;
+            padding: 28px 48px; text-align: center;
+            color: var(--muted-dim); font-size: 13px;
             font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px;
         }
 
         @media (max-width: 1024px) {
-            .page-wrapper { padding: 0 24px 60px; gap: 20px; }
-            .sidebar { width: 200px; }
+            .page-wrapper { padding: 24px 32px 60px; gap: 24px; }
+            .sidebar { width: 220px; }
         }
         @media (max-width: 768px) {
-            .navbar { padding: 0 16px; }
+            .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
             .nav-center { display: none; }
-            .page-wrapper { padding: 0 16px 48px; flex-direction: column; }
+            .page-wrapper { padding: 16px; flex-direction: column; }
             .sidebar {
                 width: 100%; position: relative; top: 0;
                 display: flex; flex-wrap: wrap; gap: 4px; padding: 12px;
@@ -374,12 +377,14 @@
             .sidebar .server-info { display: none; }
             .sidebar .nav-section { display: flex; flex-wrap: wrap; gap: 4px; }
             .sidebar .section-title { display: none; }
-            .sidebar .nav-item { padding: 6px 12px; font-size: 12px; width: auto; }
+            .sidebar .nav-item { padding: 6px 14px; font-size: 13px; width: auto; }
             .sidebar .divider { display: none; }
             .server-header { flex-wrap: wrap; }
             .top-tabs { flex-wrap: wrap; }
-            .top-tabs .tab { font-size: 12px; padding: 6px 12px; }
-            .module-card { padding: 14px 16px; }
+            .top-tabs .tab { font-size: 13px; padding: 8px 16px; }
+            .module-card { padding: 18px 20px; }
+            .module-card .card-title { font-size: 15px; }
+            .footer { padding: 20px 16px; }
         }
     </style>
 </head>
@@ -414,7 +419,7 @@
                 <span class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></span>
                 <span class="user-plan">Free</span>
             </div>
-            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
 
@@ -803,7 +808,6 @@
                 // Show parent panel if any card is visible
                 const panel = card.closest('.module-panel');
                 if (panel) {
-                    const visibleCards = panel.querySelectorAll('.module-card[style*="display: none"]');
                     const totalCards = panel.querySelectorAll('.module-card').length;
                     // If query is empty, show all panels
                     if (query === '') {
