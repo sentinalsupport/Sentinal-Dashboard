@@ -936,40 +936,40 @@
             }, 4000);
         }
 
-        // ─── MODULE NAVIGATION ───
-        function showModule(module) {
-            // Update sidebar active state
-            document.querySelectorAll('.sidebar .nav-item').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.querySelectorAll('.sidebar .nav-item').forEach(el => {
-                if (el.textContent.trim().toLowerCase().includes(module)) {
-                    el.classList.add('active');
-                }
-            });
-
-            // Update top tabs
-            document.querySelectorAll('.top-tabs .tab').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.querySelectorAll('.top-tabs .tab').forEach(el => {
-                if (el.textContent.trim().toLowerCase().includes(module)) {
-                    el.classList.add('active');
-                }
-            });
-
-            // Hide all panels
-            document.querySelectorAll('.module-panel').forEach(el => {
-                el.classList.remove('active');
-            });
-
-            // Show selected panel
-            const target = document.getElementById('module-' + module);
-            if (target) {
-                target.classList.add('active');
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+// ─── MODULE NAVIGATION ───
+function showModule(module) {
+    // Update sidebar active state
+    document.querySelectorAll('.sidebar .nav-item').forEach(el => {
+        el.classList.remove('active');
+    });
+    document.querySelectorAll('.sidebar .nav-item').forEach(el => {
+        if (el.textContent.trim().toLowerCase().includes(module)) {
+            el.classList.add('active');
         }
+    });
+
+    // Update top tabs
+    document.querySelectorAll('.top-tabs .tab').forEach(el => {
+        el.classList.remove('active');
+    });
+    document.querySelectorAll('.top-tabs .tab').forEach(el => {
+        if (el.textContent.trim().toLowerCase().includes(module)) {
+            el.classList.add('active');
+        }
+    });
+
+    // Hide all panels
+    document.querySelectorAll('.module-panel').forEach(el => {
+        el.classList.remove('active');
+    });
+
+    // Show selected panel - NO SCROLLING!
+    const target = document.getElementById('module-' + module);
+    if (target) {
+        target.classList.add('active');
+        // ❌ REMOVED: target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
 
         // ─── SEARCH FEATURES ───
         function searchFeatures() {
