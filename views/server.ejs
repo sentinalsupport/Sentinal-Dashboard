@@ -612,4 +612,244 @@
                 <div class="settings-group">
                     <div class="group-header">
                         <h4>Templates</h4>
-                        <span class="status-tag">Live</span
+                        <span class="status-tag">Live</span>
+                    </div>
+                    <p class="group-desc">Create tickets for users to open in your server</p>
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="alert('Ticket templates coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="group-header">
+                        <h4>Panels</h4>
+                        <span class="status-tag">Live</span>
+                    </div>
+                    <p class="group-desc">Organize your tickets into panels</p>
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="alert('Ticket panels coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="group-header">
+                        <h4>Quick Responses</h4>
+                        <span class="status-tag">Live</span>
+                    </div>
+                    <p class="group-desc">Create some quick responses to respond to common questions</p>
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="alert('Quick responses coming soon!')"><i class="fas fa-plus"></i> New</button>
+                        <button class="btn-save" onclick="alert('Configure quick responses coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="group-header">
+                        <h4>Transcripts</h4>
+                        <span class="status-tag">Live</span>
+                    </div>
+                    <p class="group-desc">Get a comprehensive view of all open and closed tickets</p>
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="alert('Transcripts coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── SECURITY ─── -->
+            <div class="module-panel" id="module-security">
+                <div class="panel-header">
+                    <h2><i class="fas fa-shield-halved"></i> Security</h2>
+                    <div class="panel-actions">
+                        <a href="#" class="btn-sm primary" onclick="alert('Setup verification')">Setup</a>
+                    </div>
+                </div>
+                <p class="panel-desc">Ensure only humans are allowed into your server</p>
+
+                <div class="settings-group">
+                    <div class="group-header">
+                        <h4>Verification</h4>
+                        <span class="status-tag">Live</span>
+                    </div>
+                    <p class="group-desc">Ensure only humans are allowed into your server</p>
+                    <div class="form-group">
+                        <label for="verificationChannel">Verification Channel</label>
+                        <input type="text" id="verificationChannel" value="<%= locals.config ? (config.verificationChannel || '') : '' %>" placeholder="#channel-name or channel ID">
+                        <div class="form-hint">Channel where verification will take place</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="verificationRole">Verified Role</label>
+                        <input type="text" id="verificationRole" value="<%= locals.config ? (config.verificationRole || '') : '' %>" placeholder="@role-name or role ID">
+                        <div class="form-hint">Role assigned after successful verification</div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="group-header">
+                        <h4>Auto Roles</h4>
+                        <span class="status-tag">Live</span>
+                    </div>
+                    <p class="group-desc">Automatically assign roles to users when they join your server</p>
+                    <div class="form-group">
+                        <label for="autorole">Auto-Role</label>
+                        <input type="text" id="autorole" value="<%= locals.config ? (config.autorole || '') : '' %>" placeholder="@role-name or role ID">
+                        <div class="form-hint">Role automatically assigned to new members</div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="group-header">
+                        <h4>Welcome Messages</h4>
+                        <span class="status-tag">Live</span>
+                    </div>
+                    <p class="group-desc">Automatically greet new users with a personalized message</p>
+                    <div class="form-group">
+                        <label for="welcomeChannel">Welcome Channel</label>
+                        <input type="text" id="welcomeChannel" value="<%= locals.config ? (config.welcomeChannel || '') : '' %>" placeholder="#channel-name or channel ID">
+                        <div class="form-hint">Channel where welcome messages will be sent</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="welcomeMessage">Welcome Message</label>
+                        <input type="text" id="welcomeMessage" value="<%= locals.config ? (config.welcomeMessage || 'Welcome {user} to {server}!') : 'Welcome {user} to {server}!' %>" placeholder="Welcome {user} to {server}!">
+                        <div class="form-hint">Use {user} for member mention, {server} for server name</div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="group-header">
+                        <h4>Leave Messages</h4>
+                        <span class="status-tag">Live</span>
+                    </div>
+                    <p class="group-desc">Automatically say goodbye to users who leave your server</p>
+                    <div class="form-group">
+                        <label for="memberLogChannel">Leave Log Channel</label>
+                        <input type="text" id="memberLogChannel" value="<%= locals.config ? (config.memberLogChannel || '') : '' %>" placeholder="#channel-name or channel ID">
+                        <div class="form-hint">Channel where member leave logs will be sent</div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── AUTOMATION (Coming Soon) ─── -->
+            <div class="module-panel" id="module-automation">
+                <div class="panel-header">
+                    <h2><i class="fas fa-robot"></i> Automation</h2>
+                </div>
+                <div class="coming-soon">
+                    <i class="fas fa-robot"></i>
+                    <h3>Coming Soon! 🚀</h3>
+                    <p>Auto-moderation, reaction roles, and scheduled tasks are under development.</p>
+                </div>
+            </div>
+
+            <!-- ─── COMMUNITY (Coming Soon) ─── -->
+            <div class="module-panel" id="module-community">
+                <div class="panel-header">
+                    <h2><i class="fas fa-users"></i> Community</h2>
+                </div>
+                <div class="coming-soon">
+                    <i class="fas fa-users"></i>
+                    <h3>Coming Soon! 🚀</h3>
+                    <p>Leveling, giveaways, and community engagement features are under development.</p>
+                </div>
+            </div>
+
+            <!-- ─── AUDIT & LOGS (Coming Soon) ─── -->
+            <div class="module-panel" id="module-audit">
+                <div class="panel-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Audit & Logs</h2>
+                </div>
+                <div class="coming-soon">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>Coming Soon! 🚀</h3>
+                    <p>Audit logs and moderation history features are under development.</p>
+                </div>
+            </div>
+
+        </div><!-- /content -->
+    </div><!-- /page-wrapper -->
+
+    <footer class="footer">
+        © 2026 SENTINAL — STATUS: OPERATIONAL
+    </footer>
+
+    <script>
+        // ─── MODULE NAVIGATION ───
+        function showModule(module) {
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar .nav-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.sidebar .nav-item').forEach(el => {
+                if (el.textContent.trim().toLowerCase().includes(module)) {
+                    el.classList.add('active');
+                }
+            });
+
+            // Hide all panels
+            document.querySelectorAll('.module-panel').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected panel
+            const target = document.getElementById('module-' + module);
+            if (target) {
+                target.classList.add('active');
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // ─── SAVE SETTINGS ───
+        function saveSettings() {
+            const data = {
+                prefix: document.getElementById('prefix')?.value || '',
+                language: document.getElementById('language')?.value || '',
+                applicationChannel: document.getElementById('appChannel')?.value || '',
+                ticketCategory: document.getElementById('ticketCategory')?.value || '',
+                ticketSupportRole: document.getElementById('ticketSupportRole')?.value || '',
+                verificationChannel: document.getElementById('verificationChannel')?.value || '',
+                verificationRole: document.getElementById('verificationRole')?.value || '',
+                autorole: document.getElementById('autorole')?.value || '',
+                welcomeChannel: document.getElementById('welcomeChannel')?.value || '',
+                welcomeMessage: document.getElementById('welcomeMessage')?.value || '',
+                memberLogChannel: document.getElementById('memberLogChannel')?.value || ''
+            };
+
+            fetch(`/api/config/<%= locals.guild ? guild.id : '' %>`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Settings saved successfully!');
+                    location.reload();
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('❌ Error saving settings: ' + error.message);
+            });
+        }
+
+        function resetSettings() {
+            if (confirm('Are you sure you want to reset all settings to default?')) {
+                location.reload();
+            }
+        }
+    </script>
+
+</body>
+</html>
