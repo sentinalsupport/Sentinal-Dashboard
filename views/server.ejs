@@ -106,7 +106,7 @@
             min-height: calc(100vh - 72px);
         }
 
-        /* ─── LEFT SIDEBAR (255px - EXACT FROM SCREENSHOT) ─── */
+        /* ─── LEFT SIDEBAR (255px - Full Height) ─── */
         .sidebar {
             width: 255px;
             flex-shrink: 0;
@@ -115,8 +115,8 @@
             border-radius: 14px;
             padding: 16px 18px;
             position: sticky;
-            top: 100px;
-            max-height: calc(100vh - 120px);
+            top: 88px;
+            height: calc(100vh - 108px);
             overflow-y: auto;
             overflow-x: hidden;
         }
@@ -182,7 +182,7 @@
 
         .sidebar .divider { height: 1px; background: var(--line); margin: 8px 0; }
 
-        /* ─── RIGHT CONTENT (FILLS REMAINING SPACE) ─── */
+        /* ─── RIGHT CONTENT ─── */
         .content {
             flex: 1;
             min-width: 0;
@@ -224,8 +224,7 @@
             padding: 12px 28px;
             border-radius: 12px 12px 0 0;
             color: var(--muted);
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 16px; font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.18s ease;
@@ -360,6 +359,74 @@
             background: rgba(61,255,184,0.18);
         }
 
+        /* ─── TOAST NOTIFICATIONS ─── */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            width: 100%;
+        }
+        .toast {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .toast.success {
+            border-left: 4px solid var(--signal);
+        }
+        .toast.error {
+            border-left: 4px solid var(--red);
+        }
+        .toast.info {
+            border-left: 4px solid var(--violet);
+        }
+        .toast .toast-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .toast.success .toast-icon { color: var(--signal); }
+        .toast.error .toast-icon { color: var(--red); }
+        .toast.info .toast-icon { color: var(--violet); }
+        .toast .toast-content {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.4;
+        }
+        .toast .toast-close {
+            background: none;
+            border: none;
+            color: var(--muted-dim);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+        }
+        .toast .toast-close:hover { color: var(--text); }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(40px); }
+        }
+        .toast.hiding {
+            animation: slideOut 0.3s ease forwards;
+        }
+
         .coming-soon {
             text-align: center; padding: 80px 20px;
             color: var(--muted);
@@ -407,7 +474,7 @@
             .sidebar {
                 width: 100%; position: relative; top: 0;
                 display: flex; flex-wrap: wrap; gap: 4px; padding: 12px;
-                border-radius: 12px; max-height: none;
+                border-radius: 12px; max-height: none; height: auto;
             }
             .sidebar .server-info { display: none; }
             .sidebar .nav-section { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -425,6 +492,7 @@
             .search-box input { font-size: 14px; padding: 12px 16px; max-width: 100%; }
             .footer { padding: 20px 16px; }
             .section-header { font-size: 20px; }
+            .toast-container { bottom: 16px; right: 16px; max-width: calc(100% - 32px); }
         }
     </style>
 </head>
@@ -463,10 +531,13 @@
         </div>
     </nav>
 
+    <!-- ─── TOAST CONTAINER ─── -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- ─── PAGE ─── -->
     <div class="page-wrapper">
 
-        <!-- ─── LEFT SIDEBAR (255px) ─── -->
+        <!-- ─── LEFT SIDEBAR ─── -->
         <aside class="sidebar">
 
             <!-- Server Info -->
@@ -480,7 +551,7 @@
                 </div>
                 <div class="name"><%= locals.guild ? guild.name : 'Server' %></div>
                 <div class="plan">Free</div>
-                <a href="#" class="upgrade" onclick="alert('Upgrade to Premium!')">Upgrade to Premium</a>
+                <a href="#" class="upgrade" onclick="showToast('Upgrade to Premium!', 'info')">Upgrade to Premium</a>
             </div>
 
             <!-- Navigation Groups -->
@@ -522,7 +593,7 @@
 
             <div class="nav-section">
                 <div class="section-title">Support</div>
-                <button class="nav-item" onclick="alert('Support server coming soon!')">
+                <button class="nav-item" onclick="showToast('Support server coming soon!', 'info')">
                     <i class="fas fa-headset"></i> Support Server
                 </button>
             </div>
@@ -584,7 +655,7 @@
                         </div>
                         <div class="card-desc">Configure basic server settings for Sentinal</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('General settings coming soon!')">
+                            <button class="btn-config" onclick="showToast('General settings coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -629,7 +700,7 @@
                         </div>
                         <div class="card-desc">View and manage all application submissions</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('View submissions coming soon!')">
+                            <button class="btn-config" onclick="showToast('Submissions view coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -648,7 +719,7 @@
                         </div>
                         <div class="card-desc">Create tickets for users to open in your server</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Ticket templates coming soon!')">
+                            <button class="btn-config" onclick="showToast('Ticket templates coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -661,7 +732,7 @@
                         </div>
                         <div class="card-desc">Organize your tickets into panels</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Ticket panels coming soon!')">
+                            <button class="btn-config" onclick="showToast('Ticket panels coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -674,7 +745,7 @@
                         </div>
                         <div class="card-desc">Create some quick responses to respond to common questions</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Quick responses coming soon!')">
+                            <button class="btn-config" onclick="showToast('Quick responses coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -687,7 +758,7 @@
                         </div>
                         <div class="card-desc">Get a comprehensive view of all open and closed tickets</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Transcripts coming soon!')">
+                            <button class="btn-config" onclick="showToast('Transcripts coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -706,7 +777,7 @@
                         </div>
                         <div class="card-desc">Ensure only humans are allowed into your server</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Verification settings coming soon!')">
+                            <button class="btn-config" onclick="showToast('Verification settings coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -725,7 +796,7 @@
                         </div>
                         <div class="card-desc">Automatically assign roles to users when they join your server</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Auto roles coming soon!')">
+                            <button class="btn-config" onclick="showToast('Auto roles coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -738,7 +809,7 @@
                         </div>
                         <div class="card-desc">Automatically greet new users with a personalized message</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Welcome messages coming soon!')">
+                            <button class="btn-config" onclick="showToast('Welcome messages coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -751,7 +822,21 @@
                         </div>
                         <div class="card-desc">Automatically say goodbye to users who leave your server</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Leave messages coming soon!')">
+                            <button class="btn-config" onclick="showToast('Leave messages coming soon!', 'info')">
+                                <i class="fas fa-cog"></i> Configure
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ✅ NEW: Leveling Module -->
+                    <div class="module-card">
+                        <div class="card-header">
+                            <span class="card-title">Leveling</span>
+                            <span class="card-badge new">New</span>
+                        </div>
+                        <div class="card-desc">Track user activity and reward them with XP and levels</div>
+                        <div class="card-actions">
+                            <button class="btn-config" onclick="showToast('Leveling system coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -770,7 +855,7 @@
                         </div>
                         <div class="card-desc">Create and manage polls for your server members to vote on.</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Polls coming soon!')">
+                            <button class="btn-config" onclick="showToast('Polls coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -783,7 +868,7 @@
                         </div>
                         <div class="card-desc">Create and manage giveaways for your server members to enter.</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Giveaways coming soon!')">
+                            <button class="btn-config" onclick="showToast('Giveaways coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -802,7 +887,7 @@
                         </div>
                         <div class="card-desc">Monitor and review all dashboard activities and config changes</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="alert('Dashboard logs coming soon!')">
+                            <button class="btn-config" onclick="showToast('Dashboard logs coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
@@ -818,6 +903,39 @@
     </footer>
 
     <script>
+        // ─── TOAST NOTIFICATIONS ───
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle'
+            };
+
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="fas ${icons[type] || icons.info}"></i></span>
+                <span class="toast-content">${message}</span>
+                <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            // Auto dismiss after 4 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('hiding');
+                    setTimeout(() => {
+                        if (toast.parentNode) toast.remove();
+                    }, 300);
+                }
+            }, 4000);
+        }
+
         // ─── MODULE NAVIGATION ───
         function showModule(module) {
             // Update sidebar active state
