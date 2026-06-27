@@ -74,6 +74,8 @@ router.get('/servers', isAuthenticated, async (req, res) => {
             (g.permissions & 0x8) || (g.permissions & 0x20)
         );
         
+        console.log(`✅ Found ${guilds.length} servers with admin access`);
+        
         // ✅ Check bot membership for each guild using bot token
         const botToken = process.env.DISCORD_TOKEN;
         const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
@@ -91,15 +93,19 @@ router.get('/servers', isAuthenticated, async (req, res) => {
                         }
                     });
                     botInServer = true;
+                    console.log(`✅ Bot is in ${guild.name}`);
                 } catch (botError) {
-                    // 404 means bot not in server, other errors mean something else
                     if (botError.response?.status === 404) {
+                        console.log(`❌ Bot is NOT in ${guild.name}`);
                         botInServer = false;
                     } else {
-                        console.log(`⚠️ Could not check bot membership for ${guild.name}:`, botError.message);
+                        console.log(`⚠️ Error checking ${guild.name}:`, botError.message);
                         botInServer = false;
                     }
                 }
+            } else {
+                console.log('⚠️ No DISCORD_TOKEN found in environment!');
+                botInServer = false;
             }
             
             guildsWithBotStatus.push({
@@ -168,7 +174,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         
         const config = await GuildConfig.findOne({ guildId }).catch(() => null);
         
-        // ✅ Initialize guild with default values
+        // ✅ Get guild details from user's guild list
         let guildData = {
             id: guildId,
             name: 'Server',
@@ -181,7 +187,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         const botToken = process.env.DISCORD_TOKEN;
         const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot+applications.commands`;
         
-        // ✅ Get guild details from the user's guild list
+        // Get guild from user list
         try {
             const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
                 headers: {
@@ -198,16 +204,15 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
                     approximate_member_count: userGuild.approximate_member_count || 0,
                     approximate_presence_count: userGuild.approximate_presence_count || 0
                 };
-                console.log('✅ Guild found from user list:', guildData.name);
+                console.log('✅ Guild found:', guildData.name);
             }
         } catch (guildsError) {
             console.warn('⚠️ Could not get guild from user list:', guildsError.message);
         }
         
-        // ✅ Check if bot is in the server using bot token
+        // ✅ Check bot membership
         if (botToken) {
             try {
-                console.log('🔍 Checking bot membership using bot token...');
                 await axios.get(`https://discord.com/api/guilds/${guildId}/members/${clientId}`, {
                     headers: {
                         Authorization: `Bot ${botToken}`
