@@ -2,20 +2,11 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-// ============ IMPORT REFRESH FUNCTION ============
-const { refreshAccessToken } = require('./auth');
-
 // ============ MIDDLEWARE ============
 function isAuthenticated(req, res, next) {
-    console.log('🔍 isAuthenticated called');
-    console.log('📝 Session ID:', req.session.id);
-    console.log('👤 Session user:', req.session.user ? req.session.user.username : 'None');
-    
     if (req.session.user) {
-        console.log('✅ User authenticated, proceeding');
         return next();
     }
-    console.log('❌ No session, redirecting to login');
     return res.redirect('/auth/login');
 }
 
@@ -37,6 +28,7 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
         
         console.log(`✅ Found ${guilds.length} servers for dashboard`);
         
+        // ✅ PASS servers AND user to dashboard.ejs
         return res.render('dashboard', {
             title: 'Dashboard — Sentinal',
             user: req.session.user,
@@ -79,9 +71,7 @@ router.get('/servers', isAuthenticated, async (req, res) => {
             (g.permissions & 0x8) || (g.permissions & 0x20)
         );
         
-        console.log(`✅ Found ${guilds.length} servers with admin access`);
-        
-        // ✅ Check bot membership for each guild
+        // Check bot membership
         const botToken = process.env.DISCORD_TOKEN;
         const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
         const guildsWithBotStatus = [];
@@ -97,19 +87,9 @@ router.get('/servers', isAuthenticated, async (req, res) => {
                         }
                     });
                     botInServer = true;
-                    console.log(`✅ Bot is in ${guild.name}`);
                 } catch (botError) {
-                    if (botError.response?.status === 404) {
-                        console.log(`❌ Bot is NOT in ${guild.name}`);
-                        botInServer = false;
-                    } else {
-                        console.log(`⚠️ Error checking ${guild.name}:`, botError.message);
-                        botInServer = false;
-                    }
+                    botInServer = false;
                 }
-            } else {
-                console.log('⚠️ No DISCORD_TOKEN found');
-                botInServer = false;
             }
             
             guildsWithBotStatus.push({
@@ -152,22 +132,10 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         const guildId = req.params.id;
         console.log('🔍 Loading server settings for guild:', guildId);
         
-        const tokenExpires = req.session.user.token_expires || 0;
-        const now = Date.now();
-        
-        if (now > tokenExpires) {
-            console.log('🔄 Token expired, redirecting to login');
-            req.session.destroy(() => {
-                res.redirect('/auth/login?error=session_expired');
-            });
-            return;
-        }
-        
         let GuildConfig;
         try {
             GuildConfig = require('../models/GuildConfig');
         } catch (err) {
-            console.warn('⚠️ GuildConfig model not found');
             GuildConfig = {
                 findOne: async () => null,
                 findOneAndUpdate: async () => ({})
@@ -176,42 +144,20 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         
         const config = await GuildConfig.findOne({ guildId }).catch(() => null);
         
-        let guildData = {
-            id: guildId,
-            name: 'Server',
-            icon: null,
-            approximate_member_count: 0,
-            approximate_presence_count: 0
-        };
-        let botInServer = false;
+        const response = await axios.get(`https://discord.com/api/guilds/${guildId}`, {
+            headers: {
+                Authorization: `Bearer ${req.session.user.access_token}`
+            }
+        });
+        
+        const guild = response.data;
+        
         const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
-        const botToken = process.env.DISCORD_TOKEN;
         const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot+applications.commands&guild_id=${guildId}`;
         
-        // Get guild from user list
-        try {
-            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
-                headers: {
-                    Authorization: `Bearer ${req.session.user.access_token}`
-                }
-            });
-            
-            const userGuild = guildsResponse.data.find(g => g.id === guildId);
-            if (userGuild) {
-                guildData = {
-                    id: userGuild.id,
-                    name: userGuild.name || 'Server',
-                    icon: userGuild.icon || null,
-                    approximate_member_count: userGuild.approximate_member_count || 0,
-                    approximate_presence_count: userGuild.approximate_presence_count || 0
-                };
-                console.log('✅ Guild found:', guildData.name);
-            }
-        } catch (guildsError) {
-            console.warn('⚠️ Could not get guild from user list:', guildsError.message);
-        }
-        
-        // Check bot membership
+        // Check if bot is in server
+        let botInServer = false;
+        const botToken = process.env.DISCORD_TOKEN;
         if (botToken) {
             try {
                 await axios.get(`https://discord.com/api/guilds/${guildId}/members/${clientId}`, {
@@ -220,26 +166,22 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
                     }
                 });
                 botInServer = true;
-                console.log('✅ Bot is in this server');
             } catch (botError) {
-                if (botError.response?.status === 404) {
-                    console.log('❌ Bot is NOT in this server');
-                    botInServer = false;
-                } else {
-                    console.log('⚠️ Could not verify bot membership:', botError.message);
-                    botInServer = false;
-                }
+                botInServer = false;
             }
-        } else {
-            console.log('⚠️ No DISCORD_TOKEN found');
-            botInServer = false;
         }
         
         return res.render('server', {
             title: 'Server Settings — Sentinal',
             user: req.session.user,
             isAuthenticated: true,
-            guild: guildData,
+            guild: {
+                id: guild.id,
+                name: guild.name,
+                icon: guild.icon,
+                memberCount: guild.approximate_member_count || 0,
+                channelCount: guild.approximate_presence_count || 0
+            },
             config: config || {},
             inviteLink: inviteLink,
             botInServer: botInServer
@@ -249,7 +191,6 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         console.error('❌ Error loading server settings:', error.message);
         
         if (error.response?.status === 401) {
-            console.log('🔄 Token invalid, redirecting to login');
             req.session.destroy(() => {
                 res.redirect('/auth/login?error=session_expired');
             });
@@ -257,7 +198,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         }
         
         res.status(500).render('error', {
-            message: 'Failed to load server settings. Please try again later.',
+            message: 'Failed to load server settings: ' + error.message,
             title: 'Error'
         });
     }
@@ -269,7 +210,6 @@ router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
         const guildId = req.params.guildId;
         const settings = req.body;
         
-        // Verify user has admin permissions
         const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
                 Authorization: `Bearer ${req.session.user.access_token}`
