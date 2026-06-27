@@ -176,9 +176,7 @@
         }
         .getting-started h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
+            font-size: 18px; font-weight: 700; color: #fff;
             margin-bottom: 12px;
         }
         .getting-started ol {
@@ -187,26 +185,14 @@
             margin: 0 0 12px 0;
         }
         .getting-started ol li {
-            font-size: 14px;
-            color: var(--muted);
+            font-size: 14px; color: var(--muted);
             padding: 4px 0;
-            display: flex;
-            align-items: flex-start;
+            display: flex; align-items: flex-start;
             gap: 10px;
             line-height: 1.6;
         }
-        .getting-started ol li .num {
-            color: var(--signal);
-            font-weight: 700;
-            font-size: 14px;
-            min-width: 20px;
-        }
-        .getting-started .help-link {
-            color: var(--signal);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-        }
+        .getting-started ol li .num { color: var(--signal); font-weight: 700; font-size: 14px; min-width: 20px; }
+        .getting-started .help-link { color: var(--signal); text-decoration: none; font-size: 13px; font-weight: 500; }
         .getting-started .help-link:hover { text-decoration: underline; }
 
         /* ─── KEY FEATURES ─── */
@@ -219,138 +205,73 @@
         }
         .key-features h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
+            font-size: 18px; font-weight: 700; color: #fff;
             margin-bottom: 12px;
         }
         .key-features ul {
             list-style: none;
-            padding: 0;
-            margin: 0;
+            padding: 0; margin: 0;
         }
         .key-features ul li {
-            font-size: 14px;
-            color: var(--muted);
+            font-size: 14px; color: var(--muted);
             padding: 4px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
         }
-        .key-features ul li i {
-            color: var(--signal);
-            font-size: 14px;
-            width: 18px;
-        }
+        .key-features ul li i { color: var(--signal); font-size: 14px; width: 18px; }
 
         /* ─── CREATE APP SECTION ─── */
         .create-app-section {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 28px;
-            flex-wrap: wrap;
+            display: flex; gap: 20px; margin-bottom: 28px; flex-wrap: wrap;
         }
         .create-app-card {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 14px;
             padding: 24px 28px;
-            flex: 1;
-            min-width: 280px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
+            flex: 1; min-width: 280px;
+            display: flex; align-items: center; gap: 20px;
             transition: all 0.2s ease;
         }
-        .create-app-card:hover {
-            border-color: var(--line-bright);
-        }
+        .create-app-card:hover { border-color: var(--line-bright); }
         .create-app-card .icon-wrap {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: var(--signal-tab);
-            border: 1px solid rgba(61,255,184,0.2);
+            width: 48px; height: 48px; border-radius: 12px;
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.2);
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
-            color: var(--signal);
-            flex-shrink: 0;
+            font-size: 20px; color: var(--signal); flex-shrink: 0;
         }
-        .create-app-card .info h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 2px;
-        }
-        .create-app-card .info p {
-            font-size: 13px;
-            color: var(--muted);
-        }
-        .create-app-card .info .watch-link {
-            color: var(--signal);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-        }
+        .create-app-card .info h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+        .create-app-card .info p { font-size: 13px; color: var(--muted); }
+        .create-app-card .info .watch-link { color: var(--signal); text-decoration: none; font-size: 13px; font-weight: 500; }
         .create-app-card .info .watch-link:hover { text-decoration: underline; }
 
         /* ─── APPLICATIONS LIST ─── */
         .apps-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 12px;
+            margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
         }
         .apps-header .left h3 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
+            font-size: 18px; font-weight: 700; color: #fff;
         }
-        .apps-header .left .count {
-            font-size: 13px;
-            color: var(--muted);
-        }
-        .apps-header .right {
-            display: flex; align-items: center; gap: 12px;
-            flex-wrap: wrap;
-        }
+        .apps-header .left .count { font-size: 13px; color: var(--muted); }
+        .apps-header .right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .apps-header .right .search-apps {
-            padding: 8px 16px;
-            border-radius: 10px;
-            border: 1px solid var(--line);
-            background: var(--panel);
-            color: var(--text);
-            font-size: 13px;
-            font-family: 'Inter', sans-serif;
-            outline: none;
-            width: 220px;
+            padding: 8px 16px; border-radius: 10px;
+            border: 1px solid var(--line); background: var(--panel);
+            color: var(--text); font-size: 13px; font-family: 'Inter', sans-serif;
+            outline: none; width: 220px;
         }
-        .apps-header .right .search-apps:focus {
-            border-color: var(--signal);
-            box-shadow: 0 0 0 3px var(--signal-glow);
-        }
-        .apps-header .right .search-apps::placeholder {
-            color: var(--muted-dim);
-        }
+        .apps-header .right .search-apps:focus { border-color: var(--signal); box-shadow: 0 0 0 3px var(--signal-glow); }
+        .apps-header .right .search-apps::placeholder { color: var(--muted-dim); }
         .btn-new {
-            padding: 10px 24px;
-            border-radius: 10px;
-            background: var(--signal);
-            color: #04140F;
-            border: none;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.18s ease;
-            text-decoration: none;
-            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 24px; border-radius: 10px;
+            background: var(--signal); color: #04140F;
+            border: none; font-weight: 700; font-size: 13px;
+            cursor: pointer; transition: all 0.18s ease;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
             white-space: nowrap;
         }
-        .btn-new:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 18px var(--signal-glow);
-        }
+        .btn-new:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--signal-glow); }
 
         /* ─── EMPTY STATE ─── */
         .empty-state {
@@ -361,19 +282,93 @@
             text-align: center;
             color: var(--muted);
         }
-        .empty-state i {
-            font-size: 40px;
-            color: var(--signal);
-            margin-bottom: 16px;
-            display: block;
-        }
-        .empty-state h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            color: #fff;
-            margin-bottom: 4px;
-        }
+        .empty-state i { font-size: 40px; color: var(--signal); margin-bottom: 16px; display: block; }
+        .empty-state h3 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; color: #fff; margin-bottom: 4px; }
         .empty-state p { font-size: 14px; }
+
+        /* ─── MODAL ─── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 540px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: fadeIn 0.25s ease;
+        }
+        .modal .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal .modal-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px; font-weight: 700; color: #fff;
+        }
+        .modal .modal-header .close-btn {
+            background: none; border: none;
+            color: var(--muted); font-size: 24px; cursor: pointer;
+            padding: 4px 8px; border-radius: 8px;
+            transition: all 0.18s ease;
+        }
+        .modal .modal-header .close-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+        .modal .form-group { margin-bottom: 16px; }
+        .modal .form-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            margin-bottom: 4px; color: var(--text);
+        }
+        .modal .form-group .form-hint {
+            font-size: 11px; color: var(--muted-dim); margin-top: 2px;
+        }
+        .modal .form-group input, .modal .form-group select, .modal .form-group textarea {
+            width: 100%; padding: 10px 14px;
+            border-radius: 10px; border: 1px solid var(--line);
+            background: rgba(0,0,0,0.3); color: var(--text);
+            font-size: 13px; font-family: 'Inter', sans-serif;
+            transition: all 0.18s ease; outline: none;
+        }
+        .modal .form-group input:focus, .modal .form-group select:focus, .modal .form-group textarea:focus {
+            border-color: var(--signal);
+            box-shadow: 0 0 0 3px var(--signal-glow);
+        }
+        .modal .form-group textarea { resize: vertical; min-height: 80px; }
+        .modal .form-group select option { background: var(--ink); }
+        .modal .form-actions {
+            display: flex; gap: 12px; flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .modal .btn-save {
+            padding: 10px 32px; border-radius: 10px;
+            border: none; font-weight: 700; font-size: 14px;
+            cursor: pointer; transition: all 0.18s ease;
+            background: var(--signal); color: #04140F;
+        }
+        .modal .btn-save:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--signal-glow); }
+        .modal .btn-cancel {
+            padding: 10px 32px; border-radius: 10px;
+            border: 1px solid var(--line); background: transparent;
+            color: var(--muted); font-weight: 600; font-size: 14px;
+            cursor: pointer; transition: all 0.18s ease;
+        }
+        .modal .btn-cancel:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .footer {
             border-top: 1px solid var(--line);
@@ -398,6 +393,7 @@
             .create-app-section { flex-direction: column; }
             .create-app-card { flex-direction: column; text-align: center; }
             .getting-started, .key-features { padding: 20px; }
+            .modal { padding: 24px; }
             .footer { padding: 20px 16px; }
         }
     </style>
@@ -441,6 +437,45 @@
 
         <!-- ─── TOAST CONTAINER ─── -->
         <div class="toast-container" id="toastContainer"></div>
+
+        <!-- ─── MODAL ─── -->
+        <div class="modal-overlay" id="newAppModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2><i class="fas fa-plus" style="color:var(--signal); margin-right:10px;"></i> New Application</h2>
+                    <button class="close-btn" onclick="closeModal()">&times;</button>
+                </div>
+                <form id="newAppForm" onsubmit="createApplication(event)">
+                    <div class="form-group">
+                        <label for="appName">Application Name</label>
+                        <input type="text" id="appName" placeholder="e.g. Staff Application" required>
+                        <div class="form-hint">The name of your application form</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="appDescription">Description</label>
+                        <textarea id="appDescription" placeholder="Describe what this application is for..." rows="2"></textarea>
+                        <div class="form-hint">Optional description shown to users</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="appStatus">Status</label>
+                        <select id="appStatus">
+                            <option value="enabled">Enabled</option>
+                            <option value="disabled">Disabled</option>
+                        </select>
+                        <div class="form-hint">Disabled applications cannot receive submissions</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="appChannel">Submission Channel</label>
+                        <input type="text" id="appChannel" placeholder="#applications">
+                        <div class="form-hint">Channel where applications will be sent</div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Create Application</button>
+                        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <!-- ─── PAGE HEADER ─── -->
         <div class="page-header">
@@ -496,11 +531,11 @@
         <!-- ─── APPLICATIONS LIST ─── -->
         <div class="apps-header">
             <div class="left">
-                <h3>Applications: <span class="count">0/5</span></h3>
+                <h3>Applications: <span class="count" id="appCount">0/5</span></h3>
             </div>
             <div class="right">
                 <input type="text" class="search-apps" placeholder="Search applications..." id="searchApps" onkeyup="filterApps()">
-                <button class="btn-new" onclick="showToast('Create new application coming soon!', 'info')">
+                <button class="btn-new" onclick="openModal()">
                     <i class="fas fa-plus"></i> New Application
                 </button>
             </div>
@@ -520,6 +555,7 @@
     </footer>
 
     <script>
+        // ─── TOAST ───
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -540,9 +576,68 @@
             }, 4000);
         }
 
+        // ─── MODAL ───
+        function openModal() {
+            document.getElementById('newAppModal').classList.add('active');
+            document.getElementById('appName').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('newAppModal').classList.remove('active');
+            document.getElementById('newAppForm').reset();
+        }
+
+        // ─── CREATE APPLICATION ───
+        function createApplication(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('appName').value;
+            const description = document.getElementById('appDescription').value;
+            const status = document.getElementById('appStatus').value;
+            const channel = document.getElementById('appChannel').value;
+
+            const data = {
+                name: name,
+                description: description,
+                enabled: status === 'enabled',
+                channel: channel,
+                guildId: '<%= locals.guild ? guild.id : "" %>'
+            };
+
+            fetch('/api/applications', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('✅ Application "' + name + '" created successfully!', 'success');
+                    closeModal();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast('❌ Error: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                showToast('❌ Error creating application: ' + error.message, 'error');
+            });
+        }
+
+        // ─── SEARCH ───
         function filterApps() {
             // Placeholder for search functionality
         }
+
+        // ─── CLOSE MODAL ON ESC ───
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ─── CLOSE MODAL ON OVERLAY CLICK ───
+        document.querySelector('.modal-overlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
     </script>
 
 </body>
