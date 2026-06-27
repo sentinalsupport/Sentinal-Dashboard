@@ -7,34 +7,6 @@ const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://sentinal-dashboard.onrender.com/auth/discord/callback';
 
-// ============ TOKEN REFRESH FUNCTION ============
-async function refreshAccessToken(refresh_token) {
-    try {
-        console.log('🔄 Refreshing access token...');
-        
-        const response = await axios.post(
-            'https://discord.com/api/oauth2/token',
-            new URLSearchParams({
-                client_id: DISCORD_CLIENT_ID,
-                client_secret: DISCORD_CLIENT_SECRET,
-                refresh_token: refresh_token,
-                grant_type: 'refresh_token'
-            }),
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-        );
-        
-        console.log('✅ Token refreshed successfully');
-        return response.data;
-    } catch (error) {
-        console.error('❌ Token refresh error:', error.response?.data || error.message);
-        throw error;
-    }
-}
-
 // ============ LOGIN PAGE ============
 router.get('/login', (req, res) => {
     if (req.session.user) {
@@ -132,4 +104,4 @@ router.get('/logout', (req, res) => {
     });
 });
 
-module.exports = { router, refreshAccessToken };
+module.exports = router;
