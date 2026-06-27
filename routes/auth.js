@@ -93,7 +93,6 @@ router.get('/discord/callback', async (req, res) => {
         const tokenExpiry = Date.now() + (expires_in * 1000);
         console.log('📝 Token expires at:', new Date(tokenExpiry).toLocaleString());
         
-        // ✅ Store ALL user data needed by the views
         req.session.user = {
             id: user.id,
             username: user.username,
