@@ -94,7 +94,7 @@
         .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
         /* ─── PAGE ─── */
-        .page-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 32px 60px; }
+        .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 0 32px 60px; }
 
         /* ─── PAGE HEADER ─── */
         .page-header {
@@ -112,76 +112,9 @@
         .page-header .left p {
             font-size: 13px; color: var(--muted);
         }
-        .page-header .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn-primary {
-            padding: 10px 24px; border-radius: 10px;
-            background: var(--signal); color: #04140F;
-            border: none; font-weight: 700; font-size: 13px;
-            cursor: pointer; transition: all 0.18s ease;
-            text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--signal-glow); }
-        .btn-secondary {
-            padding: 10px 24px; border-radius: 10px;
-            background: transparent; color: var(--muted);
-            border: 1px solid var(--line); font-weight: 600; font-size: 13px;
-            cursor: pointer; transition: all 0.18s ease;
-            text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-        }
-        .btn-secondary:hover { background: rgba(255,255,255,0.04); color: var(--text); }
-
-        /* ─── LAYOUT ─── */
-        .settings-layout {
-            display: grid;
-            grid-template-columns: 220px 1fr;
-            gap: 32px;
-            align-items: start;
-        }
-
-        /* ─── SIDEBAR ─── */
-        .settings-sidebar {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 12px 0;
-            position: sticky;
-            top: 80px;
-        }
-        .settings-sidebar .nav-item {
-            display: flex; align-items: center; gap: 10px;
-            padding: 10px 16px; border-radius: 8px;
-            color: var(--muted); text-decoration: none;
-            font-size: 13px; font-weight: 500;
-            transition: all 0.18s ease; cursor: pointer; border: none;
-            background: none; width: 100%; text-align: left;
-        }
-        .settings-sidebar .nav-item:hover {
-            background: rgba(255,255,255,0.04); color: var(--text);
-        }
-        .settings-sidebar .nav-item.active {
-            background: var(--signal-tab); color: var(--signal);
-        }
-        .settings-sidebar .nav-item i {
-            width: 18px; font-size: 14px;
-        }
-        .settings-sidebar .nav-item .badge {
-            margin-left: auto; font-size: 9px; font-weight: 700;
-            padding: 2px 8px; border-radius: 100px;
-            background: var(--signal-tab); color: var(--signal);
-        }
-
-        /* ─── PANEL CONTENT ─── */
-        .panel-content {
-            display: none;
-            animation: fadeIn 0.25s ease;
-        }
-        .panel-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
+        .page-header .left h1 i {
+            color: var(--signal);
+            margin-right: 10px;
         }
 
         /* ─── SECTION CARDS ─── */
@@ -194,30 +127,17 @@
         }
         .section-card .section-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+            margin-bottom: 6px; flex-wrap: wrap; gap: 8px;
         }
         .section-card .section-header h3 {
             font-size: 15px; font-weight: 600; color: #fff;
         }
-        .section-card .section-header .toggle-wrapper {
-            display: flex; align-items: center; gap: 10px;
+        .section-card .section-header .badge {
+            font-size: 10px; font-weight: 600;
+            padding: 2px 10px; border-radius: 100px;
+            background: var(--signal-tab); color: var(--signal);
+            border: 1px solid rgba(61,255,184,0.2);
         }
-        .toggle {
-            width: 44px; height: 24px;
-            background: var(--muted-dim); border-radius: 12px;
-            cursor: pointer; transition: all 0.3s ease;
-            position: relative;
-        }
-        .toggle.active { background: var(--signal); }
-        .toggle .toggle-slider {
-            width: 18px; height: 18px;
-            background: #fff; border-radius: 50%;
-            position: absolute; top: 3px; left: 3px;
-            transition: all 0.3s ease;
-        }
-        .toggle.active .toggle-slider { left: 23px; }
-        .toggle-label { font-size: 13px; color: var(--text); font-weight: 500; }
-
         .section-card .section-desc {
             font-size: 13px; color: var(--muted);
             margin-bottom: 16px;
@@ -232,25 +152,18 @@
         .form-group .form-hint {
             font-size: 11px; color: var(--muted-dim); margin-top: 2px;
         }
-        .form-group input, .form-group select, .form-group textarea {
+        .form-group input, .form-group select {
             width: 100%; padding: 9px 14px;
             border-radius: 8px; border: 1px solid var(--line);
             background: rgba(0,0,0,0.3); color: var(--text);
             font-size: 13px; font-family: 'Inter', sans-serif;
             transition: all 0.18s ease; outline: none;
         }
-        .form-group textarea {
-            resize: vertical; min-height: 80px;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        .form-group input:focus, .form-group select:focus {
             border-color: var(--signal);
             box-shadow: 0 0 0 3px var(--signal-glow);
         }
         .form-group select option { background: var(--ink); }
-        .form-group .channel-select {
-            display: flex; gap: 8px; align-items: center;
-        }
-        .form-group .channel-select input { flex: 1; }
 
         .form-actions {
             display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px;
@@ -263,86 +176,30 @@
         }
         .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 18px var(--signal-glow); }
 
-        .btn-danger {
-            padding: 8px 28px; border-radius: 8px; border: none;
-            font-weight: 600; font-size: 13px; cursor: pointer;
-            background: var(--red); color: #fff;
-            transition: all 0.18s ease;
-        }
-        .btn-danger:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(248,113,113,0.3); }
-
-        /* ─── QUESTIONS SECTION ─── */
-        .question-item {
-            background: var(--panel-raised);
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .question-item .q-number {
-            font-size: 12px; font-weight: 700; color: var(--muted);
-            min-width: 30px;
-        }
-        .question-item .q-text {
-            flex: 1; font-weight: 500;
-        }
-        .question-item .q-type {
-            font-size: 11px; color: var(--muted);
-            background: var(--panel); padding: 2px 10px;
-            border-radius: 100px; border: 1px solid var(--line);
-        }
-        .question-item .q-actions {
-            display: flex; gap: 6px;
-        }
-        .question-item .q-actions button {
-            background: none; border: none; color: var(--muted);
-            cursor: pointer; padding: 4px 8px; border-radius: 6px;
-            transition: all 0.18s ease;
-        }
-        .question-item .q-actions button:hover {
-            background: rgba(255,255,255,0.04); color: var(--text);
-        }
-        .question-item .q-actions button.danger:hover {
-            background: var(--red-bg); color: var(--red);
-        }
-
-        /* ─── PREMIUM BANNER ─── */
-        .premium-banner {
-            background: var(--gold-tab);
-            border: 1px solid rgba(245,200,66,0.2);
-            border-radius: 10px;
-            padding: 16px 20px;
-            display: flex; align-items: center; justify-content: space-between;
-            flex-wrap: wrap; gap: 12px;
-        }
-        .premium-banner p {
-            font-size: 13px; color: var(--gold);
-        }
-        .premium-banner p i { margin-right: 8px; }
-        .premium-banner .btn-upgrade {
-            padding: 6px 18px; border-radius: 8px;
-            background: var(--gold); color: #04140F;
-            border: none; font-weight: 700; font-size: 12px;
+        .btn-secondary {
+            padding: 8px 20px; border-radius: 8px;
+            background: transparent; color: var(--muted);
+            border: 1px solid var(--line); font-weight: 600; font-size: 13px;
             cursor: pointer; transition: all 0.18s ease;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
         }
-        .premium-banner .btn-upgrade:hover { transform: scale(1.05); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.04); color: var(--text); }
 
-        .coming-soon {
-            text-align: center; padding: 40px 20px;
-            color: var(--muted);
+        .btn-primary {
+            padding: 10px 24px; border-radius: 10px;
+            background: var(--signal); color: #04140F;
+            border: none; font-weight: 700; font-size: 13px;
+            cursor: pointer; transition: all 0.18s ease;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
         }
-        .coming-soon i {
-            font-size: 32px; color: var(--gold); margin-bottom: 12px; display: block;
-        }
-        .coming-soon h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 17px; color: #fff; margin-bottom: 4px;
-        }
-        .coming-soon p { font-size: 13px; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--signal-glow); }
 
+        /* ─── ACTION ROW ─── */
+        .action-row {
+            display: flex; gap: 10px; flex-wrap: wrap;
+        }
+
+        /* ─── FOOTER ─── */
         .footer {
             border-top: 1px solid var(--line); margin-top: 60px;
             padding: 24px 40px; text-align: center;
@@ -354,20 +211,11 @@
             .navbar { padding: 0 16px; }
             .nav-center { display: none; }
             .page-wrapper { padding: 0 16px 48px; }
-            .settings-layout { grid-template-columns: 1fr; }
-            .settings-sidebar {
-                position: relative; top: 0;
-                display: flex; flex-wrap: wrap; gap: 4px; padding: 12px;
-                border-radius: 12px;
-            }
-            .settings-sidebar .nav-item { padding: 6px 12px; font-size: 12px; width: auto; }
             .section-card { padding: 16px; }
-            .question-item { flex-wrap: wrap; }
             .page-header { flex-direction: column; align-items: stretch; }
-            .page-header .actions { flex-direction: column; }
-            .page-header .actions .btn-primary, .page-header .actions .btn-secondary {
-                width: 100%; justify-content: center;
-            }
+            .page-header .btn-primary { width: 100%; justify-content: center; }
+            .action-row { flex-direction: column; }
+            .action-row .btn-secondary { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -386,7 +234,7 @@
         </a>
         <div class="nav-center">
             <a href="/dashboard">Home</a>
-            <a href="/servers">Servers</a>
+            <a href="/servers" class="active">Servers</a>
             <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
             <a href="#">Premium</a>
         </div>
@@ -412,370 +260,67 @@
         <!-- ─── PAGE HEADER ─── -->
         <div class="page-header">
             <div class="left">
-                <h1><i class="fas fa-file-alt" style="color:var(--signal); margin-right:10px;"></i> <span id="appName">jkjk</span></h1>
-                <p>Configure your application settings below.</p>
+                <h1><i class="fas fa-file-alt"></i> Applications</h1>
+                <p>Create forms for your members to fill out</p>
             </div>
-            <div class="actions">
-                <a href="#" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh</a>
-                <a href="#" class="btn-secondary"><i class="fas fa-download"></i> Download Submissions</a>
+            <a href="#" class="btn-primary" onclick="alert('Create new application form coming soon!')">
+                <i class="fas fa-plus"></i> New
+            </a>
+        </div>
+
+        <!-- ─── APPLICATIONS SECTION ─── -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Applications</h3>
+                <span class="badge">Live</span>
+            </div>
+            <p class="section-desc">Create forms for your members to fill out</p>
+
+            <div class="form-group">
+                <label for="appChannel">Application Channel</label>
+                <input type="text" id="appChannel" value="<%= locals.config ? (config.applicationChannel || '') : '' %>" placeholder="#channel-name or channel ID">
+                <div class="form-hint">Channel where applications will be sent</div>
+            </div>
+
+            <div class="form-group">
+                <label for="appRole">Reviewer Role</label>
+                <input type="text" id="appRole" placeholder="@role-name or role ID">
+                <div class="form-hint">Role that can review applications</div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
             </div>
         </div>
 
-        <!-- ─── SETTINGS LAYOUT ─── -->
-        <div class="settings-layout">
-
-            <!-- ─── SIDEBAR ─── -->
-            <aside class="settings-sidebar">
-                <button class="nav-item active" onclick="showPanel('requirements')">
-                    <i class="fas fa-list-check"></i> Requirements
-                </button>
-                <button class="nav-item" onclick="showPanel('embed')">
-                    <i class="fas fa-palette"></i> Embed Customization
-                </button>
-                <button class="nav-item" onclick="showPanel('roles')">
-                    <i class="fas fa-user-tag"></i> Role Config
-                </button>
-                <button class="nav-item" onclick="showPanel('other')">
-                    <i class="fas fa-cog"></i> Other
-                </button>
-                <button class="nav-item" onclick="showPanel('questions')">
-                    <i class="fas fa-question-circle"></i> Questions
-                    <span class="badge">2</span>
-                </button>
-            </aside>
-
-            <!-- ─── CONTENT ─── -->
-
-            <!-- ─── REQUIREMENTS PANEL ─── -->
-            <div class="panel-content active" id="panel-requirements">
-
-                <!-- Enabled Toggle -->
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Enabled</h3>
-                        <div class="toggle-wrapper">
-                            <div class="toggle active" id="enabledToggle" onclick="toggleSwitch(this)">
-                                <div class="toggle-slider"></div>
-                            </div>
-                            <span class="toggle-label">Toggle the application status to open or close it.</span>
-                        </div>
-                    </div>
-                    <p class="section-desc">Closed applications will not be able to receive submissions.</p>
-                </div>
-
-                <!-- Application Name -->
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Application name</h3>
-                    </div>
-                    <p class="section-desc">The name of the application.</p>
-                    <div class="form-group">
-                        <input type="text" id="appNameInput" value="jkjk" placeholder="Application Name">
-                    </div>
-                </div>
-
-                <!-- Pending Submission Channel -->
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Pending Submission Channel</h3>
-                    </div>
-                    <p class="section-desc">The channel that application submissions will be sent to when they are pending review. It is recommended to make sure the channel can only be viewed by staff.</p>
-                    <div class="form-group">
-                        <div class="channel-select">
-                            <input type="text" id="pendingChannel" placeholder="Select a channel" value="#pending-applications">
-                            <button class="btn-secondary" style="padding:8px 16px; white-space:nowrap;" onclick="alert('Channel selector coming soon!')">Select</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Accepted Submission Channel -->
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Accepted Submission Channel</h3>
-                    </div>
-                    <p class="section-desc">The channel that application submissions will be sent to when they are accepted. It is recommended to make sure the channel can only be viewed by staff.</p>
-                    <div class="form-group">
-                        <div class="channel-select">
-                            <input type="text" id="acceptedChannel" placeholder="Select a channel" value="#accepted-applications">
-                            <button class="btn-secondary" style="padding:8px 16px; white-space:nowrap;" onclick="alert('Channel selector coming soon!')">Select</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Denied Submission Channel -->
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Denied Submission Channel</h3>
-                    </div>
-                    <p class="section-desc">The channel that application submissions will be sent to when they are denied. It is recommended to make sure the channel can only be viewed by staff.</p>
-                    <div class="form-group">
-                        <div class="channel-select">
-                            <input type="text" id="deniedChannel" placeholder="Select a channel" value="#denied-applications">
-                            <button class="btn-secondary" style="padding:8px 16px; white-space:nowrap;" onclick="alert('Channel selector coming soon!')">Select</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button class="btn-save" onclick="saveApplication()"><i class="fas fa-save"></i> Save Changes</button>
-                </div>
+        <!-- ─── PANELS SECTION ─── -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Panels</h3>
+                <span class="badge">Live</span>
             </div>
-
-            <!-- ─── EMBED CUSTOMIZATION PANEL ─── -->
-            <div class="panel-content" id="panel-embed">
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Accepted Message</h3>
-                    </div>
-                    <p class="section-desc">The message which will be sent to the user when their submission is accepted.</p>
-                    <div class="form-group">
-                        <textarea id="acceptedMessage" rows="3">Your application for `{applicationName}` has been accepted by {user}</textarea>
-                        <div class="form-hint">Use {applicationName} for the app name, {user} for the reviewer</div>
-                    </div>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Denied Message</h3>
-                    </div>
-                    <p class="section-desc">The message which will be sent to the user when their submission is denied.</p>
-                    <div class="form-group">
-                        <textarea id="deniedMessage" rows="3">Your application for `{applicationName}` has been denied by {user}</textarea>
-                        <div class="form-hint">Use {applicationName} for the app name, {user} for the reviewer</div>
-                    </div>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Confirmation Message</h3>
-                    </div>
-                    <p class="section-desc">The first message someone receives when starting their submission.</p>
-                    <div class="form-group">
-                        <textarea id="confirmationMessage" rows="4">Are you sure you want to apply?
-
-Once you start the application I will send you a series of questions. You will have 3 hours to complete the application. If you do not complete the application in time, you will have to restart. If you wish to stop the application feel free to click the cancel button at any time.</textarea>
-                    </div>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Completion Message</h3>
-                    </div>
-                    <p class="section-desc">The message the user will receive when they have completed their submission.</p>
-                    <div class="form-group">
-                        <textarea id="completionMessage" rows="2">Your application has been submitted.</textarea>
-                    </div>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Show advanced options</h3>
-                        <div class="toggle-wrapper">
-                            <div class="toggle" id="advancedToggle" onclick="toggleSwitch(this)">
-                                <div class="toggle-slider"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button class="btn-save" onclick="saveApplication()"><i class="fas fa-save"></i> Save Changes</button>
-                </div>
+            <p class="section-desc">Manage your application panels</p>
+            <div class="action-row">
+                <button class="btn-secondary" onclick="alert('Panels management coming soon!')">
+                    <i class="fas fa-cog"></i> Configure
+                </button>
             </div>
-
-            <!-- ─── ROLE CONFIG PANEL ─── -->
-            <div class="panel-content" id="panel-roles">
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Restricted Roles</h3>
-                        <span class="badge" style="background:var(--signal-tab); color:var(--signal); padding:2px 10px; border-radius:100px; font-size:11px;">0/1</span>
-                    </div>
-                    <p class="section-desc">The roles that the user must not have in order to submit an application.</p>
-                    <div class="form-group">
-                        <label>Match Mode</label>
-                        <select>
-                            <option>Has all roles</option>
-                            <option>Has any role</option>
-                        </select>
-                        <div class="form-hint">User is restricted only if they have ALL of the listed roles.</div>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" placeholder="Select some roles..." value="No roles selected">
-                    </div>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Required Roles</h3>
-                        <span class="badge" style="background:var(--signal-tab); color:var(--signal); padding:2px 10px; border-radius:100px; font-size:11px;">0/1</span>
-                    </div>
-                    <p class="section-desc">The roles that the user must have in order to submit an application.</p>
-                    <div class="form-group">
-                        <label>Match Mode</label>
-                        <select>
-                            <option>Has all roles</option>
-                            <option>Has any role</option>
-                        </select>
-                        <div class="form-hint">User is required to have ALL of the listed roles.</div>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" placeholder="Select some roles..." value="No roles selected">
-                    </div>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Accepted Roles</h3>
-                        <span class="badge" style="background:var(--signal-tab); color:var(--signal); padding:2px 10px; border-radius:100px; font-size:11px;">0/1</span>
-                    </div>
-                    <p class="section-desc">The roles given to the applicant if their submission is accepted.</p>
-                    <div class="form-group">
-                        <input type="text" placeholder="Select some roles..." value="No roles selected">
-                    </div>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Denied Roles</h3>
-                        <span class="badge" style="background:var(--signal-tab); color:var(--signal); padding:2px 10px; border-radius:100px; font-size:11px;">0/1</span>
-                    </div>
-                    <p class="section-desc">The roles given to the applicant if their submission is denied.</p>
-                    <div class="form-group">
-                        <input type="text" placeholder="Select some roles..." value="No roles selected">
-                    </div>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Ping Roles</h3>
-                        <span class="badge" style="background:var(--signal-tab); color:var(--signal); padding:2px 10px; border-radius:100px; font-size:11px;">0/1</span>
-                    </div>
-                    <p class="section-desc">The roles pinged/mentioned when an application is submitted.</p>
-                    <div class="form-group">
-                        <input type="text" placeholder="Select some roles..." value="No roles selected">
-                    </div>
-                </div>
-
-                <div class="premium-banner">
-                    <p><i class="fas fa-crown"></i> You have reached the maximum allowed roles, upgrade to enable more.</p>
-                    <button class="btn-upgrade" onclick="alert('Upgrade to Premium!')">Upgrade Plan</button>
-                </div>
-
-                <div class="form-actions">
-                    <button class="btn-save" onclick="saveApplication()"><i class="fas fa-save"></i> Save Changes</button>
-                </div>
-            </div>
-
-            <!-- ─── OTHER PANEL ─── -->
-            <div class="panel-content" id="panel-other">
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Staff Threads</h3>
-                        <div class="toggle-wrapper">
-                            <div class="toggle" id="staffThreadsToggle" onclick="toggleSwitch(this)">
-                                <div class="toggle-slider"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="section-desc">Automatically creates a thread for each submission, allowing you to communicate with your staff team about it.</p>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Application cooldown</h3>
-                    </div>
-                    <p class="section-desc">How long a user must wait before submitting a new application.</p>
-                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                        <div class="form-group" style="flex:1; min-width:80px;">
-                            <label>Days</label>
-                            <input type="number" value="0" min="0">
-                        </div>
-                        <div class="form-group" style="flex:1; min-width:80px;">
-                            <label>Hours</label>
-                            <input type="number" value="0" min="0">
-                        </div>
-                        <div class="form-group" style="flex:1; min-width:80px;">
-                            <label>Minutes</label>
-                            <input type="number" value="0" min="0">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Time Limit</h3>
-                    </div>
-                    <p class="section-desc">Set how long users have to complete this application before it expires.</p>
-                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                        <div class="form-group" style="flex:1; min-width:80px;">
-                            <label>Days</label>
-                            <input type="number" value="0" min="0">
-                        </div>
-                        <div class="form-group" style="flex:1; min-width:80px;">
-                            <label>Hours</label>
-                            <input type="number" value="3" min="0">
-                        </div>
-                        <div class="form-group" style="flex:1; min-width:80px;">
-                            <label>Minutes</label>
-                            <input type="number" value="0" min="0">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button class="btn-save" onclick="saveApplication()"><i class="fas fa-save"></i> Save Changes</button>
-                </div>
-            </div>
-
-            <!-- ─── QUESTIONS PANEL ─── -->
-            <div class="panel-content" id="panel-questions">
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Questions: <span id="questionCount">2</span>/12</h3>
-                    </div>
-
-                    <!-- Question 1 -->
-                    <div class="question-item">
-                        <span class="q-number">1.</span>
-                        <span class="q-text">Do you like dogs?</span>
-                        <span class="q-type"><i class="fas fa-pen"></i> Text</span>
-                        <div class="q-actions">
-                            <button onclick="alert('Edit question')"><i class="fas fa-edit"></i></button>
-                            <button class="danger" onclick="alert('Delete question')"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- Question 2 -->
-                    <div class="question-item">
-                        <span class="q-number">2.</span>
-                        <span class="q-text">Are capybaras the best animal?</span>
-                        <span class="q-type"><i class="fas fa-check-square"></i> Multiple choice</span>
-                        <div class="q-actions">
-                            <button onclick="alert('Edit question')"><i class="fas fa-edit"></i></button>
-                            <button class="danger" onclick="alert('Delete question')"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- Add Question -->
-                    <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
-                        <button class="btn-primary" onclick="alert('New question form coming soon!')"><i class="fas fa-plus"></i> New question</button>
-                        <div style="display:flex; gap:6px; align-items:center; margin-left:auto;">
-                            <span style="font-size:11px; color:var(--muted);">2/12 questions used.</span>
-                        </div>
-                    </div>
-
-                    <div class="premium-banner" style="margin-top:12px;">
-                        <p><i class="fas fa-crown"></i> Unlock Appy premium for up to 100 questions.</p>
-                        <button class="btn-upgrade" onclick="alert('Upgrade to Premium!')">Upgrade Plan</button>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button class="btn-save" onclick="saveApplication()"><i class="fas fa-save"></i> Save Changes</button>
-                </div>
-            </div>
-
         </div>
+
+        <!-- ─── SUBMISSIONS SECTION ─── -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Submissions</h3>
+                <span class="badge">Live</span>
+            </div>
+            <p class="section-desc">View and manage all application submissions</p>
+            <div class="action-row">
+                <button class="btn-secondary" onclick="alert('Submissions view coming soon!')">
+                    <i class="fas fa-list"></i> View All
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <footer class="footer">
@@ -783,40 +328,13 @@ Once you start the application I will send you a series of questions. You will h
     </footer>
 
     <script>
-        // ─── PANEL NAVIGATION ───
-        function showPanel(panel) {
-            document.querySelectorAll('.settings-sidebar .nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.settings-sidebar .nav-item').forEach(el => {
-                if (el.textContent.trim().toLowerCase().includes(panel)) {
-                    el.classList.add('active');
-                }
-            });
-
-            document.querySelectorAll('.panel-content').forEach(el => el.classList.remove('active'));
-            const target = document.getElementById('panel-' + panel);
-            if (target) target.classList.add('active');
-        }
-
-        // ─── TOGGLE SWITCH ───
-        function toggleSwitch(el) {
-            el.classList.toggle('active');
-        }
-
-        // ─── SAVE APPLICATION ───
-        function saveApplication() {
+        function saveSettings() {
             const data = {
-                name: document.getElementById('appNameInput')?.value || '',
-                enabled: document.getElementById('enabledToggle')?.classList.contains('active') || false,
-                pendingChannel: document.getElementById('pendingChannel')?.value || '',
-                acceptedChannel: document.getElementById('acceptedChannel')?.value || '',
-                deniedChannel: document.getElementById('deniedChannel')?.value || '',
-                acceptedMessage: document.getElementById('acceptedMessage')?.value || '',
-                deniedMessage: document.getElementById('deniedMessage')?.value || '',
-                confirmationMessage: document.getElementById('confirmationMessage')?.value || '',
-                completionMessage: document.getElementById('completionMessage')?.value || ''
+                applicationChannel: document.getElementById('appChannel')?.value || '',
+                applicationRole: document.getElementById('appRole')?.value || ''
             };
 
-            fetch('/api/applications/<%= locals.guild ? guild.id : '' %>', {
+            fetch(`/api/config/<%= locals.guild ? guild.id : '' %>`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -824,14 +342,14 @@ Once you start the application I will send you a series of questions. You will h
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('✅ Application saved successfully!');
+                    alert('✅ Settings saved successfully!');
                     location.reload();
                 } else {
                     alert('❌ Error: ' + data.error);
                 }
             })
             .catch(error => {
-                alert('❌ Error saving application: ' + error.message);
+                alert('❌ Error saving settings: ' + error.message);
             });
         }
     </script>
