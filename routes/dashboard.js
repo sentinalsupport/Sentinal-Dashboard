@@ -62,6 +62,7 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
 router.get('/servers', isAuthenticated, async (req, res) => {
     try {
         console.log('📋 Loading servers list...');
+        console.log('👤 User in session:', req.session.user ? req.session.user.username : 'None');
         
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
@@ -86,7 +87,6 @@ router.get('/servers', isAuthenticated, async (req, res) => {
             
             if (botToken) {
                 try {
-                    // Try to get bot member info from guild
                     await axios.get(`https://discord.com/api/guilds/${guild.id}/members/${clientId}`, {
                         headers: {
                             Authorization: `Bot ${botToken}`
@@ -119,9 +119,10 @@ router.get('/servers', isAuthenticated, async (req, res) => {
             });
         }
         
+        // ✅ PASS THE USER VARIABLE TO THE VIEW
         return res.render('servers', {
             title: 'My Servers — Sentinal',
-            user: req.session.user,
+            user: req.session.user,  // ✅ THIS IS THE KEY FIX
             guilds: guildsWithBotStatus,
             isAuthenticated: true
         });
@@ -185,7 +186,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         let botInServer = false;
         const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
         const botToken = process.env.DISCORD_TOKEN;
-        const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot+applications.commands`;
+        const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot+applications.commands&guild_id=${guildId}`;
         
         // Get guild from user list
         try {
