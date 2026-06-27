@@ -22,8 +22,6 @@ function isAuthenticated(req, res, next) {
 // ============ DASHBOARD HOME ============
 router.get('/dashboard', isAuthenticated, async (req, res) => {
     try {
-        console.log('📤 Making API request with token:', req.session.user.access_token.substring(0, 20) + '...');
-        
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
                 Authorization: `Bearer ${req.session.user.access_token}`
@@ -63,20 +61,62 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
 // ============ SERVERS LIST ============
 router.get('/servers', isAuthenticated, async (req, res) => {
     try {
+        console.log('📋 Loading servers list...');
+        
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
                 Authorization: `Bearer ${req.session.user.access_token}`
             }
         });
         
+        // Filter guilds where user has admin or manage server permissions
         const guilds = response.data.filter(g => 
             (g.permissions & 0x8) || (g.permissions & 0x20)
         );
         
+        // ✅ Check bot membership for each guild using bot token
+        const botToken = process.env.DISCORD_TOKEN;
+        const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
+        const guildsWithBotStatus = [];
+        
+        for (const guild of guilds) {
+            let botInServer = false;
+            
+            if (botToken) {
+                try {
+                    // Try to get bot member info from guild
+                    await axios.get(`https://discord.com/api/guilds/${guild.id}/members/${clientId}`, {
+                        headers: {
+                            Authorization: `Bot ${botToken}`
+                        }
+                    });
+                    botInServer = true;
+                } catch (botError) {
+                    // 404 means bot not in server, other errors mean something else
+                    if (botError.response?.status === 404) {
+                        botInServer = false;
+                    } else {
+                        console.log(`⚠️ Could not check bot membership for ${guild.name}:`, botError.message);
+                        botInServer = false;
+                    }
+                }
+            }
+            
+            guildsWithBotStatus.push({
+                id: guild.id,
+                name: guild.name,
+                icon: guild.icon,
+                permissions: guild.permissions,
+                approximate_member_count: guild.approximate_member_count || 0,
+                approximate_presence_count: guild.approximate_presence_count || 0,
+                botInServer: botInServer
+            });
+        }
+        
         return res.render('servers', {
             title: 'My Servers — Sentinal',
             user: req.session.user,
-            guilds: guilds,
+            guilds: guildsWithBotStatus,
             isAuthenticated: true
         });
     } catch (error) {
@@ -141,7 +181,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         const botToken = process.env.DISCORD_TOKEN;
         const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot+applications.commands`;
         
-        // ✅ Get guild details from the user's guild list (this works with user token)
+        // ✅ Get guild details from the user's guild list
         try {
             const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
                 headers: {
@@ -164,24 +204,20 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
             console.warn('⚠️ Could not get guild from user list:', guildsError.message);
         }
         
-        // ✅ Check if bot is in the server using the bot token
+        // ✅ Check if bot is in the server using bot token
         if (botToken) {
             try {
                 console.log('🔍 Checking bot membership using bot token...');
-                const botMember = await axios.get(`https://discord.com/api/guilds/${guildId}/members/${clientId}`, {
+                await axios.get(`https://discord.com/api/guilds/${guildId}/members/${clientId}`, {
                     headers: {
                         Authorization: `Bot ${botToken}`
                     }
                 });
-                // If we get a 200 response, the bot is in the server
                 botInServer = true;
-                console.log('✅ Bot is in this server (verified with bot token)');
+                console.log('✅ Bot is in this server');
             } catch (botError) {
                 if (botError.response?.status === 404) {
-                    console.log('❌ Bot is NOT in this server (404 Not Found)');
-                    botInServer = false;
-                } else if (botError.response?.status === 401) {
-                    console.log('⚠️ Bot token is invalid or expired! Please check DISCORD_TOKEN');
+                    console.log('❌ Bot is NOT in this server');
                     botInServer = false;
                 } else {
                     console.log('⚠️ Could not verify bot membership:', botError.message);
@@ -189,31 +225,8 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
                 }
             }
         } else {
-            console.log('⚠️ No DISCORD_TOKEN found in environment variables');
+            console.log('⚠️ No DISCORD_TOKEN found');
             botInServer = false;
-        }
-        
-        // ✅ If bot is in server, try to get more details using bot token
-        if (botInServer && botToken) {
-            try {
-                const guildResponse = await axios.get(`https://discord.com/api/guilds/${guildId}`, {
-                    headers: {
-                        Authorization: `Bot ${botToken}`
-                    }
-                });
-                if (guildResponse.data) {
-                    guildData = {
-                        id: guildResponse.data.id,
-                        name: guildResponse.data.name || guildData.name,
-                        icon: guildResponse.data.icon || guildData.icon,
-                        approximate_member_count: guildResponse.data.approximate_member_count || guildData.approximate_member_count,
-                        approximate_presence_count: guildResponse.data.approximate_presence_count || guildData.approximate_presence_count
-                    };
-                    console.log('✅ Guild details fetched using bot token:', guildData.name);
-                }
-            } catch (guildError) {
-                console.log('⚠️ Could not fetch guild details using bot token:', guildError.message);
-            }
         }
         
         return res.render('server', {
@@ -237,7 +250,6 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
             return;
         }
         
-        // ✅ Show error page but don't crash
         res.status(500).render('error', {
             message: 'Failed to load server settings. Please try again later.',
             title: 'Error'
