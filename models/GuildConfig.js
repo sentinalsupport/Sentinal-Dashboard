@@ -9,6 +9,7 @@ const GuildConfigSchema = new mongoose.Schema({
     mutedRole: { type: String, default: '' },
     adminRoles: { type: [String], default: [] },
     applicationChannel: { type: String, default: '' },
+    reviewerRole: { type: String, default: '' },
     ticketCategory: { type: String, default: '' },
     ticketSupportRole: { type: String, default: '' },
     giveawayChannel: { type: String, default: '' },
@@ -19,7 +20,10 @@ const GuildConfigSchema = new mongoose.Schema({
     enabledFeatures: { type: [String], default: ['applications', 'tickets', 'verification'] },
     premium: { type: Boolean, default: false },
     premiumExpiry: { type: Date, default: null },
+    welcomeChannel: { type: String, default: '' },
+    welcomeMessage: { type: String, default: 'Welcome {user} to {server}!' },
+    autorole: { type: String, default: '' },
     updatedAt: { type: Date, default: Date.now }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('GuildConfig', GuildConfigSchema);
