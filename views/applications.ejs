@@ -135,6 +135,8 @@
             font-size: 14px; padding: 4px;
         }
         .toast .toast-close:hover { color: var(--text); }
+        .toast.error { border-left-color: var(--red); }
+        .toast.error .toast-icon { color: var(--red); }
         @keyframes slideIn {
             from { opacity: 0; transform: translateX(40px); }
             to { opacity: 1; transform: translateX(0); }
@@ -304,7 +306,7 @@
             border: 1px solid var(--line);
             border-radius: 16px;
             padding: 32px;
-            max-width: 540px;
+            max-width: 480px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -325,7 +327,7 @@
             transition: all 0.18s ease;
         }
         .modal .modal-header .close-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-        .modal .form-group { margin-bottom: 16px; }
+        .modal .form-group { margin-bottom: 6px; }
         .modal .form-group label {
             display: block; font-size: 13px; font-weight: 600;
             margin-bottom: 4px; color: var(--text);
@@ -333,19 +335,28 @@
         .modal .form-group .form-hint {
             font-size: 11px; color: var(--muted-dim); margin-top: 2px;
         }
-        .modal .form-group input, .modal .form-group select, .modal .form-group textarea {
+        .modal .form-group input {
             width: 100%; padding: 10px 14px;
             border-radius: 10px; border: 1px solid var(--line);
             background: rgba(0,0,0,0.3); color: var(--text);
             font-size: 13px; font-family: 'Inter', sans-serif;
             transition: all 0.18s ease; outline: none;
         }
-        .modal .form-group input:focus, .modal .form-group select:focus, .modal .form-group textarea:focus {
+        .modal .form-group input:focus {
             border-color: var(--signal);
             box-shadow: 0 0 0 3px var(--signal-glow);
         }
-        .modal .form-group textarea { resize: vertical; min-height: 80px; }
-        .modal .form-group select option { background: var(--ink); }
+        .modal .form-group input.error {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px var(--red-border);
+        }
+        .modal .form-group .error-msg {
+            color: var(--red);
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+        .modal .form-group .error-msg.show { display: block; }
         .modal .form-actions {
             display: flex; gap: 12px; flex-wrap: wrap;
             margin-top: 20px;
@@ -357,6 +368,12 @@
             background: var(--signal); color: #04140F;
         }
         .modal .btn-save:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--signal-glow); }
+        .modal .btn-save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
         .modal .btn-cancel {
             padding: 10px 32px; border-radius: 10px;
             border: 1px solid var(--line); background: transparent;
@@ -442,36 +459,18 @@
         <div class="modal-overlay" id="newAppModal">
             <div class="modal">
                 <div class="modal-header">
-                    <h2><i class="fas fa-plus" style="color:var(--signal); margin-right:10px;"></i> New Application</h2>
+                    <h2><i class="fas fa-plus" style="color:var(--signal); margin-right:10px;"></i> Give your application a name</h2>
                     <button class="close-btn" onclick="closeModal()">&times;</button>
                 </div>
                 <form id="newAppForm" onsubmit="createApplication(event)">
                     <div class="form-group">
-                        <label for="appName">Application Name</label>
-                        <input type="text" id="appName" placeholder="e.g. Staff Application" required>
-                        <div class="form-hint">The name of your application form</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="appDescription">Description</label>
-                        <textarea id="appDescription" placeholder="Describe what this application is for..." rows="2"></textarea>
-                        <div class="form-hint">Optional description shown to users</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="appStatus">Status</label>
-                        <select id="appStatus">
-                            <option value="enabled">Enabled</option>
-                            <option value="disabled">Disabled</option>
-                        </select>
-                        <div class="form-hint">Disabled applications cannot receive submissions</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="appChannel">Submission Channel</label>
-                        <input type="text" id="appChannel" placeholder="#applications">
-                        <div class="form-hint">Channel where applications will be sent</div>
+                        <input type="text" id="appName" placeholder="Enter application name..." required>
+                        <div class="form-hint">A short, descriptive name for your application</div>
+                        <div class="error-msg" id="nameError">Please enter a valid application name without profanity.</div>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Create Application</button>
                         <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn-save" id="createBtn">Create Application</button>
                     </div>
                 </form>
             </div>
@@ -555,13 +554,38 @@
     </footer>
 
     <script>
+        // ─── PROFANITY FILTER ───
+        const BANNED_WORDS = [
+            'nigger', 'nigga', 'niger', 'niggar',
+            'fuck', 'fucking', 'shit', 'bitch', 'bastard',
+            'cunt', 'dick', 'pussy', 'asshole', 'motherfucker',
+            'retard', 'retarded', 'fag', 'faggot', 'tranny',
+            'kike', 'spic', 'chink', 'gook', 'wetback',
+            'coon', 'jiggaboo', 'moolie', 'nazi', 'hitler',
+            'whore', 'slut', 'cocksucker', 'cum', 'cumshot',
+            'fucktard', 'tard', 'mongoloid', 'midget'
+        ];
+
+        function containsProfanity(text) {
+            const lower = text.toLowerCase().trim();
+            // Check for exact matches or words containing banned terms
+            for (const word of BANNED_WORDS) {
+                // Check if the word is a whole word or part of a word
+                const regex = new RegExp('\\b' + word + '\\b|' + word, 'i');
+                if (regex.test(lower)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         // ─── TOAST ───
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            toast.className = 'toast';
+            toast.className = 'toast ' + type;
             toast.innerHTML = `
-                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i></span>
+                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i></span>
                 <span class="toast-content">${message}</span>
                 <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
                     <i class="fas fa-times"></i>
@@ -579,28 +603,71 @@
         // ─── MODAL ───
         function openModal() {
             document.getElementById('newAppModal').classList.add('active');
-            document.getElementById('appName').focus();
+            document.getElementById('appName').value = '';
+            document.getElementById('appName').classList.remove('error');
+            document.getElementById('nameError').classList.remove('show');
+            document.getElementById('createBtn').disabled = false;
+            setTimeout(() => document.getElementById('appName').focus(), 100);
         }
 
         function closeModal() {
             document.getElementById('newAppModal').classList.remove('active');
             document.getElementById('newAppForm').reset();
+            document.getElementById('appName').classList.remove('error');
+            document.getElementById('nameError').classList.remove('show');
+            document.getElementById('createBtn').disabled = false;
         }
+
+        // ─── REAL-TIME PROFANITY CHECK ───
+        document.getElementById('appName').addEventListener('input', function() {
+            const value = this.value;
+            const errorEl = document.getElementById('nameError');
+            const btn = document.getElementById('createBtn');
+            
+            if (value.length === 0) {
+                this.classList.remove('error');
+                errorEl.classList.remove('show');
+                btn.disabled = false;
+                return;
+            }
+            
+            if (containsProfanity(value)) {
+                this.classList.add('error');
+                errorEl.textContent = '❌ Application name contains inappropriate language. Please choose a different name.';
+                errorEl.classList.add('show');
+                btn.disabled = true;
+            } else {
+                this.classList.remove('error');
+                errorEl.classList.remove('show');
+                btn.disabled = false;
+            }
+        });
 
         // ─── CREATE APPLICATION ───
         function createApplication(event) {
             event.preventDefault();
             
-            const name = document.getElementById('appName').value;
-            const description = document.getElementById('appDescription').value;
-            const status = document.getElementById('appStatus').value;
-            const channel = document.getElementById('appChannel').value;
+            const name = document.getElementById('appName').value.trim();
+            const btn = document.getElementById('createBtn');
+            
+            // Double-check profanity
+            if (containsProfanity(name)) {
+                document.getElementById('appName').classList.add('error');
+                document.getElementById('nameError').textContent = '❌ Application name contains inappropriate language. Please choose a different name.';
+                document.getElementById('nameError').classList.add('show');
+                return;
+            }
+            
+            if (name.length === 0) {
+                showToast('❌ Please enter an application name.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Creating...';
 
             const data = {
                 name: name,
-                description: description,
-                enabled: status === 'enabled',
-                channel: channel,
                 guildId: '<%= locals.guild ? guild.id : "" %>'
             };
 
@@ -617,10 +684,14 @@
                     setTimeout(() => location.reload(), 1500);
                 } else {
                     showToast('❌ Error: ' + data.error, 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Create Application';
                 }
             })
             .catch(error => {
                 showToast('❌ Error creating application: ' + error.message, 'error');
+                btn.disabled = false;
+                btn.textContent = 'Create Application';
             });
         }
 
