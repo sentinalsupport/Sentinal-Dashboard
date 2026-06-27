@@ -41,7 +41,6 @@ router.get('/login', (req, res) => {
         req.session.destroy(() => {});
     }
     
-    // ✅ IMPORTANT: Must include 'identify' AND 'guilds' scopes
     const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
     
     res.render('login', {
@@ -94,12 +93,13 @@ router.get('/discord/callback', async (req, res) => {
         const tokenExpiry = Date.now() + (expires_in * 1000);
         console.log('📝 Token expires at:', new Date(tokenExpiry).toLocaleString());
         
+        // ✅ Store ALL user data needed by the views
         req.session.user = {
             id: user.id,
             username: user.username,
-            discriminator: user.discriminator,
+            discriminator: user.discriminator || '0',
             avatar: user.avatar,
-            global_name: user.global_name,
+            global_name: user.global_name || user.username,
             access_token: access_token,
             refresh_token: refresh_token,
             token_expires: tokenExpiry
@@ -133,5 +133,4 @@ router.get('/logout', (req, res) => {
     });
 });
 
-// ============ EXPORT ============
 module.exports = { router, refreshAccessToken };
