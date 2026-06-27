@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title || 'My Servers — Sentinal' %></title>
+    <title><%= title || 'Dashboard — Sentinal' %></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,12 +22,6 @@
             --signal-tab: rgba(61,255,184,0.10);
             --signal-glow: rgba(61,255,184,0.15);
             --gold: #F5C842;
-            --red: #F87171;
-            --red-bg: rgba(248,113,113,0.08);
-            --red-border: rgba(248,113,113,0.22);
-            --discord: #5865F2;
-            --discord-hover: #4752C4;
-            --discord-glow: rgba(88,101,242,0.25);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -36,8 +30,6 @@
             color: var(--text);
             min-height: 100vh;
         }
-
-        /* ─── NAVBAR ─── */
         .navbar {
             background: rgba(6,10,16,0.85);
             backdrop-filter: blur(24px) saturate(150%);
@@ -106,188 +98,131 @@
             transition: all 0.18s ease; text-decoration: none;
             display: flex; align-items: center; gap: 6px;
         }
-        .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+        .logout-btn:hover { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.22); color: #F87171; }
 
-        /* ─── LAYOUT ─── */
         .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 40px 32px 60px; }
 
-        /* ─── TAB NAV ─── */
-        .tab-nav { display: flex; align-items: center; gap: 4px; margin-bottom: 32px; }
-        .tab-btn {
-            display: flex; align-items: center; gap: 7px;
-            padding: 8px 18px; border-radius: 10px;
-            font-size: 13.5px; font-weight: 600;
-            cursor: pointer; text-decoration: none;
-            transition: all 0.18s ease; color: var(--muted);
-            border: 1.5px solid transparent;
-        }
-        .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-        .tab-btn.active { background: var(--signal-tab); border-color: rgba(61,255,184,0.3); color: var(--signal); }
-        .tab-btn i { font-size: 12px; }
-        .crown { color: var(--gold); }
-
-        /* ─── SECTION HEADER ─── */
-        .section-header {
-            display: flex; align-items: flex-end;
-            justify-content: space-between;
-            gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
-        }
-        .section-title h2 {
+        .welcome { margin-bottom: 32px; }
+        .welcome h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 22px; font-weight: 700;
-            color: #fff; letter-spacing: -0.4px; margin-bottom: 4px;
+            font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -0.4px;
         }
-        .section-title p { font-size: 13px; color: var(--muted); }
-        .header-actions { display: flex; align-items: center; gap: 10px; }
-        .search-wrap {
-            display: flex; align-items: center; gap: 8px;
+        .welcome h1 span { color: var(--signal); }
+        .welcome p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 14px; margin-bottom: 32px;
+        }
+        .stat-card {
             background: var(--panel); border: 1px solid var(--line);
-            border-radius: 10px; padding: 0 14px; height: 40px;
-            transition: border-color 0.18s;
+            border-radius: 12px; padding: 18px 20px; text-align: center;
         }
-        .search-wrap:focus-within { border-color: var(--line-bright); }
-        .search-wrap i { color: var(--muted-dim); font-size: 12.5px; }
-        .search-wrap input {
-            background: none; border: none; outline: none;
-            color: var(--text); font-size: 13px;
-            font-family: 'Inter', sans-serif; width: 200px;
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px; font-weight: 700; color: var(--signal);
         }
-        .search-wrap input::placeholder { color: var(--muted-dim); }
-        .refresh-btn {
-            display: flex; align-items: center; gap: 7px;
-            padding: 0 16px; height: 40px;
-            background: var(--signal); border: none;
-            border-radius: 10px; color: #041A10;
-            font-size: 13px; font-weight: 700;
-            cursor: pointer; transition: all 0.18s ease; white-space: nowrap;
+        .stat-label { font-size: 13px; color: var(--muted); margin-top: 2px; }
+        .stat-card .status-dot {
+            display: inline-block; width: 10px; height: 10px;
+            border-radius: 50%; background: var(--signal);
+            box-shadow: 0 0 12px var(--signal-glow); margin-right: 6px;
         }
-        .refresh-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 18px var(--signal-glow); }
-        .refresh-btn i { font-size: 12px; }
 
-        /* ─── SERVER GRID ─── */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .section-header h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px; font-weight: 600; color: #fff;
+        }
+        .section-header a {
+            font-size: 13px; color: var(--muted); text-decoration: none;
+        }
+        .section-header a:hover { color: var(--signal); }
+
         .server-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 14px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px; margin-bottom: 40px;
         }
-
         .server-card {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            overflow: hidden;
-            display: flex; flex-direction: column;
-            transition: all 0.2s ease;
+            background: var(--panel); border: 1px solid var(--line);
+            border-radius: 12px; padding: 16px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.2s ease; text-decoration: none; color: var(--text);
         }
         .server-card:hover {
-            border-color: var(--line-bright);
-            transform: translateY(-2px);
-            background: var(--panel-hover);
+            border-color: var(--line-bright); transform: translateY(-2px);
         }
-
-        .card-body {
-            display: flex; align-items: center; gap: 14px;
-            padding: 18px 20px 16px;
+        .server-card .left { display: flex; align-items: center; gap: 12px; }
+        .server-card .icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: var(--panel-raised); display: flex;
+            align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 700; overflow: hidden;
+            flex-shrink: 0; color: var(--signal);
         }
+        .server-card .icon img { width: 100%; height: 100%; object-fit: cover; }
+        .server-card .info .name { font-weight: 600; font-size: 14px; }
+        .server-card .info .role { font-size: 12px; color: var(--muted); }
+        .server-card .info .role i { color: var(--gold); font-size: 10px; }
+        .server-card .action { font-size: 13px; font-weight: 600; color: var(--signal); }
 
-        /* Server icon — always shows real Discord icon if available, fallback is styled initials */
-        .server-icon {
-            width: 48px; height: 48px;
-            border-radius: 14px;
-            overflow: hidden; flex-shrink: 0;
-            background: var(--panel-raised);
+        .modules-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 14px;
+        }
+        .module-card {
+            background: var(--panel); border: 1px solid var(--line);
+            border-radius: 12px; padding: 20px 22px;
+            transition: all 0.2s ease;
+        }
+        .module-card:hover { border-color: var(--line-bright); }
+        .module-card .header {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+        }
+        .module-card .header i { font-size: 18px; color: var(--signal); }
+        .module-card .header h4 { font-size: 15px; font-weight: 600; color: #fff; }
+        .module-card .header .status {
+            font-size: 10px; font-weight: 600; padding: 2px 10px;
+            border-radius: 100px; margin-left: auto;
+        }
+        .module-card .header .status.live {
+            background: var(--signal-tab); color: var(--signal);
+            border: 1px solid rgba(61,255,184,0.2);
+        }
+        .module-card .header .status.coming {
+            background: rgba(255,255,255,0.05); color: var(--muted);
             border: 1px solid var(--line);
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px; font-weight: 700;
         }
-        .server-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .module-card p {
+            font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 12px;
+        }
+        .module-card .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .module-card .actions .btn {
+            padding: 6px 16px; border-radius: 8px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            text-decoration: none; transition: all 0.18s ease;
+            border: 1px solid var(--line); background: transparent; color: var(--muted);
+        }
+        .module-card .actions .btn:hover {
+            background: rgba(255,255,255,0.04); color: var(--text);
+        }
+        .module-card .actions .btn.primary {
+            border-color: rgba(61,255,184,0.3); color: var(--signal);
+        }
+        .module-card .actions .btn.primary:hover { background: var(--signal-tab); }
+        .module-card .actions .btn.disabled {
+            opacity: 0.4; cursor: not-allowed;
+        }
 
-        /* Unique initial color per first letter */
-        .ic-a { background: #1e2d40; color: #4FC3F7; }
-        .ic-b { background: #1e2e1e; color: #66BB6A; }
-        .ic-c { background: #2d1e2d; color: #CE93D8; }
-        .ic-d { background: #2d2410; color: #FFA726; }
-        .ic-e { background: #1e2d40; color: #4DD0E1; }
-        .ic-f { background: #2d1e1e; color: #EF9A9A; }
-        .ic-g { background: #1a2d1a; color: #80CBC4; }
-        .ic-h { background: #1e1e2d; color: #9FA8DA; }
-        .ic-i { background: #2d2d1e; color: #FFF176; }
-        .ic-j { background: #1e2d28; color: #4DB6AC; }
-        .ic-k { background: #2d1e28; color: #F48FB1; }
-        .ic-l { background: #1e281e; color: #A5D6A7; }
-        .ic-m { background: #1e1e1e; color: #3DFFB8; }
-        .ic-n { background: #241e2d; color: #B39DDB; }
-        .ic-o { background: #2d2010; color: #FFCC80; }
-        .ic-p { background: #10202d; color: #81D4FA; }
-        .ic-q { background: #2d101e; color: #F48FB1; }
-        .ic-r { background: #1e2a10; color: #DCEDC8; }
-        .ic-s { background: #102d20; color: #3DFFB8; }
-        .ic-t { background: #2d1010; color: #FFAB91; }
-        .ic-u { background: #102020; color: #80DEEA; }
-        .ic-v { background: #1e102d; color: #CE93D8; }
-        .ic-w { background: #102d10; color: #C5E1A5; }
-        .ic-x { background: #2d1010; color: #EF9A9A; }
-        .ic-y { background: #2d2810; color: #FFF59D; }
-        .ic-z { background: #102d2d; color: #80CBC4; }
-        .ic-default { background: var(--panel-raised); color: var(--muted); }
-
-        .server-info { flex: 1; min-width: 0; }
-        .server-name {
-            font-size: 14.5px; font-weight: 600; color: #fff;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            margin-bottom: 4px;
-        }
-        .server-role {
-            display: flex; align-items: center; gap: 5px;
-            font-size: 12px; color: var(--muted);
-        }
-        .server-role i { color: var(--gold); font-size: 10px; }
-
-        /* Bot status dot */
-        .bot-dot {
-            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-        }
-        .bot-dot.in { background: var(--signal); box-shadow: 0 0 6px var(--signal-glow); }
-        .bot-dot.out { background: var(--muted-dim); }
-
-        /* Card footer with action button */
-        .card-footer { border-top: 1px solid var(--line); }
-        .card-action {
-            display: block; width: 100%;
-            padding: 12px 20px; text-align: center;
-            font-size: 13px; font-weight: 600;
-            cursor: pointer; text-decoration: none;
-            transition: all 0.18s ease; border: none; background: transparent;
-        }
-        /* Manage = green text */
-        .card-action.manage { color: var(--signal); }
-        .card-action.manage:hover { background: var(--signal-tab); }
-        /* Invite = Discord blue background, white text */
-        .card-action.invite {
-            background: var(--discord);
-            color: #fff;
-            display: flex; align-items: center; justify-content: center; gap: 7px;
-        }
-        .card-action.invite:hover { background: var(--discord-hover); box-shadow: 0 4px 14px var(--discord-glow); }
-
-        /* ─── EMPTY / NO RESULTS ─── */
         .empty-state {
-            grid-column: 1 / -1; text-align: center; padding: 72px 20px;
+            text-align: center; padding: 40px 20px; color: var(--muted);
         }
-        .empty-icon {
-            width: 64px; height: 64px; border-radius: 16px;
-            background: var(--panel-raised); border: 1px solid var(--line);
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px; font-size: 24px; color: var(--signal);
-        }
-        .empty-state h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px; color: #fff; margin-bottom: 8px;
-        }
-        .empty-state p { font-size: 13.5px; color: var(--muted); }
+        .empty-state i { font-size: 36px; color: var(--signal); margin-bottom: 12px; display: block; }
+        .empty-state h3 { color: #fff; margin-bottom: 4px; }
 
-        /* ─── FOOTER ─── */
         .footer {
             border-top: 1px solid var(--line); margin-top: 60px;
             padding: 24px 40px; text-align: center;
@@ -295,21 +230,15 @@
             font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px;
         }
 
-        /* ─── RESPONSIVE ─── */
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; }
             .nav-center { display: none; }
             .page-wrapper { padding: 24px 16px 48px; }
+            .stats-grid { grid-template-columns: 1fr; }
             .server-grid { grid-template-columns: 1fr; }
-            .section-header { flex-direction: column; align-items: stretch; }
-            .header-actions { flex-direction: column; }
-            .search-wrap { width: 100%; }
-            .search-wrap input { width: 100%; }
-            .refresh-btn { width: 100%; justify-content: center; }
+            .modules-grid { grid-template-columns: 1fr; }
+            .welcome h1 { font-size: 22px; }
         }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .spinning { animation: spin 0.6s linear; }
     </style>
 </head>
 <body>
@@ -326,10 +255,9 @@
             <span class="brand-name">Sentinal</span>
         </a>
         <div class="nav-center">
-            <a href="/dashboard">Home</a>
-            <a href="/servers" class="active">Servers</a>
+            <a href="/dashboard" class="active">Home</a>
+            <a href="/servers">Servers</a>
             <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
-            <a href="#">Premium</a>
         </div>
         <div class="nav-right">
             <div class="user-pill">
@@ -350,93 +278,152 @@
     <!-- PAGE -->
     <div class="page-wrapper">
 
-        <!-- TAB NAV -->
-        <div class="tab-nav">
-            <a href="/servers" class="tab-btn active">
-                <i class="fas fa-sliders-h"></i> Server Selection
-            </a>
-            <a href="#" class="tab-btn">
-                <i class="fas fa-crown crown"></i> Premium
-            </a>
-            <a href="#" class="tab-btn">
-                <i class="fas fa-robot crown"></i> Custom Bot
-            </a>
+        <!-- WELCOME -->
+        <div class="welcome">
+            <h1>Welcome back, <span><%= user ? user.global_name || user.username : 'User' %></span>!</h1>
+            <p>Manage your servers and bot settings from one place.</p>
         </div>
 
-        <!-- SECTION HEADER -->
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number"><%= servers ? servers.length : 0 %></div>
+                <div class="stat-label">Servers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Active Tickets</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><span class="status-dot"></span> Online</div>
+                <div class="stat-label">Bot Status</div>
+            </div>
+        </div>
+
+        <!-- YOUR SERVERS -->
         <div class="section-header">
-            <div class="section-title">
-                <h2>Select a Server</h2>
-                <p>Only servers you have administrator permissions in are shown.</p>
-            </div>
-            <div class="header-actions">
-                <div class="search-wrap">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="serverSearch" placeholder="Search for your server..." oninput="filterServers()">
-                </div>
-                <button class="refresh-btn" onclick="handleRefresh(this)">
-                    <i class="fas fa-sync-alt" id="refreshIcon"></i> Refresh
-                </button>
-            </div>
+            <h3>Your Servers</h3>
+            <a href="/servers">View All →</a>
         </div>
 
-        <!-- SERVER GRID -->
-        <div class="server-grid" id="serverGrid">
-            <% if (guilds && guilds.length > 0) { %>
-                <% guilds.forEach(function(guild) { %>
-                    <% const botInServer = guild.botInServer || false; %>
-                    <% const inviteLink = `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID || '1493217033956102215'}&permissions=8&integration_type=0&scope=bot+applications.commands&guild_id=${guild.id}`; %>
-                    <% const initial = guild.name ? guild.name.charAt(0).toLowerCase() : 'default'; %>
-                    <% const icClass = 'ic-' + (/[a-z]/.test(initial) ? initial : 'default'); %>
-
-                    <div class="server-card" data-name="<%= guild.name.toLowerCase() %>">
-                        <div class="card-body">
-                            <div class="server-icon <%= guild.icon ? '' : icClass %>">
+        <% if (servers && servers.length > 0) { %>
+            <div class="server-grid">
+                <% servers.slice(0, 3).forEach(function(guild) { %>
+                    <a href="/server/<%= guild.id %>" class="server-card">
+                        <div class="left">
+                            <div class="icon">
                                 <% if (guild.icon) { %>
-                                    <img
-                                        src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png?size=128"
-                                        alt="<%= guild.name %>"
-                                        onerror="this.style.display='none'; this.parentElement.classList.add('<%= icClass %>'); this.parentElement.textContent='<%= guild.name ? guild.name.charAt(0).toUpperCase() : '?' %>';"
-                                    >
+                                    <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
                                 <% } else { %>
                                     <%= guild.name ? guild.name.charAt(0).toUpperCase() : '?' %>
                                 <% } %>
                             </div>
-                            <div class="server-info">
-                                <div class="server-name"><%= guild.name %></div>
-                                <div class="server-role">
-                                    <i class="fas fa-crown"></i> Owner
-                                </div>
+                            <div class="info">
+                                <div class="name"><%= guild.name %></div>
+                                <div class="role"><i class="fas fa-crown"></i> Owner</div>
                             </div>
-                            <div class="bot-dot <%= botInServer ? 'in' : 'out' %>" title="<%= botInServer ? 'Bot is in this server' : 'Bot not in server' %>"></div>
                         </div>
-                        <div class="card-footer">
-                            <% if (botInServer) { %>
-                                <a href="/server/<%= guild.id %>" class="card-action manage">Configure →</a>
-                            <% } else { %>
-                                <a href="<%= inviteLink %>" target="_blank" class="card-action invite">
-                                    <i class="fab fa-discord"></i> Invite Bot to Server
-                                </a>
-                            <% } %>
-                        </div>
-                    </div>
+                        <div class="action">Manage →</div>
+                    </a>
                 <% }); %>
-            <% } else { %>
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-server"></i></div>
-                    <h3>No Servers Found</h3>
-                    <p>You don't have administrator access to any servers.</p>
-                </div>
-            <% } %>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <i class="fas fa-server"></i>
+                <h3>No Servers Found</h3>
+                <p>You don't have administrator access to any servers.</p>
+            </div>
+        <% } %>
+
+        <!-- MODULES -->
+        <div class="section-header" style="margin-top: 8px;">
+            <h3>Modules</h3>
         </div>
 
-        <!-- NO SEARCH RESULTS (hidden by default) -->
-        <div id="noResults" style="display:none; text-align:center; padding:60px 20px; color:var(--muted);">
-            <div style="width:56px;height:56px;border-radius:14px;background:var(--panel-raised);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:22px;color:var(--muted);">
-                <i class="fas fa-search"></i>
+        <div class="modules-grid">
+            <!-- Applications -->
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-file-alt"></i>
+                    <h4>Applications</h4>
+                    <span class="status live">Live</span>
+                </div>
+                <p>Create custom application forms for staff, partners, or events. Review and manage submissions.</p>
+                <div class="actions">
+                    <a href="#" class="btn primary">Configure</a>
+                    <a href="#" class="btn">Manage</a>
+                </div>
             </div>
-            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:17px;color:#fff;margin-bottom:6px;">No matches found</h3>
-            <p style="font-size:13px;">Try a different search term.</p>
+
+            <!-- Tickets -->
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-ticket"></i>
+                    <h4>Tickets</h4>
+                    <span class="status live">Live</span>
+                </div>
+                <p>Create support tickets for users to open in your server. Manage transcripts and quick responses.</p>
+                <div class="actions">
+                    <a href="#" class="btn primary">Configure</a>
+                    <a href="#" class="btn">Templates</a>
+                </div>
+            </div>
+
+            <!-- Verification -->
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-shield-halved"></i>
+                    <h4>Verification</h4>
+                    <span class="status live">Live</span>
+                </div>
+                <p>Set up verification with auto-roles, welcome messages, and advanced security settings.</p>
+                <div class="actions">
+                    <a href="#" class="btn primary">Configure</a>
+                    <a href="#" class="btn">Welcome</a>
+                </div>
+            </div>
+
+            <!-- Automation -->
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-robot"></i>
+                    <h4>Automation</h4>
+                    <span class="status coming">Coming Soon</span>
+                </div>
+                <p>Auto-moderation, reaction roles, and scheduled tasks to automate your server management.</p>
+                <div class="actions">
+                    <a href="#" class="btn disabled">Configure</a>
+                    <a href="#" class="btn disabled">Auto-Mod</a>
+                </div>
+            </div>
+
+            <!-- Community -->
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-users"></i>
+                    <h4>Community</h4>
+                    <span class="status coming">Coming Soon</span>
+                </div>
+                <p>Leveling system, giveaways, and community engagement features to grow your server.</p>
+                <div class="actions">
+                    <a href="#" class="btn disabled">Configure</a>
+                    <a href="#" class="btn disabled">Giveaways</a>
+                </div>
+            </div>
+
+            <!-- Audit & Logs -->
+            <div class="module-card">
+                <div class="header">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h4>Audit & Logs</h4>
+                    <span class="status coming">Coming Soon</span>
+                </div>
+                <p>View all moderation actions, member events, and system logs in one place.</p>
+                <div class="actions">
+                    <a href="#" class="btn disabled">View Logs</a>
+                    <a href="#" class="btn disabled">Settings</a>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -445,29 +432,6 @@
     <footer class="footer">
         © 2026 SENTINAL — STATUS: OPERATIONAL
     </footer>
-
-    <script>
-        function filterServers() {
-            const filter = document.getElementById('serverSearch').value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.server-card');
-            let visible = 0;
-
-            cards.forEach(card => {
-                const name = card.getAttribute('data-name') || '';
-                const show = name.includes(filter);
-                card.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-
-            document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
-        }
-
-        function handleRefresh(btn) {
-            const icon = document.getElementById('refreshIcon');
-            icon.classList.add('spinning');
-            setTimeout(() => { icon.classList.remove('spinning'); location.reload(); }, 600);
-        }
-    </script>
 
 </body>
 </html>
