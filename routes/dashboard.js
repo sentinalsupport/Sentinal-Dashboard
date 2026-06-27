@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router(); // ✅ This must be here!
+const router = express.Router();
 const axios = require('axios');
 
 // ============ MIDDLEWARE ============
@@ -246,6 +246,81 @@ router.get('/panels', isAuthenticated, async (req, res) => {
     }
 });
 
+// ============ API: CREATE APPLICATION ============
+router.post('/api/applications', isAuthenticated, async (req, res) => {
+    try {
+        const { name, description, enabled, channel, guildId } = req.body;
+        
+        // ✅ Profanity filter
+        const BANNED_WORDS = [
+            'nigger', 'nigga', 'niger', 'niggar',
+            'fuck', 'fucking', 'shit', 'bitch', 'bastard',
+            'cunt', 'dick', 'pussy', 'asshole', 'motherfucker',
+            'retard', 'retarded', 'fag', 'faggot', 'tranny',
+            'kike', 'spic', 'chink', 'gook', 'wetback',
+            'coon', 'jiggaboo', 'moolie', 'nazi', 'hitler',
+            'whore', 'slut', 'cocksucker', 'cum', 'cumshot',
+            'fucktard', 'tard', 'mongoloid', 'midget'
+        ];
+        
+        const lowerName = name.toLowerCase().trim();
+        for (const word of BANNED_WORDS) {
+            if (lowerName.includes(word) || new RegExp('\\b' + word + '\\b', 'i').test(lowerName)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Application name contains inappropriate language.' 
+                });
+            }
+        }
+        
+        if (!name || name.trim().length === 0) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Application name is required.' 
+            });
+        }
+        
+        // Load the ApplicationForm model
+        const ApplicationForm = require('../models/ApplicationForm');
+        
+        // Check if application with same name exists for this guild
+        const existing = await ApplicationForm.findOne({ 
+            guildId: guildId, 
+            name: name.trim() 
+        });
+        
+        if (existing) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'An application with this name already exists.' 
+            });
+        }
+        
+        // Create the application
+        const application = await ApplicationForm.create({
+            guildId: guildId,
+            name: name.trim(),
+            description: description || '',
+            enabled: enabled !== undefined ? enabled : true,
+            pendingChannel: channel || null,
+            questions: []
+        });
+        
+        res.json({ 
+            success: true, 
+            application: application,
+            message: 'Application created successfully!' 
+        });
+        
+    } catch (error) {
+        console.error('Error creating application:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message || 'Failed to create application.' 
+        });
+    }
+});
+
 // ============ API: SAVE SETTINGS ============
 router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
     try {
@@ -286,47 +361,6 @@ router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
         res.json({ success: true, message: 'Settings saved' });
     } catch (error) {
         console.error('Error saving config:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// ============ API: CREATE PANEL ============
-router.post('/api/panels', isAuthenticated, async (req, res) => {
-    try {
-        const Panel = require('../models/Panel');
-        const panel = await Panel.create(req.body);
-        res.json({ success: true, panel: panel });
-    } catch (error) {
-        console.error('Error creating panel:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// ============ API: TOGGLE PANEL ============
-router.post('/api/panels/:id/toggle', isAuthenticated, async (req, res) => {
-    try {
-        const Panel = require('../models/Panel');
-        const panel = await Panel.findById(req.params.id);
-        if (!panel) {
-            return res.status(404).json({ success: false, error: 'Panel not found' });
-        }
-        panel.enabled = !panel.enabled;
-        await panel.save();
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error toggling panel:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// ============ API: DELETE PANEL ============
-router.delete('/api/panels/:id', isAuthenticated, async (req, res) => {
-    try {
-        const Panel = require('../models/Panel');
-        await Panel.findByIdAndDelete(req.params.id);
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error deleting panel:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
