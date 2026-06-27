@@ -27,12 +27,12 @@ app.use(session({
     saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: MONGO_URI,
-        touchAfter: 24 * 3600
+        touchAfter: 24 * 3600 // lazy session update
     }),
     cookie: {
-        secure: false,
+        secure: false, // Set to true in production with HTTPS
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         sameSite: 'lax'
     }
 }));
