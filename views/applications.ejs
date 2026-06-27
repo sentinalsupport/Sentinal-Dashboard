@@ -289,9 +289,9 @@
             </div>
             <p class="section-desc">Manage your application panels</p>
             <div class="action-row">
-                <button class="btn-secondary" onclick="alert('Panels management coming soon!')">
+                <a href="/panels?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-secondary">
                     <i class="fas fa-cog"></i> Configure
-                </button>
+                </a>
             </div>
         </div>
 
