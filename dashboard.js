@@ -6,7 +6,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 
 // Import routes
-const { router: authRoutes } = require('./routes/auth');
+const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
@@ -48,7 +48,7 @@ mongoose.connect(MONGO_URI)
 
 // ============ ROUTES ============
 app.use('/auth', authRoutes);
-app.use('/', dashboardRoutes); // Handles /dashboard, /servers, /server/:id
+app.use('/', dashboardRoutes);
 
 // ============ HOME ROUTE ============
 app.get('/', (req, res) => {
