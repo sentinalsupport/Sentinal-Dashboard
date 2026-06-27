@@ -192,6 +192,20 @@ router.get('/applications', isAuthenticated, async (req, res) => {
         const guildId = req.query.guildId;
         console.log('📋 Loading applications for guild:', guildId);
         
+        // Load the ApplicationForm model
+        let ApplicationForm;
+        try {
+            ApplicationForm = require('../models/ApplicationForm');
+        } catch (err) {
+            console.warn('⚠️ ApplicationForm model not found');
+            ApplicationForm = { find: async () => [] };
+        }
+        
+        // ✅ FETCH ALL APPLICATIONS FOR THIS GUILD
+        const applications = await ApplicationForm.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        console.log(`✅ Found ${applications.length} applications`);
+        
+        // Load GuildConfig
         let GuildConfig;
         try {
             GuildConfig = require('../models/GuildConfig');
@@ -205,7 +219,8 @@ router.get('/applications', isAuthenticated, async (req, res) => {
             title: 'Applications — Sentinal',
             user: req.session.user,
             guild: { id: guildId || 'unknown' },
-            config: config || {}
+            config: config || {},
+            applications: applications // ✅ PASS APPLICATIONS TO VIEW
         });
     } catch (error) {
         console.error('Error loading applications:', error.message);
@@ -321,6 +336,44 @@ router.post('/api/applications', isAuthenticated, async (req, res) => {
     }
 });
 
+// ============ API: TOGGLE APPLICATION ============
+router.post('/api/applications/:id/toggle', isAuthenticated, async (req, res) => {
+    try {
+        const ApplicationForm = require('../models/ApplicationForm');
+        const app = await ApplicationForm.findById(req.params.id);
+        
+        if (!app) {
+            return res.status(404).json({ success: false, error: 'Application not found' });
+        }
+        
+        app.enabled = !app.enabled;
+        await app.save();
+        
+        res.json({ success: true, enabled: app.enabled });
+    } catch (error) {
+        console.error('Error toggling application:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: DELETE APPLICATION ============
+router.delete('/api/applications/:id', isAuthenticated, async (req, res) => {
+    try {
+        const ApplicationForm = require('../models/ApplicationForm');
+        const app = await ApplicationForm.findById(req.params.id);
+        
+        if (!app) {
+            return res.status(404).json({ success: false, error: 'Application not found' });
+        }
+        
+        await app.deleteOne();
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting application:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // ============ API: SAVE SETTINGS ============
 router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
     try {
@@ -361,6 +414,47 @@ router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
         res.json({ success: true, message: 'Settings saved' });
     } catch (error) {
         console.error('Error saving config:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: CREATE PANEL ============
+router.post('/api/panels', isAuthenticated, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const panel = await Panel.create(req.body);
+        res.json({ success: true, panel: panel });
+    } catch (error) {
+        console.error('Error creating panel:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: TOGGLE PANEL ============
+router.post('/api/panels/:id/toggle', isAuthenticated, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const panel = await Panel.findById(req.params.id);
+        if (!panel) {
+            return res.status(404).json({ success: false, error: 'Panel not found' });
+        }
+        panel.enabled = !panel.enabled;
+        await panel.save();
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error toggling panel:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: DELETE PANEL ============
+router.delete('/api/panels/:id', isAuthenticated, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        await Panel.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting panel:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
