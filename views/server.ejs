@@ -22,11 +22,13 @@
             --signal-tab: rgba(61,255,184,0.10);
             --signal-glow: rgba(61,255,184,0.15);
             --gold: #F5C842;
+            --gold-tab: rgba(245,200,66,0.12);
+            --violet: #8B7EFF;
+            --violet-tab: rgba(139,126,255,0.12);
             --red: #F87171;
             --red-bg: rgba(248,113,113,0.08);
             --red-border: rgba(248,113,113,0.22);
             --discord: #5865F2;
-            --discord-hover: #4752C4;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -38,43 +40,29 @@
 
         /* ─── NAVBAR ─── */
         .navbar {
-            background: rgba(6,10,16,0.85);
-            backdrop-filter: blur(24px) saturate(150%);
+            background: rgba(6,10,16,0.9);
+            backdrop-filter: blur(28px) saturate(160%);
             border-bottom: 1px solid var(--line);
             padding: 0 40px;
             height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 200;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 200;
         }
-        .brand {
-            display: flex; align-items: center; gap: 10px;
-            text-decoration: none;
-        }
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .brand-logo {
-            width: 36px; height: 36px;
-            border-radius: 10px;
-            background: var(--panel-raised);
-            border: 1px solid var(--line-bright);
+            width: 36px; height: 36px; border-radius: 10px;
+            background: var(--panel-raised); border: 1px solid var(--line-bright);
             display: flex; align-items: center; justify-content: center;
         }
         .brand-logo svg { width: 20px; height: 20px; }
         .brand-name {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 17px; font-weight: 700;
-            color: #fff; letter-spacing: -0.3px;
+            font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
         }
-        .nav-center {
-            display: flex; align-items: center; gap: 4px;
-        }
+        .nav-center { display: flex; align-items: center; gap: 4px; }
         .nav-center a {
-            color: var(--muted); text-decoration: none;
-            font-size: 13.5px; font-weight: 500;
-            padding: 6px 14px; border-radius: 8px;
-            transition: all 0.18s ease;
+            color: var(--muted); text-decoration: none; font-size: 13.5px; font-weight: 500;
+            padding: 6px 14px; border-radius: 8px; transition: all 0.18s ease;
         }
         .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
         .nav-center a.active { color: #fff; }
@@ -93,50 +81,48 @@
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .user-name { font-size: 13px; font-weight: 500; color: var(--text); }
         .user-plan {
-            font-size: 10px; font-weight: 600;
-            color: var(--signal); background: var(--signal-tab);
-            border: 1px solid rgba(61,255,184,0.22);
+            font-size: 10px; font-weight: 600; color: var(--signal);
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.22);
             border-radius: 100px; padding: 2px 8px; letter-spacing: 0.3px;
         }
         .logout-btn {
-            background: transparent; border: 1px solid var(--line);
-            border-radius: 8px; padding: 7px 12px;
-            color: var(--muted); cursor: pointer; font-size: 13px;
+            background: transparent; border: 1px solid var(--line); border-radius: 8px;
+            padding: 7px 12px; color: var(--muted); cursor: pointer; font-size: 13px;
             transition: all 0.18s ease; text-decoration: none;
             display: flex; align-items: center; gap: 6px;
         }
         .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
-        /* ─── LAYOUT ─── */
-        .page-wrapper { max-width: 900px; margin: 0 auto; padding: 40px 32px 60px; }
+        /* ─── PAGE ─── */
+        .page-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 32px 60px; }
 
         /* ─── SERVER HEADER ─── */
         .server-header {
             display: flex; align-items: center; gap: 16px;
-            margin-bottom: 24px;
+            padding: 28px 0 20px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 28px;
         }
         .server-header .icon {
-            width: 56px; height: 56px;
-            border-radius: 14px;
-            background: var(--panel-raised);
-            border: 1px solid var(--line);
+            width: 52px; height: 52px; border-radius: 14px;
+            background: var(--panel-raised); border: 1px solid var(--line);
             display: flex; align-items: center; justify-content: center;
-            font-size: 24px; font-weight: 700;
-            overflow: hidden; flex-shrink: 0;
-            color: var(--signal);
+            font-size: 22px; font-weight: 700; overflow: hidden;
+            flex-shrink: 0; color: var(--signal);
         }
         .server-header .icon img { width: 100%; height: 100%; object-fit: cover; }
         .server-header .info h1 {
-            font-size: 24px; font-weight: 700; color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px; font-weight: 700; color: #fff;
         }
         .server-header .info p {
             font-size: 13px; color: var(--muted);
         }
+        .server-header .info p i { color: var(--signal); margin-right: 4px; }
 
         /* ─── SERVER ACTIONS ─── */
         .server-actions {
-            display: flex; gap: 12px;
-            margin-bottom: 28px; flex-wrap: wrap;
+            display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap;
         }
         .btn-invite {
             display: inline-flex; align-items: center; gap: 8px;
@@ -145,17 +131,12 @@
             text-decoration: none; font-weight: 600; font-size: 13px;
             transition: all 0.2s ease;
         }
-        .btn-invite:hover {
-            transform: translateY(-2px);
-            background: var(--discord-hover);
-            box-shadow: 0 4px 16px rgba(88,101,242,0.3);
-        }
+        .btn-invite:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(88,101,242,0.3); }
         .btn-back {
             display: inline-flex; align-items: center; gap: 8px;
             padding: 10px 24px; border-radius: 10px;
             background: rgba(255,255,255,0.05);
-            color: var(--muted); text-decoration: none;
-            font-weight: 500; font-size: 13px;
+            color: var(--muted); text-decoration: none; font-weight: 500; font-size: 13px;
             border: 1px solid var(--line);
             transition: all 0.2s ease;
         }
@@ -168,47 +149,149 @@
             font-weight: 500; font-size: 13px;
         }
 
-        /* ─── SETTINGS GROUPS ─── */
+        /* ─── LAYOUT: Sidebar + Content ─── */
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ─── LEFT SIDEBAR ─── */
+        .settings-sidebar {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 16px 0;
+            position: sticky;
+            top: 80px;
+        }
+        .settings-sidebar .nav-section {
+            padding: 0 12px;
+        }
+        .settings-sidebar .section-title {
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.8px; color: var(--muted-dim);
+            padding: 8px 12px 6px;
+        }
+        .settings-sidebar .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border-radius: 8px;
+            color: var(--muted); text-decoration: none;
+            font-size: 13px; font-weight: 500;
+            transition: all 0.18s ease; cursor: pointer; border: none;
+            background: none; width: 100%; text-align: left;
+        }
+        .settings-sidebar .nav-item:hover {
+            background: rgba(255,255,255,0.04); color: var(--text);
+        }
+        .settings-sidebar .nav-item.active {
+            background: var(--signal-tab); color: var(--signal);
+        }
+        .settings-sidebar .nav-item i {
+            width: 18px; font-size: 14px;
+        }
+        .settings-sidebar .nav-item .badge {
+            margin-left: auto; font-size: 9px; font-weight: 700;
+            padding: 2px 8px; border-radius: 100px; text-transform: uppercase;
+        }
+        .settings-sidebar .nav-item .badge.live {
+            background: var(--signal-tab); color: var(--signal);
+        }
+        .settings-sidebar .nav-item .badge.coming {
+            background: var(--gold-tab); color: var(--gold);
+        }
+        .settings-sidebar .divider {
+            height: 1px; background: var(--line);
+            margin: 8px 16px;
+        }
+
+        /* ─── RIGHT CONTENT ─── */
+        .settings-content {}
+
+        /* ─── MODULE PANELS ─── */
+        .module-panel {
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+        .module-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+        }
+        .panel-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px; font-weight: 700; color: #fff;
+        }
+        .panel-header h2 i { color: var(--signal); margin-right: 10px; }
+        .panel-header .panel-actions { display: flex; gap: 8px; }
+        .panel-header .panel-actions .btn-sm {
+            padding: 6px 16px; border-radius: 8px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            border: 1px solid var(--line); background: transparent;
+            color: var(--muted); transition: all 0.18s ease;
+            text-decoration: none;
+        }
+        .panel-header .panel-actions .btn-sm:hover {
+            background: rgba(255,255,255,0.04); color: var(--text);
+        }
+        .panel-header .panel-actions .btn-sm.primary {
+            background: var(--signal-tab); border-color: rgba(61,255,184,0.3);
+            color: var(--signal);
+        }
+        .panel-header .panel-actions .btn-sm.primary:hover {
+            background: rgba(61,255,184,0.18);
+        }
+
+        .panel-desc {
+            font-size: 13px; color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        /* ─── SETTINGS GROUP ─── */
         .settings-group {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 16px;
+            padding: 20px 24px;
+            margin-bottom: 14px;
         }
         .settings-group .group-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; flex-wrap: wrap; gap: 8px;
+            margin-bottom: 6px; flex-wrap: wrap; gap: 8px;
         }
         .settings-group .group-header h4 {
-            font-size: 15px; font-weight: 600; color: #fff;
+            font-size: 14px; font-weight: 600; color: #fff;
         }
-        .settings-group .group-header .status {
-            font-size: 10px; padding: 2px 12px; border-radius: 100px;
-            font-weight: 600;
-        }
-        .settings-group .group-header .status.live {
+        .settings-group .group-header .status-tag {
+            font-size: 9px; font-weight: 700; text-transform: uppercase;
+            padding: 2px 10px; border-radius: 100px;
             background: var(--signal-tab); color: var(--signal);
             border: 1px solid rgba(61,255,184,0.2);
         }
-        .settings-group .group-header .status.coming {
-            background: rgba(255,255,255,0.05); color: var(--muted);
-            border: 1px solid var(--line);
-        }
         .settings-group .group-desc {
-            font-size: 13px; color: var(--muted);
+            font-size: 12.5px; color: var(--muted);
             margin-bottom: 14px;
         }
         .form-group { margin-bottom: 14px; }
+        .form-group:last-child { margin-bottom: 0; }
         .form-group label {
-            display: block; font-size: 13px; font-weight: 500;
+            display: block; font-size: 12px; font-weight: 600;
             margin-bottom: 4px; color: var(--text);
         }
         .form-group .form-hint {
-            font-size: 12px; color: var(--muted-dim); margin-top: 2px;
+            font-size: 11px; color: var(--muted-dim); margin-top: 2px;
         }
         .form-group input, .form-group select {
-            width: 100%; padding: 10px 14px;
+            width: 100%; padding: 9px 14px;
             border-radius: 8px; border: 1px solid var(--line);
             background: rgba(0,0,0,0.3); color: var(--text);
             font-size: 13px; font-family: 'Inter', sans-serif;
@@ -220,35 +303,46 @@
         }
         .form-group select option { background: var(--ink); }
         .form-actions {
-            display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;
+            display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;
         }
         .btn-save {
-            padding: 10px 32px; border-radius: 8px; border: none;
-            font-weight: 600; font-size: 14px; cursor: pointer;
+            padding: 8px 28px; border-radius: 8px; border: none;
+            font-weight: 600; font-size: 13px; cursor: pointer;
             background: var(--signal); color: #04140F;
             transition: all 0.18s ease;
         }
-        .btn-save:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 18px var(--signal-glow);
-        }
+        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 18px var(--signal-glow); }
         .btn-reset {
-            padding: 10px 32px; border-radius: 8px;
+            padding: 8px 28px; border-radius: 8px;
             border: 1px solid var(--line); background: transparent;
-            color: var(--muted); font-weight: 600; font-size: 14px; cursor: pointer;
+            color: var(--muted); font-weight: 600; font-size: 13px; cursor: pointer;
             transition: all 0.18s ease;
         }
         .btn-reset:hover { background: rgba(255,255,255,0.04); color: var(--text); }
 
+        /* ─── COMING SOON PLACEHOLDER ─── */
+        .coming-soon {
+            text-align: center; padding: 60px 20px;
+            color: var(--muted);
+        }
+        .coming-soon i {
+            font-size: 40px; color: var(--gold); margin-bottom: 16px; display: block;
+        }
+        .coming-soon h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px; color: #fff; margin-bottom: 6px;
+        }
+        .coming-soon p { font-size: 13px; }
+
         .success-message {
             background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.2);
-            border-radius: 8px; padding: 12px 16px; color: var(--signal);
-            font-size: 14px; margin-bottom: 20px;
+            border-radius: 8px; padding: 10px 16px; color: var(--signal);
+            font-size: 13px; margin-bottom: 16px;
         }
         .error-message {
             background: var(--red-bg); border: 1px solid var(--red-border);
-            border-radius: 8px; padding: 12px 16px; color: var(--red);
-            font-size: 14px; margin-bottom: 20px;
+            border-radius: 8px; padding: 10px 16px; color: var(--red);
+            font-size: 13px; margin-bottom: 16px;
         }
 
         /* ─── FOOTER ─── */
@@ -259,10 +353,26 @@
             font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px;
         }
 
+        @media (max-width: 1024px) {
+            .settings-layout {
+                grid-template-columns: 200px 1fr;
+                gap: 24px;
+            }
+        }
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; }
             .nav-center { display: none; }
-            .page-wrapper { padding: 24px 16px 48px; }
+            .page-wrapper { padding: 0 16px 48px; }
+            .settings-layout { grid-template-columns: 1fr; }
+            .settings-sidebar {
+                position: relative; top: 0;
+                display: flex; flex-wrap: wrap; gap: 4px; padding: 12px;
+                border-radius: 12px;
+            }
+            .settings-sidebar .nav-section { display: flex; flex-wrap: wrap; gap: 4px; }
+            .settings-sidebar .section-title { display: none; }
+            .settings-sidebar .nav-item { padding: 6px 12px; font-size: 12px; width: auto; }
+            .settings-sidebar .divider { display: none; }
             .server-header { flex-wrap: wrap; }
             .server-actions { flex-direction: column; }
             .server-actions .btn-invite, .server-actions .btn-back { width: 100%; justify-content: center; }
@@ -289,17 +399,18 @@
             <a href="/dashboard">Home</a>
             <a href="/servers" class="active">Servers</a>
             <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
+            <a href="#">Premium</a>
         </div>
         <div class="nav-right">
             <div class="user-pill">
                 <div class="user-avatar">
-                    <% if (user && user.avatar) { %>
+                    <% if (locals.user && user.avatar) { %>
                         <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
                     <% } else { %>
-                        <%= user ? (user.username ? user.username.charAt(0).toUpperCase() : 'U') : 'U' %>
+                        <%= locals.user ? (user.username ? user.username.charAt(0).toUpperCase() : 'U') : 'U' %>
                     <% } %>
                 </div>
-                <span class="user-name"><%= user ? user.global_name || user.username : 'User' %></span>
+                <span class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></span>
                 <span class="user-plan">Free</span>
             </div>
             <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
@@ -309,26 +420,18 @@
     <!-- ─── PAGE ─── -->
     <div class="page-wrapper">
 
-        <!-- SUCCESS / ERROR MESSAGES -->
-        <% if (locals.success) { %>
-            <div class="success-message"><i class="fas fa-check-circle"></i> Settings saved successfully!</div>
-        <% } %>
-        <% if (locals.error) { %>
-            <div class="error-message"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
-        <% } %>
-
         <!-- ─── SERVER HEADER ─── -->
         <div class="server-header">
             <div class="icon">
-                <% if (guild && guild.icon) { %>
+                <% if (locals.guild && guild.icon) { %>
                     <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
                 <% } else { %>
-                    <%= guild ? (guild.name ? guild.name.charAt(0).toUpperCase() : '?') : '?' %>
+                    <%= locals.guild ? (guild.name ? guild.name.charAt(0).toUpperCase() : '?') : '?' %>
                 <% } %>
             </div>
             <div class="info">
-                <h1><%= guild ? guild.name : 'Server' %></h1>
-                <p><i class="fas fa-users"></i> <%= guild ? (guild.memberCount || 'N/A') : 'N/A' %> members</p>
+                <h1><%= locals.guild ? guild.name : 'Server' %></h1>
+                <p><i class="fas fa-users"></i> <%= locals.guild ? (guild.memberCount || 'N/A') : 'N/A' %> members</p>
             </div>
         </div>
 
@@ -337,112 +440,386 @@
             <% if (locals.botInServer) { %>
                 <span class="status-badge"><i class="fas fa-check-circle"></i> Bot is in this server</span>
             <% } else { %>
-                <a href="<%= locals.inviteLink || '#' %>" target="_blank" class="btn-invite">
-                    <i class="fab fa-discord"></i> Invite Bot to Server
-                </a>
+                <a href="<%= locals.inviteLink || '#' %>" target="_blank" class="btn-invite"><i class="fab fa-discord"></i> Invite Bot to Server</a>
             <% } %>
             <a href="/servers" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Servers</a>
         </div>
 
-        <!-- ─── GENERAL SETTINGS ─── -->
-        <div class="settings-group">
-            <div class="group-header">
-                <h4><i class="fas fa-sliders-h" style="color:var(--signal);"></i> General Settings</h4>
-                <span class="status live">Live</span>
-            </div>
-            <p class="group-desc">Configure basic server settings for Sentinal</p>
-            <div class="form-group">
-                <label for="prefix">Command Prefix</label>
-                <input type="text" id="prefix" value="<%= locals.config ? (config.prefix || '!') : '!' %>" placeholder="!">
-                <div class="form-hint">Example: !, ?, $, etc.</div>
-            </div>
-            <div class="form-group">
-                <label for="language">Language</label>
-                <select id="language">
-                    <option value="en" <%= (locals.config && config.language === 'en') ? 'selected' : '' %>>English</option>
-                    <option value="es" <%= (locals.config && config.language === 'es') ? 'selected' : '' %>>Español</option>
-                    <option value="fr" <%= (locals.config && config.language === 'fr') ? 'selected' : '' %>>Français</option>
-                    <option value="de" <%= (locals.config && config.language === 'de') ? 'selected' : '' %>>Deutsch</option>
-                    <option value="pt" <%= (locals.config && config.language === 'pt') ? 'selected' : '' %>>Português</option>
-                </select>
-            </div>
-            <div class="form-actions">
-                <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-                <button class="btn-reset" onclick="resetSettings()"><i class="fas fa-undo"></i> Reset</button>
-            </div>
-        </div>
+        <!-- ─── SUCCESS / ERROR ─── -->
+        <% if (locals.success) { %>
+            <div class="success-message"><i class="fas fa-check-circle"></i> Settings saved successfully!</div>
+        <% } %>
+        <% if (locals.error) { %>
+            <div class="error-message"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+        <% } %>
 
-        <!-- ─── APPLICATIONS ─── -->
-        <div class="settings-group">
-            <div class="group-header">
-                <h4><i class="fas fa-file-alt" style="color:var(--signal);"></i> Applications</h4>
-                <span class="status live">Live</span>
-            </div>
-            <p class="group-desc">Create and manage application forms for your server.</p>
-            <div class="form-group">
-                <label for="appChannel">Application Channel</label>
-                <input type="text" id="appChannel" value="<%= locals.config ? (config.applicationChannel || '') : '' %>" placeholder="#channel-name or channel ID">
-                <div class="form-hint">Channel where applications will be sent</div>
-            </div>
-            <div class="form-group">
-                <label for="appRole">Reviewer Role</label>
-                <input type="text" id="appRole" placeholder="@role-name or role ID">
-                <div class="form-hint">Role that can review applications</div>
-            </div>
-            <div class="form-actions">
-                <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-            </div>
-        </div>
+        <!-- ─── SETTINGS LAYOUT ─── -->
+        <div class="settings-layout">
 
-        <!-- ─── TICKETS ─── -->
-        <div class="settings-group">
-            <div class="group-header">
-                <h4><i class="fas fa-ticket" style="color:var(--signal);"></i> Tickets</h4>
-                <span class="status live">Live</span>
-            </div>
-            <p class="group-desc">Configure the ticket system for support requests.</p>
-            <div class="form-group">
-                <label for="ticketCategory">Ticket Category</label>
-                <input type="text" id="ticketCategory" value="<%= locals.config ? (config.ticketCategory || '') : '' %>" placeholder="Category ID">
-                <div class="form-hint">Category where ticket channels will be created</div>
-            </div>
-            <div class="form-group">
-                <label for="ticketSupportRole">Support Role</label>
-                <input type="text" id="ticketSupportRole" value="<%= locals.config ? (config.ticketSupportRole || '') : '' %>" placeholder="@role-name or role ID">
-                <div class="form-hint">Role that can view and manage tickets</div>
-            </div>
-            <div class="form-actions">
-                <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-            </div>
-        </div>
+            <!-- ─── LEFT SIDEBAR ─── -->
+            <aside class="settings-sidebar">
+                <div class="nav-section">
+                    <div class="section-title">Modules</div>
 
-        <!-- ─── VERIFICATION ─── -->
-        <div class="settings-group">
-            <div class="group-header">
-                <h4><i class="fas fa-shield-halved" style="color:var(--signal);"></i> Verification</h4>
-                <span class="status live">Live</span>
-            </div>
-            <p class="group-desc">Set up verification, auto-roles, and welcome messages.</p>
-            <div class="form-group">
-                <label for="verificationChannel">Verification Channel</label>
-                <input type="text" id="verificationChannel" value="<%= locals.config ? (config.verificationChannel || '') : '' %>" placeholder="#channel-name or channel ID">
-                <div class="form-hint">Channel where verification will take place</div>
-            </div>
-            <div class="form-group">
-                <label for="verificationRole">Verified Role</label>
-                <input type="text" id="verificationRole" value="<%= locals.config ? (config.verificationRole || '') : '' %>" placeholder="@role-name or role ID">
-                <div class="form-hint">Role assigned after successful verification</div>
-            </div>
-            <div class="form-group">
-                <label for="autorole">Auto-Role</label>
-                <input type="text" id="autorole" value="<%= locals.config ? (config.autorole || '') : '' %>" placeholder="@role-name or role ID">
-                <div class="form-hint">Role automatically assigned to new members</div>
-            </div>
-            <div class="form-actions">
-                <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
-            </div>
-        </div>
+                    <button class="nav-item active" onclick="showModule('general')">
+                        <i class="fas fa-sliders-h"></i> Overview
+                        <span class="badge live">Live</span>
+                    </button>
 
+                    <button class="nav-item" onclick="showModule('applications')">
+                        <i class="fas fa-file-alt"></i> Applications
+                        <span class="badge live">Live</span>
+                    </button>
+
+                    <button class="nav-item" onclick="showModule('tickets')">
+                        <i class="fas fa-ticket"></i> Tickets
+                        <span class="badge live">Live</span>
+                    </button>
+
+                    <button class="nav-item" onclick="showModule('verification')">
+                        <i class="fas fa-shield-halved"></i> Security
+                        <span class="badge live">Live</span>
+                    </button>
+
+                    <button class="nav-item" onclick="showModule('automation')">
+                        <i class="fas fa-robot"></i> Automation
+                        <span class="badge coming">Soon</span>
+                    </button>
+
+                    <button class="nav-item" onclick="showModule('community')">
+                        <i class="fas fa-users"></i> Community
+                        <span class="badge coming">Soon</span>
+                    </button>
+
+                    <button class="nav-item" onclick="showModule('audit')">
+                        <i class="fas fa-clipboard-list"></i> Audit & Logs
+                        <span class="badge coming">Soon</span>
+                    </button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="nav-section">
+                    <div class="section-title">Settings</div>
+                    <button class="nav-item" onclick="showModule('premium')">
+                        <i class="fas fa-crown" style="color:var(--gold);"></i> Premium
+                    </button>
+                </div>
+            </aside>
+
+            <!-- ─── RIGHT CONTENT ─── -->
+
+            <div class="settings-content">
+
+                <!-- ─── GENERAL / OVERVIEW ─── -->
+                <div class="module-panel active" id="module-general">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-sliders-h"></i> Overview</h2>
+                        <div class="panel-actions">
+                            <a href="#" class="btn-sm primary" onclick="saveSettings()">Save All</a>
+                        </div>
+                    </div>
+                    <p class="panel-desc">Configure basic server settings for Sentinal</p>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Command Prefix</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="prefix" value="<%= locals.config ? (config.prefix || '!') : '!' %>" placeholder="!">
+                            <div class="form-hint">Example: !, ?, $, etc.</div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Language</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <div class="form-group">
+                            <select id="language">
+                                <option value="en" <%= (locals.config && config.language === 'en') ? 'selected' : '' %>>English</option>
+                                <option value="es" <%= (locals.config && config.language === 'es') ? 'selected' : '' %>>Español</option>
+                                <option value="fr" <%= (locals.config && config.language === 'fr') ? 'selected' : '' %>>Français</option>
+                                <option value="de" <%= (locals.config && config.language === 'de') ? 'selected' : '' %>>Deutsch</option>
+                                <option value="pt" <%= (locals.config && config.language === 'pt') ? 'selected' : '' %>>Português</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                        <button class="btn-reset" onclick="resetSettings()"><i class="fas fa-undo"></i> Reset</button>
+                    </div>
+                </div>
+
+                <!-- ─── APPLICATIONS ─── -->
+                <div class="module-panel" id="module-applications">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-file-alt"></i> Applications</h2>
+                        <div class="panel-actions">
+                            <a href="#" class="btn-sm primary" onclick="alert('Create new application form')">+ New</a>
+                        </div>
+                    </div>
+                    <p class="panel-desc">Create forms for your members to fill out</p>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Applications</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <p class="group-desc">Create forms for your members to fill out</p>
+                        <div class="form-group">
+                            <label for="appChannel">Application Channel</label>
+                            <input type="text" id="appChannel" value="<%= locals.config ? (config.applicationChannel || '') : '' %>" placeholder="#channel-name or channel ID">
+                            <div class="form-hint">Channel where applications will be sent</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="appRole">Reviewer Role</label>
+                            <input type="text" id="appRole" placeholder="@role-name or role ID">
+                            <div class="form-hint">Role that can review applications</div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Panels</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <p class="group-desc">Manage your application panels</p>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="alert('Manage panels coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Submissions</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <p class="group-desc">View and manage all application submissions</p>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="alert('View submissions coming soon!')"><i class="fas fa-list"></i> View All</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── TICKETS ─── -->
+                <div class="module-panel" id="module-tickets">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-ticket"></i> Tickets</h2>
+                        <div class="panel-actions">
+                            <a href="#" class="btn-sm primary" onclick="alert('Create new ticket template')">+ New</a>
+                        </div>
+                    </div>
+                    <p class="panel-desc">Create tickets for users to open in your server</p>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Ticket Category</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="ticketCategory" value="<%= locals.config ? (config.ticketCategory || '') : '' %>" placeholder="Category ID">
+                            <div class="form-hint">Category where ticket channels will be created</div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Support Role</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="ticketSupportRole" value="<%= locals.config ? (config.ticketSupportRole || '') : '' %>" placeholder="@role-name or role ID">
+                            <div class="form-hint">Role that can view and manage tickets</div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Templates</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <p class="group-desc">Create tickets for users to open in your server</p>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="alert('Ticket templates coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Quick Responses</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <p class="group-desc">Create quick responses to common questions</p>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="alert('Quick responses coming soon!')"><i class="fas fa-plus"></i> New</button>
+                            <button class="btn-save" onclick="alert('Configure quick responses coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Transcripts</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <p class="group-desc">Get a comprehensive view of all open and closed tickets</p>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="alert('Transcripts coming soon!')"><i class="fas fa-cog"></i> Configure</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── VERIFICATION / SECURITY ─── -->
+                <div class="module-panel" id="module-verification">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-shield-halved"></i> Security</h2>
+                        <div class="panel-actions">
+                            <a href="#" class="btn-sm primary" onclick="alert('Setup verification')">Setup</a>
+                        </div>
+                    </div>
+                    <p class="panel-desc">Ensure only humans are allowed into your server</p>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Verification</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <p class="group-desc">Ensure only humans are allowed into your server</p>
+                        <div class="form-group">
+                            <label for="verificationChannel">Verification Channel</label>
+                            <input type="text" id="verificationChannel" value="<%= locals.config ? (config.verificationChannel || '') : '' %>" placeholder="#channel-name or channel ID">
+                            <div class="form-hint">Channel where verification will take place</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="verificationRole">Verified Role</label>
+                            <input type="text" id="verificationRole" value="<%= locals.config ? (config.verificationRole || '') : '' %>" placeholder="@role-name or role ID">
+                            <div class="form-hint">Role assigned after successful verification</div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Auto Roles</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="autorole">Auto-Role</label>
+                            <input type="text" id="autorole" value="<%= locals.config ? (config.autorole || '') : '' %>" placeholder="@role-name or role ID">
+                            <div class="form-hint">Role automatically assigned to new members</div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Welcome Messages</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="welcomeChannel">Welcome Channel</label>
+                            <input type="text" id="welcomeChannel" value="<%= locals.config ? (config.welcomeChannel || '') : '' %>" placeholder="#channel-name or channel ID">
+                            <div class="form-hint">Channel where welcome messages will be sent</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="welcomeMessage">Welcome Message</label>
+                            <input type="text" id="welcomeMessage" value="<%= locals.config ? (config.welcomeMessage || 'Welcome {user} to {server}!') : 'Welcome {user} to {server}!' %>" placeholder="Welcome {user} to {server}!">
+                            <div class="form-hint">Use {user} for member mention, {server} for server name</div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="group-header">
+                            <h4>Leave Messages</h4>
+                            <span class="status-tag">Live</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="memberLogChannel">Leave Log Channel</label>
+                            <input type="text" id="memberLogChannel" value="<%= locals.config ? (config.memberLogChannel || '') : '' %>" placeholder="#channel-name or channel ID">
+                            <div class="form-hint">Channel where member leave logs will be sent</div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── AUTOMATION (Coming Soon) ─── -->
+                <div class="module-panel" id="module-automation">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-robot"></i> Automation</h2>
+                    </div>
+                    <div class="coming-soon">
+                        <i class="fas fa-robot"></i>
+                        <h3>Coming Soon! 🚀</h3>
+                        <p>Auto-moderation, reaction roles, and scheduled tasks are under development.</p>
+                    </div>
+                </div>
+
+                <!-- ─── COMMUNITY (Coming Soon) ─── -->
+                <div class="module-panel" id="module-community">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-users"></i> Community</h2>
+                    </div>
+                    <div class="coming-soon">
+                        <i class="fas fa-users"></i>
+                        <h3>Coming Soon! 🚀</h3>
+                        <p>Leveling, giveaways, and community engagement features are under development.</p>
+                    </div>
+                </div>
+
+                <!-- ─── AUDIT & LOGS (Coming Soon) ─── -->
+                <div class="module-panel" id="module-audit">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-clipboard-list"></i> Audit & Logs</h2>
+                    </div>
+                    <div class="coming-soon">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>Coming Soon! 🚀</h3>
+                        <p>Audit logs and moderation history features are under development.</p>
+                    </div>
+                </div>
+
+                <!-- ─── PREMIUM ─── -->
+                <div class="module-panel" id="module-premium">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-crown" style="color:var(--gold);"></i> Premium</h2>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:24px; text-align:center;">
+                            <div style="font-size:28px; font-weight:700; color:var(--gold);">$7.99</div>
+                            <div style="font-size:13px; color:var(--muted);">/ month</div>
+                            <div style="font-weight:600; margin:8px 0;">Sentinal+</div>
+                            <button class="btn-save" onclick="alert('Upgrade to Sentinal+ for $7.99/month')" style="width:100%;">Upgrade</button>
+                        </div>
+                        <div style="background:var(--panel); border:2px solid var(--gold); border-radius:12px; padding:24px; text-align:center; position:relative;">
+                            <div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:var(--gold); color:#04140F; font-size:10px; font-weight:700; padding:2px 12px; border-radius:100px; text-transform:uppercase;">Popular</div>
+                            <div style="font-size:28px; font-weight:700; color:var(--gold);">$13.99</div>
+                            <div style="font-size:13px; color:var(--muted);">/ month</div>
+                            <div style="font-weight:600; margin:8px 0;">Sentinal++</div>
+                            <button class="btn-save" onclick="alert('Upgrade to Sentinal++ for $13.99/month')" style="width:100%;">Upgrade</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /settings-content -->
+        </div><!-- /settings-layout -->
     </div>
 
     <!-- ─── FOOTER ─── -->
@@ -451,6 +828,32 @@
     </footer>
 
     <script>
+        // ─── MODULE NAVIGATION ───
+        function showModule(module) {
+            // Update sidebar active state
+            document.querySelectorAll('.settings-sidebar .nav-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.settings-sidebar .nav-item').forEach(el => {
+                if (el.textContent.trim().toLowerCase().includes(module)) {
+                    el.classList.add('active');
+                }
+            });
+
+            // Hide all panels
+            document.querySelectorAll('.module-panel').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected panel
+            const target = document.getElementById('module-' + module);
+            if (target) {
+                target.classList.add('active');
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // ─── SAVE SETTINGS ───
         function saveSettings() {
             const data = {
                 prefix: document.getElementById('prefix')?.value || '',
@@ -460,7 +863,10 @@
                 ticketSupportRole: document.getElementById('ticketSupportRole')?.value || '',
                 verificationChannel: document.getElementById('verificationChannel')?.value || '',
                 verificationRole: document.getElementById('verificationRole')?.value || '',
-                autorole: document.getElementById('autorole')?.value || ''
+                autorole: document.getElementById('autorole')?.value || '',
+                welcomeChannel: document.getElementById('welcomeChannel')?.value || '',
+                welcomeMessage: document.getElementById('welcomeMessage')?.value || '',
+                memberLogChannel: document.getElementById('memberLogChannel')?.value || ''
             };
 
             fetch(`/api/config/<%= locals.guild ? guild.id : '' %>`, {
