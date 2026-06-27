@@ -22,6 +22,9 @@ function isAuthenticated(req, res, next) {
 // ============ DASHBOARD HOME ============
 router.get('/dashboard', isAuthenticated, async (req, res) => {
     try {
+        console.log('📊 Dashboard route accessed');
+        console.log('👤 User:', req.session.user ? req.session.user.username : 'None');
+        
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
                 Authorization: `Bearer ${req.session.user.access_token}`
@@ -32,10 +35,13 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
             (g.permissions & 0x8) || (g.permissions & 0x20)
         );
         
+        console.log(`✅ Found ${guilds.length} servers for dashboard`);
+        
+        // ✅ PASS user AND servers to dashboard.ejs
         return res.render('dashboard', {
             title: 'Dashboard — Sentinal',
-            user: req.session.user,
-            servers: guilds,
+            user: req.session.user,        // ← For navbar (avatar, name)
+            servers: guilds,               // ← For "Your Servers" section
             isAuthenticated: true
         });
     } catch (error) {
@@ -61,8 +67,8 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
 // ============ SERVERS LIST ============
 router.get('/servers', isAuthenticated, async (req, res) => {
     try {
-        console.log('📋 Loading servers list...');
-        console.log('👤 User in session:', req.session.user ? req.session.user.username : 'None');
+        console.log('📋 Servers route accessed');
+        console.log('👤 User:', req.session.user ? req.session.user.username : 'None');
         
         const response = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
@@ -70,14 +76,13 @@ router.get('/servers', isAuthenticated, async (req, res) => {
             }
         });
         
-        // Filter guilds where user has admin or manage server permissions
         const guilds = response.data.filter(g => 
             (g.permissions & 0x8) || (g.permissions & 0x20)
         );
         
         console.log(`✅ Found ${guilds.length} servers with admin access`);
         
-        // ✅ Check bot membership for each guild using bot token
+        // ✅ Check bot membership for each guild
         const botToken = process.env.DISCORD_TOKEN;
         const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
         const guildsWithBotStatus = [];
@@ -104,7 +109,7 @@ router.get('/servers', isAuthenticated, async (req, res) => {
                     }
                 }
             } else {
-                console.log('⚠️ No DISCORD_TOKEN found in environment!');
+                console.log('⚠️ No DISCORD_TOKEN found');
                 botInServer = false;
             }
             
@@ -119,11 +124,11 @@ router.get('/servers', isAuthenticated, async (req, res) => {
             });
         }
         
-        // ✅ PASS THE USER VARIABLE TO THE VIEW
+        // ✅ PASS user AND guilds to servers.ejs
         return res.render('servers', {
             title: 'My Servers — Sentinal',
-            user: req.session.user,  // ✅ THIS IS THE KEY FIX
-            guilds: guildsWithBotStatus,
+            user: req.session.user,        // ← For navbar (avatar, name)
+            guilds: guildsWithBotStatus,   // ← For server cards
             isAuthenticated: true
         });
     } catch (error) {
@@ -149,7 +154,6 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         const guildId = req.params.id;
         console.log('🔍 Loading server settings for guild:', guildId);
         
-        // Check token expiry
         const tokenExpires = req.session.user.token_expires || 0;
         const now = Date.now();
         
@@ -161,12 +165,11 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
             return;
         }
         
-        // Try to load GuildConfig model
         let GuildConfig;
         try {
             GuildConfig = require('../models/GuildConfig');
         } catch (err) {
-            console.warn('⚠️ GuildConfig model not found, creating fallback');
+            console.warn('⚠️ GuildConfig model not found');
             GuildConfig = {
                 findOne: async () => null,
                 findOneAndUpdate: async () => ({})
@@ -175,7 +178,6 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         
         const config = await GuildConfig.findOne({ guildId }).catch(() => null);
         
-        // ✅ Get guild details from user's guild list
         let guildData = {
             id: guildId,
             name: 'Server',
@@ -211,7 +213,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
             console.warn('⚠️ Could not get guild from user list:', guildsError.message);
         }
         
-        // ✅ Check bot membership
+        // Check bot membership
         if (botToken) {
             try {
                 await axios.get(`https://discord.com/api/guilds/${guildId}/members/${clientId}`, {
@@ -235,6 +237,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
             botInServer = false;
         }
         
+        // ✅ PASS user, guild, config, inviteLink, botInServer to server.ejs
         return res.render('server', {
             title: 'Server Settings — Sentinal',
             user: req.session.user,
@@ -269,7 +272,6 @@ router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
         const guildId = req.params.guildId;
         const settings = req.body;
         
-        // Verify user has admin permissions
         const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
                 Authorization: `Bearer ${req.session.user.access_token}`
