@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title || 'Server Settings — Sentinal' %></title>
+    <title><%= title || 'Modules — Sentinal' %></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -95,7 +95,14 @@
         .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
         /* ─── PAGE LAYOUT ─── */
-        .page-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 32px 60px; display: flex; gap: 24px; align-items: flex-start; }
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px 60px;
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
 
         /* ─── LEFT SIDEBAR ─── */
         .sidebar {
@@ -152,7 +159,7 @@
         }
         .sidebar .nav-item {
             display: flex; align-items: center; gap: 10px;
-            padding: 7px 12px; border-radius: 8px;
+            padding: 6px 12px; border-radius: 8px;
             color: var(--muted); text-decoration: none;
             font-size: 12.5px; font-weight: 500;
             transition: all 0.18s ease; cursor: pointer; border: none;
@@ -178,12 +185,12 @@
             min-width: 0;
         }
 
-        /* ─── SERVER HEADER (inside content) ─── */
+        /* ─── SERVER HEADER ─── */
         .server-header {
             display: flex; align-items: center; gap: 16px;
             padding: 20px 0 16px;
             border-bottom: 1px solid var(--line);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         .server-header .icon {
             width: 48px; height: 48px; border-radius: 12px;
@@ -202,6 +209,31 @@
         }
         .server-header .info p i { color: var(--signal); margin-right: 4px; }
 
+        /* ─── TOP TABS ─── */
+        .top-tabs {
+            display: flex; gap: 4px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .top-tabs .tab {
+            padding: 8px 16px;
+            border-radius: 8px 8px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.18s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .top-tabs .tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+        .top-tabs .tab.active {
+            color: var(--signal);
+            border-bottom-color: var(--signal);
+            background: var(--signal-tab);
+        }
+
         /* ─── MODULE PANELS ─── */
         .module-panel {
             display: none;
@@ -216,16 +248,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .panel-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
-        }
-        .panel-header h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px; font-weight: 700; color: #fff;
-        }
-        .panel-header h2 i { color: var(--signal); margin-right: 10px; }
-
         /* ─── MODULE CARDS ─── */
         .module-card {
             background: var(--panel);
@@ -233,6 +255,10 @@
             border-radius: 12px;
             padding: 18px 22px;
             margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+        .module-card:hover {
+            border-color: var(--line-bright);
         }
         .module-card .card-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -271,6 +297,7 @@
             border: 1px solid rgba(61,255,184,0.2);
             transition: all 0.18s ease;
             text-decoration: none;
+            display: inline-flex; align-items: center; gap: 6px;
         }
         .module-card .card-actions .btn-config:hover {
             background: rgba(61,255,184,0.18);
@@ -300,6 +327,30 @@
             font-size: 13px; margin-bottom: 16px;
         }
 
+        /* ─── SEARCH BOX ─── */
+        .search-box {
+            margin-bottom: 16px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.18s ease;
+        }
+        .search-box input:focus {
+            border-color: var(--signal);
+            box-shadow: 0 0 0 3px var(--signal-glow);
+        }
+        .search-box input::placeholder {
+            color: var(--muted-dim);
+        }
+
         .footer {
             border-top: 1px solid var(--line); margin-top: 60px;
             padding: 24px 40px; text-align: center;
@@ -326,6 +377,8 @@
             .sidebar .nav-item { padding: 6px 12px; font-size: 12px; width: auto; }
             .sidebar .divider { display: none; }
             .server-header { flex-wrap: wrap; }
+            .top-tabs { flex-wrap: wrap; }
+            .top-tabs .tab { font-size: 12px; padding: 6px 12px; }
             .module-card { padding: 14px 16px; }
         }
     </style>
@@ -385,7 +438,7 @@
                 <a href="#" class="upgrade" onclick="alert('Upgrade to Premium!')">Upgrade to Premium</a>
             </div>
 
-            <!-- Modules -->
+            <!-- Navigation Groups -->
             <div class="nav-section">
                 <div class="section-title">Modules</div>
 
@@ -457,14 +510,26 @@
                 <div class="error-message"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
             <% } %>
 
+            <!-- ─── TOP TABS ─── -->
+            <div class="top-tabs">
+                <button class="tab active" onclick="showModule('overview')">Overview</button>
+                <button class="tab" onclick="showModule('applications')">Applications</button>
+                <button class="tab" onclick="showModule('tickets')">Tickets</button>
+                <button class="tab" onclick="showModule('security')">Security</button>
+                <button class="tab" onclick="showModule('automation')">Automation</button>
+                <button class="tab" onclick="showModule('community')">Community</button>
+                <button class="tab" onclick="showModule('audit')">Audit & Logs</button>
+            </div>
+
+            <!-- ─── SEARCH BOX ─── -->
+            <div class="search-box">
+                <input type="text" placeholder="Search for a feature..." id="featureSearch" onkeyup="searchFeatures()">
+            </div>
+
             <!-- ─── MODULE PANELS ─── -->
 
             <!-- ─── OVERVIEW ─── -->
             <div class="module-panel active" id="module-overview">
-                <div class="panel-header">
-                    <h2><i class="fas fa-th-large"></i> Overview</h2>
-                </div>
-
                 <div class="module-card">
                     <div class="card-header">
                         <span class="card-title">General Settings</span>
@@ -472,17 +537,15 @@
                     </div>
                     <div class="card-desc">Configure basic server settings for Sentinal</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('General settings coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('General settings coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- ─── APPLICATIONS ─── -->
             <div class="module-panel" id="module-applications">
-                <div class="panel-header">
-                    <h2><i class="fas fa-file-alt"></i> Applications</h2>
-                </div>
-
                 <div class="module-card">
                     <div class="card-header">
                         <span class="card-title">Applications</span>
@@ -490,7 +553,9 @@
                     </div>
                     <div class="card-desc">Create forms for your members to fill out</div>
                     <div class="card-actions">
-                        <a href="/applications?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">Configure</a>
+                        <a href="/applications?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">
+                            <i class="fas fa-cog"></i> Configure
+                        </a>
                     </div>
                 </div>
 
@@ -501,7 +566,9 @@
                     </div>
                     <div class="card-desc">Manage your application panels</div>
                     <div class="card-actions">
-                        <a href="/panels?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">Configure</a>
+                        <a href="/panels?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">
+                            <i class="fas fa-cog"></i> Configure
+                        </a>
                     </div>
                 </div>
 
@@ -512,17 +579,15 @@
                     </div>
                     <div class="card-desc">View and manage all application submissions</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('View submissions coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('View submissions coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- ─── TICKETS ─── -->
             <div class="module-panel" id="module-tickets">
-                <div class="panel-header">
-                    <h2><i class="fas fa-ticket"></i> Tickets</h2>
-                </div>
-
                 <div class="module-card">
                     <div class="card-header">
                         <span class="card-title">Templates</span>
@@ -530,7 +595,9 @@
                     </div>
                     <div class="card-desc">Create tickets for users to open in your server</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Ticket templates coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Ticket templates coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
 
@@ -541,7 +608,9 @@
                     </div>
                     <div class="card-desc">Organize your tickets into panels</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Ticket panels coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Ticket panels coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
 
@@ -552,7 +621,9 @@
                     </div>
                     <div class="card-desc">Create some quick responses to respond to common questions</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Quick responses coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Quick responses coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
 
@@ -563,17 +634,15 @@
                     </div>
                     <div class="card-desc">Get a comprehensive view of all open and closed tickets</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Transcripts coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Transcripts coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- ─── SECURITY ─── -->
             <div class="module-panel" id="module-security">
-                <div class="panel-header">
-                    <h2><i class="fas fa-shield-halved"></i> Security</h2>
-                </div>
-
                 <div class="module-card">
                     <div class="card-header">
                         <span class="card-title">Verification</span>
@@ -581,17 +650,15 @@
                     </div>
                     <div class="card-desc">Ensure only humans are allowed into your server</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Verification settings coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Verification settings coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- ─── AUTOMATION ─── -->
             <div class="module-panel" id="module-automation">
-                <div class="panel-header">
-                    <h2><i class="fas fa-robot"></i> Automation</h2>
-                </div>
-
                 <div class="module-card">
                     <div class="card-header">
                         <span class="card-title">Auto Roles</span>
@@ -599,7 +666,9 @@
                     </div>
                     <div class="card-desc">Automatically assign roles to users when they join your server</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Auto roles coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Auto roles coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
 
@@ -610,7 +679,9 @@
                     </div>
                     <div class="card-desc">Automatically greet new users with a personalized message</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Welcome messages coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Welcome messages coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
 
@@ -621,17 +692,15 @@
                     </div>
                     <div class="card-desc">Automatically say goodbye to users who leave your server</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Leave messages coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Leave messages coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- ─── COMMUNITY ─── -->
             <div class="module-panel" id="module-community">
-                <div class="panel-header">
-                    <h2><i class="fas fa-users"></i> Community</h2>
-                </div>
-
                 <div class="module-card">
                     <div class="card-header">
                         <span class="card-title">Polls</span>
@@ -639,7 +708,9 @@
                     </div>
                     <div class="card-desc">Create and manage polls for your server members to vote on.</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Polls coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Polls coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
 
@@ -650,17 +721,15 @@
                     </div>
                     <div class="card-desc">Create and manage giveaways for your server members to enter.</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Giveaways coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Giveaways coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- ─── AUDIT & LOGS ─── -->
             <div class="module-panel" id="module-audit">
-                <div class="panel-header">
-                    <h2><i class="fas fa-clipboard-list"></i> Audit & Logs</h2>
-                </div>
-
                 <div class="module-card">
                     <div class="card-header">
                         <span class="card-title">Dashboard Logs</span>
@@ -668,7 +737,9 @@
                     </div>
                     <div class="card-desc">Monitor and review all dashboard activities and config changes</div>
                     <div class="card-actions">
-                        <button class="btn-config" onclick="alert('Dashboard logs coming soon!')">Configure</button>
+                        <button class="btn-config" onclick="alert('Dashboard logs coming soon!')">
+                            <i class="fas fa-cog"></i> Configure
+                        </button>
                     </div>
                 </div>
             </div>
@@ -693,6 +764,16 @@
                 }
             });
 
+            // Update top tabs
+            document.querySelectorAll('.top-tabs .tab').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.top-tabs .tab').forEach(el => {
+                if (el.textContent.trim().toLowerCase().includes(module)) {
+                    el.classList.add('active');
+                }
+            });
+
             // Hide all panels
             document.querySelectorAll('.module-panel').forEach(el => {
                 el.classList.remove('active');
@@ -703,6 +784,40 @@
             if (target) {
                 target.classList.add('active');
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // ─── SEARCH FEATURES ───
+        function searchFeatures() {
+            const query = document.getElementById('featureSearch').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.module-card');
+
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title')?.textContent?.toLowerCase() || '';
+                const desc = card.querySelector('.card-desc')?.textContent?.toLowerCase() || '';
+                const match = title.includes(query) || desc.includes(query);
+
+                // Show/hide card
+                card.style.display = match ? '' : 'none';
+
+                // Show parent panel if any card is visible
+                const panel = card.closest('.module-panel');
+                if (panel) {
+                    const visibleCards = panel.querySelectorAll('.module-card[style*="display: none"]');
+                    const totalCards = panel.querySelectorAll('.module-card').length;
+                    // If query is empty, show all panels
+                    if (query === '') {
+                        panel.style.display = '';
+                    } else {
+                        const hasVisible = Array.from(panel.querySelectorAll('.module-card')).some(c => c.style.display !== 'none');
+                        panel.style.display = hasVisible ? '' : 'none';
+                    }
+                }
+            });
+
+            // If query is empty, show all panels
+            if (query === '') {
+                document.querySelectorAll('.module-panel').forEach(el => el.style.display = '');
             }
         }
     </script>
