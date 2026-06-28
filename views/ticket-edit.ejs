@@ -649,21 +649,104 @@
     </div>
 
     <script>
-        // Toast notifications
+        // ============================================================
+        // Ticket Edit Page - Client-side interactivity
+        // ============================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initToggles();
+            initSegmentedControls();
+            initRoleSelects();
+            updateQuestionCounts();
+            
+            // Add question button listener
+            const addBtn = document.getElementById('add-question-btn');
+            if (addBtn) {
+                addBtn.addEventListener('click', addQuestion);
+            }
+        });
+
+        // ---------------- Toggles ----------------
+        function initToggles() {
+            document.querySelectorAll('.toggle[data-action="toggle"]').forEach((btn) => {
+                btn.addEventListener('click', function() {
+                    const isOn = this.classList.toggle('on');
+                    this.setAttribute('aria-checked', String(isOn));
+                });
+            });
+        }
+
+        // ---------------- Segmented controls ----------------
+        function initSegmentedControls() {
+            document.querySelectorAll('.segmented').forEach((group) => {
+                group.querySelectorAll('.segment').forEach((seg) => {
+                    seg.addEventListener('click', function() {
+                        group.querySelectorAll('.segment').forEach((s) => s.classList.remove('active'));
+                        this.classList.add('active');
+
+                        // Update the descriptive text
+                        const desc = this.closest('.form-group')?.querySelector('.match-mode-desc');
+                        if (desc) {
+                            const mode = this.dataset.value;
+                            const isBlocked = group.dataset.group === 'blocked-match-mode';
+                            const verb = isBlocked ? 'blocked' : 'required';
+                            desc.innerHTML = mode === 'all'
+                                ? `User is ${verb} only if they have <strong>ALL</strong> of the listed roles.`
+                                : `User is ${verb} if they have <strong>ANY</strong> of the listed roles.`;
+                        }
+                    });
+                });
+            });
+        }
+
+        // ---------------- Role multi-selects with live counts ----------------
+        function initRoleSelects() {
+            document.querySelectorAll('.role-select').forEach((select) => {
+                const targetId = select.dataset.roleTarget + 'Count';
+                const countTarget = document.getElementById(targetId);
+                const max = select.dataset.max ? parseInt(select.dataset.max, 10) : 10;
+
+                function updateCount() {
+                    const count = Array.from(select.selectedOptions).filter((o) => o.value !== '').length;
+                    if (countTarget) {
+                        countTarget.textContent = `${count}/${max}`;
+                    }
+                }
+
+                select.addEventListener('change', function() {
+                    const selected = Array.from(this.selectedOptions).filter((o) => o.value !== '');
+
+                    if (selected.length > max) {
+                        // Deselect the most recently added option past the max
+                        selected[selected.length - 1].selected = false;
+                        showToast(`You can select up to ${max} role${max === 1 ? '' : 's'} here.`, 'error');
+                    }
+
+                    updateCount();
+                });
+
+                updateCount();
+            });
+        }
+
+        // ---------------- Toast notifications ----------------
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             if (!container) return;
             
             const toast = document.createElement('div');
             toast.className = 'toast ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : '');
+            const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
+            
             toast.innerHTML = `
-                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i></span>
+                <span class="toast-icon"><i class="fas fa-${icon}"></i></span>
                 <span class="toast-content">${message}</span>
                 <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
                     <i class="fas fa-times"></i>
                 </button>
             `;
             container.appendChild(toast);
+            
             setTimeout(() => {
                 if (toast.parentNode) {
                     toast.classList.add('hiding');
@@ -672,70 +755,8 @@
             }, 4000);
         }
 
-        // Save template
-        function saveTemplate() {
-            // Collect all question data from the DOM
-            const questionItems = document.querySelectorAll('.question-item');
-            const questions = [];
-            
-            questionItems.forEach((item, index) => {
-                const title = item.querySelector('.q-desc strong')?.textContent === 'Question title' 
-                    ? item.querySelector('.q-desc:first-of-type')?.textContent?.replace('Question title', '').trim() 
-                    : `Question ${index + 1}`;
-                
-                // You'll need to expand this to capture full question data from edit forms
-                questions.push({
-                    title: title || `Question ${index + 1}`,
-                    description: 'Please explain your answer in full detail',
-                    placeholder: 'Please describe your issue in full detail.',
-                    type: 'short',
-                    required: true,
-                    minLength: 1,
-                    maxLength: 500
-                });
-            });
-
-            const data = {
-                name: document.getElementById('templateName').value,
-                category: document.getElementById('ticketCategory').value,
-                channelName: document.getElementById('ticketChannel').value,
-                maxTickets: parseInt(document.getElementById('maxTickets').value) || 3,
-                blockedRoles: Array.from(document.getElementById('blockedRoles').selectedOptions).map(o => o.value),
-                requiredRoles: Array.from(document.getElementById('requiredRoles').selectedOptions).map(o => o.value),
-                supportRoles: Array.from(document.getElementById('supportRoles').selectedOptions).map(o => o.value),
-                ticketClaiming: document.getElementById('ticketClaiming').classList.contains('on'),
-                actionOnLeave: document.getElementById('actionOnLeave').value,
-                pingSupport: document.getElementById('pingSupport').classList.contains('on'),
-                rateSupport: document.getElementById('rateSupport').classList.contains('on'),
-                formDescription: document.getElementById('formDescription').value,
-                questions: questions,
-                guildId: '<%= locals.guild ? guild.id : "" %>'
-            };
-
-            const templateId = '<%= locals.template ? template._id : "" %>';
-            const url = templateId ? `/api/tickets/${templateId}` : '/api/tickets';
-            const method = templateId ? 'PUT' : 'POST';
-
-            fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('✅ Template saved successfully!', 'success');
-                } else {
-                    showToast('❌ Error: ' + (data.error || 'Unknown error'), 'error');
-                }
-            })
-            .catch(error => {
-                showToast('❌ Error saving template: ' + error.message, 'error');
-            });
-        }
-
-        // Question management functions
-        let questionCounter = document.querySelectorAll('.question-item').length || 1;
+        // ---------------- Question management ----------------
+        let questionCounter = 0;
 
         function addQuestion() {
             const list = document.getElementById('questions-list');
@@ -798,16 +819,23 @@
         }
 
         function editQuestion(index) {
+            // This would open an edit modal or form
+            // For now, just show a toast
             showToast('Edit mode coming soon! Click "Add Question" to create new ones.', 'info');
         }
 
         function updateQuestionCounts() {
-            const count = document.querySelectorAll('.question-item').length;
-            document.getElementById('questionCount').textContent = count;
-            document.getElementById('questions-used-count').textContent = count;
+            const items = document.querySelectorAll('.question-item');
+            const count = items.length;
+            
+            const countElement = document.getElementById('questionCount');
+            const usedElement = document.getElementById('questions-used-count');
+            
+            if (countElement) countElement.textContent = count;
+            if (usedElement) usedElement.textContent = count;
             
             // Update question numbers
-            document.querySelectorAll('.question-item').forEach((item, i) => {
+            items.forEach((item, i) => {
                 item.dataset.index = i;
                 const title = item.querySelector('.q-title');
                 if (title) {
@@ -816,81 +844,94 @@
             });
         }
 
-        // Add question button listener
-        document.addEventListener('DOMContentLoaded', function() {
-            const addBtn = document.getElementById('add-question-btn');
-            if (addBtn) {
-                addBtn.addEventListener('click', addQuestion);
-            }
+        // ---------------- Save template ----------------
+        function saveTemplate() {
+            // Collect all question data from the DOM
+            const questionItems = document.querySelectorAll('.question-item');
+            const questions = [];
             
-            // Initialize toggle components
-            initToggles();
-            
-            // Initialize segmented controls
-            initSegmentedControls();
-            
-            // Initialize role selects
-            initRoleSelects();
-            
-            // Update question counts
-            updateQuestionCounts();
-        });
-
-        // Re-initialize functions from dashboard.js
-        function initToggles() {
-            document.querySelectorAll('.toggle[data-action="toggle"]').forEach((btn) => {
-                btn.addEventListener('click', function() {
-                    const isOn = this.classList.toggle('on');
-                    this.setAttribute('aria-checked', String(isOn));
-                });
-            });
-        }
-
-        function initSegmentedControls() {
-            document.querySelectorAll('.segmented').forEach((group) => {
-                group.querySelectorAll('.segment').forEach((seg) => {
-                    seg.addEventListener('click', function() {
-                        group.querySelectorAll('.segment').forEach((s) => s.classList.remove('active'));
-                        this.classList.add('active');
-
-                        const desc = this.closest('.form-group')?.querySelector('.match-mode-desc');
-                        if (desc) {
-                            const mode = this.dataset.value;
-                            const isBlocked = group.dataset.group === 'blocked-match-mode';
-                            const verb = isBlocked ? 'blocked' : 'required';
-                            desc.innerHTML = mode === 'all'
-                                ? `User is ${verb} only if they have <strong>ALL</strong> of the listed roles.`
-                                : `User is ${verb} if they have <strong>ANY</strong> of the listed roles.`;
-                        }
-                    });
-                });
-            });
-        }
-
-        function initRoleSelects() {
-            document.querySelectorAll('.role-select').forEach((select) => {
-                const countTarget = document.getElementById(select.dataset.roleTarget + 'Count');
-                const max = select.dataset.max ? parseInt(select.dataset.max, 10) : 10;
-
-                function updateCount() {
-                    const count = Array.from(select.selectedOptions).filter((o) => o.value !== '').length;
-                    if (countTarget) countTarget.textContent = `${count}/${max}`;
+            questionItems.forEach((item, index) => {
+                // Extract question data from the displayed content
+                const titleEl = item.querySelector('.q-desc:first-of-type');
+                const descEl = item.querySelector('.q-desc:nth-of-type(2)');
+                const placeholderEl = item.querySelector('.q-desc:nth-of-type(3)');
+                const typeEl = item.querySelector('.q-type:first-of-type');
+                
+                const title = titleEl ? titleEl.textContent.replace('Question title', '').trim() : `Question ${index + 1}`;
+                const description = descEl ? descEl.textContent.replace('Description', '').trim() : 'Please explain your answer in full detail';
+                const placeholder = placeholderEl ? placeholderEl.textContent.replace('Placeholder', '').trim() : 'Please describe your issue in full detail.';
+                const type = typeEl ? typeEl.textContent.trim().toLowerCase() : 'short';
+                
+                // Extract min/max from the displayed values
+                const typeElements = item.querySelectorAll('.q-type');
+                let minLength = 1;
+                let maxLength = 500;
+                
+                if (typeElements.length >= 3) {
+                    const minText = typeElements[1].textContent;
+                    const maxText = typeElements[2].textContent;
+                    const minMatch = minText.match(/Min:\s*(\d+)/);
+                    const maxMatch = maxText.match(/Max:\s*(\d+)/);
+                    if (minMatch) minLength = parseInt(minMatch[1]);
+                    if (maxMatch) maxLength = parseInt(maxMatch[1]);
                 }
-
-                select.addEventListener('change', function() {
-                    const selected = Array.from(this.selectedOptions).filter((o) => o.value !== '');
-
-                    if (selected.length > max) {
-                        selected[selected.length - 1].selected = false;
-                        showToast(`You can select up to ${max} role${max === 1 ? '' : 's'} here.`, 'error');
-                    }
-
-                    updateCount();
+                
+                questions.push({
+                    title: title,
+                    description: description,
+                    placeholder: placeholder,
+                    type: type,
+                    required: true,
+                    minLength: minLength,
+                    maxLength: maxLength
                 });
+            });
 
-                updateCount();
+            const data = {
+                name: document.getElementById('templateName').value,
+                category: document.getElementById('ticketCategory').value,
+                channelName: document.getElementById('ticketChannel').value,
+                maxTickets: parseInt(document.getElementById('maxTickets').value) || 3,
+                blockedRoles: Array.from(document.getElementById('blockedRoles').selectedOptions).map(o => o.value),
+                requiredRoles: Array.from(document.getElementById('requiredRoles').selectedOptions).map(o => o.value),
+                supportRoles: Array.from(document.getElementById('supportRoles').selectedOptions).map(o => o.value),
+                ticketClaiming: document.getElementById('ticketClaiming').classList.contains('on'),
+                actionOnLeave: document.getElementById('actionOnLeave').value,
+                pingSupport: document.getElementById('pingSupport').classList.contains('on'),
+                rateSupport: document.getElementById('rateSupport').classList.contains('on'),
+                formDescription: document.getElementById('formDescription').value,
+                questions: questions,
+                guildId: '<%= locals.guild ? guild.id : "" %>'
+            };
+
+            const templateId = '<%= locals.template ? template._id : "" %>';
+            const url = templateId ? `/api/tickets/${templateId}` : '/api/tickets';
+            const method = templateId ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('✅ Template saved successfully!', 'success');
+                } else {
+                    showToast('❌ Error: ' + (data.error || 'Unknown error'), 'error');
+                }
+            })
+            .catch(error => {
+                showToast('❌ Error saving template: ' + error.message, 'error');
             });
         }
+
+        // Make functions globally accessible for onclick handlers
+        window.addQuestion = addQuestion;
+        window.deleteQuestion = deleteQuestion;
+        window.editQuestion = editQuestion;
+        window.saveTemplate = saveTemplate;
+        window.showToast = showToast;
     </script>
 </body>
 </html>
