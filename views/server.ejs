@@ -223,6 +223,10 @@
             text-decoration: none;
             transition: all 0.18s ease;
             border-bottom: 3px solid transparent;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
         }
         .top-tabs .tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
         .top-tabs .tab.active {
@@ -551,7 +555,7 @@
                 </div>
             </div>
 
-            <!-- ─── TOP TABS (ALL USE showModule) ─── -->
+            <!-- ─── TOP TABS ─── -->
             <div class="top-tabs">
                 <button class="tab active" onclick="showModule('overview')">Overview</button>
                 <button class="tab" onclick="showModule('applications')">Applications</button>
@@ -636,7 +640,7 @@
                 <div class="module-grid">
                     <div class="module-card">
                         <div class="card-header">
-                            <span class="card-title">Templates</span>
+                            <span class="card-title">Tickets</span>
                             <span class="card-badge live">Live</span>
                         </div>
                         <div class="card-desc">Create tickets for users to open in your server</div>
@@ -653,21 +657,9 @@
                         </div>
                         <div class="card-desc">Organize your tickets into panels</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Ticket panels coming soon!', 'info')">
+                            <a href="/panels?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">
                                 <i class="fas fa-cog"></i> Configure
-                            </button>
-                        </div>
-                    </div>
-                    <div class="module-card">
-                        <div class="card-header">
-                            <span class="card-title">Quick Responses</span>
-                            <span class="card-badge new">New</span>
-                        </div>
-                        <div class="card-desc">Create some quick responses to respond to common questions</div>
-                        <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Quick responses coming soon!', 'info')">
-                                <i class="fas fa-cog"></i> Configure
-                            </button>
+                            </a>
                         </div>
                     </div>
                     <div class="module-card">
