@@ -300,6 +300,36 @@ router.get('/tickets', isAuthenticated, async (req, res) => {
     }
 });
 
+// ============ TICKET TEMPLATES PAGE ============
+router.get('/tickets/templates', isAuthenticated, async (req, res) => {
+    try {
+        const guildId = req.query.guildId;
+        console.log('📋 Loading ticket templates for guild:', guildId);
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { find: async () => [] };
+        }
+        
+        const templates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        
+        res.render('ticket-templates', {
+            title: 'Templates — Sentinal',
+            user: req.session.user,
+            guild: { id: guildId || 'unknown' },
+            templates: templates
+        });
+    } catch (error) {
+        console.error('Error loading ticket templates:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load ticket templates',
+            title: 'Error'
+        });
+    }
+});
+
 // ============ API: APPLICATIONS ============
 router.post('/api/applications', isAuthenticated, async (req, res) => {
     try {
