@@ -4,10 +4,10 @@ const axios = require('axios');
 
 // ============ MIDDLEWARE ============
 function isAuthenticated(req, res, next) {
-    if (req.session.user) {
+    if (req.session && req.session.user) {
         return next();
     }
-    return res.redirect('/auth/login');
+    return res.redirect('/login');
 }
 
 // ============ DASHBOARD HOME (Redirects to Servers) ============
@@ -73,30 +73,31 @@ router.get('/servers', isAuthenticated, async (req, res) => {
         
         if (error.response?.status === 401) {
             req.session.destroy(() => {
-                res.redirect('/auth/login?error=session_expired');
+                res.redirect('/login?error=session_expired');
             });
             return;
         }
         
         return res.status(500).render('error', {
             message: 'Failed to load your servers. Please try again later.',
-            title: 'Error'
+            title: 'Error',
+            user: req.session.user
         });
     }
 });
 
-// ============ SERVER SETTINGS ============
-router.get('/server/:id', isAuthenticated, async (req, res) => {
+// ============ SERVER SETTINGS (Overview) ============
+router.get('/servers/:guildId', isAuthenticated, async (req, res) => {
     try {
-        const guildId = req.params.id;
-        console.log('🔍 Loading server settings for guild:', guildId);
+        const guildId = req.params.guildId;
+        console.log('🔍 Loading server overview for guild:', guildId);
         
         const tokenExpires = req.session.user.token_expires || 0;
         const now = Date.now();
         
         if (now > tokenExpires) {
             req.session.destroy(() => {
-                res.redirect('/auth/login?error=session_expired');
+                res.redirect('/login?error=session_expired');
             });
             return;
         }
@@ -106,8 +107,7 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
             GuildConfig = require('../models/GuildConfig');
         } catch (err) {
             GuildConfig = {
-                findOne: async () => null,
-                findOneAndUpdate: async () => ({})
+                findOne: async () => null
             };
         }
         
@@ -174,22 +174,23 @@ router.get('/server/:id', isAuthenticated, async (req, res) => {
         
         if (error.response?.status === 401) {
             req.session.destroy(() => {
-                res.redirect('/auth/login?error=session_expired');
+                res.redirect('/login?error=session_expired');
             });
             return;
         }
         
         res.status(500).render('error', {
             message: 'Failed to load server settings. Please try again later.',
-            title: 'Error'
+            title: 'Error',
+            user: req.session.user
         });
     }
 });
 
-// ============ APPLICATIONS PAGE ============
-router.get('/applications', isAuthenticated, async (req, res) => {
+// ============ SERVER APPLICATIONS ============
+router.get('/servers/:guildId/applications', isAuthenticated, async (req, res) => {
     try {
-        const guildId = req.query.guildId;
+        const guildId = req.params.guildId;
         console.log('📋 Loading applications for guild:', guildId);
         
         let ApplicationForm;
@@ -215,23 +216,58 @@ router.get('/applications', isAuthenticated, async (req, res) => {
         res.render('applications', {
             title: 'Applications — Sentinal',
             user: req.session.user,
-            guild: { id: guildId || 'unknown' },
+            guild: { id: guildId },
             config: config || {},
-            applications: applications
+            applications: applications,
+            isAuthenticated: true
         });
     } catch (error) {
         console.error('Error loading applications:', error.message);
         res.status(500).render('error', {
             message: 'Failed to load applications',
-            title: 'Error'
+            title: 'Error',
+            user: req.session.user
         });
     }
 });
 
-// ============ PANELS PAGE ============
-router.get('/panels', isAuthenticated, async (req, res) => {
+// ============ SERVER TICKETS ============
+router.get('/servers/:guildId/tickets', isAuthenticated, async (req, res) => {
     try {
-        const guildId = req.query.guildId;
+        const guildId = req.params.guildId;
+        console.log('📋 Loading tickets for guild:', guildId);
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { find: async () => [] };
+        }
+        
+        const tickets = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        console.log(`✅ Found ${tickets.length} ticket templates`);
+        
+        res.render('tickets', {
+            title: 'Tickets — Sentinal',
+            user: req.session.user,
+            guild: { id: guildId },
+            tickets: tickets,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading tickets:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load tickets',
+            title: 'Error',
+            user: req.session.user
+        });
+    }
+});
+
+// ============ SERVER PANELS ============
+router.get('/servers/:guildId/panels', isAuthenticated, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
         console.log('📋 Loading panels for guild:', guildId);
         
         let Panel;
@@ -244,32 +280,24 @@ router.get('/panels', isAuthenticated, async (req, res) => {
         const panels = await Panel.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
         console.log(`✅ Found ${panels.length} panels`);
         
-        let ApplicationForm;
-        try {
-            ApplicationForm = require('../models/ApplicationForm');
-        } catch (err) {
-            ApplicationForm = { find: async () => [] };
-        }
-        
-        const applications = await ApplicationForm.find({ guildId }).catch(() => []);
-        
         res.render('panels', {
             title: 'Panels — Sentinal',
             user: req.session.user,
-            guild: { id: guildId || 'unknown' },
+            guild: { id: guildId },
             panels: panels,
-            applications: applications
+            isAuthenticated: true
         });
     } catch (error) {
         console.error('Error loading panels:', error.message);
         res.status(500).render('error', {
             message: 'Failed to load panels',
-            title: 'Error'
+            title: 'Error',
+            user: req.session.user
         });
     }
 });
 
-// ============ PANEL CREATION WIZARD ROUTES ============
+// ============ PANEL CREATION WIZARD ============
 
 // Step 1: Panel Type
 router.get('/servers/:guildId/panels/create', isAuthenticated, (req, res) => {
@@ -277,7 +305,7 @@ router.get('/servers/:guildId/panels/create', isAuthenticated, (req, res) => {
     res.render('panel-create-step1', {
         title: 'Panel Designer — Sentinal',
         user: req.session.user,
-        guild: { id: guildId, name: 'Sentinal Support' },
+        guild: { id: guildId },
         isAuthenticated: true
     });
 });
@@ -289,7 +317,7 @@ router.get('/servers/:guildId/panels/create/step2', isAuthenticated, (req, res) 
     res.render('panel-create-step2', {
         title: 'Panel Designer — Sentinal',
         user: req.session.user,
-        guild: { id: guildId, name: 'Sentinal Support' },
+        guild: { id: guildId },
         panelType: type || 'ticket',
         isAuthenticated: true
     });
@@ -302,7 +330,7 @@ router.get('/servers/:guildId/panels/create/step3', isAuthenticated, (req, res) 
     res.render('panel-create-step3', {
         title: 'Panel Designer — Sentinal',
         user: req.session.user,
-        guild: { id: guildId, name: 'Sentinal Support' },
+        guild: { id: guildId },
         panelType: type || 'ticket',
         ticketStyle: style || 'text',
         isAuthenticated: true
@@ -316,7 +344,7 @@ router.get('/servers/:guildId/panels/create/step4', isAuthenticated, (req, res) 
     res.render('panel-create-step4', {
         title: 'Panel Designer — Sentinal',
         user: req.session.user,
-        guild: { id: guildId, name: 'Sentinal Support' },
+        guild: { id: guildId },
         panelType: type || 'ticket',
         ticketStyle: style || 'text',
         sendChannel: channel || '',
@@ -324,7 +352,7 @@ router.get('/servers/:guildId/panels/create/step4', isAuthenticated, (req, res) 
     });
 });
 
-// Panel Editor
+// ============ PANEL EDITOR ============
 router.get('/servers/:guildId/panels/:panelId/edit', isAuthenticated, async (req, res) => {
     try {
         const guildId = req.params.guildId;
@@ -337,7 +365,6 @@ router.get('/servers/:guildId/panels/:panelId/edit', isAuthenticated, async (req
             Panel = { findOne: async () => null, save: async () => {} };
         }
         
-        // Try to find existing panel or create a new one
         let panel = await Panel.findOne({ _id: panelId, guildId });
         
         if (!panel) {
@@ -354,21 +381,14 @@ router.get('/servers/:guildId/panels/:panelId/edit', isAuthenticated, async (req
                 config: {
                     embeds: [{
                         title: 'Tickets',
-                        description: 'Click below to create a new ticket\n\nFOR STAFF APPLICATIONS, You have to be at least 14 years old, have previous experience on other servers, know how to screenshare, no punishment history in the past month, must know English and have good grammar. You gotta make a good application to get accepted',
+                        description: 'Click below to create a new ticket',
                         color: '#5865F2'
                     }],
                     buttons: [
-                        { label: 'Refund', style: 'primary', emoji: '💰' },
-                        { label: 'Player reporting', style: 'secondary', emoji: '📋' },
-                        { label: 'Unban (Must have solid proof)', style: 'danger', emoji: '🔓' },
-                        { label: 'Partnership', style: 'success', emoji: '🤝' },
-                        { label: 'Rank claiming', style: 'primary', emoji: '👑' },
-                        { label: 'Staff application', style: 'secondary', emoji: '📝' }
+                        { label: 'Create Ticket', style: 'primary', emoji: '🎫' }
                     ],
                     rows: [
-                        { buttons: ['Refund', 'Player reporting'] },
-                        { buttons: ['Unban (Must have solid proof)', 'Partnership'] },
-                        { buttons: ['Rank claiming', 'Staff application'] }
+                        { buttons: ['Create Ticket'] }
                     ]
                 }
             });
@@ -378,7 +398,7 @@ router.get('/servers/:guildId/panels/:panelId/edit', isAuthenticated, async (req
         res.render('panel-editor', {
             title: 'Panel Designer — Sentinal',
             user: req.session.user,
-            guild: { id: guildId, name: 'Sentinal Support' },
+            guild: { id: guildId },
             panel: panel,
             panelId: panelId,
             isAuthenticated: true
@@ -387,77 +407,17 @@ router.get('/servers/:guildId/panels/:panelId/edit', isAuthenticated, async (req
         console.error('Error loading panel editor:', error);
         res.status(500).render('error', {
             message: 'Failed to load panel editor',
-            title: 'Error'
-        });
-    }
-});
-
-// ============ TICKETS PAGE ============
-router.get('/tickets', isAuthenticated, async (req, res) => {
-    try {
-        const guildId = req.query.guildId;
-        console.log('📋 Loading tickets for guild:', guildId);
-        
-        let TicketTemplate;
-        try {
-            TicketTemplate = require('../models/TicketTemplate');
-        } catch (err) {
-            TicketTemplate = { find: async () => [] };
-        }
-        
-        const tickets = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
-        console.log(`✅ Found ${tickets.length} ticket templates`);
-        
-        res.render('tickets', {
-            title: 'Tickets — Sentinal',
-            user: req.session.user,
-            guild: { id: guildId || 'unknown' },
-            tickets: tickets
-        });
-    } catch (error) {
-        console.error('Error loading tickets:', error.message);
-        res.status(500).render('error', {
-            message: 'Failed to load tickets',
-            title: 'Error'
-        });
-    }
-});
-
-// ============ TICKET TEMPLATES PAGE ============
-router.get('/tickets/templates', isAuthenticated, async (req, res) => {
-    try {
-        const guildId = req.query.guildId;
-        console.log('📋 Loading ticket templates for guild:', guildId);
-        
-        let TicketTemplate;
-        try {
-            TicketTemplate = require('../models/TicketTemplate');
-        } catch (err) {
-            TicketTemplate = { find: async () => [] };
-        }
-        
-        const templates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
-        
-        res.render('ticket-templates', {
-            title: 'Templates — Sentinal',
-            user: req.session.user,
-            guild: { id: guildId || 'unknown' },
-            templates: templates
-        });
-    } catch (error) {
-        console.error('Error loading ticket templates:', error.message);
-        res.status(500).render('error', {
-            message: 'Failed to load ticket templates',
-            title: 'Error'
+            title: 'Error',
+            user: req.session.user
         });
     }
 });
 
 // ============ TICKET EDIT PAGE ============
-router.get('/tickets/edit/:id', isAuthenticated, async (req, res) => {
+router.get('/servers/:guildId/tickets/edit/:id', isAuthenticated, async (req, res) => {
     try {
         const templateId = req.params.id;
-        const guildId = req.query.guildId;
+        const guildId = req.params.guildId;
         console.log('📋 Loading ticket template for edit:', templateId);
         
         let TicketTemplate;
@@ -472,21 +432,24 @@ router.get('/tickets/edit/:id', isAuthenticated, async (req, res) => {
         if (!template) {
             return res.status(404).render('error', {
                 message: 'Ticket template not found',
-                title: 'Not Found'
+                title: 'Not Found',
+                user: req.session.user
             });
         }
         
         res.render('ticket-edit', {
             title: 'Edit Template — Sentinal',
             user: req.session.user,
-            guild: { id: guildId || 'unknown' },
-            template: template
+            guild: { id: guildId },
+            template: template,
+            isAuthenticated: true
         });
     } catch (error) {
         console.error('Error loading ticket template:', error.message);
         res.status(500).render('error', {
             message: 'Failed to load ticket template',
-            title: 'Error'
+            title: 'Error',
+            user: req.session.user
         });
     }
 });
@@ -610,7 +573,6 @@ router.post('/api/panels', isAuthenticated, async (req, res) => {
     }
 });
 
-// API: Create panel from wizard
 router.post('/api/panels/create', isAuthenticated, async (req, res) => {
     try {
         const { guildId, name, description, type, style, channel, config } = req.body;
@@ -642,7 +604,6 @@ router.post('/api/panels/create', isAuthenticated, async (req, res) => {
     }
 });
 
-// API: Save panel
 router.post('/api/panels/:panelId/save', isAuthenticated, async (req, res) => {
     try {
         const panelId = req.params.panelId;
@@ -838,7 +799,7 @@ router.post('/api/config/:guildId', isAuthenticated, async (req, res) => {
     }
 });
 
-// ============ API: SERVER ROLES (for dropdowns) ============
+// ============ API: SERVER ROLES ============
 router.get('/api/servers/:guildId/roles', isAuthenticated, async (req, res) => {
     try {
         const guildId = req.params.guildId;
@@ -870,7 +831,7 @@ router.get('/api/servers/:guildId/roles', isAuthenticated, async (req, res) => {
     }
 });
 
-// ============ API: SERVER CHANNELS (for dropdowns) ============
+// ============ API: SERVER CHANNELS ============
 router.get('/api/servers/:guildId/channels', isAuthenticated, async (req, res) => {
     try {
         const guildId = req.params.guildId;
