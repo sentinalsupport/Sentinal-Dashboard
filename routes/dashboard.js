@@ -437,11 +437,32 @@ router.get('/servers/:guildId/tickets/edit/:id', isAuthenticated, async (req, re
             });
         }
         
+        // Get roles for the dropdowns
+        let roles = [];
+        const botToken = process.env.DISCORD_TOKEN;
+        if (botToken) {
+            try {
+                const rolesResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/roles`, {
+                    headers: {
+                        Authorization: `Bot ${botToken}`
+                    }
+                });
+                roles = rolesResponse.data.map(r => ({
+                    id: r.id,
+                    name: r.name,
+                    color: r.color
+                }));
+            } catch (err) {
+                console.warn('Could not fetch roles:', err.message);
+            }
+        }
+        
         res.render('ticket-edit', {
             title: 'Edit Template — Sentinal',
             user: req.session.user,
             guild: { id: guildId },
             template: template,
+            roles: roles,
             isAuthenticated: true
         });
     } catch (error) {
@@ -730,11 +751,23 @@ router.put('/api/tickets/:id', isAuthenticated, async (req, res) => {
             return res.status(404).json({ success: false, error: 'Ticket not found' });
         }
         
-        const { name, category, description, enabled } = req.body;
+        const { name, category, description, enabled, channelName, maxTickets, blockedRoles, requiredRoles, supportRoles, ticketClaiming, actionOnLeave, pingSupport, rateSupport, formDescription, questions } = req.body;
+        
         ticket.name = name || ticket.name;
         ticket.category = category || ticket.category;
         ticket.description = description || ticket.description;
         if (enabled !== undefined) ticket.enabled = enabled;
+        ticket.channelName = channelName || ticket.channelName;
+        ticket.maxTickets = maxTickets || ticket.maxTickets || 3;
+        ticket.blockedRoles = blockedRoles || ticket.blockedRoles || [];
+        ticket.requiredRoles = requiredRoles || ticket.requiredRoles || [];
+        ticket.supportRoles = supportRoles || ticket.supportRoles || [];
+        ticket.ticketClaiming = ticketClaiming !== undefined ? ticketClaiming : (ticket.ticketClaiming || false);
+        ticket.actionOnLeave = actionOnLeave || ticket.actionOnLeave || 'nothing';
+        ticket.pingSupport = pingSupport !== undefined ? pingSupport : (ticket.pingSupport || false);
+        ticket.rateSupport = rateSupport !== undefined ? rateSupport : (ticket.rateSupport || false);
+        ticket.formDescription = formDescription || ticket.formDescription || '';
+        ticket.questions = questions || ticket.questions || [];
         
         await ticket.save();
         res.json({ success: true, ticket: ticket });
@@ -860,6 +893,42 @@ router.get('/api/servers/:guildId/channels', isAuthenticated, async (req, res) =
         res.json({ success: true, channels });
     } catch (error) {
         console.error('Error fetching channels:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: TICKET TEMPLATES ============
+router.get('/api/tickets/templates/:guildId', isAuthenticated, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        const TicketTemplate = require('../models/TicketTemplate');
+        const templates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 });
+        res.json({ success: true, templates });
+    } catch (error) {
+        console.error('Error fetching ticket templates:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: GUILD INFO ============
+router.get('/api/guilds/:guildId', isAuthenticated, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        const botToken = process.env.DISCORD_TOKEN;
+        
+        if (!botToken) {
+            return res.status(500).json({ success: false, error: 'Bot token not configured' });
+        }
+        
+        const response = await axios.get(`https://discord.com/api/guilds/${guildId}`, {
+            headers: {
+                Authorization: `Bot ${botToken}`
+            }
+        });
+        
+        res.json({ success: true, guild: response.data });
+    } catch (error) {
+        console.error('Error fetching guild info:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
