@@ -5,155 +5,238 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title || 'Edit Template — Sentinal' %></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
     <style>
-        /* Additional styles for ticket edit page */
+        :root {
+            --ink: #060A10;
+            --panel: #0D1520;
+            --panel-raised: #111D2C;
+            --panel-hover: #162033;
+            --line: rgba(255,255,255,0.07);
+            --line-bright: rgba(255,255,255,0.13);
+            --text: #E6EDF6;
+            --muted: #6C7A90;
+            --muted-dim: #3E4A5C;
+            --signal: #3DFFB8;
+            --signal-tab: rgba(61,255,184,0.08);
+            --signal-glow: rgba(61,255,184,0.15);
+            --gold: #F5C842;
+            --gold-tab: rgba(245,200,66,0.12);
+            --violet: #8B7EFF;
+            --violet-tab: rgba(139,126,255,0.12);
+            --red: #F87171;
+            --red-bg: rgba(248,113,113,0.08);
+            --red-border: rgba(248,113,113,0.22);
+            --discord: #5865F2;
+            --discord-hover: #4752C4;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--ink);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(6,10,16,0.9);
+            backdrop-filter: blur(28px) saturate(160%);
+            border-bottom: 1px solid var(--line);
+            padding: 0 48px;
+            height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 200;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-logo {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: var(--panel-raised); border: 1px solid var(--line-bright);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .brand-logo svg { width: 22px; height: 22px; }
+        .brand-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+        }
+        .nav-center { display: flex; align-items: center; gap: 8px; }
+        .nav-center a {
+            color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
+            padding: 8px 18px; border-radius: 10px; transition: all 0.18s ease;
+        }
+        .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .nav-center a.active { color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .user-pill {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--panel); border: 1px solid var(--line);
+            border-radius: 100px; padding: 6px 18px 6px 8px;
+        }
+        .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--panel-raised); overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700;
+        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 14px; font-weight: 500; color: var(--text); }
+        .user-plan {
+            font-size: 11px; font-weight: 600; color: var(--signal);
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.22);
+            border-radius: 100px; padding: 3px 10px; letter-spacing: 0.3px;
+        }
+        .logout-btn {
+            background: transparent; border: 1px solid var(--line); border-radius: 10px;
+            padding: 8px 14px; color: var(--muted); cursor: pointer; font-size: 14px;
+            transition: all 0.18s ease; text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+
         .page-wrapper {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 24px 32px 60px;
+            padding: 32px 48px 60px;
         }
 
-        .page-header {
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            width: 100%;
+        }
+        .toast {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
             align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--signal);
+        }
+        .toast .toast-icon { color: var(--signal); font-size: 18px; flex-shrink: 0; }
+        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
+        .toast .toast-close {
+            background: none; border: none;
+            color: var(--muted-dim); cursor: pointer;
+            font-size: 14px; padding: 4px;
+        }
+        .toast .toast-close:hover { color: var(--text); }
+        .toast.error { border-left-color: var(--red); }
+        .toast.error .toast-icon { color: var(--red); }
+        .toast.success { border-left-color: var(--signal); }
+        .toast.success .toast-icon { color: var(--signal); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(40px); }
+        }
+        .toast.hiding { animation: slideOut 0.3s ease forwards; }
+
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center;
             padding: 20px 0 16px;
-            border-bottom: 1px solid var(--border-soft);
+            border-bottom: 1px solid var(--line);
             margin-bottom: 24px;
             flex-wrap: wrap;
             gap: 16px;
         }
-
         .page-header .left h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px; font-weight: 700; color: #fff;
         }
-
-        .page-header .left h1 i {
-            color: var(--accent);
-        }
-
         .page-header .left p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin: 4px 0 0;
+            font-size: 14px; color: var(--muted);
         }
-
+        .page-header .left h1 i {
+            color: var(--signal);
+            margin-right: 10px;
+        }
         .page-header .right .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
             padding: 8px 20px;
-            border-radius: var(--radius-md);
-            background: transparent;
-            color: var(--text-secondary);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: var(--muted);
             text-decoration: none;
             font-weight: 500;
             font-size: 13px;
-            border: 1px solid var(--border-soft);
+            border: 1px solid var(--line);
             transition: all 0.18s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-
         .page-header .right .btn-back:hover {
-            background: var(--bg-input-alt);
-            color: var(--text-primary);
+            background: rgba(255,255,255,0.08);
+            color: var(--text);
         }
 
         .section-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-soft);
-            border-radius: var(--radius-lg);
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
             padding: 24px 28px;
             margin-bottom: 16px;
         }
-
         .section-card .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 6px;
             flex-wrap: wrap;
             gap: 8px;
         }
-
         .section-card .section-header h3 {
-            font-size: 15px;
-            font-weight: 600;
-            margin: 0;
-            color: var(--text-primary);
+            font-size: 15px; font-weight: 600; color: #fff;
         }
-
         .section-card .section-header .badge {
-            font-size: 10px;
-            font-weight: 600;
+            font-size: 10px; font-weight: 600;
             padding: 2px 10px;
             border-radius: 100px;
-            background: var(--accent-soft);
-            color: var(--accent);
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            background: var(--signal-tab);
+            color: var(--signal);
+            border: 1px solid rgba(61,255,184,0.2);
         }
-
         .section-card .section-desc {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--muted);
             margin-bottom: 14px;
         }
 
-        .form-group {
-            margin-bottom: 14px;
-        }
-
+        .form-group { margin-bottom: 14px; }
         .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--text-primary);
+            display: block; font-size: 12px; font-weight: 600;
+            margin-bottom: 4px; color: var(--text);
         }
-
         .form-group .form-hint {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 2px;
+            font-size: 11px; color: var(--muted-dim); margin-top: 2px;
         }
-
-        .form-group input,
-        .form-group select,
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 9px 14px;
+            border-radius: 8px; border: 1px solid var(--line);
+            background: rgba(0,0,0,0.3); color: var(--text);
+            font-size: 13px; font-family: 'Inter', sans-serif;
+            transition: all 0.18s ease; outline: none;
+        }
         .form-group textarea {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            background: var(--bg-input);
-            color: var(--text-primary);
-            font-size: 13px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.18s ease;
-            outline: none;
+            resize: vertical; min-height: 60px;
         }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 60px;
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--signal);
+            box-shadow: 0 0 0 3px var(--signal-glow);
         }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-        }
-
-        .form-group select option {
-            background: var(--bg-page);
-        }
+        .form-group select option { background: var(--ink); }
 
         .form-row {
             display: grid;
@@ -162,530 +245,562 @@
         }
 
         .form-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+            display: flex; gap: 10px; flex-wrap: wrap;
             margin-top: 16px;
         }
-
         .btn-save {
-            padding: 10px 28px;
-            border-radius: var(--radius-md);
-            border: none;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            background: var(--accent);
-            color: white;
+            padding: 8px 28px; border-radius: 8px; border: none;
+            font-weight: 600; font-size: 13px; cursor: pointer;
+            background: var(--signal); color: #04140F;
             transition: all 0.18s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
-
-        .btn-save:hover {
-            background: var(--accent-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 18px rgba(99, 102, 241, 0.25);
-        }
-
+        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 18px var(--signal-glow); }
         .btn-secondary {
-            padding: 8px 20px;
-            border-radius: var(--radius-md);
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-soft);
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.18s ease;
+            padding: 8px 20px; border-radius: 8px;
+            background: transparent; color: var(--muted);
+            border: 1px solid var(--line); font-weight: 600; font-size: 13px;
+            cursor: pointer; transition: all 0.18s ease;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
+            display: inline-flex; align-items: center; gap: 7px;
         }
-
-        .btn-secondary:hover {
-            background: var(--bg-input-alt);
-            color: var(--text-primary);
-        }
-
-        .btn-danger {
-            padding: 8px 20px;
-            border-radius: var(--radius-md);
-            background: var(--danger-soft);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.25);
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.18s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.2);
-        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+        .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
         .toggle-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
         }
-
-        .toggle-wrapper span {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-primary);
+        .toggle {
+            width: 44px; height: 24px;
+            background: var(--muted-dim); border-radius: 12px;
+            cursor: pointer; transition: all 0.3s ease;
+            position: relative;
         }
-
-        .question-item {
-            background: var(--bg-input);
-            border: 1px solid var(--border-soft);
-            border-radius: var(--radius-md);
-            padding: 16px 18px;
-            margin-bottom: 10px;
+        .toggle.active { background: var(--signal); }
+        .toggle .toggle-slider {
+            width: 18px; height: 18px;
+            background: #fff; border-radius: 50%;
+            position: absolute; top: 3px; left: 3px;
+            transition: all 0.3s ease;
         }
+        .toggle.active .toggle-slider { left: 23px; }
 
-        .question-item .q-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 6px;
+        /* ── Match Mode segmented control ── */
+        .match-mode-row {
+            margin-bottom: 14px;
         }
-
-        .question-item .q-header .q-number {
-            font-weight: 700;
-            font-size: 13px;
-            color: var(--accent);
+        .match-mode-label-row {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12px; font-weight: 600; color: var(--text);
+            margin-bottom: 8px;
         }
-
-        .question-item .q-header .q-title {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-primary);
+        .help-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 14px; height: 14px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); color: var(--muted);
+            font-size: 10px; cursor: help;
         }
-
-        .question-item .q-desc {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
+        .segmented {
+            display: inline-flex;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 2px;
+            margin-bottom: 8px;
         }
-
-        .question-item .q-type {
-            font-size: 11px;
-            color: var(--text-secondary);
-            background: var(--bg-card);
-            padding: 2px 10px;
-            border-radius: 100px;
-            border: 1px solid var(--border-soft);
-            display: inline-block;
-        }
-
-        .question-item .q-actions {
-            display: flex;
-            gap: 6px;
-            margin-top: 8px;
-        }
-
-        .question-item .q-actions button {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
+        .segment {
+            background: none; border: none;
+            color: var(--muted);
+            font-size: 12.5px; font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 6px;
             cursor: pointer;
-            padding: 4px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            font-weight: 500;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .segment.active {
+            background: var(--signal);
+            color: #04140F;
+        }
+        .match-mode-desc {
+            font-size: 11px; color: var(--muted-dim); margin: 0;
+        }
+
+        /* ── Role multi-select ── */
+        .role-select {
+            width: 100%;
+            min-height: 84px;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: rgba(0,0,0,0.3);
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
             transition: all 0.18s ease;
         }
-
-        .question-item .q-actions button:hover {
-            background: var(--bg-input-alt);
-            color: var(--text-primary);
+        .role-select:focus {
+            border-color: var(--signal);
+            box-shadow: 0 0 0 3px var(--signal-glow);
+        }
+        .role-select option {
+            background: var(--ink);
+            padding: 5px 6px;
         }
 
-        .question-item .q-actions button.danger:hover {
-            background: var(--danger-soft);
-            color: var(--danger);
+        /* ── Editable question card ── */
+        .question-item {
+            background: var(--panel-raised);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 0 18px 18px;
+            margin-bottom: 10px;
+        }
+        .question-item .q-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 14px;
+        }
+        .question-item .q-header .drag-handle {
+            color: var(--muted-dim);
+            cursor: grab;
+            font-size: 14px;
+        }
+        .question-item .q-header .q-title {
+            flex: 1;
+            font-weight: 600; font-size: 14px; color: #fff;
+        }
+        .question-item .q-header .icon-btn {
+            background: var(--red-bg);
+            border: 1px solid var(--red-border);
+            border-radius: 6px;
+            color: var(--red);
+            padding: 5px 9px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+        .question-item .q-header .icon-btn:hover {
+            background: rgba(248,113,113,0.18);
+        }
+        .question-item .q-field {
+            margin-bottom: 12px;
+        }
+        .question-item .q-field:last-of-type {
+            margin-bottom: 0;
+        }
+        .question-item .q-field label {
+            display: block; font-size: 12px; font-weight: 600;
+            margin-bottom: 4px; color: var(--text);
+        }
+        .question-item .q-field input {
+            width: 100%; padding: 9px 14px;
+            border-radius: 8px; border: 1px solid var(--line);
+            background: rgba(0,0,0,0.3); color: var(--text);
+            font-size: 13px; font-family: 'Inter', sans-serif;
+            outline: none; transition: all 0.18s ease;
+        }
+        .question-item .q-field input:focus {
+            border-color: var(--signal);
+            box-shadow: 0 0 0 3px var(--signal-glow);
+        }
+        .question-item .q-row {
+            display: flex; gap: 24px; margin-top: 14px;
+        }
+        .question-item .q-col { flex: 1; }
+        .question-item .q-col.align-right {
+            display: flex; flex-direction: column; align-items: flex-end;
+        }
+        .question-item .q-col.align-right label { width: 100%; }
+
+        .footer {
+            border-top: 1px solid var(--line);
+            margin-top: 60px;
+            padding: 28px 48px;
+            text-align: center;
+            color: var(--muted-dim);
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.5px;
         }
 
         @media (max-width: 768px) {
-            .page-wrapper {
-                padding: 16px;
-            }
-            .page-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            .section-card {
-                padding: 16px;
-            }
+            .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
+            .nav-center { display: none; }
+            .page-wrapper { padding: 16px; }
+            .page-header { flex-direction: column; align-items: stretch; }
+            .form-row { grid-template-columns: 1fr; }
+            .section-card { padding: 16px; }
+            .footer { padding: 20px 16px; }
+            .question-item .q-row { flex-direction: column; gap: 12px; }
+            .question-item .q-col.align-right { align-items: flex-start; }
         }
     </style>
 </head>
 <body>
-    <!-- Use the existing layout from dashboard.ejs -->
-    <div class="layout">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="brand">
-                <span class="brand-icon">🛡️</span>
-                Sentinal
-            </div>
 
-            <div class="server-switcher">
-                <div class="server-avatar"></div>
-                <div>
-                    <div class="server-name"><%= locals.guild ? guild.name : 'No Server Selected' %></div>
-                    <div class="server-plan">Free</div>
+    <nav class="navbar">
+        <a href="/dashboard" class="brand">
+            <div class="brand-logo">
+                <svg viewBox="0 0 245 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M104.4 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zM140.9 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z" fill="#3DFFB8"/>
+                    <path d="M189.5 20H55.5C44.7 20 36 28.7 36 39.5v140.9c0 10.8 8.7 19.5 19.5 19.5h113.5l-5.3-18.5 12.8 11.9 12.1 11.2L209 220V39.5C209 28.7 200.3 20 189.5 20zM155.7 152.1s-3.6-4.3-6.6-8.1c13.1-3.7 18.1-11.9 18.1-11.9-4.1 2.7-8 4.6-11.5 5.9-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.4 1.3-25.9-.1-5.7-1.1-10.6-2.6-14.7-4.3-2.3-.9-4.8-2-7.3-3.4-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.4-.3-2-1.1-3.1-1.9-3.1-1.9 4.7 4.3 9.3 6.5 21.7 10.2-2.9 3.8-6.6 8.1-6.6 8.1-22 0-32.1-15.2-32.1-15.2 0-32.2 14.4-58.4 14.4-58.4 14.4-10.8 28.1-10.5 28.1-10.5l1 1.2C99.2 87.7 87.9 97.4 87.9 97.4s2.9-1.6 7.8-3.8c14.1-6.2 25.3-7.9 29.9-8.3.8-.1 1.5-.2 2.3-.2 8.2-1 17.5-1.3 27.2.2 12.9 2 26.7 7.5 40.8 17.3 0 0-10.8-10.2-28.5-13.7l1.4-1.6s13.7-.3 28.1 10.5c0 0 14.4 26.2 14.4 58.4 0 0-10.2 15.2-32.1 15.2z" fill="#3DFFB8"/>
+                </svg>
+            </div>
+            <span class="brand-name">Sentinal</span>
+        </a>
+        <div class="nav-center">
+            <a href="/dashboard">Home</a>
+            <a href="/servers" class="active">Servers</a>
+            <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
+            <a href="#">Premium</a>
+        </div>
+        <div class="nav-right">
+            <div class="user-pill">
+                <div class="user-avatar">
+                    <% if (locals.user && user.avatar) { %>
+                        <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
+                    <% } else { %>
+                        <%= locals.user ? (user.username ? user.username.charAt(0).toUpperCase() : 'U') : 'U' %>
+                    <% } %>
                 </div>
+                <span class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></span>
+                <span class="user-plan">Free</span>
             </div>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
 
-            <nav class="nav">
-                <a href="/dashboard" class="nav-link nav-top">
-                    <span><span class="nav-icon">🏠</span> Dashboard</span>
+    <div class="page-wrapper">
+
+        <div class="toast-container" id="toastContainer"></div>
+
+        <div class="page-header">
+            <div class="left">
+                <h1><i class="fas fa-ticket"></i> <%= locals.template ? template.name : 'When' %></h1>
+                <p>Configure your ticket template settings</p>
+            </div>
+            <div class="right">
+                <a href="/tickets/templates?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Templates
                 </a>
-
-                <div class="nav-group">
-                    <a href="/servers" class="nav-link">
-                        <span><span class="nav-icon">🖥️</span> Servers</span>
-                    </a>
-                    <div class="nav-sub">
-                        <a href="/servers/<%= locals.guild ? guild.id : '' %>/applications" class="nav-link">
-                            <span><span class="nav-icon">📄</span> Applications</span>
-                        </a>
-                        <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets" class="nav-link active">
-                            <span><span class="nav-icon">🎫</span> Tickets</span>
-                        </a>
-                        <a href="/servers/<%= locals.guild ? guild.id : '' %>/panels" class="nav-link">
-                            <span><span class="nav-icon">📋</span> Panels</span>
-                        </a>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="sidebar-footer">
-                <a href="#" class="support-link">
-                    <span>💬</span> Support
-                </a>
-                <div class="user-card">
-                    <div class="user-avatar">
-                        <%= locals.user ? (user.global_name ? user.global_name.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase()) : 'U' %>
-                    </div>
-                    <div>
-                        <div class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></div>
-                        <div class="user-plan-badge">FREE</div>
-                    </div>
-                </div>
             </div>
-        </aside>
+        </div>
 
-        <!-- Main Content -->
-        <main class="content">
-            <div class="page-wrapper">
-                <div class="page-header">
-                    <div class="left">
-                        <h1>
-                            <i class="fas fa-ticket"></i>
-                            <%= locals.template ? template.name : 'Edit Template' %>
-                        </h1>
-                        <p>Configure your ticket template settings</p>
-                    </div>
-                    <div class="right">
-                        <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets" class="btn-back">
-                            <i class="fas fa-arrow-left"></i> Back to Templates
-                        </a>
-                    </div>
+        <!-- ─── REQUIREMENTS ─── -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Requirements</h3>
+                <span class="badge">Live</span>
+            </div>
+
+            <div class="form-group">
+                <label for="templateName">Template name</label>
+                <input type="text" id="templateName" value="<%= locals.template ? template.name : 'When' %>" placeholder="The name of the ticket.">
+                <div class="form-hint">The name of the ticket.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="ticketCategory">Ticket Category</label>
+                <input type="text" id="ticketCategory" value="<%= locals.template ? template.category || '' : '' %>" placeholder="Select a category">
+                <div class="form-hint">The category that user created tickets will be under.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="ticketChannel">Ticket Channel Name</label>
+                <input type="text" id="ticketChannel" value="<%= locals.template ? template.channelName || '{ticket-creator-username}-{total-tickets-opened}' : '{ticket-creator-username}-{total-tickets-opened}' %>">
+                <div class="form-hint">Customize the name of the channel that is made when a user opens a ticket.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="maxTickets">Max concurrent open tickets</label>
+                <input type="number" id="maxTickets" value="<%= locals.template ? template.maxTickets || 3 : 3 %>" min="1" max="10">
+                <div class="form-hint">The maximum number of tickets a user may have open at once. If they reach this limit, they won't be able to open any new tickets until they close or resolve an existing one.</div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-save" onclick="saveTemplate()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+
+        <!-- ─── TICKET ACCESS CONTROL ─── -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Ticket access control</h3>
+                <span class="badge">Live</span>
+            </div>
+
+            <div class="form-group">
+                <label>Blocked Roles: <span id="blockedCount">0/10</span></label>
+                <select id="blockedRoles" class="role-select" multiple>
+                    <option value="" disabled>Select some roles...</option>
+                    <% if (locals.roles) { %>
+                        <% roles.forEach(role => { %>
+                            <option value="<%= role.id %>"><%= role.name %></option>
+                        <% }) %>
+                    <% } %>
+                </select>
+                <div class="form-hint">Members with any one of these roles will not be able to open a ticket.</div>
+            </div>
+
+            <div class="match-mode-row">
+                <div class="match-mode-label-row">
+                    Match Mode <span class="help-icon" title="How blocked role matching is evaluated">?</span>
                 </div>
-
-                <!-- Toast Container -->
-                <div id="toastContainer" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: 100%;"></div>
-
-                <!-- ─── REQUIREMENTS ─── -->
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Requirements</h3>
-                        <span class="badge">Live</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="templateName">Template name</label>
-                        <input type="text" id="templateName" value="<%= locals.template ? template.name : 'When' %>" placeholder="The name of the ticket.">
-                        <div class="form-hint">The name of the ticket.</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ticketCategory">Ticket Category</label>
-                        <input type="text" id="ticketCategory" value="<%= locals.template ? template.category || '' : '' %>" placeholder="Select a category">
-                        <div class="form-hint">The category that user created tickets will be under.</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ticketChannel">Ticket Channel Name</label>
-                        <input type="text" id="ticketChannel" value="<%= locals.template ? template.channelName || '{ticket-creator-username}-{total-tickets-opened}' : '{ticket-creator-username}-{total-tickets-opened}' %>">
-                        <div class="form-hint">Customize the name of the channel that is made when a user opens a ticket.</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="maxTickets">Max concurrent open tickets</label>
-                        <input type="number" id="maxTickets" value="<%= locals.template ? template.maxTickets || 3 : 3 %>" min="1" max="10">
-                        <div class="form-hint">The maximum number of tickets a user may have open at once.</div>
-                    </div>
+                <div class="segmented" data-group="blocked-match-mode">
+                    <button class="segment active" type="button" data-value="all">Has all roles</button>
+                    <button class="segment" type="button" data-value="any">Has any role</button>
                 </div>
+                <p class="match-mode-desc">User is blocked only if they have <strong>ALL</strong> of the listed roles.</p>
+            </div>
 
-                <!-- ─── TICKET ACCESS CONTROL ─── -->
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Ticket access control</h3>
-                        <span class="badge">Live</span>
-                    </div>
+            <div class="form-group">
+                <label>Required Roles: <span id="requiredCount">0/10</span></label>
+                <select id="requiredRoles" class="role-select" multiple>
+                    <option value="" disabled>Select some roles...</option>
+                    <% if (locals.roles) { %>
+                        <% roles.forEach(role => { %>
+                            <option value="<%= role.id %>"><%= role.name %></option>
+                        <% }) %>
+                    <% } %>
+                </select>
+                <div class="form-hint">Members with all of these roles will be able to open a ticket.</div>
+            </div>
 
-                    <div class="form-group">
-                        <label>Blocked Roles: <span id="blockedCount">0/10</span></label>
-                        <select id="blockedRoles" class="role-select" multiple data-role-target="blocked" data-max="10">
-                            <% if (locals.roles) { %>
-                                <% roles.forEach(role => { %>
-                                    <option value="<%= role.id %>"><%= role.name %></option>
-                                <% }) %>
-                            <% } %>
-                        </select>
-                        <div class="form-hint">Members with any one of these roles will not be able to open a ticket.</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Match Mode</label>
-                        <div class="segmented" data-group="blocked-match-mode">
-                            <button class="segment active" type="button" data-value="all">Has all roles</button>
-                            <button class="segment" type="button" data-value="any">Has any role</button>
-                        </div>
-                        <div class="match-mode-desc">User is blocked only if they have <strong>ALL</strong> of the listed roles.</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Required Roles: <span id="requiredCount">0/10</span></label>
-                        <select id="requiredRoles" class="role-select" multiple data-role-target="required" data-max="10">
-                            <% if (locals.roles) { %>
-                                <% roles.forEach(role => { %>
-                                    <option value="<%= role.id %>"><%= role.name %></option>
-                                <% }) %>
-                            <% } %>
-                        </select>
-                        <div class="form-hint">Members with all of these roles will be able to open a ticket.</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Match Mode</label>
-                        <div class="segmented" data-group="required-match-mode">
-                            <button class="segment active" type="button" data-value="all">Has all roles</button>
-                            <button class="segment" type="button" data-value="any">Has any role</button>
-                        </div>
-                        <div class="match-mode-desc">User is required only if they have <strong>ALL</strong> of the listed roles.</div>
-                    </div>
+            <div class="match-mode-row">
+                <div class="match-mode-label-row">
+                    Match Mode <span class="help-icon" title="How required role matching is evaluated">?</span>
                 </div>
+                <div class="segmented" data-group="required-match-mode">
+                    <button class="segment active" type="button" data-value="all">Has all roles</button>
+                    <button class="segment" type="button" data-value="any">Has any role</button>
+                </div>
+                <p class="match-mode-desc">User is required only if they have <strong>ALL</strong> of the listed roles.</p>
+            </div>
 
-                <!-- ─── SUPPORT TEAM & PERMISSIONS ─── -->
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Support Team & Permissions</h3>
-                        <span class="badge">Live</span>
+            <div class="form-actions">
+                <button class="btn-save" onclick="saveTemplate()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+
+        <!-- ─── SUPPORT TEAM & PERMISSIONS ─── -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Support Team & Permissions</h3>
+                <span class="badge">Live</span>
+            </div>
+
+            <div class="form-group">
+                <label>Support Team Roles: <span id="supportCount">0/1</span></label>
+                <select id="supportRoles" class="role-select" multiple data-max="1">
+                    <option value="" disabled>Select some roles...</option>
+                    <% if (locals.roles) { %>
+                        <% roles.forEach(role => { %>
+                            <option value="<%= role.id %>"><%= role.name %></option>
+                        <% }) %>
+                    <% } %>
+                </select>
+                <div class="form-hint">The roles which will be able to view and manage tickets.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="toggle-wrapper">
+                    <div class="toggle active" id="ticketClaiming" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
                     </div>
+                    <span style="font-size:13px; color:var(--text); font-weight:500;">Ticket Claiming</span>
+                </div>
+                <div class="form-hint">Allows support team members to claim a ticket via the claim button or /ticket claim, assigning the ticket to themselves.</div>
+            </div>
 
-                    <div class="form-group">
-                        <label>Support Team Roles: <span id="supportCount">0/1</span></label>
-                        <select id="supportRoles" class="role-select" multiple data-role-target="support" data-max="1">
-                            <% if (locals.roles) { %>
-                                <% roles.forEach(role => { %>
-                                    <option value="<%= role.id %>"><%= role.name %></option>
-                                <% }) %>
-                            <% } %>
-                        </select>
-                        <div class="form-hint">The roles which will be able to view and manage tickets.</div>
+            <div class="form-group">
+                <label>Action on User Leave</label>
+                <select id="actionOnLeave">
+                    <option value="nothing">NOTHING</option>
+                    <option value="close">Close Ticket</option>
+                    <option value="transfer">Transfer Ticket</option>
+                </select>
+                <div class="form-hint">If a user leaves the server, the bot will perform the specified action on the ticket.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="toggle-wrapper">
+                    <div class="toggle active" id="pingSupport" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
                     </div>
+                    <span style="font-size:13px; color:var(--text); font-weight:500;">Ping Support Roles</span>
+                </div>
+                <div class="form-hint">If any support roles have been added to the ticket template the bot will automatically ping them when a ticket is created.</div>
+            </div>
 
-                    <div class="form-group">
-                        <div class="toggle-wrapper">
-                            <button class="toggle on" type="button" role="switch" aria-checked="true" data-action="toggle" id="ticketClaiming">
-                                <span class="toggle-knob"></span>
+            <div class="form-group">
+                <div class="toggle-wrapper">
+                    <div class="toggle" id="rateSupport" onclick="toggleSwitch(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span style="font-size:13px; color:var(--text); font-weight:500;">Rate Support Experience Enabled</span>
+                </div>
+                <div class="form-hint">If this option is enabled it means the user that opened the ticket can rate the support experience.</div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-save" onclick="saveTemplate()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+
+        <!-- ─── TICKET FORM ─── -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Ticket Form</h3>
+                <span class="badge">Live</span>
+            </div>
+            <div class="section-desc">The form which will be opened when a user attempts to open a ticket (helpful for asking specific questions about their issue)</div>
+
+            <div class="form-group">
+                <label for="formDescription">Form Introduction</label>
+                <textarea id="formDescription" rows="2"><%= locals.template ? template.formDescription || 'Please explain your issue in full detail' : 'Please explain your issue in full detail' %></textarea>
+                <div class="form-hint">This text will be shown at the top of the ticket form.</div>
+            </div>
+
+            <div class="section-desc" style="margin-top:18px;">
+                <strong>Questions: <span id="questionCount"><%= (locals.template && template.questions && template.questions.length) ? template.questions.length : 1 %></span>/5</strong>
+            </div>
+
+            <div id="questions-list">
+                <% var qList = (locals.template && template.questions && template.questions.length)
+                    ? template.questions
+                    : [{
+                        title: 'Do you like capybaras?',
+                        description: 'Please explain your answer in full detail',
+                        placeholder: 'Please describe your issue in full detail.',
+                        type: 'short',
+                        required: true,
+                        minLength: 1,
+                        maxLength: 500
+                    }]; %>
+
+                <% qList.forEach((question, index) => { %>
+                    <div class="question-item" data-index="<%= index %>">
+                        <div class="q-header">
+                            <span class="drag-handle" aria-hidden="true">⠿</span>
+                            <span class="q-title">Question <%= index + 1 %></span>
+                            <button class="icon-btn" type="button" data-action="delete-question" aria-label="Delete question">
+                                <i class="fas fa-trash"></i>
                             </button>
-                            <span>Ticket Claiming</span>
                         </div>
-                        <div class="form-hint">Allows support team members to claim a ticket via the claim button.</div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="actionOnLeave">Action on User Leave</label>
-                        <select id="actionOnLeave" class="select-input upper-select">
-                            <option value="nothing">NOTHING</option>
-                            <option value="close">Close Ticket</option>
-                            <option value="transfer">Transfer Ticket</option>
-                        </select>
-                        <div class="form-hint">If a user leaves the server, the bot will perform the specified action on the ticket.</div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="toggle-wrapper">
-                            <button class="toggle on" type="button" role="switch" aria-checked="true" data-action="toggle" id="pingSupport">
-                                <span class="toggle-knob"></span>
-                            </button>
-                            <span>Ping Support Roles</span>
+                        <div class="q-field">
+                            <label>Question title</label>
+                            <input type="text" value="<%= question.title || '' %>" data-field="title" placeholder="e.g. What seems to be the issue?">
                         </div>
-                        <div class="form-hint">If any support roles have been added, the bot will automatically ping them when a ticket is created.</div>
-                    </div>
 
-                    <div class="form-group">
-                        <div class="toggle-wrapper">
-                            <button class="toggle" type="button" role="switch" aria-checked="false" data-action="toggle" id="rateSupport">
-                                <span class="toggle-knob"></span>
-                            </button>
-                            <span>Rate Support Experience Enabled</span>
+                        <div class="q-field">
+                            <label>Description</label>
+                            <input type="text" value="<%= question.description || '' %>" data-field="description" placeholder="Please explain your answer in full detail">
                         </div>
-                        <div class="form-hint">If enabled, the user that opened the ticket can rate the support experience.</div>
-                    </div>
-                </div>
 
-                <!-- ─── TICKET FORM ─── -->
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Ticket Form</h3>
-                        <span class="badge">Live</span>
-                    </div>
-                    <div class="section-desc">The form which will be opened when a user attempts to open a ticket.</div>
+                        <div class="q-field">
+                            <label>Placeholder</label>
+                            <input type="text" value="<%= question.placeholder || '' %>" data-field="placeholder" placeholder="Please describe your issue in full detail.">
+                        </div>
 
-                    <div class="form-group">
-                        <label for="formDescription">Form Introduction</label>
-                        <textarea id="formDescription" rows="2"><%= locals.template ? template.formDescription || 'Please explain your issue in full detail' : 'Please explain your issue in full detail' %></textarea>
-                        <div class="form-hint">This text will be shown at the top of the ticket form.</div>
-                    </div>
-
-                    <div class="section-desc" style="margin-top:12px;">
-                        <strong>Questions: <span id="questionCount">1</span>/5</strong>
-                    </div>
-
-                    <div id="questions-list">
-                        <!-- Questions will be rendered here -->
-                        <% if (locals.template && template.questions && template.questions.length) { %>
-                            <% template.questions.forEach((question, index) => { %>
-                                <div class="question-item" data-index="<%= index %>">
-                                    <div class="q-header">
-                                        <span class="q-number">●</span>
-                                        <span class="q-title">Question <%= index + 1 %></span>
-                                    </div>
-                                    <div class="q-desc">
-                                        <strong>Question title</strong><br>
-                                        <%= question.title || 'Untitled Question' %>
-                                    </div>
-                                    <div class="q-desc">
-                                        <strong>Description</strong><br>
-                                        <%= question.description || 'No description' %>
-                                    </div>
-                                    <div class="q-desc">
-                                        <strong>Placeholder</strong><br>
-                                        <%= question.placeholder || 'No placeholder' %>
-                                    </div>
-                                    <div>
-                                        <span class="q-type"><%= question.type || 'short' %></span>
-                                        <span class="q-type" style="margin-left:4px;">Min: <%= question.minLength || 1 %></span>
-                                        <span class="q-type" style="margin-left:4px;">Max: <%= question.maxLength || 500 %></span>
-                                    </div>
-                                    <div class="q-actions">
-                                        <button onclick="editQuestion(<%= index %>)"><i class="fas fa-edit"></i> Edit</button>
-                                        <button class="danger" onclick="deleteQuestion(<%= index %>)"><i class="fas fa-trash"></i> Delete</button>
-                                    </div>
-                                </div>
-                            <% }) %>
-                        <% } else { %>
-                            <!-- Default question -->
-                            <div class="question-item" data-index="0">
-                                <div class="q-header">
-                                    <span class="q-number">●</span>
-                                    <span class="q-title">Question 1</span>
-                                </div>
-                                <div class="q-desc">
-                                    <strong>Question title</strong><br>
-                                    Do you like capybara?
-                                </div>
-                                <div class="q-desc">
-                                    <strong>Description</strong><br>
-                                    Please explain your answer in full detail
-                                </div>
-                                <div class="q-desc">
-                                    <strong>Placeholder</strong><br>
-                                    Please describe your issue in full detail.
-                                </div>
-                                <div>
-                                    <span class="q-type">Short</span>
-                                    <span class="q-type" style="margin-left:4px;">Min: 1</span>
-                                    <span class="q-type" style="margin-left:4px;">Max: 500</span>
-                                </div>
-                                <div class="q-actions">
-                                    <button onclick="editQuestion(0)"><i class="fas fa-edit"></i> Edit</button>
-                                    <button class="danger" onclick="deleteQuestion(0)"><i class="fas fa-trash"></i> Delete</button>
+                        <div class="q-row">
+                            <div class="q-col">
+                                <label>Question type</label>
+                                <div class="segmented" data-group="question-type-<%= index %>">
+                                    <button class="segment <%= question.type !== 'paragraph' ? 'active' : '' %>" type="button" data-value="short">Short</button>
+                                    <button class="segment <%= question.type === 'paragraph' ? 'active' : '' %>" type="button" data-value="paragraph">Paragraph</button>
                                 </div>
                             </div>
-                        <% } %>
-                    </div>
+                            <div class="q-col align-right">
+                                <label>Required answer</label>
+                                <div class="toggle <%= question.required !== false ? 'active' : '' %>" data-action="toggle-required">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; align-items:center;">
-                        <button class="btn-secondary" id="add-question-btn">
-                            <i class="fas fa-plus"></i> New question
-                        </button>
-                        <span style="font-size:12px; color:var(--text-muted);"><span id="questions-used-count">1</span>/5 questions used.</span>
+                        <div class="q-row">
+                            <div class="q-col">
+                                <label>Min answer length</label>
+                                <input type="number" min="0" value="<%= question.minLength || 1 %>" data-field="minLength">
+                            </div>
+                            <div class="q-col">
+                                <label>Max answer length</label>
+                                <input type="number" min="1" value="<%= question.maxLength || 500 %>" data-field="maxLength">
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="form-actions" style="margin-top:16px;">
-                        <button class="btn-save" onclick="saveTemplate()">
-                            <i class="fas fa-save"></i> Save Changes
-                        </button>
-                    </div>
-                </div>
+                <% }) %>
             </div>
-        </main>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; align-items:center;">
+                <button class="btn-secondary" id="add-question-btn">
+                    <i class="fas fa-plus"></i> New question
+                </button>
+                <span style="font-size:12px; color:var(--muted);"><span id="questions-used-count"><%= qList.length %></span>/5 questions used.</span>
+            </div>
+
+            <div class="form-actions" style="margin-top:16px;">
+                <button class="btn-save" onclick="saveTemplate()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+
     </div>
 
+    <footer class="footer">
+        © 2026 SENTINAL — STATUS: OPERATIONAL
+    </footer>
+
     <script>
-        // ============================================================
-        // Ticket Edit Page - Client-side interactivity
-        // ============================================================
+        const MAX_QUESTIONS = 5;
 
         document.addEventListener('DOMContentLoaded', function() {
-            initToggles();
             initSegmentedControls();
             initRoleSelects();
+            initQuestionCards();
             updateQuestionCounts();
-            
-            // Add question button listener
+
             const addBtn = document.getElementById('add-question-btn');
-            if (addBtn) {
-                addBtn.addEventListener('click', addQuestion);
-            }
+            if (addBtn) addBtn.addEventListener('click', addQuestion);
         });
 
-        // ---------------- Toggles ----------------
-        function initToggles() {
-            document.querySelectorAll('.toggle[data-action="toggle"]').forEach((btn) => {
-                btn.addEventListener('click', function() {
-                    const isOn = this.classList.toggle('on');
-                    this.setAttribute('aria-checked', String(isOn));
-                });
-            });
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i></span>
+                <span class="toast-content">${message}</span>
+                <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+                }
+            }, 4000);
         }
 
-        // ---------------- Segmented controls ----------------
+        function toggleSwitch(el) {
+            el.classList.toggle('active');
+        }
+
+        // ---------------- Match Mode segmented controls ----------------
         function initSegmentedControls() {
             document.querySelectorAll('.segmented').forEach((group) => {
+                if (group.dataset.bound) return;
+                group.dataset.bound = '1';
                 group.querySelectorAll('.segment').forEach((seg) => {
                     seg.addEventListener('click', function() {
                         group.querySelectorAll('.segment').forEach((s) => s.classList.remove('active'));
                         this.classList.add('active');
 
-                        // Update the descriptive text
-                        const desc = this.closest('.form-group')?.querySelector('.match-mode-desc');
+                        const desc = this.closest('.match-mode-row, .q-col')?.querySelector('.match-mode-desc');
                         if (desc) {
                             const mode = this.dataset.value;
                             const isBlocked = group.dataset.group === 'blocked-match-mode';
@@ -701,27 +816,25 @@
 
         // ---------------- Role multi-selects with live counts ----------------
         function initRoleSelects() {
-            document.querySelectorAll('.role-select').forEach((select) => {
-                const targetId = select.dataset.roleTarget + 'Count';
-                const countTarget = document.getElementById(targetId);
+            const map = { blockedRoles: 'blockedCount', requiredRoles: 'requiredCount', supportRoles: 'supportCount' };
+
+            Object.keys(map).forEach((selectId) => {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                const countTarget = document.getElementById(map[selectId]);
                 const max = select.dataset.max ? parseInt(select.dataset.max, 10) : 10;
 
                 function updateCount() {
                     const count = Array.from(select.selectedOptions).filter((o) => o.value !== '').length;
-                    if (countTarget) {
-                        countTarget.textContent = `${count}/${max}`;
-                    }
+                    if (countTarget) countTarget.textContent = `${count}/${max}`;
                 }
 
                 select.addEventListener('change', function() {
                     const selected = Array.from(this.selectedOptions).filter((o) => o.value !== '');
-
                     if (selected.length > max) {
-                        // Deselect the most recently added option past the max
                         selected[selected.length - 1].selected = false;
                         showToast(`You can select up to ${max} role${max === 1 ? '' : 's'} here.`, 'error');
                     }
-
                     updateCount();
                 });
 
@@ -729,176 +842,174 @@
             });
         }
 
-        // ---------------- Toast notifications ----------------
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
-            
-            const toast = document.createElement('div');
-            toast.className = 'toast ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : '');
-            const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
-            
-            toast.innerHTML = `
-                <span class="toast-icon"><i class="fas fa-${icon}"></i></span>
-                <span class="toast-content">${message}</span>
-                <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.classList.add('hiding');
-                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
-                }
-            }, 4000);
+        // ---------------- Ticket Form: editable question cards ----------------
+        function initQuestionCards() {
+            document.querySelectorAll('.question-item').forEach(attachQuestionCardBehavior);
         }
 
-        // ---------------- Question management ----------------
-        let questionCounter = 0;
+        function attachQuestionCardBehavior(card) {
+            const deleteBtn = card.querySelector('[data-action="delete-question"]');
+            if (deleteBtn && !deleteBtn.dataset.bound) {
+                deleteBtn.dataset.bound = '1';
+                deleteBtn.addEventListener('click', () => deleteQuestion(card));
+            }
+
+            const requiredToggle = card.querySelector('[data-action="toggle-required"]');
+            if (requiredToggle && !requiredToggle.dataset.bound) {
+                requiredToggle.dataset.bound = '1';
+                requiredToggle.addEventListener('click', () => requiredToggle.classList.toggle('active'));
+            }
+
+            initSegmentedControls();
+        }
+
+        function buildQuestionCard(index) {
+            const card = document.createElement('div');
+            card.className = 'question-item';
+            card.dataset.index = index;
+
+            card.innerHTML = `
+                <div class="q-header">
+                    <span class="drag-handle" aria-hidden="true">⠿</span>
+                    <span class="q-title">Question ${index + 1}</span>
+                    <button class="icon-btn" type="button" data-action="delete-question" aria-label="Delete question">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+
+                <div class="q-field">
+                    <label>Question title</label>
+                    <input type="text" value="" data-field="title" placeholder="e.g. What seems to be the issue?">
+                </div>
+
+                <div class="q-field">
+                    <label>Description</label>
+                    <input type="text" value="" data-field="description" placeholder="Please explain your answer in full detail">
+                </div>
+
+                <div class="q-field">
+                    <label>Placeholder</label>
+                    <input type="text" value="" data-field="placeholder" placeholder="Please describe your issue in full detail.">
+                </div>
+
+                <div class="q-row">
+                    <div class="q-col">
+                        <label>Question type</label>
+                        <div class="segmented" data-group="question-type-${index}">
+                            <button class="segment active" type="button" data-value="short">Short</button>
+                            <button class="segment" type="button" data-value="paragraph">Paragraph</button>
+                        </div>
+                    </div>
+                    <div class="q-col align-right">
+                        <label>Required answer</label>
+                        <div class="toggle active" data-action="toggle-required">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="q-row">
+                    <div class="q-col">
+                        <label>Min answer length</label>
+                        <input type="number" min="0" value="1" data-field="minLength">
+                    </div>
+                    <div class="q-col">
+                        <label>Max answer length</label>
+                        <input type="number" min="1" value="500" data-field="maxLength">
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
 
         function addQuestion() {
             const list = document.getElementById('questions-list');
             const count = list.querySelectorAll('.question-item').length;
-            
-            if (count >= 5) {
+
+            if (count >= MAX_QUESTIONS) {
                 showToast('Maximum 5 questions allowed.', 'error');
                 return;
             }
 
-            const newIndex = count;
-            const questionHtml = `
-                <div class="question-item" data-index="${newIndex}">
-                    <div class="q-header">
-                        <span class="q-number">●</span>
-                        <span class="q-title">Question ${newIndex + 1}</span>
-                    </div>
-                    <div class="q-desc">
-                        <strong>Question title</strong><br>
-                        New Question
-                    </div>
-                    <div class="q-desc">
-                        <strong>Description</strong><br>
-                        Please explain your answer in full detail
-                    </div>
-                    <div class="q-desc">
-                        <strong>Placeholder</strong><br>
-                        Please describe your issue in full detail.
-                    </div>
-                    <div>
-                        <span class="q-type">Short</span>
-                        <span class="q-type" style="margin-left:4px;">Min: 1</span>
-                        <span class="q-type" style="margin-left:4px;">Max: 500</span>
-                    </div>
-                    <div class="q-actions">
-                        <button onclick="editQuestion(${newIndex})"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="danger" onclick="deleteQuestion(${newIndex})"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                </div>
-            `;
-            
-            list.insertAdjacentHTML('beforeend', questionHtml);
+            const card = buildQuestionCard(count);
+            list.appendChild(card);
+            attachQuestionCardBehavior(card);
             updateQuestionCounts();
             showToast('New question added!', 'success');
         }
 
-        function deleteQuestion(index) {
+        function deleteQuestion(card) {
             const items = document.querySelectorAll('.question-item');
             if (items.length <= 1) {
                 showToast('Cannot delete the last question. Add a new one first.', 'error');
                 return;
             }
-            
-            const item = document.querySelector(`.question-item[data-index="${index}"]`);
-            if (item) {
-                item.remove();
-                updateQuestionCounts();
-                showToast('Question deleted.', 'info');
-            }
-        }
-
-        function editQuestion(index) {
-            // This would open an edit modal or form
-            // For now, just show a toast
-            showToast('Edit mode coming soon! Click "Add Question" to create new ones.', 'info');
+            card.remove();
+            updateQuestionCounts();
+            showToast('Question deleted.', 'info');
         }
 
         function updateQuestionCounts() {
             const items = document.querySelectorAll('.question-item');
             const count = items.length;
-            
-            const countElement = document.getElementById('questionCount');
-            const usedElement = document.getElementById('questions-used-count');
-            
-            if (countElement) countElement.textContent = count;
-            if (usedElement) usedElement.textContent = count;
-            
-            // Update question numbers
+
+            const countEl = document.getElementById('questionCount');
+            const usedEl = document.getElementById('questions-used-count');
+            const addBtn = document.getElementById('add-question-btn');
+
+            if (countEl) countEl.textContent = count;
+            if (usedEl) usedEl.textContent = count;
+            if (addBtn) addBtn.disabled = count >= MAX_QUESTIONS;
+
             items.forEach((item, i) => {
                 item.dataset.index = i;
                 const title = item.querySelector('.q-title');
-                if (title) {
-                    title.textContent = `Question ${i + 1}`;
-                }
+                if (title) title.textContent = `Question ${i + 1}`;
             });
         }
 
         // ---------------- Save template ----------------
         function saveTemplate() {
-            // Collect all question data from the DOM
             const questionItems = document.querySelectorAll('.question-item');
             const questions = [];
-            
-            questionItems.forEach((item, index) => {
-                // Extract question data from the displayed content
-                const titleEl = item.querySelector('.q-desc:first-of-type');
-                const descEl = item.querySelector('.q-desc:nth-of-type(2)');
-                const placeholderEl = item.querySelector('.q-desc:nth-of-type(3)');
-                const typeEl = item.querySelector('.q-type:first-of-type');
-                
-                const title = titleEl ? titleEl.textContent.replace('Question title', '').trim() : `Question ${index + 1}`;
-                const description = descEl ? descEl.textContent.replace('Description', '').trim() : 'Please explain your answer in full detail';
-                const placeholder = placeholderEl ? placeholderEl.textContent.replace('Placeholder', '').trim() : 'Please describe your issue in full detail.';
-                const type = typeEl ? typeEl.textContent.trim().toLowerCase() : 'short';
-                
-                // Extract min/max from the displayed values
-                const typeElements = item.querySelectorAll('.q-type');
-                let minLength = 1;
-                let maxLength = 500;
-                
-                if (typeElements.length >= 3) {
-                    const minText = typeElements[1].textContent;
-                    const maxText = typeElements[2].textContent;
-                    const minMatch = minText.match(/Min:\s*(\d+)/);
-                    const maxMatch = maxText.match(/Max:\s*(\d+)/);
-                    if (minMatch) minLength = parseInt(minMatch[1]);
-                    if (maxMatch) maxLength = parseInt(maxMatch[1]);
-                }
-                
+
+            questionItems.forEach((item) => {
+                const getField = (name) => item.querySelector(`[data-field="${name}"]`)?.value ?? '';
+                const activeType = item.querySelector('.segmented .segment.active')?.dataset.value || 'short';
+                const requiredToggle = item.querySelector('[data-action="toggle-required"]');
+
                 questions.push({
-                    title: title,
-                    description: description,
-                    placeholder: placeholder,
-                    type: type,
-                    required: true,
-                    minLength: minLength,
-                    maxLength: maxLength
+                    title: getField('title'),
+                    description: getField('description'),
+                    placeholder: getField('placeholder'),
+                    type: activeType,
+                    required: requiredToggle ? requiredToggle.classList.contains('active') : true,
+                    minLength: parseInt(getField('minLength'), 10) || 1,
+                    maxLength: parseInt(getField('maxLength'), 10) || 500
                 });
             });
+
+            const getRoleValues = (id) => Array.from(document.getElementById(id).selectedOptions)
+                .map(o => o.value)
+                .filter(v => v !== '');
+
+            const getMatchMode = (group) => document.querySelector(`.segmented[data-group="${group}"] .segment.active`)?.dataset.value || 'all';
 
             const data = {
                 name: document.getElementById('templateName').value,
                 category: document.getElementById('ticketCategory').value,
                 channelName: document.getElementById('ticketChannel').value,
                 maxTickets: parseInt(document.getElementById('maxTickets').value) || 3,
-                blockedRoles: Array.from(document.getElementById('blockedRoles').selectedOptions).map(o => o.value),
-                requiredRoles: Array.from(document.getElementById('requiredRoles').selectedOptions).map(o => o.value),
-                supportRoles: Array.from(document.getElementById('supportRoles').selectedOptions).map(o => o.value),
-                ticketClaiming: document.getElementById('ticketClaiming').classList.contains('on'),
+                blockedRoles: getRoleValues('blockedRoles'),
+                blockedMatchMode: getMatchMode('blocked-match-mode'),
+                requiredRoles: getRoleValues('requiredRoles'),
+                requiredMatchMode: getMatchMode('required-match-mode'),
+                supportRoles: getRoleValues('supportRoles'),
+                ticketClaiming: document.getElementById('ticketClaiming').classList.contains('active'),
                 actionOnLeave: document.getElementById('actionOnLeave').value,
-                pingSupport: document.getElementById('pingSupport').classList.contains('on'),
-                rateSupport: document.getElementById('rateSupport').classList.contains('on'),
+                pingSupport: document.getElementById('pingSupport').classList.contains('active'),
+                rateSupport: document.getElementById('rateSupport').classList.contains('active'),
                 formDescription: document.getElementById('formDescription').value,
                 questions: questions,
                 guildId: '<%= locals.guild ? guild.id : "" %>'
@@ -918,20 +1029,14 @@
                 if (data.success) {
                     showToast('✅ Template saved successfully!', 'success');
                 } else {
-                    showToast('❌ Error: ' + (data.error || 'Unknown error'), 'error');
+                    showToast('❌ Error: ' + data.error, 'error');
                 }
             })
             .catch(error => {
                 showToast('❌ Error saving template: ' + error.message, 'error');
             });
         }
-
-        // Make functions globally accessible for onclick handlers
-        window.addQuestion = addQuestion;
-        window.deleteQuestion = deleteQuestion;
-        window.editQuestion = editQuestion;
-        window.saveTemplate = saveTemplate;
-        window.showToast = showToast;
     </script>
+
 </body>
 </html>
