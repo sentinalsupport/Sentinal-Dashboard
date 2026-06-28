@@ -166,53 +166,64 @@
             margin-right: 10px;
         }
 
-        .card-section {
-            margin-bottom: 16px;
-        }
-        .card-section .section-title {
+        .section-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #fff;
             margin-bottom: 4px;
         }
-        .card-section .section-desc {
+        .section-subtitle {
             font-size: 14px;
             color: var(--muted);
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        /* ─── 3-COLUMN GRID ─── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .ticket-card {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 14px;
-            padding: 20px 24px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 20px 22px;
             transition: all 0.2s ease;
-            flex-wrap: wrap;
-            gap: 12px;
+            display: flex;
+            flex-direction: column;
         }
         .ticket-card:hover {
             border-color: var(--line-bright);
         }
-        .ticket-card .card-info {
-            flex: 1;
-            min-width: 200px;
-        }
-        .ticket-card .card-info .card-title {
+        .ticket-card .card-title {
             font-weight: 600;
             font-size: 16px;
             color: #fff;
+            margin-bottom: 2px;
         }
-        .ticket-card .card-info .card-desc {
+        .ticket-card .card-title .badge-new {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: 100px;
+            background: var(--violet-tab);
+            color: var(--violet);
+            margin-left: 6px;
+            text-transform: uppercase;
+        }
+        .ticket-card .card-desc {
             font-size: 13px;
             color: var(--muted);
+            margin-bottom: 14px;
+            line-height: 1.5;
+            flex: 1;
         }
         .ticket-card .card-actions {
-            display: flex; gap: 8px;
+            margin-top: auto;
         }
         .ticket-card .card-actions .btn-config {
             padding: 6px 18px;
@@ -245,13 +256,18 @@
             letter-spacing: 0.5px;
         }
 
+        @media (max-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
             .nav-center { display: none; }
             .page-wrapper { padding: 16px; }
             .page-header { flex-direction: column; align-items: stretch; }
-            .ticket-card { flex-direction: column; align-items: stretch; }
-            .ticket-card .card-actions { justify-content: flex-start; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .ticket-card { padding: 16px 18px; }
             .footer { padding: 20px 16px; }
         }
     </style>
@@ -301,72 +317,53 @@
             </div>
         </div>
 
-        <!-- ─── TEMPLATES ─── -->
-        <div class="card-section">
-            <div class="section-title">Templates</div>
-            <div class="section-desc">Create tickets for users to open in your server</div>
+        <!-- ─── 3-COLUMN GRID ─── -->
+        <div class="cards-grid">
+
+            <!-- Templates -->
             <div class="ticket-card">
-                <div class="card-info">
-                    <div class="card-title">Templates</div>
-                    <div class="card-desc">Create tickets for users to open in your server</div>
-                </div>
+                <div class="card-title">Templates</div>
+                <div class="card-desc">Create tickets for users to open in your server</div>
                 <div class="card-actions">
-                    <a href="/tickets/templates?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">
+                    <button class="btn-config" onclick="showToast('Templates coming soon!', 'info')">
                         <i class="fas fa-cog"></i> Configure
-                    </a>
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- ─── PANELS ─── -->
-        <div class="card-section">
-            <div class="section-title">Panels</div>
-            <div class="section-desc">Organize your tickets into panels</div>
+            <!-- Panels -->
             <div class="ticket-card">
-                <div class="card-info">
-                    <div class="card-title">Panels</div>
-                    <div class="card-desc">Organize your tickets into panels</div>
-                </div>
+                <div class="card-title">Panels</div>
+                <div class="card-desc">Organize your tickets into panels</div>
                 <div class="card-actions">
                     <button class="btn-config" onclick="showToast('Ticket panels coming soon!', 'info')">
                         <i class="fas fa-cog"></i> Configure
                     </button>
                 </div>
             </div>
-        </div>
 
-        <!-- ─── QUICK RESPONSES ─── -->
-        <div class="card-section">
-            <div class="section-title">Quick Responses</div>
-            <div class="section-desc">Create some quick responses to respond to common questions</div>
+            <!-- Quick Responses -->
             <div class="ticket-card">
-                <div class="card-info">
-                    <div class="card-title">Quick Responses</div>
-                    <div class="card-desc">Create some quick responses to respond to common questions</div>
-                </div>
+                <div class="card-title">Quick Responses <span class="badge-new">New</span></div>
+                <div class="card-desc">Create some quick responses to respond to common questions</div>
                 <div class="card-actions">
                     <button class="btn-config" onclick="showToast('Quick responses coming soon!', 'info')">
                         <i class="fas fa-cog"></i> Configure
                     </button>
                 </div>
             </div>
-        </div>
 
-        <!-- ─── TRANSCRIPTS ─── -->
-        <div class="card-section">
-            <div class="section-title">Transcripts</div>
-            <div class="section-desc">Get a comprehensive view of all open and closed tickets</div>
+            <!-- Transcripts -->
             <div class="ticket-card">
-                <div class="card-info">
-                    <div class="card-title">Transcripts</div>
-                    <div class="card-desc">Get a comprehensive view of all open and closed tickets</div>
-                </div>
+                <div class="card-title">Transcripts</div>
+                <div class="card-desc">Get a comprehensive view of all open and closed tickets</div>
                 <div class="card-actions">
                     <button class="btn-config" onclick="showToast('Transcripts coming soon!', 'info')">
                         <i class="fas fa-cog"></i> Configure
                     </button>
                 </div>
             </div>
+
         </div>
 
     </div>
