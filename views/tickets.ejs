@@ -166,23 +166,9 @@
             margin-right: 10px;
         }
 
-        .section-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 4px;
-        }
-        .section-subtitle {
-            font-size: 14px;
-            color: var(--muted);
-            margin-bottom: 16px;
-        }
-
-        /* ─── 3-COLUMN GRID ─── */
-        .cards-grid {
+        .tickets-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -212,6 +198,16 @@
             border-radius: 100px;
             background: var(--violet-tab);
             color: var(--violet);
+            margin-left: 6px;
+            text-transform: uppercase;
+        }
+        .ticket-card .card-title .badge-live {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: 100px;
+            background: var(--signal-tab);
+            color: var(--signal);
             margin-left: 6px;
             text-transform: uppercase;
         }
@@ -256,17 +252,12 @@
             letter-spacing: 0.5px;
         }
 
-        @media (max-width: 1024px) {
-            .cards-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
             .nav-center { display: none; }
             .page-wrapper { padding: 16px; }
             .page-header { flex-direction: column; align-items: stretch; }
-            .cards-grid { grid-template-columns: 1fr; }
+            .tickets-grid { grid-template-columns: 1fr; }
             .ticket-card { padding: 16px 18px; }
             .footer { padding: 20px 16px; }
         }
@@ -317,23 +308,23 @@
             </div>
         </div>
 
-        <!-- ─── 3-COLUMN GRID ─── -->
-        <div class="cards-grid">
+        <!-- ─── 2-COLUMN GRID ─── -->
+        <div class="tickets-grid">
 
             <!-- Templates -->
             <div class="ticket-card">
-                <div class="card-title">Templates</div>
+                <div class="card-title">Templates <span class="badge-live">Live</span></div>
                 <div class="card-desc">Create tickets for users to open in your server</div>
                 <div class="card-actions">
-                    <button class="btn-config" onclick="showToast('Templates coming soon!', 'info')">
+                    <a href="/tickets/templates?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">
                         <i class="fas fa-cog"></i> Configure
-                    </button>
+                    </a>
                 </div>
             </div>
 
             <!-- Panels -->
             <div class="ticket-card">
-                <div class="card-title">Panels</div>
+                <div class="card-title">Panels <span class="badge-live">Live</span></div>
                 <div class="card-desc">Organize your tickets into panels</div>
                 <div class="card-actions">
                     <button class="btn-config" onclick="showToast('Ticket panels coming soon!', 'info')">
@@ -355,7 +346,7 @@
 
             <!-- Transcripts -->
             <div class="ticket-card">
-                <div class="card-title">Transcripts</div>
+                <div class="card-title">Transcripts <span class="badge-live">Live</span></div>
                 <div class="card-desc">Get a comprehensive view of all open and closed tickets</div>
                 <div class="card-actions">
                     <button class="btn-config" onclick="showToast('Transcripts coming soon!', 'info')">
