@@ -87,6 +87,10 @@
             color: #FF6B6B;
             font-size: 13px;
             margin-bottom: 16px;
+            text-align: left;
+        }
+        .error-message i {
+            margin-right: 8px;
         }
         .footer-text {
             margin-top: 24px;
@@ -116,9 +120,15 @@
             </div>
         <% } %>
 
-        <a href="<%= discordAuthUrl %>" class="login-btn">
-            <i class="fab fa-discord"></i> Login with Discord
-        </a>
+        <% if (locals.discordAuthUrl) { %>
+            <a href="<%= discordAuthUrl %>" class="login-btn">
+                <i class="fab fa-discord"></i> Login with Discord
+            </a>
+        <% } else { %>
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> Authentication is not configured. Please check your environment variables.
+            </div>
+        <% } %>
 
         <div class="footer-text">
             By logging in, you agree to our <a href="#">Terms of Service</a>
