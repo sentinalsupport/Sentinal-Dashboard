@@ -1,7 +1,7 @@
 {
-  "name": "sentinel-dashboard",
+  "name": "sentinal-dashboard",
   "version": "1.0.0",
-  "description": "Sentinel Discord Bot Dashboard",
+  "description": "Sentinal Discord Bot Dashboard",
   "main": "dashboard.js",
   "scripts": {
     "start": "node dashboard.js",
@@ -10,12 +10,13 @@
   "dependencies": {
     "axios": "^1.6.0",
     "connect-mongo": "^5.0.0",
-    "discord.js": "^14.14.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "mongoose": "^8.0.0"
+    "mongoose": "^7.5.0",
+    "mongodb": "^5.8.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
