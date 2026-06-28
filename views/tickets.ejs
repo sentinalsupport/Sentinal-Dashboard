@@ -102,7 +102,6 @@
             padding: 32px 48px 60px;
         }
 
-        /* ─── TOAST ─── */
         .toast-container {
             position: fixed;
             bottom: 24px;
@@ -197,15 +196,71 @@
         .getting-started .help-link { color: var(--signal); text-decoration: none; font-size: 13px; font-weight: 500; }
         .getting-started .help-link:hover { text-decoration: underline; }
 
-        .tickets-header {
+        .key-features {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+        }
+        .key-features h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px; font-weight: 700; color: #fff;
+            margin-bottom: 12px;
+        }
+        .key-features ul {
+            list-style: none;
+            padding: 0; margin: 0;
+        }
+        .key-features ul li {
+            font-size: 14px; color: var(--muted);
+            padding: 4px 0;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .key-features ul li i { color: var(--signal); font-size: 14px; width: 18px; }
+
+        .setup-section {
+            display: flex; gap: 20px; margin-bottom: 28px; flex-wrap: wrap;
+        }
+        .setup-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 24px 28px;
+            flex: 1; min-width: 280px;
+            display: flex; align-items: center; gap: 20px;
+            transition: all 0.2s ease;
+        }
+        .setup-card:hover { border-color: var(--line-bright); }
+        .setup-card .icon-wrap {
+            width: 48px; height: 48px; border-radius: 12px;
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: var(--signal); flex-shrink: 0;
+        }
+        .setup-card .info h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+        .setup-card .info p { font-size: 13px; color: var(--muted); }
+        .setup-card .info .watch-link { color: var(--signal); text-decoration: none; font-size: 13px; font-weight: 500; }
+        .setup-card .info .watch-link:hover { text-decoration: underline; }
+
+        .templates-header {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
         }
-        .tickets-header .left h3 {
+        .templates-header .left h3 {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 18px; font-weight: 700; color: #fff;
         }
-        .tickets-header .left .count { font-size: 13px; color: var(--muted); }
+        .templates-header .left .count { font-size: 13px; color: var(--muted); }
+        .templates-header .right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .templates-header .right .search-templates {
+            padding: 8px 16px; border-radius: 10px;
+            border: 1px solid var(--line); background: var(--panel);
+            color: var(--text); font-size: 13px; font-family: 'Inter', sans-serif;
+            outline: none; width: 200px;
+        }
+        .templates-header .right .search-templates:focus { border-color: var(--signal); box-shadow: 0 0 0 3px var(--signal-glow); }
+        .templates-header .right .search-templates::placeholder { color: var(--muted-dim); }
         .btn-new {
             padding: 10px 24px; border-radius: 10px;
             background: var(--signal); color: #04140F;
@@ -216,14 +271,14 @@
         }
         .btn-new:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--signal-glow); }
 
-        .tickets-grid {
+        .templates-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 16px;
             margin-bottom: 8px;
         }
 
-        .ticket-card {
+        .template-card {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 14px;
@@ -232,76 +287,66 @@
             display: flex;
             flex-direction: column;
         }
-        .ticket-card:hover {
+        .template-card:hover {
             border-color: var(--line-bright);
         }
-        .ticket-card .ticket-card-header {
+        .template-card .template-card-header {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 6px;
         }
-        .ticket-card .ticket-card-header .ticket-name {
+        .template-card .template-card-header .template-name {
             font-weight: 600;
             font-size: 16px;
             color: #fff;
         }
-        .ticket-card .ticket-card-header .ticket-status {
+        .template-card .template-card-header .template-status {
             font-size: 10px; font-weight: 600;
             padding: 2px 12px; border-radius: 100px;
         }
-        .ticket-card .ticket-card-header .ticket-status.enabled {
+        .template-card .template-card-header .template-status.enabled {
             background: var(--signal-tab); color: var(--signal);
             border: 1px solid rgba(61,255,184,0.2);
         }
-        .ticket-card .ticket-card-header .ticket-status.disabled {
+        .template-card .template-card-header .template-status.disabled {
             background: var(--muted-dim); color: var(--muted);
             border: 1px solid var(--line);
         }
-        .ticket-card .ticket-card-desc {
+        .template-card .template-card-desc {
             font-size: 13px;
             color: var(--muted);
             margin-bottom: 14px;
             line-height: 1.5;
             flex: 1;
         }
-        .ticket-card .ticket-card-actions {
+        .template-card .template-card-actions {
             display: flex; gap: 8px; flex-wrap: wrap;
             margin-top: auto;
         }
-        .ticket-card .ticket-card-actions .btn-edit {
+        .template-card .template-card-actions .btn-edit {
             padding: 6px 14px;
             border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            background: var(--blue);
-            color: #fff;
+            font-size: 12px; font-weight: 600;
+            cursor: pointer; border: none;
+            background: var(--blue); color: #fff;
             transition: all 0.18s ease;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            display: inline-flex; align-items: center; gap: 6px;
         }
-        .ticket-card .ticket-card-actions .btn-edit:hover {
+        .template-card .template-card-actions .btn-edit:hover {
             background: var(--discord-hover);
             transform: translateY(-1px);
         }
-        .ticket-card .ticket-card-actions .btn-delete {
+        .template-card .template-card-actions .btn-delete {
             padding: 6px 14px;
             border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            background: var(--red-bg);
-            color: var(--red);
+            font-size: 12px; font-weight: 600;
+            cursor: pointer; border: none;
+            background: var(--red-bg); color: var(--red);
             border: 1px solid var(--red-border);
             transition: all 0.18s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            display: inline-flex; align-items: center; gap: 6px;
         }
-        .ticket-card .ticket-card-actions .btn-delete:hover {
+        .template-card .template-card-actions .btn-delete:hover {
             background: var(--red);
             color: #fff;
         }
@@ -336,7 +381,7 @@
             border: 1px solid var(--line);
             border-radius: 16px;
             padding: 32px;
-            max-width: 540px;
+            max-width: 480px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -420,10 +465,15 @@
             .nav-center { display: none; }
             .page-wrapper { padding: 16px; }
             .page-header { flex-direction: column; align-items: stretch; }
-            .tickets-header { flex-direction: column; align-items: stretch; }
+            .templates-header { flex-direction: column; align-items: stretch; }
+            .templates-header .right { flex-direction: column; }
+            .templates-header .right .search-templates { width: 100%; }
             .btn-new { justify-content: center; }
-            .tickets-grid { grid-template-columns: 1fr; }
-            .ticket-card { padding: 16px 18px; }
+            .setup-section { flex-direction: column; }
+            .setup-card { flex-direction: column; text-align: center; }
+            .getting-started, .key-features { padding: 20px; }
+            .templates-grid { grid-template-columns: 1fr; }
+            .template-card { padding: 16px 18px; }
             .modal { padding: 24px; }
             .footer { padding: 20px 16px; }
         }
@@ -471,7 +521,7 @@
         <div class="modal-overlay" id="ticketModal">
             <div class="modal">
                 <div class="modal-header">
-                    <h2><i class="fas fa-ticket" style="color:var(--signal); margin-right:10px;"></i> <span id="modalTitle">New Ticket Template</span></h2>
+                    <h2><i class="fas fa-ticket" style="color:var(--signal); margin-right:10px;"></i> <span id="modalTitle">Give your template a name</span></h2>
                     <button class="close-btn" onclick="closeTicketModal()">&times;</button>
                 </div>
                 <form id="ticketForm" onsubmit="saveTicket(event)">
@@ -479,30 +529,13 @@
 
                     <div class="form-group">
                         <label for="ticketName">Template Name</label>
-                        <input type="text" id="ticketName" placeholder="e.g. Support Ticket" required>
-                        <div class="form-hint">The name of your ticket template</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ticketCategory">Category</label>
-                        <select id="ticketCategory">
-                            <option value="support">Support</option>
-                            <option value="report">Report</option>
-                            <option value="general">General</option>
-                            <option value="other">Other</option>
-                        </select>
-                        <div class="form-hint">The category for this ticket type</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ticketDescription">Description</label>
-                        <textarea id="ticketDescription" placeholder="Describe what this ticket is for..." rows="2"></textarea>
-                        <div class="form-hint">Optional description shown to users</div>
+                        <input type="text" id="ticketName" placeholder="Enter template name..." required>
+                        <div class="form-hint">A short, descriptive name for your ticket template</div>
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn-save" id="saveTicketBtn"><i class="fas fa-save"></i> Save Template</button>
                         <button type="button" class="btn-cancel" onclick="closeTicketModal()">Cancel</button>
+                        <button type="submit" class="btn-save" id="saveTicketBtn">Create Template</button>
                     </div>
                 </form>
             </div>
@@ -520,37 +553,71 @@
         <div class="getting-started">
             <h2>Getting started</h2>
             <ol>
-                <li><span class="num">1.</span> Create a new ticket template</li>
-                <li><span class="num">2.</span> Set up the ticket channel and support roles</li>
-                <li><span class="num">3.</span> Members can use <code style="background:var(--panel-raised); padding:2px 8px; border-radius:4px; color:var(--signal); font-size:12px;">/ticket</code> to open a ticket</li>
-                <li><span class="num">4.</span> Staff can close and manage tickets</li>
+                <li><span class="num">1.</span> Create a new ticket and give it a name</li>
+                <li><span class="num">2.</span> Open it by clicking the edit button</li>
+                <li><span class="num">3.</span> Configure your tickets settings</li>
+                <li><span class="num">4.</span> Members in your server can open a ticket by using a ticket panel, you can make one by clicking <a href="#" onclick="showToast('Panels coming soon!', 'info')" style="color:var(--signal);">here</a></li>
             </ol>
             <a href="#" class="help-link" onclick="showToast('Support server coming soon!', 'info')">Need help? Join our support server.</a>
         </div>
 
-        <!-- ─── TICKETS HEADER ─── -->
-        <div class="tickets-header">
-            <div class="left">
-                <h3>Ticket Templates: <span class="count" id="ticketCount"><%= locals.tickets ? tickets.length : 0 %></span></h3>
-            </div>
-            <button class="btn-new" onclick="openTicketModal()">
-                <i class="fas fa-plus"></i> New Template
-            </button>
+        <!-- ─── KEY FEATURES ─── -->
+        <div class="key-features">
+            <h2>Key Features</h2>
+            <ul>
+                <li><i class="fas fa-check"></i> Create and manage multiple tickets</li>
+                <li><i class="fas fa-check"></i> Customizable ticket templates</li>
+                <li><i class="fas fa-check"></i> Advanced ticket settings and configs</li>
+                <li><i class="fas fa-check"></i> Control all role interactions</li>
+            </ul>
         </div>
 
-        <!-- ─── TICKETS GRID ─── -->
+        <!-- ─── SETUP SECTION ─── -->
+        <div class="setup-section">
+            <div class="setup-card">
+                <div class="icon-wrap"><i class="fas fa-play"></i></div>
+                <div class="info">
+                    <h3>Setting up tickets</h3>
+                    <p>Learn how to setup tickets for your discord server</p>
+                    <a href="#" class="watch-link" onclick="showToast('Video tutorial coming soon!', 'info')">Click to watch →</a>
+                </div>
+            </div>
+            <div class="setup-card">
+                <div class="icon-wrap"><i class="fas fa-file"></i></div>
+                <div class="info">
+                    <h3>Setting up tickets</h3>
+                    <p>Learn how to setup tickets for your discord server</p>
+                    <a href="#" class="watch-link" onclick="showToast('Documentation coming soon!', 'info')">Click to watch →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── TEMPLATES HEADER ─── -->
+        <div class="templates-header">
+            <div class="left">
+                <h3>Templates: <span class="count" id="templateCount"><%= locals.tickets ? tickets.length : 0 %>/5</span></h3>
+            </div>
+            <div class="right">
+                <input type="text" class="search-templates" placeholder="Search templates..." id="searchTemplates" onkeyup="filterTemplates()">
+                <button class="btn-new" onclick="openTicketModal()">
+                    <i class="fas fa-plus"></i> New Template
+                </button>
+            </div>
+        </div>
+
+        <!-- ─── TEMPLATES GRID ─── -->
         <% if (locals.tickets && tickets.length > 0) { %>
-            <div class="tickets-grid" id="ticketsList">
+            <div class="templates-grid" id="templatesList">
                 <% tickets.forEach(function(ticket) { %>
-                    <div class="ticket-card" data-id="<%= ticket._id %>">
-                        <div class="ticket-card-header">
-                            <span class="ticket-name"><%= ticket.name || 'Untitled Template' %></span>
-                            <span class="ticket-status <%= ticket.enabled !== false ? 'enabled' : 'disabled' %>">
+                    <div class="template-card" data-name="<%= ticket.name.toLowerCase() %>">
+                        <div class="template-card-header">
+                            <span class="template-name"><%= ticket.name || 'Untitled Template' %></span>
+                            <span class="template-status <%= ticket.enabled !== false ? 'enabled' : 'disabled' %>">
                                 <%= ticket.enabled !== false ? '● Enabled' : '● Disabled' %>
                             </span>
                         </div>
-                        <div class="ticket-card-desc"><%= ticket.description || 'No description' %></div>
-                        <div class="ticket-card-actions">
+                        <div class="template-card-desc"><%= ticket.description || 'No description' %></div>
+                        <div class="template-card-actions">
                             <button class="btn-edit" onclick="editTicket('<%= ticket._id %>')">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
@@ -562,9 +629,9 @@
                 <% }); %>
             </div>
         <% } else { %>
-            <div class="empty-state" id="ticketsList">
+            <div class="empty-state" id="templatesList">
                 <i class="fas fa-ticket"></i>
-                <h3>No ticket templates created</h3>
+                <h3>No templates created</h3>
                 <p>Create your first ticket template to get started.</p>
                 <button class="btn-new" onclick="openTicketModal()">
                     <i class="fas fa-plus"></i> New Template
@@ -605,7 +672,7 @@
 
         function openTicketModal() {
             editingTicketId = null;
-            document.getElementById('modalTitle').textContent = 'New Ticket Template';
+            document.getElementById('modalTitle').textContent = 'Give your template a name';
             document.getElementById('ticketId').value = '';
             document.getElementById('ticketForm').reset();
             document.getElementById('ticketName').value = '';
@@ -625,11 +692,9 @@
                     if (data.success) {
                         const ticket = data.ticket;
                         editingTicketId = ticketId;
-                        document.getElementById('modalTitle').textContent = 'Edit Ticket Template';
+                        document.getElementById('modalTitle').textContent = 'Edit Template';
                         document.getElementById('ticketId').value = ticketId;
                         document.getElementById('ticketName').value = ticket.name || '';
-                        document.getElementById('ticketCategory').value = ticket.category || 'support';
-                        document.getElementById('ticketDescription').value = ticket.description || '';
                         document.getElementById('ticketModal').classList.add('active');
                     }
                 })
@@ -644,8 +709,6 @@
             
             const ticketId = document.getElementById('ticketId').value;
             const name = document.getElementById('ticketName').value.trim();
-            const category = document.getElementById('ticketCategory').value;
-            const description = document.getElementById('ticketDescription').value;
 
             if (!name) {
                 showToast('❌ Please enter a template name.', 'error');
@@ -654,8 +717,7 @@
 
             const data = {
                 name: name,
-                category: category,
-                description: description,
+                description: `${name} template`,
                 enabled: true,
                 guildId: '<%= locals.guild ? guild.id : "" %>'
             };
@@ -702,6 +764,17 @@
                     showToast('❌ Error deleting ticket template: ' + error.message, 'error');
                 });
             }
+        }
+
+        // ─── SEARCH ───
+        function filterTemplates() {
+            const query = document.getElementById('searchTemplates').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.template-card');
+            
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                card.style.display = name.includes(query) ? '' : 'none';
+            });
         }
 
         // ─── CLOSE MODAL ON ESC ───
