@@ -1,29 +1,401 @@
-// ============ TICKET TEMPLATES PAGE ============
-router.get('/tickets/templates', isAuthenticated, async (req, res) => {
-    try {
-        const guildId = req.query.guildId;
-        console.log('📋 Loading ticket templates for guild:', guildId);
-        
-        let TicketTemplate;
-        try {
-            TicketTemplate = require('../models/TicketTemplate');
-        } catch (err) {
-            TicketTemplate = { find: async () => [] };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Tickets — Sentinal' %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --ink: #060A10;
+            --panel: #0D1520;
+            --panel-raised: #111D2C;
+            --panel-hover: #162033;
+            --line: rgba(255,255,255,0.07);
+            --line-bright: rgba(255,255,255,0.13);
+            --text: #E6EDF6;
+            --muted: #6C7A90;
+            --muted-dim: #3E4A5C;
+            --signal: #3DFFB8;
+            --signal-tab: rgba(61,255,184,0.08);
+            --signal-glow: rgba(61,255,184,0.15);
+            --gold: #F5C842;
+            --gold-tab: rgba(245,200,66,0.12);
+            --violet: #8B7EFF;
+            --violet-tab: rgba(139,126,255,0.12);
+            --red: #F87171;
+            --red-bg: rgba(248,113,113,0.08);
+            --red-border: rgba(248,113,113,0.22);
+            --discord: #5865F2;
+            --discord-hover: #4752C4;
         }
-        
-        const templates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
-        
-        res.render('ticket-templates', {
-            title: 'Templates — Sentinal',
-            user: req.session.user,
-            guild: { id: guildId || 'unknown' },
-            templates: templates
-        });
-    } catch (error) {
-        console.error('Error loading ticket templates:', error.message);
-        res.status(500).render('error', {
-            message: 'Failed to load ticket templates',
-            title: 'Error'
-        });
-    }
-});
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--ink);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(6,10,16,0.9);
+            backdrop-filter: blur(28px) saturate(160%);
+            border-bottom: 1px solid var(--line);
+            padding: 0 48px;
+            height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 200;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-logo {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: var(--panel-raised); border: 1px solid var(--line-bright);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .brand-logo svg { width: 22px; height: 22px; }
+        .brand-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+        }
+        .nav-center { display: flex; align-items: center; gap: 8px; }
+        .nav-center a {
+            color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
+            padding: 8px 18px; border-radius: 10px; transition: all 0.18s ease;
+        }
+        .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .nav-center a.active { color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .user-pill {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--panel); border: 1px solid var(--line);
+            border-radius: 100px; padding: 6px 18px 6px 8px;
+        }
+        .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--panel-raised); overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700;
+        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 14px; font-weight: 500; color: var(--text); }
+        .user-plan {
+            font-size: 11px; font-weight: 600; color: var(--signal);
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.22);
+            border-radius: 100px; padding: 3px 10px; letter-spacing: 0.3px;
+        }
+        .logout-btn {
+            background: transparent; border: 1px solid var(--line); border-radius: 10px;
+            padding: 8px 14px; color: var(--muted); cursor: pointer; font-size: 14px;
+            transition: all 0.18s ease; text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 48px 60px;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            width: 100%;
+        }
+        .toast {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--signal);
+        }
+        .toast .toast-icon { color: var(--signal); font-size: 18px; flex-shrink: 0; }
+        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
+        .toast .toast-close {
+            background: none; border: none;
+            color: var(--muted-dim); cursor: pointer;
+            font-size: 14px; padding: 4px;
+        }
+        .toast .toast-close:hover { color: var(--text); }
+        .toast.error { border-left-color: var(--red); }
+        .toast.error .toast-icon { color: var(--red); }
+        .toast.success { border-left-color: var(--signal); }
+        .toast.success .toast-icon { color: var(--signal); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(40px); }
+        }
+        .toast.hiding { animation: slideOut 0.3s ease forwards; }
+
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 0 16px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .page-header .left h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px; font-weight: 700; color: #fff;
+        }
+        .page-header .left p {
+            font-size: 14px; color: var(--muted);
+        }
+        .page-header .left h1 i {
+            color: var(--signal);
+            margin-right: 10px;
+        }
+
+        .card-section {
+            margin-bottom: 16px;
+        }
+        .card-section .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .card-section .section-desc {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .ticket-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .ticket-card:hover {
+            border-color: var(--line-bright);
+        }
+        .ticket-card .card-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        .ticket-card .card-info .card-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #fff;
+        }
+        .ticket-card .card-info .card-desc {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .ticket-card .card-actions {
+            display: flex; gap: 8px;
+        }
+        .ticket-card .card-actions .btn-config {
+            padding: 6px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: var(--signal-tab);
+            color: var(--signal);
+            border: 1px solid rgba(61,255,184,0.2);
+            transition: all 0.18s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ticket-card .card-actions .btn-config:hover {
+            background: rgba(61,255,184,0.18);
+        }
+
+        .footer {
+            border-top: 1px solid var(--line);
+            margin-top: 60px;
+            padding: 28px 48px;
+            text-align: center;
+            color: var(--muted-dim);
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
+            .nav-center { display: none; }
+            .page-wrapper { padding: 16px; }
+            .page-header { flex-direction: column; align-items: stretch; }
+            .ticket-card { flex-direction: column; align-items: stretch; }
+            .ticket-card .card-actions { justify-content: flex-start; }
+            .footer { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/dashboard" class="brand">
+            <div class="brand-logo">
+                <svg viewBox="0 0 245 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M104.4 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zM140.9 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z" fill="#3DFFB8"/>
+                    <path d="M189.5 20H55.5C44.7 20 36 28.7 36 39.5v140.9c0 10.8 8.7 19.5 19.5 19.5h113.5l-5.3-18.5 12.8 11.9 12.1 11.2L209 220V39.5C209 28.7 200.3 20 189.5 20zM155.7 152.1s-3.6-4.3-6.6-8.1c13.1-3.7 18.1-11.9 18.1-11.9-4.1 2.7-8 4.6-11.5 5.9-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.4 1.3-25.9-.1-5.7-1.1-10.6-2.6-14.7-4.3-2.3-.9-4.8-2-7.3-3.4-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.4-.3-2-1.1-3.1-1.9-3.1-1.9 4.7 4.3 9.3 6.5 21.7 10.2-2.9 3.8-6.6 8.1-6.6 8.1-22 0-32.1-15.2-32.1-15.2 0-32.2 14.4-58.4 14.4-58.4 14.4-10.8 28.1-10.5 28.1-10.5l1 1.2C99.2 87.7 87.9 97.4 87.9 97.4s2.9-1.6 7.8-3.8c14.1-6.2 25.3-7.9 29.9-8.3.8-.1 1.5-.2 2.3-.2 8.2-1 17.5-1.3 27.2.2 12.9 2 26.7 7.5 40.8 17.3 0 0-10.8-10.2-28.5-13.7l1.4-1.6s13.7-.3 28.1 10.5c0 0 14.4 26.2 14.4 58.4 0 0-10.2 15.2-32.1 15.2z" fill="#3DFFB8"/>
+                </svg>
+            </div>
+            <span class="brand-name">Sentinal</span>
+        </a>
+        <div class="nav-center">
+            <a href="/dashboard">Home</a>
+            <a href="/servers" class="active">Servers</a>
+            <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
+            <a href="#">Premium</a>
+        </div>
+        <div class="nav-right">
+            <div class="user-pill">
+                <div class="user-avatar">
+                    <% if (locals.user && user.avatar) { %>
+                        <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
+                    <% } else { %>
+                        <%= locals.user ? (user.username ? user.username.charAt(0).toUpperCase() : 'U') : 'U' %>
+                    <% } %>
+                </div>
+                <span class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></span>
+                <span class="user-plan">Free</span>
+            </div>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+
+        <div class="toast-container" id="toastContainer"></div>
+
+        <div class="page-header">
+            <div class="left">
+                <h1><i class="fas fa-ticket"></i> Tickets</h1>
+                <p>Create tickets for users to open in your server</p>
+            </div>
+        </div>
+
+        <!-- ─── TEMPLATES ─── -->
+        <div class="card-section">
+            <div class="section-title">Templates</div>
+            <div class="section-desc">Create tickets for users to open in your server</div>
+            <div class="ticket-card">
+                <div class="card-info">
+                    <div class="card-title">Templates</div>
+                    <div class="card-desc">Create tickets for users to open in your server</div>
+                </div>
+                <div class="card-actions">
+                    <a href="/tickets/templates?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">
+                        <i class="fas fa-cog"></i> Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── PANELS ─── -->
+        <div class="card-section">
+            <div class="section-title">Panels</div>
+            <div class="section-desc">Organize your tickets into panels</div>
+            <div class="ticket-card">
+                <div class="card-info">
+                    <div class="card-title">Panels</div>
+                    <div class="card-desc">Organize your tickets into panels</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-config" onclick="showToast('Ticket panels coming soon!', 'info')">
+                        <i class="fas fa-cog"></i> Configure
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── QUICK RESPONSES ─── -->
+        <div class="card-section">
+            <div class="section-title">Quick Responses</div>
+            <div class="section-desc">Create some quick responses to respond to common questions</div>
+            <div class="ticket-card">
+                <div class="card-info">
+                    <div class="card-title">Quick Responses</div>
+                    <div class="card-desc">Create some quick responses to respond to common questions</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-config" onclick="showToast('Quick responses coming soon!', 'info')">
+                        <i class="fas fa-cog"></i> Configure
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── TRANSCRIPTS ─── -->
+        <div class="card-section">
+            <div class="section-title">Transcripts</div>
+            <div class="section-desc">Get a comprehensive view of all open and closed tickets</div>
+            <div class="ticket-card">
+                <div class="card-info">
+                    <div class="card-title">Transcripts</div>
+                    <div class="card-desc">Get a comprehensive view of all open and closed tickets</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-config" onclick="showToast('Transcripts coming soon!', 'info')">
+                        <i class="fas fa-cog"></i> Configure
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        © 2026 SENTINAL — STATUS: OPERATIONAL
+    </footer>
+
+    <script>
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i></span>
+                <span class="toast-content">${message}</span>
+                <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+                }
+            }, 4000);
+        }
+    </script>
+
+</body>
+</html>
