@@ -106,7 +106,7 @@
             min-height: calc(100vh - 72px);
         }
 
-        /* ─── LEFT SIDEBAR (255px - Full Height) ─── */
+        /* ─── LEFT SIDEBAR ─── */
         .sidebar {
             width: 255px;
             flex-shrink: 0;
@@ -382,39 +382,20 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.4);
             animation: slideIn 0.3s ease;
             backdrop-filter: blur(10px);
-        }
-        .toast.success {
             border-left: 4px solid var(--signal);
         }
-        .toast.error {
-            border-left: 4px solid var(--red);
-        }
-        .toast.info {
-            border-left: 4px solid var(--violet);
-        }
-        .toast .toast-icon {
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-        .toast.success .toast-icon { color: var(--signal); }
-        .toast.error .toast-icon { color: var(--red); }
-        .toast.info .toast-icon { color: var(--violet); }
-        .toast .toast-content {
-            flex: 1;
-            font-size: 13px;
-            color: var(--text);
-            line-height: 1.4;
-        }
+        .toast .toast-icon { color: var(--signal); font-size: 18px; flex-shrink: 0; }
+        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
         .toast .toast-close {
-            background: none;
-            border: none;
-            color: var(--muted-dim);
-            cursor: pointer;
-            font-size: 14px;
-            padding: 4px;
+            background: none; border: none;
+            color: var(--muted-dim); cursor: pointer;
+            font-size: 14px; padding: 4px;
         }
         .toast .toast-close:hover { color: var(--text); }
-
+        .toast.error { border-left-color: var(--red); }
+        .toast.error .toast-icon { color: var(--red); }
+        .toast.success { border-left-color: var(--signal); }
+        .toast.success .toast-icon { color: var(--signal); }
         @keyframes slideIn {
             from { opacity: 0; transform: translateX(40px); }
             to { opacity: 1; transform: translateX(0); }
@@ -423,33 +404,7 @@
             from { opacity: 1; transform: translateX(0); }
             to { opacity: 0; transform: translateX(40px); }
         }
-        .toast.hiding {
-            animation: slideOut 0.3s ease forwards;
-        }
-
-        .coming-soon {
-            text-align: center; padding: 80px 20px;
-            color: var(--muted);
-        }
-        .coming-soon i {
-            font-size: 48px; color: var(--gold); margin-bottom: 20px; display: block;
-        }
-        .coming-soon h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 22px; color: #fff; margin-bottom: 8px;
-        }
-        .coming-soon p { font-size: 15px; }
-
-        .success-message {
-            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.2);
-            border-radius: 10px; padding: 16px 24px; color: var(--signal);
-            font-size: 15px; margin-bottom: 20px;
-        }
-        .error-message {
-            background: var(--red-bg); border: 1px solid var(--red-border);
-            border-radius: 10px; padding: 16px 24px; color: var(--red);
-            font-size: 15px; margin-bottom: 20px;
-        }
+        .toast.hiding { animation: slideOut 0.3s ease forwards; }
 
         .footer {
             border-top: 1px solid var(--line); margin-top: 60px;
@@ -527,7 +482,7 @@
                 <span class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></span>
                 <span class="user-plan">Free</span>
             </div>
-            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
         </div>
     </nav>
 
@@ -562,16 +517,19 @@
                     <i class="fas fa-th-large"></i> Overview
                 </button>
 
-                <button class="nav-item" onclick="showModule('applications')">
+                <button class="nav-item" onclick="window.location.href='/applications?guildId=<%= locals.guild ? guild.id : '' %>'">
                     <i class="fas fa-file-alt"></i> Applications
+                    <span class="badge live">Live</span>
                 </button>
 
-                <button class="nav-item" onclick="showModule('tickets')">
+                <button class="nav-item" onclick="window.location.href='/tickets?guildId=<%= locals.guild ? guild.id : '' %>'">
                     <i class="fas fa-ticket"></i> Tickets
+                    <span class="badge live">Live</span>
                 </button>
 
                 <button class="nav-item" onclick="showModule('security')">
                     <i class="fas fa-shield-halved"></i> Security
+                    <span class="badge live">Live</span>
                 </button>
 
                 <button class="nav-item" onclick="showModule('automation')">
@@ -618,19 +576,11 @@
                 </div>
             </div>
 
-            <!-- ─── SUCCESS / ERROR ─── -->
-            <% if (locals.success) { %>
-                <div class="success-message"><i class="fas fa-check-circle"></i> Settings saved successfully!</div>
-            <% } %>
-            <% if (locals.error) { %>
-                <div class="error-message"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
-            <% } %>
-
             <!-- ─── TOP TABS ─── -->
             <div class="top-tabs">
                 <button class="tab active" onclick="showModule('overview')">Overview</button>
-                <button class="tab" onclick="showModule('applications')">Applications</button>
-                <button class="tab" onclick="showModule('tickets')">Tickets</button>
+                <button class="tab" onclick="window.location.href='/applications?guildId=<%= locals.guild ? guild.id : '' %>'">Applications</button>
+                <button class="tab" onclick="window.location.href='/tickets?guildId=<%= locals.guild ? guild.id : '' %>'">Tickets</button>
                 <button class="tab" onclick="showModule('security')">Security</button>
                 <button class="tab" onclick="showModule('automation')">Automation</button>
                 <button class="tab" onclick="showModule('community')">Community</button>
@@ -664,7 +614,7 @@
             </div>
 
             <!-- ─── APPLICATIONS ─── -->
-            <div class="module-panel" id="module-applications">
+            <div class="module-panel" id="module-applications" style="display:none;">
                 <div class="section-header">Applications</div>
                 <div class="module-grid">
                     <div class="module-card">
@@ -709,7 +659,7 @@
             </div>
 
             <!-- ─── TICKETS ─── -->
-            <div class="module-panel" id="module-tickets">
+            <div class="module-panel" id="module-tickets" style="display:none;">
                 <div class="section-header">Tickets</div>
                 <div class="module-grid">
                     <div class="module-card">
@@ -719,9 +669,9 @@
                         </div>
                         <div class="card-desc">Create tickets for users to open in your server</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Ticket templates coming soon!', 'info')">
+                            <a href="/tickets?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">
                                 <i class="fas fa-cog"></i> Configure
-                            </button>
+                            </a>
                         </div>
                     </div>
 
@@ -828,7 +778,6 @@
                         </div>
                     </div>
 
-                    <!-- ✅ NEW: Leveling Module -->
                     <div class="module-card">
                         <div class="card-header">
                             <span class="card-title">Leveling</span>
@@ -907,69 +856,57 @@
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-
-            const icons = {
-                success: 'fa-check-circle',
-                error: 'fa-exclamation-circle',
-                info: 'fa-info-circle'
-            };
-
+            toast.className = 'toast ' + type;
             toast.innerHTML = `
-                <span class="toast-icon"><i class="fas ${icons[type] || icons.info}"></i></span>
+                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i></span>
                 <span class="toast-content">${message}</span>
                 <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
                     <i class="fas fa-times"></i>
                 </button>
             `;
-
             container.appendChild(toast);
-
-            // Auto dismiss after 4 seconds
             setTimeout(() => {
                 if (toast.parentNode) {
                     toast.classList.add('hiding');
-                    setTimeout(() => {
-                        if (toast.parentNode) toast.remove();
-                    }, 300);
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
                 }
             }, 4000);
         }
 
-// ─── MODULE NAVIGATION ───
-function showModule(module) {
-    // Update sidebar active state
-    document.querySelectorAll('.sidebar .nav-item').forEach(el => {
-        el.classList.remove('active');
-    });
-    document.querySelectorAll('.sidebar .nav-item').forEach(el => {
-        if (el.textContent.trim().toLowerCase().includes(module)) {
-            el.classList.add('active');
+        // ─── MODULE NAVIGATION ───
+        function showModule(module) {
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar .nav-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.sidebar .nav-item').forEach(el => {
+                if (el.textContent.trim().toLowerCase().includes(module)) {
+                    el.classList.add('active');
+                }
+            });
+
+            // Update top tabs
+            document.querySelectorAll('.top-tabs .tab').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.top-tabs .tab').forEach(el => {
+                if (el.textContent.trim().toLowerCase().includes(module)) {
+                    el.classList.add('active');
+                }
+            });
+
+            // Hide all panels
+            document.querySelectorAll('.module-panel').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected panel - NO SCROLLING!
+            const target = document.getElementById('module-' + module);
+            if (target) {
+                target.classList.add('active');
+                // ❌ REMOVED: target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
-    });
-
-    // Update top tabs
-    document.querySelectorAll('.top-tabs .tab').forEach(el => {
-        el.classList.remove('active');
-    });
-    document.querySelectorAll('.top-tabs .tab').forEach(el => {
-        if (el.textContent.trim().toLowerCase().includes(module)) {
-            el.classList.add('active');
-        }
-    });
-
-    // Hide all panels
-    document.querySelectorAll('.module-panel').forEach(el => {
-        el.classList.remove('active');
-    });
-
-    // Show selected panel - NO SCROLLING!
-    const target = document.getElementById('module-' + module);
-    if (target) {
-        target.classList.add('active');
-        // ❌ REMOVED: target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-}
 
         // ─── SEARCH FEATURES ───
         function searchFeatures() {
