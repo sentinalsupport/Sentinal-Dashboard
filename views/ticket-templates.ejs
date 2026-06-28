@@ -205,8 +205,7 @@
             font-size: 13px;
             color: var(--muted);
             padding: 3px 0;
-            display: flex;
-            align-items: flex-start;
+            display: flex; align-items: flex-start;
             gap: 10px;
             line-height: 1.6;
         }
@@ -235,8 +234,7 @@
             font-size: 13px;
             color: var(--muted);
             padding: 3px 0;
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
             gap: 10px;
         }
         .key-features ul li i { color: var(--signal); font-size: 14px; width: 18px; }
@@ -268,9 +266,7 @@
             border-radius: 10px;
             background: var(--signal-tab);
             border: 1px solid rgba(61,255,184,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 18px;
             color: var(--signal);
             flex-shrink: 0;
@@ -303,9 +299,7 @@
         }
         .templates-header .left h3 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
+            font-size: 18px; font-weight: 700; color: #fff;
         }
         .templates-header .left .count { font-size: 13px; color: var(--muted); }
         .templates-header .right {
@@ -481,9 +475,7 @@
         }
         .modal .modal-header h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
-            color: #fff;
+            font-size: 22px; font-weight: 700; color: #fff;
         }
         .modal .modal-header .close-btn {
             background: none;
@@ -732,7 +724,7 @@
                         <div class="template-name"><%= template.name %></div>
                         <div class="template-desc"><%= template.description || 'No description' %></div>
                         <div class="template-actions">
-                            <button class="btn-edit" onclick="editTemplate('<%= template._id %>')">
+                            <button class="btn-edit" onclick="window.location.href='/tickets/edit/<%= template._id %>?guildId=<%= locals.guild ? guild.id : '' %>'">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
                             <button class="btn-delete" onclick="deleteTemplate('<%= template._id %>')">
@@ -794,25 +786,6 @@
         function closeTemplateModal() {
             document.getElementById('templateModal').classList.remove('active');
             editingTemplateId = null;
-        }
-
-        function editTemplate(templateId) {
-            fetch(`/api/tickets/${templateId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const template = data.ticket;
-                        editingTemplateId = templateId;
-                        document.getElementById('templateId').value = templateId;
-                        document.getElementById('templateName').value = template.name || '';
-                        document.getElementById('saveTemplateBtn').textContent = 'Save Changes';
-                        document.getElementById('templateModal').classList.add('active');
-                        setTimeout(() => document.getElementById('templateName').focus(), 100);
-                    }
-                })
-                .catch(error => {
-                    showToast('❌ Error loading template: ' + error.message, 'error');
-                });
         }
 
         function saveTemplate(event) {
