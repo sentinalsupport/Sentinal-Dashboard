@@ -330,6 +330,44 @@ router.get('/tickets/templates', isAuthenticated, async (req, res) => {
     }
 });
 
+// ============ TICKET EDIT PAGE ============
+router.get('/tickets/edit/:id', isAuthenticated, async (req, res) => {
+    try {
+        const templateId = req.params.id;
+        const guildId = req.query.guildId;
+        console.log('📋 Loading ticket template for edit:', templateId);
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { findById: async () => null };
+        }
+        
+        const template = await TicketTemplate.findById(templateId);
+        
+        if (!template) {
+            return res.status(404).render('error', {
+                message: 'Ticket template not found',
+                title: 'Not Found'
+            });
+        }
+        
+        res.render('ticket-edit', {
+            title: 'Edit Template — Sentinal',
+            user: req.session.user,
+            guild: { id: guildId || 'unknown' },
+            template: template
+        });
+    } catch (error) {
+        console.error('Error loading ticket template:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load ticket template',
+            title: 'Error'
+        });
+    }
+});
+
 // ============ API: APPLICATIONS ============
 router.post('/api/applications', isAuthenticated, async (req, res) => {
     try {
