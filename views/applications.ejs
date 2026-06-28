@@ -166,53 +166,54 @@
             margin-right: 10px;
         }
 
-        .card-section {
-            margin-bottom: 16px;
-        }
-        .card-section .section-title {
+        .section-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #fff;
             margin-bottom: 4px;
         }
-        .card-section .section-desc {
+        .section-subtitle {
             font-size: 14px;
             color: var(--muted);
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        /* ─── 3-COLUMN GRID ─── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .app-card {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 14px;
-            padding: 20px 24px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 20px 22px;
             transition: all 0.2s ease;
-            flex-wrap: wrap;
-            gap: 12px;
+            display: flex;
+            flex-direction: column;
         }
         .app-card:hover {
             border-color: var(--line-bright);
         }
-        .app-card .card-info {
-            flex: 1;
-            min-width: 200px;
-        }
-        .app-card .card-info .card-title {
+        .app-card .card-title {
             font-weight: 600;
             font-size: 16px;
             color: #fff;
+            margin-bottom: 2px;
         }
-        .app-card .card-info .card-desc {
+        .app-card .card-desc {
             font-size: 13px;
             color: var(--muted);
+            margin-bottom: 14px;
+            line-height: 1.5;
+            flex: 1;
         }
         .app-card .card-actions {
-            display: flex; gap: 8px;
+            margin-top: auto;
         }
         .app-card .card-actions .btn-config {
             padding: 6px 18px;
@@ -245,13 +246,18 @@
             letter-spacing: 0.5px;
         }
 
+        @media (max-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
             .nav-center { display: none; }
             .page-wrapper { padding: 16px; }
             .page-header { flex-direction: column; align-items: stretch; }
-            .app-card { flex-direction: column; align-items: stretch; }
-            .app-card .card-actions { justify-content: flex-start; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .app-card { padding: 16px 18px; }
             .footer { padding: 20px 16px; }
         }
     </style>
@@ -301,55 +307,42 @@
             </div>
         </div>
 
-        <!-- ─── APPLICATIONS ─── -->
-        <div class="card-section">
-            <div class="section-title">Applications</div>
-            <div class="section-desc">Create forms for your members to fill out</div>
+        <!-- ─── 3-COLUMN GRID ─── -->
+        <div class="cards-grid">
+
+            <!-- Applications -->
             <div class="app-card">
-                <div class="card-info">
-                    <div class="card-title">Applications</div>
-                    <div class="card-desc">Create forms for your members to fill out</div>
-                </div>
+                <div class="card-title">Applications</div>
+                <div class="card-desc">Create forms for your members to fill out</div>
                 <div class="card-actions">
-                    <a href="#" class="btn-config" onclick="showToast('Applications management coming soon!', 'info')">
+                    <button class="btn-config" onclick="showToast('Applications coming soon!', 'info')">
                         <i class="fas fa-cog"></i> Configure
-                    </a>
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- ─── PANELS ─── -->
-        <div class="card-section">
-            <div class="section-title">Panels</div>
-            <div class="section-desc">Manage your application panels</div>
+            <!-- Panels -->
             <div class="app-card">
-                <div class="card-info">
-                    <div class="card-title">Panels</div>
-                    <div class="card-desc">Manage your application panels</div>
-                </div>
+                <div class="card-title">Panels</div>
+                <div class="card-desc">Manage your application panels</div>
                 <div class="card-actions">
                     <a href="/panels?guildId=<%= locals.guild ? guild.id : '' %>" class="btn-config">
                         <i class="fas fa-cog"></i> Configure
                     </a>
                 </div>
             </div>
-        </div>
 
-        <!-- ─── SUBMISSIONS ─── -->
-        <div class="card-section">
-            <div class="section-title">Submissions</div>
-            <div class="section-desc">View and manage all application submissions</div>
+            <!-- Submissions -->
             <div class="app-card">
-                <div class="card-info">
-                    <div class="card-title">Submissions</div>
-                    <div class="card-desc">View and manage all application submissions</div>
-                </div>
+                <div class="card-title">Submissions</div>
+                <div class="card-desc">View and manage all application submissions</div>
                 <div class="card-actions">
-                    <button class="btn-config" onclick="showToast('Submissions view coming soon!', 'info')">
+                    <button class="btn-config" onclick="showToast('Submissions coming soon!', 'info')">
                         <i class="fas fa-cog"></i> Configure
                     </button>
                 </div>
             </div>
+
         </div>
 
     </div>
