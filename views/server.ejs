@@ -907,8 +907,14 @@
 
             if (query === '') {
                 cards.forEach(card => card.style.display = '');
+                document.querySelectorAll('.module-panel').forEach(el => el.style.display = '');
             }
         }
+
+        // Make functions globally accessible
+        window.showToast = showToast;
+        window.showModule = showModule;
+        window.searchFeatures = searchFeatures;
     </script>
 
 </body>
