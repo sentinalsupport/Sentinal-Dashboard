@@ -5,20 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title || 'Panel Designer — Sentinal' %></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
     <style>
-        .designer-container {
-            max-width: 1000px;
+        :root {
+            --ink: #060A10;
+            --panel: #0D1520;
+            --panel-raised: #111D2C;
+            --panel-hover: #162033;
+            --line: rgba(255,255,255,0.07);
+            --line-bright: rgba(255,255,255,0.13);
+            --text: #E6EDF6;
+            --muted: #6C7A90;
+            --muted-dim: #3E4A5C;
+            --signal: #3DFFB8;
+            --signal-tab: rgba(61,255,184,0.08);
+            --signal-glow: rgba(61,255,184,0.15);
+            --gold: #F5C842;
+            --gold-tab: rgba(245,200,66,0.12);
+            --violet: #8B7EFF;
+            --violet-tab: rgba(139,126,255,0.12);
+            --red: #F87171;
+            --red-bg: rgba(248,113,113,0.08);
+            --red-border: rgba(248,113,113,0.22);
+            --discord: #5865F2;
+            --discord-hover: #4752C4;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--ink);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(6,10,16,0.9);
+            backdrop-filter: blur(28px) saturate(160%);
+            border-bottom: 1px solid var(--line);
+            padding: 0 48px;
+            height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 200;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-logo {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: var(--panel-raised); border: 1px solid var(--line-bright);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .brand-logo svg { width: 22px; height: 22px; }
+        .brand-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+        }
+        .nav-center { display: flex; align-items: center; gap: 8px; }
+        .nav-center a {
+            color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
+            padding: 8px 18px; border-radius: 10px; transition: all 0.18s ease;
+        }
+        .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .nav-center a.active { color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .user-pill {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--panel); border: 1px solid var(--line);
+            border-radius: 100px; padding: 6px 18px 6px 8px;
+        }
+        .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--panel-raised); overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700;
+        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 14px; font-weight: 500; color: var(--text); }
+        .user-plan {
+            font-size: 11px; font-weight: 600; color: var(--signal);
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.22);
+            border-radius: 100px; padding: 3px 10px; letter-spacing: 0.3px;
+        }
+        .logout-btn {
+            background: transparent; border: 1px solid var(--line); border-radius: 10px;
+            padding: 8px 14px; color: var(--muted); cursor: pointer; font-size: 14px;
+            transition: all 0.18s ease; text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+
+        .page-wrapper {
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 32px 48px 60px;
+        }
+
+        .status-bar {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px;
+            background: var(--panel);
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            margin-bottom: 24px;
+        }
+        .status-bar .dot { color: #34d399; font-size: 12px; font-weight: 600; }
+        .status-bar .text { color: var(--text-secondary); font-size: 13px; }
+        .status-bar .time { margin-left: auto; color: var(--muted-dim); font-size: 12px; }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+        .page-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px; font-weight: 700; color: #fff;
+        }
+        .page-header p {
+            color: var(--muted);
+            font-size: 16px;
         }
 
         .designer-progress {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
             padding: 0 20px;
             position: relative;
         }
@@ -30,7 +140,7 @@
             left: 40px;
             right: 40px;
             height: 2px;
-            background: var(--border-soft);
+            background: var(--line);
             transform: translateY(-50%);
         }
 
@@ -44,40 +154,40 @@
         }
 
         .progress-step .step-number {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: var(--bg-input);
-            border: 2px solid var(--border);
+            background: var(--panel);
+            border: 2px solid var(--line);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 13px;
-            color: var(--text-muted);
+            font-size: 14px;
+            color: var(--muted-dim);
             transition: all 0.3s ease;
         }
 
         .progress-step.active .step-number {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
+            background: var(--signal);
+            border-color: var(--signal);
+            color: var(--ink);
         }
 
         .progress-step.completed .step-number {
             background: #34d399;
             border-color: #34d399;
-            color: white;
+            color: var(--ink);
         }
 
         .progress-step .step-label {
-            font-size: 11px;
-            color: var(--text-muted);
+            font-size: 12px;
+            color: var(--muted-dim);
             font-weight: 500;
         }
 
         .progress-step.active .step-label {
-            color: var(--text-primary);
+            color: var(--text);
         }
 
         .defaults-grid {
@@ -87,15 +197,15 @@
         }
 
         .default-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-soft);
-            border-radius: var(--radius-lg);
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
             padding: 20px;
-            transition: all 0.18s ease;
+            transition: all 0.2s ease;
         }
 
         .default-card:hover {
-            border-color: var(--border);
+            border-color: var(--line-bright);
         }
 
         .default-card.full-width {
@@ -105,7 +215,7 @@
         .default-card .card-label {
             font-size: 13px;
             font-weight: 600;
-            color: var(--text-primary);
+            color: #fff;
             margin-bottom: 4px;
             display: flex;
             align-items: center;
@@ -114,7 +224,7 @@
 
         .default-card .card-hint {
             font-size: 12px;
-            color: var(--text-muted);
+            color: var(--muted);
             margin-bottom: 12px;
             line-height: 1.4;
         }
@@ -124,21 +234,21 @@
         .default-card textarea {
             width: 100%;
             padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            background: var(--bg-input);
-            color: var(--text-primary);
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: var(--ink);
+            color: var(--text);
             font-size: 13px;
             font-family: 'Inter', sans-serif;
             outline: none;
-            transition: all 0.18s ease;
+            transition: all 0.2s ease;
         }
 
         .default-card select:focus,
         .default-card input:focus,
         .default-card textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            border-color: var(--signal);
+            box-shadow: 0 0 0 4px var(--signal-glow);
         }
 
         .default-card textarea {
@@ -147,7 +257,7 @@
         }
 
         .default-card select option {
-            background: var(--bg-page);
+            background: var(--ink);
         }
 
         .default-card select[multiple] {
@@ -162,37 +272,37 @@
 
         .mode-btn {
             padding: 4px 12px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
+            border-radius: 6px;
+            border: 1px solid var(--line);
             background: transparent;
-            color: var(--text-secondary);
+            color: var(--muted);
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.18s ease;
+            transition: all 0.2s ease;
         }
 
         .mode-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
+            background: var(--signal-tab);
+            border-color: var(--signal);
+            color: var(--signal);
         }
 
         .mode-btn:hover:not(.active) {
-            background: var(--bg-input-alt);
+            background: rgba(255,255,255,0.04);
         }
 
         .server-default-indicator {
             font-size: 12px;
-            color: var(--text-muted);
-            background: var(--bg-input-alt);
+            color: var(--muted);
+            background: var(--panel-raised);
             padding: 6px 12px;
-            border-radius: var(--radius-sm);
+            border-radius: 8px;
             margin-top: 8px;
         }
 
         .server-default-indicator i {
-            color: var(--accent);
+            color: var(--signal);
             margin-right: 6px;
         }
 
@@ -203,10 +313,10 @@
             font-size: 10px;
             font-weight: 700;
             color: var(--gold);
-            background: rgba(251, 191, 36, 0.12);
+            background: var(--gold-tab);
             padding: 2px 10px;
             border-radius: 100px;
-            border: 1px solid rgba(251, 191, 36, 0.2);
+            border: 1px solid rgba(245,200,66,0.2);
             margin-left: 8px;
         }
 
@@ -223,10 +333,10 @@
             font-size: 9px;
             font-weight: 700;
             color: var(--gold);
-            background: rgba(251, 191, 36, 0.12);
+            background: var(--gold-tab);
             padding: 2px 10px;
             border-radius: 100px;
-            border: 1px solid rgba(251, 191, 36, 0.2);
+            border: 1px solid rgba(245,200,66,0.2);
         }
 
         .premium-feature .toggle {
@@ -235,17 +345,17 @@
         }
 
         .note-box {
-            background: var(--bg-input-alt);
-            border: 1px solid var(--border-soft);
-            border-radius: var(--radius-md);
+            background: var(--panel-raised);
+            border: 1px solid var(--line);
+            border-radius: 10px;
             padding: 12px 16px;
             margin: 16px 0 24px;
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--muted);
         }
 
         .note-box i {
-            color: var(--accent);
+            color: var(--signal);
             margin-right: 8px;
         }
 
@@ -255,54 +365,53 @@
             align-items: center;
             margin-top: 32px;
             padding-top: 20px;
-            border-top: 1px solid var(--border-soft);
+            border-top: 1px solid var(--line);
         }
 
         .btn-back {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 20px;
-            border-radius: var(--radius-md);
+            padding: 10px 24px;
+            border-radius: 10px;
             background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-soft);
+            color: var(--muted);
+            border: 1px solid var(--line);
             font-weight: 600;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.18s ease;
+            transition: all 0.2s ease;
             text-decoration: none;
         }
 
         .btn-back:hover {
-            background: var(--bg-input-alt);
-            color: var(--text-primary);
+            background: rgba(255,255,255,0.04);
+            color: var(--text);
         }
 
         .btn-start-editing {
             padding: 10px 32px;
-            border-radius: var(--radius-md);
-            background: var(--accent);
-            color: white;
+            border-radius: 10px;
+            background: var(--signal);
+            color: var(--ink);
             border: none;
-            font-weight: 600;
-            font-size: 13px;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.18s ease;
+            transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
 
         .btn-start-editing:hover {
-            background: var(--accent-hover);
             transform: translateY(-1px);
-            box-shadow: 0 4px 18px rgba(99, 102, 241, 0.25);
+            box-shadow: 0 4px 20px var(--signal-glow);
         }
 
         .form-hint {
-            color: var(--text-muted);
-            font-size: 13px;
+            color: var(--muted);
+            font-size: 14px;
             margin-bottom: 20px;
         }
 
@@ -315,13 +424,43 @@
         .toggle-wrapper span {
             font-size: 13px;
             font-weight: 500;
-            color: var(--text-primary);
+            color: var(--text);
+        }
+
+        .toggle {
+            width: 44px;
+            height: 24px;
+            background: var(--muted-dim);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: none;
+        }
+
+        .toggle.active {
+            background: var(--signal);
+        }
+
+        .toggle .toggle-slider {
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle.active .toggle-slider {
+            left: 23px;
         }
 
         .char-counter {
             text-align: right;
             font-size: 12px;
-            color: var(--text-muted);
+            color: var(--muted);
             margin-top: 4px;
         }
 
@@ -330,294 +469,320 @@
             align-items: center;
             gap: 4px;
             font-size: 11px;
-            color: var(--text-muted);
-            background: var(--bg-input-alt);
+            color: var(--muted);
+            background: var(--panel-raised);
             padding: 2px 8px;
             border-radius: 4px;
             margin-top: 4px;
         }
 
         .variable-hint code {
-            background: var(--bg-input);
+            background: var(--ink);
             padding: 1px 6px;
             border-radius: 3px;
             font-size: 10px;
             font-family: monospace;
-            color: var(--accent);
+            color: var(--signal);
         }
 
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            width: 100%;
+        }
+        .toast {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--signal);
+        }
+        .toast .toast-icon { color: var(--signal); font-size: 18px; flex-shrink: 0; }
+        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
+        .toast .toast-close {
+            background: none; border: none;
+            color: var(--muted-dim); cursor: pointer;
+            font-size: 14px; padding: 4px;
+        }
+        .toast .toast-close:hover { color: var(--text); }
+        .toast.error { border-left-color: var(--red); }
+        .toast.error .toast-icon { color: var(--red); }
+        .toast.success { border-left-color: var(--signal); }
+        .toast.success .toast-icon { color: var(--signal); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(40px); }
+        }
+        .toast.hiding { animation: slideOut 0.3s ease forwards; }
+
         @media (max-width: 768px) {
-            .defaults-grid {
-                grid-template-columns: 1fr;
-            }
-            .default-card.full-width {
-                grid-column: 1;
-            }
-            .designer-progress {
-                overflow-x: auto;
-                gap: 8px;
-            }
-            .designer-progress::before {
-                display: none;
-            }
-            .progress-step .step-label {
-                display: none;
-            }
-            .designer-actions {
-                flex-direction: column;
-                gap: 12px;
-            }
+            .navbar { padding: 0 16px; height: 64px; }
+            .nav-center { display: none; }
+            .page-wrapper { padding: 16px; }
+            .defaults-grid { grid-template-columns: 1fr; }
+            .default-card.full-width { grid-column: 1; }
+            .designer-progress { padding: 0; }
+            .designer-progress::before { display: none; }
+            .progress-step .step-label { display: none; }
+            .designer-actions { flex-direction: column; gap: 12px; }
             .designer-actions .btn-back,
-            .designer-actions .btn-start-editing {
-                width: 100%;
-                justify-content: center;
-            }
+            .designer-actions .btn-start-editing { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
-    <div class="layout">
-        <aside class="sidebar">
-            <div class="brand">
-                <span class="brand-icon">🛡️</span>
-                Sentinal
+
+    <nav class="navbar">
+        <a href="/dashboard" class="brand">
+            <div class="brand-logo">
+                <svg viewBox="0 0 245 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M104.4 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zM140.9 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z" fill="#3DFFB8"/>
+                    <path d="M189.5 20H55.5C44.7 20 36 28.7 36 39.5v140.9c0 10.8 8.7 19.5 19.5 19.5h113.5l-5.3-18.5 12.8 11.9 12.1 11.2L209 220V39.5C209 28.7 200.3 20 189.5 20zM155.7 152.1s-3.6-4.3-6.6-8.1c13.1-3.7 18.1-11.9 18.1-11.9-4.1 2.7-8 4.6-11.5 5.9-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.4 1.3-25.9-.1-5.7-1.1-10.6-2.6-14.7-4.3-2.3-.9-4.8-2-7.3-3.4-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.4-.3-2-1.1-3.1-1.9-3.1-1.9 4.7 4.3 9.3 6.5 21.7 10.2-2.9 3.8-6.6 8.1-6.6 8.1-22 0-32.1-15.2-32.1-15.2 0-32.2 14.4-58.4 14.4-58.4 14.4-10.8 28.1-10.5 28.1-10.5l1 1.2C99.2 87.7 87.9 97.4 87.9 97.4s2.9-1.6 7.8-3.8c14.1-6.2 25.3-7.9 29.9-8.3.8-.1 1.5-.2 2.3-.2 8.2-1 17.5-1.3 27.2.2 12.9 2 26.7 7.5 40.8 17.3 0 0-10.8-10.2-28.5-13.7l1.4-1.6s13.7-.3 28.1 10.5c0 0 14.4 26.2 14.4 58.4 0 0-10.2 15.2-32.1 15.2z" fill="#3DFFB8"/>
+                </svg>
             </div>
-            <div class="server-switcher">
-                <div class="server-avatar"></div>
-                <div>
-                    <div class="server-name"><%= locals.guild ? guild.name : 'Sentinal Support' %></div>
-                    <div class="server-plan">Free</div>
+            <span class="brand-name">Sentinal</span>
+        </a>
+        <div class="nav-center">
+            <a href="/dashboard">Home</a>
+            <a href="/servers" class="active">Servers</a>
+            <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
+            <a href="#">Premium</a>
+        </div>
+        <div class="nav-right">
+            <div class="user-pill">
+                <div class="user-avatar">
+                    <% if (locals.user && user.avatar) { %>
+                        <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
+                    <% } else { %>
+                        <%= locals.user ? (user.username ? user.username.charAt(0).toUpperCase() : 'U') : 'U' %>
+                    <% } %>
                 </div>
+                <span class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></span>
+                <span class="user-plan">Free</span>
             </div>
-            <nav class="nav">
-                <a href="/dashboard" class="nav-link nav-top"><span><span class="nav-icon">🏠</span> Dashboard</span></a>
-                <div class="nav-group">
-                    <a href="/servers" class="nav-link"><span><span class="nav-icon">🖥️</span> Servers</span></a>
-                    <div class="nav-sub">
-                        <a href="/servers/<%= locals.guild ? guild.id : '' %>/applications" class="nav-link"><span><span class="nav-icon">📄</span> Applications</span></a>
-                        <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets" class="nav-link"><span><span class="nav-icon">🎫</span> Tickets</span></a>
-                        <a href="/servers/<%= locals.guild ? guild.id : '' %>/panels" class="nav-link active"><span><span class="nav-icon">📋</span> Panels</span></a>
-                    </div>
-                </div>
-            </nav>
-            <div class="sidebar-footer">
-                <a href="#" class="support-link"><span>💬</span> Support</a>
-                <div class="user-card">
-                    <div class="user-avatar"><%= locals.user ? (user.global_name ? user.global_name.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase()) : 'U' %></div>
-                    <div>
-                        <div class="user-name"><%= locals.user ? (user.global_name || user.username) : 'thedude12355' %></div>
-                        <div class="user-plan-badge">FREE</div>
-                    </div>
-                </div>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="page-wrapper">
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span class="dot">●</span>
+            <span class="text">All Systems Operational</span>
+            <span class="time"><%= new Date().toLocaleString() %></span>
+        </div>
+
+        <div class="page-header">
+            <h1>Panel Designer</h1>
+            <p>Create a new panel for your server.</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="designer-progress">
+            <div class="progress-step completed">
+                <div class="step-number">✓</div>
+                <span class="step-label">Panel Type</span>
             </div>
-        </aside>
+            <div class="progress-step completed">
+                <div class="step-number">✓</div>
+                <span class="step-label">Ticket Style</span>
+            </div>
+            <div class="progress-step completed">
+                <div class="step-number">✓</div>
+                <span class="step-label">Send Channel</span>
+            </div>
+            <div class="progress-step active">
+                <div class="step-number">4</div>
+                <span class="step-label">Panel Defaults</span>
+            </div>
+        </div>
 
-        <main class="content">
-            <div class="designer-container">
-                <!-- Status Bar -->
-                <div style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--bg-card); border-radius:var(--radius-md); border:1px solid var(--border-soft); margin-bottom:24px;">
-                    <span style="color:#34d399; font-size:12px; font-weight:600;">●</span>
-                    <span style="color:var(--text-secondary); font-size:13px;">All Systems Operational</span>
-                    <span style="margin-left:auto; color:var(--text-muted); font-size:12px;"><%= new Date().toLocaleString() %></span>
+        <h2 style="font-size:20px; font-weight:600; margin:0 0 4px; color:#fff;">Configure Panel Defaults <span style="font-size:13px; font-weight:400; color:var(--muted);">(Optional)</span></h2>
+        <p class="form-hint">Panel-wide defaults (optional). Any option on this panel can inherit these values instead of carrying its own.</p>
+
+        <div class="note-box">
+            <i class="fas fa-info-circle"></i>
+            Skip this step to configure each option individually. You can always set or change panel defaults later from the panel's edit page.
+        </div>
+
+        <div class="defaults-grid">
+            <!-- Default Categories -->
+            <div class="default-card full-width">
+                <div class="card-label">Default Categories</div>
+                <div class="card-hint">Categories used by options that inherit this field. Server-wide categories from your settings page also apply as overflow if these fill up.</div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
+                    <button class="mode-btn" onclick="toggleMode(this)">Override</button>
                 </div>
-
-                <h1 style="font-size:28px; font-weight:700; margin:0 0 4px;">Panel Designer</h1>
-                <p style="color:var(--text-secondary); margin:0 0 24px;">Create a new panel for your server.</p>
-
-                <!-- Progress Steps -->
-                <div class="designer-progress">
-                    <div class="progress-step completed">
-                        <div class="step-number">✓</div>
-                        <span class="step-label">Panel Type</span>
-                    </div>
-                    <div class="progress-step completed">
-                        <div class="step-number">✓</div>
-                        <span class="step-label">Ticket Style</span>
-                    </div>
-                    <div class="progress-step completed">
-                        <div class="step-number">✓</div>
-                        <span class="step-label">Send Channel</span>
-                    </div>
-                    <div class="progress-step active">
-                        <div class="step-number">4</div>
-                        <span class="step-label">Panel Defaults</span>
-                    </div>
+                <div class="server-default-indicator">
+                    <i class="fas fa-server"></i> Using the server-wide ticket categories.
                 </div>
+                <select style="margin-top:8px;" disabled>
+                    <option>Select category...</option>
+                    <option>Support Tickets</option>
+                    <option>Billing Tickets</option>
+                    <option>Technical Tickets</option>
+                </select>
+            </div>
 
-                <h2 style="font-size:18px; font-weight:600; margin:0 0 4px;">Configure Panel Defaults <span style="font-size:13px; font-weight:400; color:var(--text-muted);">(Optional)</span></h2>
-                <p class="form-hint">Panel-wide defaults (optional). Any option on this panel can inherit these values instead of carrying its own.</p>
-
-                <div class="note-box">
-                    <i class="fas fa-info-circle"></i>
-                    Skip this step to configure each option individually. You can always set or change panel defaults later from the panel's edit page.
+            <!-- Default Support Roles -->
+            <div class="default-card full-width">
+                <div class="card-label">Default Support Roles</div>
+                <div class="card-hint">Roles that can view and manage tickets opened from this panel. Server-wide support roles from your settings page always apply too.</div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
+                    <button class="mode-btn" onclick="toggleMode(this)">Override</button>
                 </div>
-
-                <div class="defaults-grid">
-                    <!-- Default Categories -->
-                    <div class="default-card full-width">
-                        <div class="card-label">Default Categories</div>
-                        <div class="card-hint">Categories used by options that inherit this field. Server-wide categories from your settings page also apply as overflow if these fill up.</div>
-                        <div class="mode-selector">
-                            <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
-                            <button class="mode-btn" onclick="toggleMode(this)">Override</button>
-                        </div>
-                        <div class="server-default-indicator">
-                            <i class="fas fa-server"></i> Using the server-wide ticket categories.
-                        </div>
-                        <select style="margin-top:8px;" disabled>
-                            <option>Select category...</option>
-                            <option>Support Tickets</option>
-                            <option>Billing Tickets</option>
-                            <option>Technical Tickets</option>
-                            <option>General Tickets</option>
-                        </select>
-                    </div>
-
-                    <!-- Default Support Roles -->
-                    <div class="default-card full-width">
-                        <div class="card-label">Default Support Roles</div>
-                        <div class="card-hint">Roles that can view and manage tickets opened from this panel. Server-wide support roles from your settings page always apply too - those roles can manage every ticket.</div>
-                        <div class="mode-selector">
-                            <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
-                            <button class="mode-btn" onclick="toggleMode(this)">Override</button>
-                        </div>
-                        <div class="server-default-indicator">
-                            <i class="fas fa-server"></i> Using the server-wide ticket roles.
-                        </div>
-                        <select multiple style="min-height:80px; margin-top:8px;" disabled>
-                            <option>Support Team</option>
-                            <option>Moderator</option>
-                            <option>Admin</option>
-                        </select>
-                    </div>
-
-                    <!-- Default Ticket Name Format -->
-                    <div class="default-card full-width">
-                        <div class="card-label">Default Ticket Name Format</div>
-                        <div class="card-hint">Channel name format used by inheriting options. Leave empty to use the built-in format.</div>
-                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                            <input type="text" value="ticket-{TICKET_NUMBER}" style="flex:1; min-width:200px;">
-                            <button class="mode-btn" style="padding:8px 16px; white-space:nowrap;" onclick="showVariables()">
-                                <i class="fas fa-plus"></i> Add Variable
-                            </button>
-                        </div>
-                        <div class="variable-hint">
-                            <i class="fas fa-info-circle"></i> Variables: <code>{TICKET_NUMBER}</code> <code>{USERNAME}</code> <code>{USER_ID}</code> <code>{SERVER_NAME}</code>
-                        </div>
-                    </div>
-
-                    <!-- Default Ticket Embed Message -->
-                    <div class="default-card full-width">
-                        <div class="card-label">Default Ticket Embed Message</div>
-                        <div class="card-hint">The message shown inside the ticket's opening embed. Leave empty to use the built-in greeting.</div>
-                        <textarea rows="3" oninput="updateCharCount(this, 'embedCount', 2048)">Welcome to your ticket. A member of our support team will be with you shortly.</textarea>
-                        <div class="char-counter"><span id="embedCount">0</span>/2048</div>
-                    </div>
-
-                    <!-- Default Ticket Message Content -->
-                    <div class="default-card full-width">
-                        <div class="card-label">Default Ticket Message Content</div>
-                        <div class="card-hint">Additional message sent alongside the ticket's opening embed. Leave empty to skip this extra message.</div>
-                        <textarea rows="2" oninput="updateCharCount(this, 'messageCount', 1024)">Additional content sent above the embed...</textarea>
-                        <div class="char-counter"><span id="messageCount">0</span>/1024</div>
-                    </div>
-
-                    <!-- Default Blocked Roles -->
-                    <div class="default-card full-width">
-                        <div class="card-label">Default Blocked Roles</div>
-                        <div class="card-hint">Users with any of these roles will be blocked from using inheriting options. Server-wide blocked roles from your settings page also block users from every ticket regardless of what you set here.</div>
-                        <div class="mode-selector">
-                            <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
-                            <button class="mode-btn" onclick="toggleMode(this)">Override</button>
-                        </div>
-                        <div class="server-default-indicator">
-                            <i class="fas fa-server"></i> Using the server-wide blocked roles.
-                        </div>
-                        <select multiple style="min-height:80px; margin-top:8px;" disabled>
-                            <option>Muted</option>
-                            <option>Banned</option>
-                            <option>Suspicious</option>
-                        </select>
-                    </div>
-
-                    <!-- Default Ticket Open Log Channel -->
-                    <div class="default-card full-width">
-                        <div class="card-label">Default Ticket Open Log Channel</div>
-                        <div class="card-hint">Channel where the open-ticket log embed is sent for tickets opened from this panel.</div>
-                        <div class="mode-selector">
-                            <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
-                            <button class="mode-btn" onclick="toggleMode(this)">Override</button>
-                        </div>
-                        <div class="server-default-indicator">
-                            <i class="fas fa-server"></i> Using the server-wide opened-tickets log channel.
-                        </div>
-                        <select style="margin-top:8px;" disabled>
-                            <option>Select a channel...</option>
-                            <option>#ticket-logs</option>
-                            <option>#open-tickets</option>
-                            <option>#support-logs</option>
-                        </select>
-                    </div>
-
-                    <!-- Default Ticket Close Log Channel -->
-                    <div class="default-card full-width">
-                        <div class="card-label">Default Ticket Close Log Channel</div>
-                        <div class="card-hint">Channel where the close-ticket log embed (with transcript link) is sent for tickets opened from this panel.</div>
-                        <div class="mode-selector">
-                            <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
-                            <button class="mode-btn" onclick="toggleMode(this)">Override</button>
-                        </div>
-                        <div class="server-default-indicator">
-                            <i class="fas fa-server"></i> Using the server-wide closed-tickets log channel.
-                        </div>
-                        <select style="margin-top:8px;" disabled>
-                            <option>Select a channel...</option>
-                            <option>#closed-tickets</option>
-                            <option>#ticket-archive</option>
-                            <option>#support-archive</option>
-                        </select>
-                    </div>
-
-                    <!-- Default Required Roles -->
-                    <div class="default-card full-width">
-                        <div class="card-label">Default Required Roles</div>
-                        <div class="card-hint">Inheriting options will require any of these roles to open a ticket. Leave empty for no role requirement.</div>
-                        <select multiple style="min-height:80px;">
-                            <option>Verified</option>
-                            <option>Member</option>
-                            <option>Trusted</option>
-                        </select>
-                    </div>
-
-                    <!-- Default Steam ID Integration (Premium) -->
-                    <div class="default-card full-width premium-feature">
-                        <div class="card-label">Default Steam ID Integration <span class="premium-badge"><i class="fas fa-crown"></i> PREMIUM</span></div>
-                        <div class="card-hint">Whether inheriting options prompt users to link their Steam account.</div>
-                        <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
-                            <div class="toggle-wrapper">
-                                <button class="toggle" type="button" role="switch" aria-checked="false" data-action="toggle" disabled style="opacity:0.5; cursor:not-allowed;">
-                                    <span class="toggle-knob"></span>
-                                </button>
-                                <span style="font-size:13px; color:var(--text-secondary);">Require Steam Linking</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="server-default-indicator">
+                    <i class="fas fa-server"></i> Using the server-wide ticket roles.
                 </div>
+                <select multiple style="min-height:80px; margin-top:8px;" disabled>
+                    <option>Support Team</option>
+                    <option>Moderator</option>
+                    <option>Admin</option>
+                </select>
+            </div>
 
-                <div class="designer-actions">
-                    <a href="/servers/<%= locals.guild ? guild.id : '' %>/panels/create/step3?type=<%= panelType %>&style=<%= ticketStyle %>" class="btn-back">
-                        <i class="fas fa-arrow-left"></i> Back
-                    </a>
-                    <button class="btn-start-editing" onclick="startEditing()">
-                        Start Editing <i class="fas fa-arrow-right"></i>
+            <!-- Default Ticket Name Format -->
+            <div class="default-card full-width">
+                <div class="card-label">Default Ticket Name Format</div>
+                <div class="card-hint">Channel name format used by inheriting options. Leave empty to use the built-in format.</div>
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <input type="text" value="ticket-{TICKET_NUMBER}" style="flex:1; min-width:200px;">
+                    <button class="mode-btn" style="padding:8px 16px; white-space:nowrap;" onclick="showVariables()">
+                        <i class="fas fa-plus"></i> Add Variable
                     </button>
                 </div>
+                <div class="variable-hint">
+                    <i class="fas fa-info-circle"></i> Variables: <code>{TICKET_NUMBER}</code> <code>{USERNAME}</code> <code>{USER_ID}</code>
+                </div>
             </div>
-        </main>
+
+            <!-- Default Ticket Embed Message -->
+            <div class="default-card full-width">
+                <div class="card-label">Default Ticket Embed Message</div>
+                <div class="card-hint">The message shown inside the ticket's opening embed. Leave empty to use the built-in greeting.</div>
+                <textarea rows="3" oninput="updateCharCount(this, 'embedCount', 2048)">Welcome to your ticket. A member of our support team will be with you shortly.</textarea>
+                <div class="char-counter"><span id="embedCount">0</span>/2048</div>
+            </div>
+
+            <!-- Default Ticket Message Content -->
+            <div class="default-card full-width">
+                <div class="card-label">Default Ticket Message Content</div>
+                <div class="card-hint">Additional message sent alongside the ticket's opening embed. Leave empty to skip this extra message.</div>
+                <textarea rows="2" oninput="updateCharCount(this, 'messageCount', 1024)">Additional content sent above the embed...</textarea>
+                <div class="char-counter"><span id="messageCount">0</span>/1024</div>
+            </div>
+
+            <!-- Default Blocked Roles -->
+            <div class="default-card full-width">
+                <div class="card-label">Default Blocked Roles</div>
+                <div class="card-hint">Users with any of these roles will be blocked from using inheriting options. Server-wide blocked roles also apply.</div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
+                    <button class="mode-btn" onclick="toggleMode(this)">Override</button>
+                </div>
+                <div class="server-default-indicator">
+                    <i class="fas fa-server"></i> Using the server-wide blocked roles.
+                </div>
+                <select multiple style="min-height:80px; margin-top:8px;" disabled>
+                    <option>Muted</option>
+                    <option>Banned</option>
+                </select>
+            </div>
+
+            <!-- Default Ticket Open Log Channel -->
+            <div class="default-card full-width">
+                <div class="card-label">Default Ticket Open Log Channel</div>
+                <div class="card-hint">Channel where the open-ticket log embed is sent for tickets opened from this panel.</div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
+                    <button class="mode-btn" onclick="toggleMode(this)">Override</button>
+                </div>
+                <div class="server-default-indicator">
+                    <i class="fas fa-server"></i> Using the server-wide opened-tickets log channel.
+                </div>
+                <select style="margin-top:8px;" disabled>
+                    <option>Select a channel...</option>
+                    <option>#ticket-logs</option>
+                    <option>#open-tickets</option>
+                </select>
+            </div>
+
+            <!-- Default Ticket Close Log Channel -->
+            <div class="default-card full-width">
+                <div class="card-label">Default Ticket Close Log Channel</div>
+                <div class="card-hint">Channel where the close-ticket log embed (with transcript link) is sent for tickets opened from this panel.</div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
+                    <button class="mode-btn" onclick="toggleMode(this)">Override</button>
+                </div>
+                <div class="server-default-indicator">
+                    <i class="fas fa-server"></i> Using the server-wide closed-tickets log channel.
+                </div>
+                <select style="margin-top:8px;" disabled>
+                    <option>Select a channel...</option>
+                    <option>#closed-tickets</option>
+                    <option>#ticket-archive</option>
+                </select>
+            </div>
+
+            <!-- Default Required Roles -->
+            <div class="default-card full-width">
+                <div class="card-label">Default Required Roles</div>
+                <div class="card-hint">Inheriting options will require any of these roles to open a ticket. Leave empty for no role requirement.</div>
+                <select multiple style="min-height:80px;">
+                    <option>Verified</option>
+                    <option>Member</option>
+                </select>
+            </div>
+
+            <!-- Steam ID Integration (Premium) -->
+            <div class="default-card full-width premium-feature">
+                <div class="card-label">Default Steam ID Integration <span class="premium-badge"><i class="fas fa-crown"></i> PREMIUM</span></div>
+                <div class="card-hint">Whether inheriting options prompt users to link their Steam account.</div>
+                <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+                    <div class="toggle-wrapper">
+                        <button class="toggle" type="button" role="switch" aria-checked="false" onclick="toggleSwitch(this)" disabled style="opacity:0.5; cursor:not-allowed;">
+                            <span class="toggle-slider"></span>
+                        </button>
+                        <span style="font-size:13px; color:var(--muted);">Require Steam Linking</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="designer-actions">
+            <a href="/servers/<%= locals.guild ? guild.id : '' %>/panels/create/step3?type=<%= panelType %>&style=<%= ticketStyle %>" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <button class="btn-start-editing" onclick="startEditing()">
+                Start Editing <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
     </div>
 
     <script>
-        // ============ Mode Toggle ============
         function toggleMode(btn) {
             const parent = btn.closest('.mode-selector');
             const card = btn.closest('.default-card');
@@ -634,28 +799,26 @@
             }
             
             if (indicator) {
-                if (isOverride) {
-                    indicator.style.display = 'none';
-                } else {
-                    indicator.style.display = 'block';
-                }
+                indicator.style.display = isOverride ? 'none' : 'block';
             }
         }
 
-        // ============ Character Counter ============
+        function toggleSwitch(el) {
+            el.classList.toggle('active');
+        }
+
         function updateCharCount(input, id, max) {
             const count = document.getElementById(id);
             if (count) {
                 count.textContent = input.value.length;
                 if (input.value.length > max) {
-                    count.style.color = 'var(--danger)';
+                    count.style.color = 'var(--red)';
                 } else {
-                    count.style.color = 'var(--text-muted)';
+                    count.style.color = 'var(--muted)';
                 }
             }
         }
 
-        // ============ Variables Helper ============
         function showVariables() {
             const variables = [
                 '{TICKET_NUMBER} - The ticket number',
@@ -663,38 +826,18 @@
                 '{USER_ID} - The user\'s Discord ID',
                 '{SERVER_NAME} - The server name',
                 '{TICKET_CREATOR} - The ticket creator\'s mention',
-                '{TICKET_ID} - The ticket ID',
-                '{DATE} - Current date',
-                '{TIME} - Current time'
+                '{TICKET_ID} - The ticket ID'
             ];
-            
             alert('Available Variables:\n\n' + variables.join('\n'));
         }
 
-        // ============ Start Editing ============
         function startEditing() {
             const type = '<%= panelType %>';
             const style = '<%= ticketStyle %>';
             const channel = '<%= sendChannel %>';
             
-            // Collect default settings from the form
-            const defaultCategories = document.querySelector('.default-card:first-child select')?.value || '';
-            const supportRoles = document.querySelectorAll('.default-card:nth-child(2) select option:checked');
-            const supportRolesArray = Array.from(supportRoles).map(o => o.value);
-            const ticketNameFormat = document.querySelector('.default-card:nth-child(3) input')?.value || '';
-            const embedMessage = document.querySelector('.default-card:nth-child(4) textarea')?.value || '';
-            const messageContent = document.querySelector('.default-card:nth-child(5) textarea')?.value || '';
-            const blockedRoles = document.querySelectorAll('.default-card:nth-child(6) select option:checked');
-            const blockedRolesArray = Array.from(blockedRoles).map(o => o.value);
-            const openLogChannel = document.querySelector('.default-card:nth-child(7) select')?.value || '';
-            const closeLogChannel = document.querySelector('.default-card:nth-child(8) select')?.value || '';
-            const requiredRoles = document.querySelectorAll('.default-card:nth-child(9) select option:checked');
-            const requiredRolesArray = Array.from(requiredRoles).map(o => o.value);
-            
-            // Generate a temporary panel ID
             const panelId = 'new_' + Date.now();
             
-            // Create the panel with default config
             fetch('/api/panels/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -716,18 +859,7 @@
                         ],
                         rows: [
                             { buttons: ['Create Ticket'] }
-                        ],
-                        defaults: {
-                            categories: defaultCategories,
-                            supportRoles: supportRolesArray,
-                            ticketNameFormat: ticketNameFormat,
-                            embedMessage: embedMessage,
-                            messageContent: messageContent,
-                            blockedRoles: blockedRolesArray,
-                            openLogChannel: openLogChannel,
-                            closeLogChannel: closeLogChannel,
-                            requiredRoles: requiredRolesArray
-                        }
+                        ]
                     }
                 })
             })
@@ -736,17 +868,35 @@
                 if (data.success) {
                     window.location.href = `/servers/<%= locals.guild ? guild.id : '' %>/panels/${data.panelId}/edit`;
                 } else {
-                    alert('Error creating panel: ' + data.error);
+                    showToast('Error creating panel: ' + data.error, 'error');
                 }
             })
             .catch(error => {
-                alert('Error: ' + error.message);
+                showToast('Error: ' + error.message, 'error');
             });
         }
 
-        // ============ Initialize character counters on load ============
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i></span>
+                <span class="toast-content">${message}</span>
+                <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+                }
+            }, 4000);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize character counts
             document.querySelectorAll('textarea[oninput*="updateCharCount"]').forEach(textarea => {
                 const match = textarea.getAttribute('oninput').match(/updateCharCount\(this,\s*['"]([^'"]+)['"]/);
                 if (match) {
@@ -754,7 +904,6 @@
                 }
             });
             
-            // Initialize mode buttons
             document.querySelectorAll('.mode-selector').forEach(group => {
                 const activeBtn = group.querySelector('.mode-btn.active');
                 if (activeBtn) {
@@ -762,12 +911,7 @@
                 }
             });
         });
-
-        // Make functions globally accessible
-        window.toggleMode = toggleMode;
-        window.updateCharCount = updateCharCount;
-        window.showVariables = showVariables;
-        window.startEditing = startEditing;
     </script>
+
 </body>
 </html>
