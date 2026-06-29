@@ -380,16 +380,297 @@
             cursor: not-allowed;
         }
 
-        .role-color-dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-            vertical-align: middle;
-            border: 1px solid rgba(255,255,255,0.1);
+        /* ============ CUSTOM MULTI-SELECT ============ */
+        .multi-select-wrapper {
+            position: relative;
+            width: 100%;
         }
 
+        .multi-select-wrapper .dropdown-toggle {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--ink);
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .multi-select-wrapper .dropdown-toggle:hover {
+            border-color: var(--line-bright);
+        }
+
+        .multi-select-wrapper .dropdown-toggle:focus {
+            border-color: var(--signal);
+            box-shadow: 0 0 0 3px var(--signal-glow);
+        }
+
+        .multi-select-wrapper .dropdown-toggle .selected-text {
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        .multi-select-wrapper .dropdown-toggle .selected-text span {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .multi-select-wrapper .dropdown-toggle .arrow {
+            color: var(--muted);
+            transition: transform 0.2s ease;
+            font-size: 12px;
+        }
+
+        .multi-select-wrapper .dropdown-toggle .arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .multi-select-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 8px;
+            z-index: 100;
+            max-height: 220px;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .multi-select-dropdown::-webkit-scrollbar {
+            width: 4px;
+        }
+        .multi-select-dropdown::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .multi-select-dropdown::-webkit-scrollbar-thumb {
+            background: var(--muted-dim);
+            border-radius: 10px;
+        }
+
+        .multi-select-dropdown.open {
+            display: block;
+            animation: fadeIn 0.15s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .multi-select-dropdown .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+            background: var(--ink);
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            margin-bottom: 6px;
+        }
+
+        .multi-select-dropdown .search-input:focus {
+            border-color: var(--signal);
+            box-shadow: 0 0 0 3px var(--signal-glow);
+        }
+
+        .multi-select-dropdown .search-input::placeholder {
+            color: var(--muted-dim);
+        }
+
+        .multi-select-dropdown .option-item {
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.15s ease;
+            color: var(--text);
+            font-size: 13px;
+            user-select: none;
+        }
+
+        .multi-select-dropdown .option-item:hover {
+            background: var(--panel-hover);
+        }
+
+        .multi-select-dropdown .option-item .checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid var(--muted-dim);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+        }
+
+        .multi-select-dropdown .option-item .checkbox.checked {
+            background: var(--signal);
+            border-color: var(--signal);
+        }
+
+        .multi-select-dropdown .option-item .checkbox.checked::after {
+            content: '✓';
+            color: var(--ink);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .multi-select-dropdown .option-item .role-color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .multi-select-dropdown .option-item .role-name {
+            flex: 1;
+        }
+
+        .multi-select-dropdown .option-item .role-count {
+            font-size: 11px;
+            color: var(--muted-dim);
+        }
+
+        .multi-select-dropdown .no-results {
+            padding: 12px;
+            text-align: center;
+            color: var(--muted-dim);
+            font-size: 13px;
+        }
+
+        .selected-roles-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+            min-height: 28px;
+        }
+
+        .selected-role-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 10px 2px 6px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 500;
+            background: var(--signal-tab);
+            color: var(--signal);
+            border: 1px solid rgba(61,255,184,0.2);
+            animation: tagIn 0.2s ease;
+        }
+
+        @keyframes tagIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .selected-role-tag .role-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .selected-role-tag .remove-role {
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0.6;
+            transition: all 0.15s ease;
+            background: none;
+            border: none;
+            color: var(--signal);
+            padding: 0 2px;
+            line-height: 1;
+        }
+
+        .selected-role-tag .remove-role:hover {
+            opacity: 1;
+        }
+
+        .match-mode {
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: var(--panel-raised);
+            border-radius: 8px;
+            border: 1px solid var(--line);
+        }
+
+        .match-mode-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .match-mode-label .info-icon {
+            color: var(--muted-dim);
+            font-size: 12px;
+            cursor: help;
+        }
+
+        .segmented {
+            display: inline-flex;
+            background: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .segment {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .segment.active {
+            background: var(--signal);
+            color: var(--ink);
+        }
+
+        .match-mode-desc {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 6px;
+            padding: 6px 12px;
+            background: var(--ink);
+            border-radius: 6px;
+        }
+
+        .match-mode-desc strong {
+            color: var(--text);
+        }
+
+        /* ============ QUESTIONS ============ */
         .question-item {
             background: var(--panel-raised);
             border: 1px solid var(--line);
@@ -474,7 +755,7 @@
 
         .question-item .q-row .q-field {
             flex: 1;
-            min-width: 120px;
+            min-width: 100px;
         }
 
         .question-item .q-row .q-field label {
@@ -501,6 +782,22 @@
         .question-item .q-row .q-field input:focus,
         .question-item .q-row .q-field select:focus {
             border-color: var(--signal);
+        }
+
+        .question-item .q-row .q-field .toggle {
+            width: 36px;
+            height: 20px;
+        }
+
+        .question-item .q-row .q-field .toggle .toggle-slider {
+            width: 14px;
+            height: 14px;
+            top: 3px;
+            left: 3px;
+        }
+
+        .question-item .q-row .q-field .toggle.active .toggle-slider {
+            left: 19px;
         }
 
         .btn-secondary {
@@ -798,20 +1095,60 @@
                 <span class="badge">Live</span>
             </div>
 
+            <!-- Blocked Roles -->
             <div class="form-group">
                 <label>Blocked Roles: <span id="blockedCount">0/10</span></label>
-                <select multiple id="blockedRoles" onchange="updateRoleCount('blocked')">
-                    <option value="">Loading roles...</option>
-                </select>
+                <div class="multi-select-wrapper" id="blockedRolesWrapper">
+                    <button class="dropdown-toggle" onclick="toggleDropdown('blocked')">
+                        <span class="selected-text">Select some roles...</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="multi-select-dropdown" id="blockedDropdown">
+                        <input class="search-input" placeholder="Search roles..." onkeyup="filterRoles('blocked', this.value)">
+                        <div class="options-list" id="blockedOptions"></div>
+                    </div>
+                </div>
+                <div class="selected-roles-display" id="blockedSelected"></div>
                 <div class="form-hint">Members with any one of these roles will not be able to open a ticket.</div>
+                <div class="match-mode">
+                    <div class="match-mode-label">
+                        Match Mode
+                        <span class="info-icon" title="User is blocked only if they have ALL of the listed roles.">ⓘ</span>
+                    </div>
+                    <div class="segmented" id="blockedMatchMode">
+                        <button class="segment active" data-value="all" onclick="setMatchMode('blocked', 'all')">Has all roles</button>
+                        <button class="segment" data-value="any" onclick="setMatchMode('blocked', 'any')">Has any role</button>
+                    </div>
+                    <div class="match-mode-desc" id="blockedMatchDesc">User is blocked only if they have <strong>ALL</strong> of the listed roles.</div>
+                </div>
             </div>
 
+            <!-- Required Roles -->
             <div class="form-group">
                 <label>Required Roles: <span id="requiredCount">0/10</span></label>
-                <select multiple id="requiredRoles" onchange="updateRoleCount('required')">
-                    <option value="">Loading roles...</option>
-                </select>
+                <div class="multi-select-wrapper" id="requiredRolesWrapper">
+                    <button class="dropdown-toggle" onclick="toggleDropdown('required')">
+                        <span class="selected-text">Select some roles...</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="multi-select-dropdown" id="requiredDropdown">
+                        <input class="search-input" placeholder="Search roles..." onkeyup="filterRoles('required', this.value)">
+                        <div class="options-list" id="requiredOptions"></div>
+                    </div>
+                </div>
+                <div class="selected-roles-display" id="requiredSelected"></div>
                 <div class="form-hint">Members with all of these roles will be able to open a ticket.</div>
+                <div class="match-mode">
+                    <div class="match-mode-label">
+                        Match Mode
+                        <span class="info-icon" title="User is required only if they have ALL of the listed roles.">ⓘ</span>
+                    </div>
+                    <div class="segmented" id="requiredMatchMode">
+                        <button class="segment active" data-value="all" onclick="setMatchMode('required', 'all')">Has all roles</button>
+                        <button class="segment" data-value="any" onclick="setMatchMode('required', 'any')">Has any role</button>
+                    </div>
+                    <div class="match-mode-desc" id="requiredMatchDesc">User is required only if they have <strong>ALL</strong> of the listed roles.</div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -834,11 +1171,20 @@
                 <span class="badge">Live</span>
             </div>
 
+            <!-- Support Roles -->
             <div class="form-group">
                 <label>Support Team Roles: <span id="supportCount">0/2</span></label>
-                <select multiple id="supportRoles" onchange="updateRoleCount('support')">
-                    <option value="">Loading roles...</option>
-                </select>
+                <div class="multi-select-wrapper" id="supportRolesWrapper">
+                    <button class="dropdown-toggle" onclick="toggleDropdown('support')">
+                        <span class="selected-text">Select some roles...</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="multi-select-dropdown" id="supportDropdown">
+                        <input class="search-input" placeholder="Search roles..." onkeyup="filterRoles('support', this.value)">
+                        <div class="options-list" id="supportOptions"></div>
+                    </div>
+                </div>
+                <div class="selected-roles-display" id="supportSelected"></div>
                 <div class="form-hint">The roles which will be able to view and manage tickets. You can choose up to 2 roles.</div>
             </div>
 
@@ -971,80 +1317,6 @@
     </footer>
 
     <script>
-        // ============ Fetch Roles from Discord ============
-        async function fetchRoles() {
-            const guildId = '<%= locals.guild ? guild.id : "" %>';
-            const blockedSelect = document.getElementById('blockedRoles');
-            const requiredSelect = document.getElementById('requiredRoles');
-            const supportSelect = document.getElementById('supportRoles');
-
-            try {
-                const response = await fetch(`/api/servers/${guildId}/roles`);
-                const data = await response.json();
-
-                if (data.success && data.roles && data.roles.length > 0) {
-                    // Populate all role selects
-                    [blockedSelect, requiredSelect, supportSelect].forEach(select => {
-                        // Clear loading message
-                        select.innerHTML = '';
-
-                        data.roles.forEach(role => {
-                            const option = document.createElement('option');
-                            option.value = role.id;
-                            const colorHex = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#6C7A90';
-                            option.innerHTML = `
-                                <span class="role-option">
-                                    <span class="role-color-dot" style="background-color: ${colorHex};"></span>
-                                    ${role.name}
-                                </span>
-                            `;
-                            option.dataset.color = colorHex;
-                            option.dataset.position = role.position;
-                            select.appendChild(option);
-                        });
-                    });
-                } else {
-                    [blockedSelect, requiredSelect, supportSelect].forEach(select => {
-                        select.innerHTML = '<option value="">No roles found</option>';
-                    });
-                }
-            } catch (error) {
-                console.error('Error fetching roles:', error);
-                [blockedSelect, requiredSelect, supportSelect].forEach(select => {
-                    select.innerHTML = '<option value="">Error loading roles</option>';
-                });
-                showToast('Failed to load roles', 'error');
-            }
-        }
-
-        // ============ Update Role Count ============
-        function updateRoleCount(type) {
-            const select = document.getElementById(type + 'Roles');
-            const countSpan = document.getElementById(type + 'Count');
-            const max = type === 'support' ? 2 : 10;
-            
-            const selected = Array.from(select.selectedOptions);
-            const count = selected.length;
-            
-            // Enforce max limit
-            if (count > max) {
-                // Deselect the last selected option
-                selected[selected.length - 1].selected = false;
-                countSpan.textContent = `${count - 1}/${max}`;
-                showToast(`You can select up to ${max} roles.`, 'error');
-                return;
-            }
-            
-            countSpan.textContent = `${count}/${max}`;
-        }
-
-        // ============ Toggle Switch ============
-        function toggleSwitch(el) {
-            el.classList.toggle('active');
-            const isOn = el.classList.contains('active');
-            el.setAttribute('aria-checked', String(isOn));
-        }
-
         // ============ Toast Notifications ============
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
@@ -1064,6 +1336,213 @@
                     setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
                 }
             }, 4000);
+        }
+
+        // ============ Toggle Switch ============
+        function toggleSwitch(el) {
+            el.classList.toggle('active');
+            const isOn = el.classList.contains('active');
+            el.setAttribute('aria-checked', String(isOn));
+        }
+
+        // ============ Multi-Select Role Picker ============
+        let rolesData = {};
+
+        function toggleDropdown(type) {
+            const dropdown = document.getElementById(type + 'Dropdown');
+            const arrow = document.querySelector(`#${type}RolesWrapper .arrow`);
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.multi-select-dropdown').forEach(d => {
+                if (d.id !== type + 'Dropdown' && d.classList.contains('open')) {
+                    d.classList.remove('open');
+                    const otherArrow = d.parentElement.querySelector('.arrow');
+                    if (otherArrow) otherArrow.classList.remove('open');
+                }
+            });
+            
+            dropdown.classList.toggle('open');
+            if (arrow) arrow.classList.toggle('open');
+            
+            // Focus search input when opened
+            if (dropdown.classList.contains('open')) {
+                const search = dropdown.querySelector('.search-input');
+                if (search) setTimeout(() => search.focus(), 50);
+            }
+        }
+
+        function filterRoles(type, query) {
+            const options = document.getElementById(type + 'Options');
+            const items = options.querySelectorAll('.option-item');
+            let hasResults = false;
+            
+            items.forEach(item => {
+                const name = item.dataset.name.toLowerCase();
+                const match = name.includes(query.toLowerCase());
+                item.style.display = match ? 'flex' : 'none';
+                if (match) hasResults = true;
+            });
+            
+            // Show "no results" if needed
+            let noResults = options.querySelector('.no-results');
+            if (!hasResults) {
+                if (!noResults) {
+                    noResults = document.createElement('div');
+                    noResults.className = 'no-results';
+                    noResults.textContent = 'No roles found';
+                    options.appendChild(noResults);
+                }
+                noResults.style.display = 'block';
+            } else if (noResults) {
+                noResults.style.display = 'none';
+            }
+        }
+
+        function setMatchMode(type, mode) {
+            const container = document.getElementById(type + 'MatchMode');
+            container.querySelectorAll('.segment').forEach(seg => seg.classList.remove('active'));
+            container.querySelector(`[data-value="${mode}"]`).classList.add('active');
+            
+            const desc = document.getElementById(type + 'MatchDesc');
+            const verb = type === 'blocked' ? 'blocked' : 'required';
+            desc.innerHTML = mode === 'all' 
+                ? `User is ${verb} only if they have <strong>ALL</strong> of the listed roles.`
+                : `User is ${verb} if they have <strong>ANY</strong> of the listed roles.`;
+        }
+
+        function toggleRole(type, roleId, roleName, color) {
+            const max = type === 'support' ? 2 : 10;
+            const selectedContainer = document.getElementById(type + 'Selected');
+            const countSpan = document.getElementById(type + 'Count');
+            
+            // Get current selected roles
+            let selected = JSON.parse(selectedContainer.dataset.selected || '[]');
+            
+            const index = selected.indexOf(roleId);
+            const isSelected = index !== -1;
+            
+            if (isSelected) {
+                // Remove role
+                selected.splice(index, 1);
+            } else {
+                // Add role (check max)
+                if (selected.length >= max) {
+                    showToast(`You can select up to ${max} roles.`, 'error');
+                    return;
+                }
+                selected.push(roleId);
+            }
+            
+            // Update the checkbox
+            const option = document.querySelector(`#${type}Options .option-item[data-id="${roleId}"]`);
+            if (option) {
+                const checkbox = option.querySelector('.checkbox');
+                if (checkbox) {
+                    checkbox.classList.toggle('checked', !isSelected);
+                }
+            }
+            
+            // Update selected display
+            updateSelectedDisplay(type, selected);
+        }
+
+        function updateSelectedDisplay(type, selected) {
+            const container = document.getElementById(type + 'Selected');
+            const countSpan = document.getElementById(type + 'Count');
+            const max = type === 'support' ? 2 : 10;
+            const dropdown = document.getElementById(type + 'Dropdown');
+            
+            // Get all roles from the dropdown
+            const roleItems = dropdown.querySelectorAll('.option-item');
+            const roles = {};
+            roleItems.forEach(item => {
+                roles[item.dataset.id] = {
+                    name: item.dataset.name,
+                    color: item.dataset.color
+                };
+            });
+            
+            // Build selected tags
+            container.innerHTML = '';
+            selected.forEach(id => {
+                if (roles[id]) {
+                    const tag = document.createElement('span');
+                    tag.className = 'selected-role-tag';
+                    const colorHex = roles[id].color || '#6C7A90';
+                    tag.innerHTML = `
+                        <span class="role-dot" style="background-color: ${colorHex};"></span>
+                        ${roles[id].name}
+                        <button class="remove-role" onclick="event.stopPropagation(); toggleRole('${type}', '${id}', '${roles[id].name}', '${colorHex}')">×</button>
+                    `;
+                    container.appendChild(tag);
+                }
+            });
+            
+            // Update count
+            countSpan.textContent = `${selected.length}/${max}`;
+            
+            // Store selected data
+            container.dataset.selected = JSON.stringify(selected);
+        }
+
+        function populateRoles(type, roles) {
+            const optionsContainer = document.getElementById(type + 'Options');
+            optionsContainer.innerHTML = '';
+            
+            // Sort roles by position (highest first)
+            const sortedRoles = [...roles].sort((a, b) => (b.position || 0) - (a.position || 0));
+            
+            sortedRoles.forEach(role => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                div.dataset.id = role.id;
+                div.dataset.name = role.name;
+                div.dataset.color = role.color;
+                div.onclick = function(e) {
+                    e.stopPropagation();
+                    toggleRole(type, role.id, role.name, role.color);
+                };
+                
+                const colorHex = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#6C7A90';
+                div.innerHTML = `
+                    <div class="checkbox"></div>
+                    <span class="role-color-dot" style="background-color: ${colorHex};"></span>
+                    <span class="role-name">${role.name}</span>
+                `;
+                optionsContainer.appendChild(div);
+            });
+        }
+
+        // ============ Fetch Roles from Discord ============
+        async function fetchRoles() {
+            const guildId = '<%= locals.guild ? guild.id : "" %>';
+            
+            try {
+                const response = await fetch(`/api/servers/${guildId}/roles`);
+                const data = await response.json();
+
+                if (data.success && data.roles && data.roles.length > 0) {
+                    ['blocked', 'required', 'support'].forEach(type => {
+                        populateRoles(type, data.roles);
+                        // Initialize selected display
+                        document.getElementById(type + 'Selected').dataset.selected = '[]';
+                        // Update count
+                        document.getElementById(type + 'Count').textContent = `0/${type === 'support' ? 2 : 10}`;
+                    });
+                } else {
+                    ['blocked', 'required', 'support'].forEach(type => {
+                        const options = document.getElementById(type + 'Options');
+                        options.innerHTML = '<div class="no-results">No roles found</div>';
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching roles:', error);
+                showToast('Failed to load roles', 'error');
+                ['blocked', 'required', 'support'].forEach(type => {
+                    const options = document.getElementById(type + 'Options');
+                    options.innerHTML = '<div class="no-results">Error loading roles</div>';
+                });
+            }
         }
 
         // ============ Question Management ============
@@ -1172,10 +1651,17 @@
             const ticketCategory = document.getElementById('ticketCategory').value;
             const ticketChannelName = document.getElementById('ticketChannelName').value;
             const canClose = document.getElementById('canClose').classList.contains('active');
-            const blockedRoles = Array.from(document.getElementById('blockedRoles').selectedOptions).map(o => o.value);
-            const requiredRoles = Array.from(document.getElementById('requiredRoles').selectedOptions).map(o => o.value);
+            
+            // Get selected roles from the multi-selects
+            const blockedSelected = JSON.parse(document.getElementById('blockedSelected').dataset.selected || '[]');
+            const requiredSelected = JSON.parse(document.getElementById('requiredSelected').dataset.selected || '[]');
+            const supportSelected = JSON.parse(document.getElementById('supportSelected').dataset.selected || '[]');
+            
+            // Get match modes
+            const blockedMatchMode = document.querySelector('#blockedMatchMode .segment.active')?.dataset.value || 'all';
+            const requiredMatchMode = document.querySelector('#requiredMatchMode .segment.active')?.dataset.value || 'all';
+            
             const maxTickets = document.getElementById('maxTickets').value;
-            const supportRoles = Array.from(document.getElementById('supportRoles').selectedOptions).map(o => o.value);
             const pingSupport = document.getElementById('pingSupport').classList.contains('active');
             const ticketClaiming = document.getElementById('ticketClaiming').classList.contains('active');
             const formDescription = document.getElementById('formDescription').value;
@@ -1236,10 +1722,12 @@
                             category: ticketCategory,
                             channelName: ticketChannelName,
                             canClose: canClose,
-                            blockedRoles: blockedRoles,
-                            requiredRoles: requiredRoles,
+                            blockedRoles: blockedSelected,
+                            blockedMatchMode: blockedMatchMode,
+                            requiredRoles: requiredSelected,
+                            requiredMatchMode: requiredMatchMode,
                             maxTickets: parseInt(maxTickets) || 3,
-                            supportRoles: supportRoles,
+                            supportRoles: supportSelected,
                             pingSupport: pingSupport,
                             ticketClaiming: ticketClaiming,
                             formDescription: formDescription,
@@ -1261,15 +1749,23 @@
             });
         }
 
+        // ============ Close dropdowns on outside click ============
+        document.addEventListener('click', function(event) {
+            const wrappers = document.querySelectorAll('.multi-select-wrapper');
+            wrappers.forEach(wrapper => {
+                if (!wrapper.contains(event.target)) {
+                    const dropdown = wrapper.querySelector('.multi-select-dropdown');
+                    const arrow = wrapper.querySelector('.arrow');
+                    if (dropdown) dropdown.classList.remove('open');
+                    if (arrow) arrow.classList.remove('open');
+                }
+            });
+        });
+
         // ============ Initialize ============
         document.addEventListener('DOMContentLoaded', function() {
             // Fetch roles from Discord
             fetchRoles();
-            
-            // Update role counts
-            updateRoleCount('blocked');
-            updateRoleCount('required');
-            updateRoleCount('support');
 
             // Add question button
             document.getElementById('add-question-btn').addEventListener('click', addQuestion);
@@ -1283,8 +1779,13 @@
         window.showToast = showToast;
         window.addQuestion = addQuestion;
         window.deleteQuestion = deleteQuestion;
-        window.updateRoleCount = updateRoleCount;
+        window.toggleDropdown = toggleDropdown;
+        window.filterRoles = filterRoles;
+        window.setMatchMode = setMatchMode;
+        window.toggleRole = toggleRole;
         window.continueToEditor = continueToEditor;
+        window.populateRoles = populateRoles;
+        window.updateSelectedDisplay = updateSelectedDisplay;
     </script>
 
 </body>
