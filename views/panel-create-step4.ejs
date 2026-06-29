@@ -760,27 +760,6 @@
             color: var(--text);
         }
 
-        .btn-save {
-            padding: 10px 28px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            background: var(--signal);
-            color: var(--ink);
-            transition: all 0.18s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .btn-save:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 18px var(--signal-glow);
-        }
-
         .designer-actions {
             display: flex;
             justify-content: space-between;
@@ -838,6 +817,28 @@
             border-color: var(--line-bright);
         }
 
+        .btn-save-panel {
+            padding: 10px 32px;
+            border-radius: 10px;
+            border: none;
+            background: var(--violet);
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save-panel:hover {
+            background: #7a6fe6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 18px rgba(139,126,255,0.3);
+        }
+
         .btn-send-panel {
             padding: 10px 32px;
             border-radius: 10px;
@@ -859,7 +860,9 @@
             box-shadow: 0 4px 18px var(--signal-glow);
         }
 
-        .btn-send-panel:disabled {
+        .btn-send-panel:disabled,
+        .btn-save-panel:disabled,
+        .btn-save-draft:disabled {
             opacity: 0.4;
             cursor: not-allowed;
             transform: none;
@@ -1261,6 +1264,9 @@
                 <button class="btn-save-draft" onclick="saveDraft()">
                     <i class="fas fa-save"></i> Save Draft
                 </button>
+                <button class="btn-save-panel" onclick="savePanel()">
+                    <i class="fas fa-save"></i> Save Panel
+                </button>
                 <button class="btn-send-panel" onclick="sendPanel()">
                     <i class="fas fa-paper-plane"></i> Send Panel
                 </button>
@@ -1562,6 +1568,122 @@
             });
         }
 
+        // ============ SAVE PANEL (The main save function) ============
+        function savePanel() {
+            const panelName = document.getElementById('panelName').value || 'Panel';
+            const ticketCategory = document.getElementById('ticketCategory').value;
+            const ticketChannelName = document.getElementById('ticketChannelName').value;
+            const canClose = document.getElementById('canClose').classList.contains('active');
+            
+            const blockedSelected = JSON.parse(document.getElementById('blockedSelected').dataset.selected || '[]');
+            const requiredSelected = JSON.parse(document.getElementById('requiredSelected').dataset.selected || '[]');
+            const supportSelected = JSON.parse(document.getElementById('supportSelected').dataset.selected || '[]');
+            
+            const maxTickets = document.getElementById('maxTickets').value;
+            const pingSupport = document.getElementById('pingSupport').classList.contains('active');
+            const ticketClaiming = document.getElementById('ticketClaiming').classList.contains('active');
+            const formDescription = document.getElementById('formDescription').value;
+
+            const questions = [];
+            document.querySelectorAll('.question-item').forEach((item, index) => {
+                const title = item.querySelector('.q-desc strong')?.textContent === 'Question title' 
+                    ? item.querySelector('.q-desc:first-of-type')?.textContent?.replace('Question title', '').trim() 
+                    : `Question ${index + 1}`;
+                
+                const description = item.querySelector('.q-desc:nth-of-type(2)')?.textContent?.replace('Description', '').trim() || 'Please explain your answer in full detail';
+                const placeholder = item.querySelector('.q-desc:nth-of-type(3)')?.textContent?.replace('Placeholder', '').trim() || 'Please describe your issue in full detail.';
+                const type = item.querySelector('.q-field select')?.value || 'short';
+                const required = item.querySelector('.q-field .toggle')?.classList.contains('active') || false;
+                const minLength = parseInt(item.querySelector('.q-field input[type="number"]:first-of-type')?.value) || 1;
+                const maxLength = parseInt(item.querySelector('.q-field input[type="number"]:last-of-type')?.value) || 500;
+                
+                questions.push({
+                    title: title || `Question ${index + 1}`,
+                    description: description,
+                    placeholder: placeholder,
+                    type: type,
+                    required: required,
+                    minLength: minLength,
+                    maxLength: maxLength
+                });
+            });
+
+            const data = {
+                guildId: '<%= locals.guild ? guild.id : "" %>',
+                name: panelName,
+                type: '<%= panelType %>',
+                style: '<%= ticketStyle %>',
+                channel: '<%= sendChannel %>',
+                status: 'active',
+                config: {
+                    embeds: [{
+                        title: 'Tickets',
+                        description: 'Click below to create a new ticket',
+                        color: '#5865F2'
+                    }],
+                    buttons: [
+                        { label: 'Create Ticket', style: 'primary', emoji: '🎫' }
+                    ],
+                    rows: [
+                        { buttons: ['Create Ticket'] }
+                    ],
+                    ticketConfig: {
+                        category: ticketCategory,
+                        channelName: ticketChannelName,
+                        canClose: canClose,
+                        blockedRoles: blockedSelected,
+                        requiredRoles: requiredSelected,
+                        maxTickets: parseInt(maxTickets) || 3,
+                        supportRoles: supportSelected,
+                        pingSupport: pingSupport,
+                        ticketClaiming: ticketClaiming,
+                        formDescription: formDescription,
+                        questions: questions
+                    }
+                }
+            };
+
+            const saveBtn = document.querySelector('.btn-save-panel');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            // Check if we have a panel ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const panelId = urlParams.get('panel');
+
+            let url = '/api/panels/create';
+            let method = 'POST';
+
+            if (panelId) {
+                url = `/api/panels/${panelId}/save`;
+                method = 'POST';
+                data.panelId = panelId;
+            }
+
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('✅ Panel saved successfully!', 'success');
+                    const newUrl = `/servers/<%= locals.guild ? guild.id : '' %>/panels/create/step4?type=<%= panelType %>&style=<%= ticketStyle %>&channel=<%= sendChannel %>&panel=${data.panelId || panelId}`;
+                    window.history.replaceState({}, '', newUrl);
+                } else {
+                    showToast('❌ Error saving: ' + data.error, 'error');
+                }
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Panel';
+            })
+            .catch(error => {
+                showToast('❌ Error: ' + error.message, 'error');
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Panel';
+            });
+        }
+
         // ============ Save Draft ============
         function saveDraft() {
             const panelName = document.getElementById('panelName').value || 'Panel';
@@ -1667,6 +1789,7 @@
 
         // ============ Send Panel ============
         function sendPanel() {
+            // First save the panel
             const panelName = document.getElementById('panelName').value || 'Panel';
             const ticketCategory = document.getElementById('ticketCategory').value;
             const ticketChannelName = document.getElementById('ticketChannelName').value;
@@ -1798,6 +1921,7 @@
         window.filterRoles = filterRoles;
         window.toggleRole = toggleRole;
         window.saveDraft = saveDraft;
+        window.savePanel = savePanel;
         window.sendPanel = sendPanel;
         window.populateRoles = populateRoles;
         window.updateSelectedDisplay = updateSelectedDisplay;
