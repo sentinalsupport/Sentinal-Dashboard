@@ -8,13 +8,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ... (keep all your existing styles from the previous version) ... */
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
+        :root {
+            --ink: #060A10;
+            --panel: #0D1520;
+            --panel-raised: #111D2C;
+            --panel-hover: #162033;
+            --line: rgba(255,255,255,0.07);
+            --line-bright: rgba(255,255,255,0.13);
+            --text: #E6EDF6;
+            --muted: #6C7A90;
+            --muted-dim: #3E4A5C;
+            --signal: #3DFFB8;
+            --signal-tab: rgba(61,255,184,0.08);
+            --signal-glow: rgba(61,255,184,0.15);
+            --gold: #F5C842;
+            --gold-tab: rgba(245,200,66,0.12);
+            --violet: #8B7EFF;
+            --violet-tab: rgba(139,126,255,0.12);
+            --red: #F87171;
+            --red-bg: rgba(248,113,113,0.08);
+            --red-border: rgba(248,113,113,0.22);
+            --discord: #5865F2;
+            --discord-hover: #4752C4;
         }
+        /* ... rest of your styles ... */
+        
         .btn-save-draft {
             padding: 10px 24px;
             border-radius: 8px;
@@ -28,8 +46,9 @@
             font-family: 'Inter', sans-serif;
         }
         .btn-save-draft:hover {
-            background: rgba(255,255,255,0.04);
+            background: var(--panel-hover);
             color: var(--text);
+            border-color: var(--line-bright);
         }
         .btn-send-panel {
             padding: 10px 32px;
@@ -51,64 +70,14 @@
             box-shadow: 0 4px 18px var(--signal-glow);
         }
         .btn-send-panel:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
             transform: none;
-        }
-        .toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 380px;
-            width: 100%;
-        }
-        .toast {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-            animation: slideIn 0.3s ease;
-            backdrop-filter: blur(10px);
-            border-left: 4px solid var(--signal);
-        }
-        .toast .toast-icon { color: var(--signal); font-size: 18px; flex-shrink: 0; }
-        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
-        .toast .toast-close {
-            background: none; border: none;
-            color: var(--muted-dim); cursor: pointer;
-            font-size: 14px; padding: 4px;
-        }
-        .toast .toast-close:hover { color: var(--text); }
-        .toast.error { border-left-color: var(--red); }
-        .toast.error .toast-icon { color: var(--red); }
-        .toast.success { border-left-color: var(--signal); }
-        .toast.success .toast-icon { color: var(--signal); }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(40px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideOut {
-            from { opacity: 1; transform: translateX(0); }
-            to { opacity: 0; transform: translateX(40px); }
-        }
-        .toast.hiding { animation: slideOut 0.3s ease forwards; }
-
-        @media (max-width: 768px) {
-            .action-buttons { flex-direction: column; width: 100%; }
-            .action-buttons button { width: 100%; justify-content: center; }
+            box-shadow: none;
         }
     </style>
 </head>
 <body>
-
     <!-- ... (keep your existing navbar, status bar, page header, progress steps) ... -->
 
     <!-- ============================================================ -->
@@ -248,6 +217,10 @@
                 }
             };
 
+            const sendBtn = document.querySelector('.btn-save-draft');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
             fetch('/api/panels/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -257,21 +230,23 @@
             .then(data => {
                 if (data.success) {
                     showToast('✅ Panel saved as draft!', 'success');
-                    // Update the URL with the panel ID for future saves
                     const newUrl = `/servers/<%= locals.guild ? guild.id : '' %>/panels/create/step4?type=<%= panelType %>&style=<%= ticketStyle %>&channel=<%= sendChannel %>&panel=${data.panelId}`;
                     window.history.replaceState({}, '', newUrl);
                 } else {
                     showToast('❌ Error saving: ' + data.error, 'error');
                 }
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-save"></i> Save Draft';
             })
             .catch(error => {
                 showToast('❌ Error: ' + error.message, 'error');
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-save"></i> Save Draft';
             });
         }
 
         // ============ Send Panel ============
         function sendPanel() {
-            // First save the panel
             const panelName = document.getElementById('panelName').value || 'Panel';
             const ticketCategory = document.getElementById('ticketCategory').value;
             const ticketChannelName = document.getElementById('ticketChannelName').value;
@@ -359,7 +334,6 @@
             .then(data => {
                 if (data.success) {
                     showToast('✅ Panel sent to channel!', 'success');
-                    // Redirect to the panels list
                     setTimeout(() => {
                         window.location.href = `/servers/<%= locals.guild ? guild.id : '' %>/panels`;
                     }, 1500);
