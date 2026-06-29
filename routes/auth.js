@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const crypto = require('crypto');
 
 // ============ CONFIGURATION ============
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
@@ -15,11 +14,7 @@ router.get('/login', (req, res) => {
         req.session.destroy(() => {});
     }
 
-    // ✅ Generate state parameter for security
-    const state = crypto.randomBytes(16).toString('hex');
-    req.session.oauth_state = state;
-
-    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds&state=${state}`;
+    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
 
     res.render('login', {
         title: 'Login — Sentinal',
@@ -31,21 +26,10 @@ router.get('/login', (req, res) => {
 
 // ============ DISCORD OAUTH2 CALLBACK ============
 router.get('/discord/callback', async (req, res) => {
-    const { code, state } = req.query;
-
-    // ✅ Verify state parameter to prevent CSRF
-    if (!state || state !== req.session.oauth_state) {
-        console.log('❌ Invalid state parameter');
-        return res.redirect('/auth/login?error=invalid_state');
-    }
+    const { code } = req.query;
 
     if (!code) {
         return res.redirect('/auth/login');
-    }
-
-    // ✅ Check if user already has a valid session
-    if (req.session.user) {
-        return res.redirect('/dashboard');
     }
 
     try {
@@ -70,7 +54,6 @@ router.get('/discord/callback', async (req, res) => {
         const { access_token, refresh_token, expires_in } = tokenResponse.data;
         console.log('✅ Token received, expires in:', expires_in, 'seconds');
 
-        // Get user info
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
             headers: {
                 Authorization: `Bearer ${access_token}`
@@ -80,22 +63,9 @@ router.get('/discord/callback', async (req, res) => {
         const user = userResponse.data;
         console.log('👤 User logged in:', user.username);
 
-        // ✅ Get user's guilds to check admin permissions
-        try {
-            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
-                headers: {
-                    Authorization: `Bearer ${access_token}`
-                }
-            });
-            console.log('✅ Found', guildsResponse.data.length, 'guilds');
-        } catch (guildError) {
-            console.warn('⚠️ Could not fetch guilds:', guildError.message);
-        }
-
         const tokenExpiry = Date.now() + (expires_in * 1000);
         console.log('📝 Token expires at:', new Date(tokenExpiry).toLocaleString());
 
-        // ✅ Store user in session
         req.session.user = {
             id: user.id,
             username: user.username,
@@ -107,10 +77,6 @@ router.get('/discord/callback', async (req, res) => {
             token_expires: tokenExpiry
         };
 
-        // ✅ Clear the state after successful login
-        req.session.oauth_state = null;
-
-        // ✅ Save session and redirect
         req.session.save((err) => {
             if (err) {
                 console.error('❌ Session save error:', err);
@@ -125,20 +91,13 @@ router.get('/discord/callback', async (req, res) => {
     } catch (error) {
         console.error('❌ OAuth error:', error.response?.data || error.message);
 
-        // ✅ Handle specific errors
         let errorMessage = 'Authentication failed. Please try again.';
-
         if (error.response?.data?.error === 'invalid_grant') {
-            console.log('⚠️ Invalid grant - code already used or expired');
-            errorMessage = 'The authorization code has expired or was already used. Please try logging in again.';
-        } else if (error.response?.data?.error === 'invalid_client') {
-            console.log('⚠️ Invalid client - check CLIENT_ID and CLIENT_SECRET');
-            errorMessage = 'Invalid client credentials. Please contact support.';
+            errorMessage = 'The authorization code has expired. Please try again.';
         } else if (error.response?.data?.error_description) {
             errorMessage = error.response.data.error_description;
         }
 
-        // ✅ Clear session on error
         req.session.destroy(() => {
             res.redirect(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
         });
