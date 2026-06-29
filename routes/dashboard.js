@@ -748,9 +748,16 @@ router.post('/api/panels/:id/toggle', isAuthenticated, ensureValidToken, async (
     }
 });
 
+// ============ API: DELETE PANEL ============
 router.delete('/api/panels/:id', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const Panel = require('../models/Panel');
+        const panel = await Panel.findById(req.params.id);
+        
+        if (!panel) {
+            return res.status(404).json({ success: false, error: 'Panel not found' });
+        }
+        
         await Panel.findByIdAndDelete(req.params.id);
         res.json({ success: true });
     } catch (error) {
