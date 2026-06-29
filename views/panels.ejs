@@ -818,6 +818,7 @@
                                 </div>
                             </div>
                             <div class="panel-card-actions">
+                                <!-- ✅ Edit button redirects to step 1 of panel designer -->
                                 <button class="btn-edit" onclick="editPanel('<%= panel._id %>')">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
@@ -868,6 +869,13 @@
             }, 4000);
         }
 
+        // ============ Edit Panel - Redirects to Panel Designer Step 1 ============
+        function editPanel(panelId) {
+            const guildId = '<%= locals.guild ? guild.id : "" %>';
+            // Redirect to step 1 of the panel designer with the panel ID as a query parameter
+            window.location.href = `/servers/${guildId}/panels/create?edit=${panelId}`;
+        }
+
         // ============ Delete Modal ============
         let deletePanelId = null;
         let deletePanelName = null;
@@ -890,12 +898,6 @@
                 performDelete(deletePanelId, deletePanelName);
                 closeDeleteModal();
             }
-        }
-
-        // ============ Edit Panel ============
-        function editPanel(panelId) {
-            const guildId = '<%= locals.guild ? guild.id : "" %>';
-            window.location.href = `/servers/${guildId}/panels/${panelId}/edit`;
         }
 
         // ============ Delete Panel ============
