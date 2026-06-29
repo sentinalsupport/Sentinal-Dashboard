@@ -1,45 +1,82 @@
-<div class="channel-select-wrapper">
-    <div class="form-group">
-        <label for="sendChannel">Select a channel</label>
-        <select id="sendChannel" onchange="validateChannel()">
-            <option value="">Loading channels...</option>
-        </select>
-        <div class="form-hint">Choose the channel where the panel message will be sent.</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Panel Designer — Sentinal' %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ... (keep your existing styles) ... */
+    </style>
+</head>
+<body>
+    <!-- ... (keep your existing navbar, sidebar, and page structure) ... -->
+
+    <div class="channel-select-wrapper">
+        <div class="form-group">
+            <label for="sendChannel">Select a channel</label>
+            <select id="sendChannel" onchange="validateChannel()">
+                <option value="">Loading channels...</option>
+            </select>
+            <div class="form-hint">Choose the channel where the panel message will be sent.</div>
+        </div>
     </div>
-</div>
 
-<script>
-    // Fetch channels when the page loads
-    document.addEventListener('DOMContentLoaded', async function() {
-        const guildId = '<%= locals.guild ? guild.id : "" %>';
-        const select = document.getElementById('sendChannel');
+    <!-- ... (keep your existing actions and footer) ... -->
 
-        try {
-            const response = await fetch(`/api/servers/${guildId}/channels`);
-            const data = await response.json();
+    <script>
+        // Fetch channels when the page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            const guildId = '<%= locals.guild ? guild.id : "" %>';
+            const select = document.getElementById('sendChannel');
 
-            if (data.success && data.channels.length > 0) {
-                // Clear loading message
-                select.innerHTML = '<option value="">Select a channel...</option>';
+            try {
+                const response = await fetch(`/api/servers/${guildId}/channels`);
+                const data = await response.json();
 
-                // Add channels to dropdown
-                data.channels.forEach(channel => {
-                    // Only show text channels (type 0) and categories (type 4)
-                    if (channel.type === 0 || channel.type === 4) {
-                        const option = document.createElement('option');
-                        option.value = channel.id;
-                        // If it's a category, add a prefix for clarity
-                        const prefix = channel.type === 4 ? '📁 ' : '#';
-                        option.textContent = `${prefix}${channel.name}`;
-                        select.appendChild(option);
-                    }
-                });
-            } else {
-                select.innerHTML = '<option value="">No channels found</option>';
+                if (data.success && data.channels.length > 0) {
+                    // Clear loading message
+                    select.innerHTML = '<option value="">Select a channel...</option>';
+
+                    // Add channels to dropdown
+                    data.channels.forEach(channel => {
+                        // Only show text channels (type 0) and categories (type 4)
+                        if (channel.type === 0 || channel.type === 4) {
+                            const option = document.createElement('option');
+                            option.value = channel.id;
+                            // If it's a category, add a prefix for clarity
+                            const prefix = channel.type === 4 ? '📁 ' : '#';
+                            option.textContent = `${prefix}${channel.name}`;
+                            select.appendChild(option);
+                        }
+                    });
+                } else {
+                    select.innerHTML = '<option value="">No channels found</option>';
+                }
+            } catch (error) {
+                console.error('Error loading channels:', error);
+                select.innerHTML = '<option value="">Error loading channels</option>';
             }
-        } catch (error) {
-            console.error('Error loading channels:', error);
-            select.innerHTML = '<option value="">Error loading channels</option>';
+        });
+
+        function validateChannel() {
+            const select = document.getElementById('sendChannel');
+            const btn = document.getElementById('continueBtn');
+            btn.disabled = !select.value;
         }
-    });
-</script>
+
+        function continueStep() {
+            const select = document.getElementById('sendChannel');
+            if (!select.value) return;
+            
+            const type = '<%= panelType %>';
+            const style = '<%= ticketStyle %>';
+            const channel = select.value;
+            
+            window.location.href = `/servers/<%= locals.guild ? guild.id : '' %>/panels/create/step4?type=${type}&style=${style}&channel=${channel}`;
+        }
+    </script>
+</body>
+</html>
