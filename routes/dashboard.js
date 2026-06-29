@@ -135,7 +135,6 @@ router.get('/servers', isAuthenticated, ensureValidToken, async (req, res) => {
 });
 
 // ============ SERVER SETTINGS ============
-// ✅ FIXED: Changed from /server/:id to /servers/:guildId
 router.get('/servers/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const guildId = req.params.guildId;
@@ -891,14 +890,20 @@ router.get('/api/servers/:guildId/roles', isAuthenticated, ensureValidToken, asy
             }
         });
         
-        const roles = response.data.map(role => ({
-            id: role.id,
-            name: role.name,
-            color: role.color,
-            position: role.position,
-            managed: role.managed,
-            mentionable: role.mentionable
-        }));
+        // Format the roles - filter out @everyone and sort by position
+        const roles = response.data
+            .filter(role => role.name !== '@everyone') // Exclude @everyone
+            .sort((a, b) => b.position - a.position) // Sort by position (highest first)
+            .map(role => ({
+                id: role.id,
+                name: role.name,
+                color: role.color,
+                position: role.position,
+                managed: role.managed,
+                mentionable: role.mentionable,
+                hoist: role.hoist,
+                permissions: role.permissions
+            }));
         
         res.json({ success: true, roles });
     } catch (error) {
@@ -912,19 +917,18 @@ router.get('/api/servers/:guildId/channels', isAuthenticated, ensureValidToken, 
     try {
         const guildId = req.params.guildId;
         const botToken = process.env.DISCORD_TOKEN;
-
+        
         if (!botToken) {
             return res.status(500).json({ success: false, error: 'Bot token not configured' });
         }
-
-        // Fetch channels from Discord API
+        
         const response = await axios.get(`https://discord.com/api/guilds/${guildId}/channels`, {
             headers: {
                 Authorization: `Bot ${botToken}`
             }
         });
-
-        // Filter and format channels (only text channels and categories)
+        
+        // Filter and sort channels
         const channels = response.data
             .filter(ch => ch.type === 0 || ch.type === 2 || ch.type === 4) // 0=text, 2=voice, 4=category
             .map(ch => ({
@@ -934,7 +938,7 @@ router.get('/api/servers/:guildId/channels', isAuthenticated, ensureValidToken, 
                 position: ch.position,
                 parent_id: ch.parent_id
             }));
-
+        
         res.json({ success: true, channels });
     } catch (error) {
         console.error('Error fetching channels:', error);
