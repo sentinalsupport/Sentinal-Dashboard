@@ -310,7 +310,7 @@ router.get('/servers/:guildId/tickets', isAuthenticated, ensureValidToken, async
     }
 });
 
-// ============ SERVER PANELS ============
+// ============ SERVER PANELS (NEW - Single Page) ============
 router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const guildId = req.params.guildId;
@@ -326,11 +326,13 @@ router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async 
         const panels = await Panel.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
         console.log(`✅ Found ${panels.length} panels`);
         
-        res.render('panels', {
-            title: 'Panels — Sentinal',
+        res.render('application-panels', {
+            title: 'Application Panels — Sentinal',
             user: req.session.user,
             guild: { id: guildId },
             panels: panels,
+            editingPanel: null,
+            sendChannel: null,
             isAuthenticated: true
         });
     } catch (error) {
@@ -342,110 +344,38 @@ router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async 
     }
 });
 
-// ============ PANEL CREATION WIZARD ============
-
-// Step 1: Panel Type
-router.get('/servers/:guildId/panels/create', isAuthenticated, ensureValidToken, (req, res) => {
-    const guildId = req.params.guildId;
-    res.render('panel-create-step1', {
-        title: 'Panel Designer — Sentinal',
-        user: req.session.user,
-        guild: { id: guildId },
-        isAuthenticated: true
-    });
-});
-
-// Step 2: Ticket Style
-router.get('/servers/:guildId/panels/create/step2', isAuthenticated, ensureValidToken, (req, res) => {
-    const guildId = req.params.guildId;
-    const { type } = req.query;
-    res.render('panel-create-step2', {
-        title: 'Panel Designer — Sentinal',
-        user: req.session.user,
-        guild: { id: guildId },
-        panelType: type || 'ticket',
-        isAuthenticated: true
-    });
-});
-
-// Step 3: Send Channel
-router.get('/servers/:guildId/panels/create/step3', isAuthenticated, ensureValidToken, (req, res) => {
-    const guildId = req.params.guildId;
-    const { type, style } = req.query;
-    res.render('panel-create-step3', {
-        title: 'Panel Designer — Sentinal',
-        user: req.session.user,
-        guild: { id: guildId },
-        panelType: type || 'ticket',
-        ticketStyle: style || 'text',
-        isAuthenticated: true
-    });
-});
-
-// Step 4: Panel Defaults
-router.get('/servers/:guildId/panels/create/step4', isAuthenticated, ensureValidToken, (req, res) => {
-    const guildId = req.params.guildId;
-    const { type, style, channel } = req.query;
-    res.render('panel-create-step4', {
-        title: 'Panel Designer — Sentinal',
-        user: req.session.user,
-        guild: { id: guildId },
-        panelType: type || 'ticket',
-        ticketStyle: style || 'text',
-        sendChannel: channel || '',
-        isAuthenticated: true
-    });
-});
-
-// ============ PANEL EDITOR ============
-router.get('/servers/:guildId/panels/:panelId/edit', isAuthenticated, ensureValidToken, async (req, res) => {
+// ============ PANEL CREATE/EDIT (Single Page) ============
+router.get('/servers/:guildId/panels/create', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const guildId = req.params.guildId;
-        const panelId = req.params.panelId;
-        
+        const editId = req.query.edit;
         let Panel;
         try {
             Panel = require('../models/Panel');
         } catch (err) {
-            Panel = { findOne: async () => null, save: async () => {} };
+            Panel = { findOne: async () => null };
         }
         
-        let panel = await Panel.findOne({ _id: panelId, guildId });
+        let editingPanel = null;
+        let sendChannel = null;
         
-        if (!panel) {
-            // If panel doesn't exist, create a default one
-            const PanelModel = require('../models/Panel');
-            panel = new PanelModel({
-                _id: panelId,
-                guildId: guildId,
-                name: 'Ticket King',
-                description: 'Click below to create a new ticket',
-                type: 'ticket',
-                style: 'text',
-                status: 'draft',
-                config: {
-                    embeds: [{
-                        title: 'Tickets',
-                        description: 'Click below to create a new ticket',
-                        color: '#5865F2'
-                    }],
-                    buttons: [
-                        { label: 'Create Ticket', style: 'primary', emoji: '🎫' }
-                    ],
-                    rows: [
-                        { buttons: ['Create Ticket'] }
-                    ]
-                }
-            });
-            await panel.save();
+        if (editId) {
+            editingPanel = await Panel.findOne({ _id: editId, guildId });
+            if (editingPanel) {
+                sendChannel = editingPanel.channel;
+            }
         }
         
-        res.render('panel-editor', {
-            title: 'Panel Designer — Sentinal',
+        // Get all panels for the list view
+        const panels = await Panel.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        
+        res.render('application-panels', {
+            title: 'Application Panels — Sentinal',
             user: req.session.user,
             guild: { id: guildId },
-            panel: panel,
-            panelId: panelId,
+            panels: panels,
+            editingPanel: editingPanel,
+            sendChannel: sendChannel,
             isAuthenticated: true
         });
     } catch (error) {
@@ -636,30 +566,12 @@ router.post('/api/panels', isAuthenticated, ensureValidToken, async (req, res) =
     }
 });
 
+// ============ API: CREATE PANEL ============
 router.post('/api/panels/create', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
-        const { guildId, name, description, type, style, channel, config } = req.body;
-        
         const Panel = require('../models/Panel');
-        
-        const panel = new Panel({
-            guildId,
-            name: name || 'New Panel',
-            description: description || '',
-            type: type || 'ticket',
-            style: style || 'text',
-            channel: channel || '',
-            config: config || {
-                embeds: [],
-                buttons: [],
-                rows: []
-            },
-            status: 'draft',
-            createdBy: req.session.user.id
-        });
-        
+        const panel = new Panel(req.body);
         await panel.save();
-        
         res.json({ success: true, panelId: panel._id });
     } catch (error) {
         console.error('Error creating panel:', error);
@@ -667,18 +579,17 @@ router.post('/api/panels/create', isAuthenticated, ensureValidToken, async (req,
     }
 });
 
+// ============ API: SAVE PANEL ============
 router.post('/api/panels/:panelId/save', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
-        const panelId = req.params.panelId;
-        const { name, description, config, status } = req.body;
-        
         const Panel = require('../models/Panel');
-        const panel = await Panel.findOne({ _id: panelId });
+        const panel = await Panel.findOne({ _id: req.params.panelId });
         
         if (!panel) {
             return res.status(404).json({ success: false, error: 'Panel not found' });
         }
         
+        const { name, description, config, status } = req.body;
         panel.name = name || panel.name;
         panel.description = description || panel.description;
         panel.config = config || panel.config;
@@ -686,8 +597,7 @@ router.post('/api/panels/:panelId/save', isAuthenticated, ensureValidToken, asyn
         panel.updatedAt = new Date();
         
         await panel.save();
-        
-        res.json({ success: true, panel });
+        res.json({ success: true, panelId: panel._id });
     } catch (error) {
         console.error('Error saving panel:', error);
         res.status(500).json({ success: false, error: error.message });
@@ -752,12 +662,6 @@ router.post('/api/panels/:id/toggle', isAuthenticated, ensureValidToken, async (
 router.delete('/api/panels/:id', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const Panel = require('../models/Panel');
-        const panel = await Panel.findById(req.params.id);
-        
-        if (!panel) {
-            return res.status(404).json({ success: false, error: 'Panel not found' });
-        }
-        
         await Panel.findByIdAndDelete(req.params.id);
         res.json({ success: true });
     } catch (error) {
@@ -897,10 +801,9 @@ router.get('/api/servers/:guildId/roles', isAuthenticated, ensureValidToken, asy
             }
         });
         
-        // Format the roles - filter out @everyone and sort by position
         const roles = response.data
-            .filter(role => role.name !== '@everyone') // Exclude @everyone
-            .sort((a, b) => b.position - a.position) // Sort by position (highest first)
+            .filter(role => role.name !== '@everyone')
+            .sort((a, b) => b.position - a.position)
             .map(role => ({
                 id: role.id,
                 name: role.name,
@@ -935,9 +838,8 @@ router.get('/api/servers/:guildId/channels', isAuthenticated, ensureValidToken, 
             }
         });
         
-        // Filter and sort channels
         const channels = response.data
-            .filter(ch => ch.type === 0 || ch.type === 2 || ch.type === 4) // 0=text, 2=voice, 4=category
+            .filter(ch => ch.type === 0 || ch.type === 2 || ch.type === 4)
             .map(ch => ({
                 id: ch.id,
                 name: ch.name,
