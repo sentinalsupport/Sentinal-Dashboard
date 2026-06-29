@@ -264,6 +264,15 @@
             min-height: 80px;
         }
 
+        .default-card select[multiple] option {
+            padding: 6px 8px;
+        }
+
+        .default-card select[multiple] option:checked {
+            background: var(--signal-tab);
+            color: var(--signal);
+        }
+
         .mode-selector {
             display: flex;
             gap: 8px;
@@ -531,6 +540,33 @@
         }
         .toast.hiding { animation: slideOut 0.3s ease forwards; }
 
+        .footer {
+            border-top: 1px solid var(--line);
+            margin-top: 60px;
+            padding: 28px 48px;
+            text-align: center;
+            color: var(--muted-dim);
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .role-color-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .role-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; height: 64px; }
             .nav-center { display: none; }
@@ -655,10 +691,8 @@
                 <div class="server-default-indicator">
                     <i class="fas fa-server"></i> Using the server-wide ticket roles.
                 </div>
-                <select multiple style="min-height:80px; margin-top:8px;" disabled>
-                    <option>Support Team</option>
-                    <option>Moderator</option>
-                    <option>Admin</option>
+                <select multiple style="min-height:80px; margin-top:8px;" disabled id="supportRoles">
+                    <option value="">Loading roles...</option>
                 </select>
             </div>
 
@@ -704,9 +738,8 @@
                 <div class="server-default-indicator">
                     <i class="fas fa-server"></i> Using the server-wide blocked roles.
                 </div>
-                <select multiple style="min-height:80px; margin-top:8px;" disabled>
-                    <option>Muted</option>
-                    <option>Banned</option>
+                <select multiple style="min-height:80px; margin-top:8px;" disabled id="blockedRoles">
+                    <option value="">Loading roles...</option>
                 </select>
             </div>
 
@@ -750,9 +783,8 @@
             <div class="default-card full-width">
                 <div class="card-label">Default Required Roles</div>
                 <div class="card-hint">Inheriting options will require any of these roles to open a ticket. Leave empty for no role requirement.</div>
-                <select multiple style="min-height:80px;">
-                    <option>Verified</option>
-                    <option>Member</option>
+                <select multiple style="min-height:80px;" id="requiredRoles">
+                    <option value="">Loading roles...</option>
                 </select>
             </div>
 
@@ -782,7 +814,61 @@
 
     </div>
 
+    <footer class="footer">
+        © 2026 SENTINAL — STATUS: OPERATIONAL
+    </footer>
+
     <script>
+        // ============ Fetch Roles from Discord ============
+        async function fetchRoles() {
+            const guildId = '<%= locals.guild ? guild.id : "" %>';
+            const supportSelect = document.getElementById('supportRoles');
+            const blockedSelect = document.getElementById('blockedRoles');
+            const requiredSelect = document.getElementById('requiredRoles');
+
+            try {
+                const response = await fetch(`/api/servers/${guildId}/roles`);
+                const data = await response.json();
+
+                if (data.success && data.roles && data.roles.length > 0) {
+                    // Populate all role selects
+                    [supportSelect, blockedSelect, requiredSelect].forEach(select => {
+                        // Clear loading message
+                        select.innerHTML = '';
+
+                        data.roles.forEach(role => {
+                            const option = document.createElement('option');
+                            option.value = role.id;
+                            // Create a colored dot for the role
+                            const colorHex = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#6C7A90';
+                            option.innerHTML = `
+                                <span class="role-option">
+                                    <span class="role-color-dot" style="background-color: ${colorHex};"></span>
+                                    ${role.name}
+                                </span>
+                            `;
+                            // Add data attributes for the role
+                            option.dataset.color = colorHex;
+                            option.dataset.position = role.position;
+                            select.appendChild(option);
+                        });
+                    });
+                } else {
+                    // No roles found
+                    [supportSelect, blockedSelect, requiredSelect].forEach(select => {
+                        select.innerHTML = '<option value="">No roles found</option>';
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching roles:', error);
+                [supportSelect, blockedSelect, requiredSelect].forEach(select => {
+                    select.innerHTML = '<option value="">Error loading roles</option>';
+                });
+                showToast('Failed to load roles', 'error');
+            }
+        }
+
+        // ============ Mode Toggle ============
         function toggleMode(btn) {
             const parent = btn.closest('.mode-selector');
             const card = btn.closest('.default-card');
@@ -803,10 +889,12 @@
             }
         }
 
+        // ============ Toggle Switch ============
         function toggleSwitch(el) {
             el.classList.toggle('active');
         }
 
+        // ============ Character Counter ============
         function updateCharCount(input, id, max) {
             const count = document.getElementById(id);
             if (count) {
@@ -819,6 +907,7 @@
             }
         }
 
+        // ============ Show Variables ============
         function showVariables() {
             const variables = [
                 '{TICKET_NUMBER} - The ticket number',
@@ -831,13 +920,30 @@
             alert('Available Variables:\n\n' + variables.join('\n'));
         }
 
+        // ============ Start Editing ============
         function startEditing() {
             const type = '<%= panelType %>';
             const style = '<%= ticketStyle %>';
             const channel = '<%= sendChannel %>';
+
+            // Collect default settings from the form
+            const supportRolesSelect = document.getElementById('supportRoles');
+            const blockedRolesSelect = document.getElementById('blockedRoles');
+            const requiredRolesSelect = document.getElementById('requiredRoles');
             
+            const supportRoles = Array.from(supportRolesSelect.selectedOptions).map(o => o.value);
+            const blockedRoles = Array.from(blockedRolesSelect.selectedOptions).map(o => o.value);
+            const requiredRoles = Array.from(requiredRolesSelect.selectedOptions).map(o => o.value);
+
+            const defaultCategories = document.querySelector('.default-card:first-child select')?.value || '';
+            const ticketNameFormat = document.querySelector('.default-card:nth-child(3) input')?.value || '';
+            const embedMessage = document.querySelector('.default-card:nth-child(4) textarea')?.value || '';
+            const messageContent = document.querySelector('.default-card:nth-child(5) textarea')?.value || '';
+            const openLogChannel = document.querySelector('.default-card:nth-child(7) select')?.value || '';
+            const closeLogChannel = document.querySelector('.default-card:nth-child(8) select')?.value || '';
+
             const panelId = 'new_' + Date.now();
-            
+
             fetch('/api/panels/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -859,7 +965,18 @@
                         ],
                         rows: [
                             { buttons: ['Create Ticket'] }
-                        ]
+                        ],
+                        defaults: {
+                            categories: defaultCategories,
+                            supportRoles: supportRoles,
+                            ticketNameFormat: ticketNameFormat,
+                            embedMessage: embedMessage,
+                            messageContent: messageContent,
+                            blockedRoles: blockedRoles,
+                            openLogChannel: openLogChannel,
+                            closeLogChannel: closeLogChannel,
+                            requiredRoles: requiredRoles
+                        }
                     }
                 })
             })
@@ -876,6 +993,7 @@
             });
         }
 
+        // ============ Toast Notifications ============
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -896,7 +1014,12 @@
             }, 4000);
         }
 
+        // ============ Initialize on Page Load ============
         document.addEventListener('DOMContentLoaded', function() {
+            // Fetch roles from Discord
+            fetchRoles();
+
+            // Initialize character counts
             document.querySelectorAll('textarea[oninput*="updateCharCount"]').forEach(textarea => {
                 const match = textarea.getAttribute('oninput').match(/updateCharCount\(this,\s*['"]([^'"]+)['"]/);
                 if (match) {
@@ -904,6 +1027,7 @@
                 }
             });
             
+            // Initialize mode buttons
             document.querySelectorAll('.mode-selector').forEach(group => {
                 const activeBtn = group.querySelector('.mode-btn.active');
                 if (activeBtn) {
@@ -911,6 +1035,14 @@
                 }
             });
         });
+
+        // Make functions globally accessible
+        window.toggleMode = toggleMode;
+        window.toggleSwitch = toggleSwitch;
+        window.updateCharCount = updateCharCount;
+        window.showVariables = showVariables;
+        window.startEditing = startEditing;
+        window.showToast = showToast;
     </script>
 
 </body>
