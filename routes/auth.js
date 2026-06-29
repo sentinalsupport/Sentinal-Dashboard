@@ -1,56 +1,63 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
+const crypto = require('crypto');
 
-// ============ DISCORD OAUTH2 CONFIG ============
-const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
-const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:3000/auth/discord/callback';
+// ============ CONFIGURATION ============
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI || 'https://sentinal-dashboard.onrender.com/auth/discord/callback';
 
 // ============ LOGIN PAGE ============
 router.get('/login', (req, res) => {
-    // Check if user is already logged in
-    if (req.session && req.session.user) {
-        return res.redirect('/servers');
+    // Clear any existing session on login page
+    if (req.session.user) {
+        req.session.destroy(() => {});
     }
-    
-    // Build the Discord OAuth URL
-    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
-    
-    // Pass any error from query params
-    const error = req.query.error || null;
-    
+
+    // ✅ Generate state parameter for security
+    const state = crypto.randomBytes(16).toString('hex');
+    req.session.oauth_state = state;
+
+    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds&state=${state}`;
+
     res.render('login', {
         title: 'Login — Sentinal',
         discordAuthUrl: discordAuthUrl,
-        error: error,
         user: null,
-        isAuthenticated: false
+        error: req.query.error || null
     });
 });
 
-// ============ DISCORD OAUTH REDIRECT ============
-router.get('/discord', (req, res) => {
-    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify%20guilds`;
-    res.redirect(discordAuthUrl);
-});
-
-// ============ CALLBACK ============
+// ============ DISCORD OAUTH2 CALLBACK ============
 router.get('/discord/callback', async (req, res) => {
-    const { code } = req.query;
+    const { code, state } = req.query;
+
+    // ✅ Verify state parameter to prevent CSRF
+    if (!state || state !== req.session.oauth_state) {
+        console.log('❌ Invalid state parameter');
+        return res.redirect('/auth/login?error=invalid_state');
+    }
 
     if (!code) {
-        return res.redirect('/auth/login?error=no_code');
+        return res.redirect('/auth/login');
+    }
+
+    // ✅ Check if user already has a valid session
+    if (req.session.user) {
+        return res.redirect('/dashboard');
     }
 
     try {
-        // Exchange code for access token
-        const tokenResponse = await axios.post('https://discord.com/api/oauth2/token',
+        console.log('🔄 Exchanging code for token...');
+
+        const tokenResponse = await axios.post(
+            'https://discord.com/api/oauth2/token',
             new URLSearchParams({
-                client_id: CLIENT_ID,
-                client_secret: CLIENT_SECRET,
-                grant_type: 'authorization_code',
+                client_id: DISCORD_CLIENT_ID,
+                client_secret: DISCORD_CLIENT_SECRET,
                 code: code,
+                grant_type: 'authorization_code',
                 redirect_uri: REDIRECT_URI
             }),
             {
@@ -60,48 +67,90 @@ router.get('/discord/callback', async (req, res) => {
             }
         );
 
-        const { access_token, token_type, expires_in } = tokenResponse.data;
+        const { access_token, refresh_token, expires_in } = tokenResponse.data;
+        console.log('✅ Token received, expires in:', expires_in, 'seconds');
 
         // Get user info
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
             headers: {
-                Authorization: `${token_type} ${access_token}`
+                Authorization: `Bearer ${access_token}`
             }
         });
 
         const user = userResponse.data;
+        console.log('👤 User logged in:', user.username);
 
-        // Get user guilds
-        const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
-            headers: {
-                Authorization: `${token_type} ${access_token}`
-            }
-        });
+        // ✅ Get user's guilds to check admin permissions
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${access_token}`
+                }
+            });
+            console.log('✅ Found', guildsResponse.data.length, 'guilds');
+        } catch (guildError) {
+            console.warn('⚠️ Could not fetch guilds:', guildError.message);
+        }
 
-        // Store user in session
+        const tokenExpiry = Date.now() + (expires_in * 1000);
+        console.log('📝 Token expires at:', new Date(tokenExpiry).toLocaleString());
+
+        // ✅ Store user in session
         req.session.user = {
             id: user.id,
             username: user.username,
-            global_name: user.global_name,
+            discriminator: user.discriminator || '0',
             avatar: user.avatar,
-            discriminator: user.discriminator,
+            global_name: user.global_name || user.username,
             access_token: access_token,
-            token_type: token_type,
-            expires_in: expires_in,
-            token_expires: Date.now() + (expires_in * 1000),
-            guilds: guildsResponse.data
+            refresh_token: refresh_token,
+            token_expires: tokenExpiry
         };
 
-        res.redirect('/servers');
+        // ✅ Clear the state after successful login
+        req.session.oauth_state = null;
+
+        // ✅ Save session and redirect
+        req.session.save((err) => {
+            if (err) {
+                console.error('❌ Session save error:', err);
+                return res.redirect('/auth/login?error=session_failed');
+            }
+            console.log('✅ Session saved successfully');
+            console.log('📝 Session ID:', req.session.id);
+            console.log('🔗 Redirecting to /dashboard');
+            return res.redirect('/dashboard');
+        });
+
     } catch (error) {
         console.error('❌ OAuth error:', error.response?.data || error.message);
-        res.redirect('/auth/login?error=auth_failed');
+
+        // ✅ Handle specific errors
+        let errorMessage = 'Authentication failed. Please try again.';
+
+        if (error.response?.data?.error === 'invalid_grant') {
+            console.log('⚠️ Invalid grant - code already used or expired');
+            errorMessage = 'The authorization code has expired or was already used. Please try logging in again.';
+        } else if (error.response?.data?.error === 'invalid_client') {
+            console.log('⚠️ Invalid client - check CLIENT_ID and CLIENT_SECRET');
+            errorMessage = 'Invalid client credentials. Please contact support.';
+        } else if (error.response?.data?.error_description) {
+            errorMessage = error.response.data.error_description;
+        }
+
+        // ✅ Clear session on error
+        req.session.destroy(() => {
+            res.redirect(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
+        });
     }
 });
 
 // ============ LOGOUT ============
 router.get('/logout', (req, res) => {
-    req.session.destroy(() => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+        }
         res.redirect('/');
     });
 });
