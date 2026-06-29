@@ -190,51 +190,70 @@
             color: var(--text);
         }
 
-        .defaults-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .default-card {
+        .section-card {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 14px;
-            padding: 20px;
-            transition: all 0.2s ease;
+            padding: 24px 28px;
+            margin-bottom: 16px;
         }
 
-        .default-card:hover {
-            border-color: var(--line-bright);
-        }
-
-        .default-card.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .default-card .card-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 4px;
+        .section-card .section-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
             gap: 8px;
         }
 
-        .default-card .card-hint {
-            font-size: 12px;
-            color: var(--muted);
-            margin-bottom: 12px;
-            line-height: 1.4;
+        .section-card .section-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-primary);
         }
 
-        .default-card select,
-        .default-card input,
-        .default-card textarea {
+        .section-card .section-header .badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 100px;
+            background: var(--signal-tab);
+            color: var(--signal);
+            border: 1px solid rgba(61,255,184,0.2);
+        }
+
+        .section-card .section-desc {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .form-group .form-hint {
+            font-size: 11px;
+            color: var(--muted-dim);
+            margin-top: 2px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 10px 14px;
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid var(--line);
             background: var(--ink);
             color: var(--text);
@@ -244,75 +263,77 @@
             transition: all 0.2s ease;
         }
 
-        .default-card select:focus,
-        .default-card input:focus,
-        .default-card textarea:focus {
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             border-color: var(--signal);
-            box-shadow: 0 0 0 4px var(--signal-glow);
+            box-shadow: 0 0 0 3px var(--signal-glow);
         }
 
-        .default-card textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-
-        .default-card select option {
+        .form-group select option {
             background: var(--ink);
         }
 
-        .default-card select[multiple] {
+        .form-group select[multiple] {
             min-height: 80px;
         }
 
-        .default-card select[multiple] option {
+        .form-group select[multiple] option {
             padding: 6px 8px;
         }
 
-        .default-card select[multiple] option:checked {
+        .form-group select[multiple] option:checked {
             background: var(--signal-tab);
             color: var(--signal);
         }
 
-        .mode-selector {
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .toggle-wrapper {
             display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
+            align-items: center;
+            gap: 10px;
         }
 
-        .mode-btn {
-            padding: 4px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--line);
-            background: transparent;
-            color: var(--muted);
-            font-size: 11px;
-            font-weight: 600;
+        .toggle-wrapper span {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .toggle {
+            width: 44px;
+            height: 24px;
+            background: var(--muted-dim);
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            border: none;
+            flex-shrink: 0;
         }
 
-        .mode-btn.active {
-            background: var(--signal-tab);
-            border-color: var(--signal);
-            color: var(--signal);
+        .toggle.active {
+            background: var(--signal);
         }
 
-        .mode-btn:hover:not(.active) {
-            background: rgba(255,255,255,0.04);
+        .toggle .toggle-slider {
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s ease;
         }
 
-        .server-default-indicator {
-            font-size: 12px;
-            color: var(--muted);
-            background: var(--panel-raised);
-            padding: 6px 12px;
-            border-radius: 8px;
-            margin-top: 8px;
-        }
-
-        .server-default-indicator i {
-            color: var(--signal);
-            margin-right: 6px;
+        .toggle.active .toggle-slider {
+            left: 23px;
         }
 
         .premium-badge {
@@ -353,19 +374,176 @@
             cursor: not-allowed;
         }
 
-        .note-box {
+        .premium-feature select,
+        .premium-feature input {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .role-color-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .question-item {
             background: var(--panel-raised);
             border: 1px solid var(--line);
             border-radius: 10px;
-            padding: 12px 16px;
-            margin: 16px 0 24px;
-            font-size: 13px;
-            color: var(--muted);
+            padding: 16px 18px;
+            margin-bottom: 10px;
         }
 
-        .note-box i {
+        .question-item .q-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .question-item .q-header .q-number {
+            font-weight: 700;
+            font-size: 13px;
             color: var(--signal);
-            margin-right: 8px;
+        }
+
+        .question-item .q-header .q-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .question-item .q-desc {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .question-item .q-desc strong {
+            color: var(--text);
+        }
+
+        .question-item .q-type {
+            font-size: 11px;
+            color: var(--muted);
+            background: var(--panel);
+            padding: 2px 10px;
+            border-radius: 100px;
+            border: 1px solid var(--line);
+            display: inline-block;
+        }
+
+        .question-item .q-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .question-item .q-actions button {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.18s ease;
+        }
+
+        .question-item .q-actions button:hover {
+            background: rgba(255,255,255,0.04);
+            color: var(--text);
+        }
+
+        .question-item .q-actions button.danger:hover {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .question-item .q-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .question-item .q-row .q-field {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .question-item .q-row .q-field label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .question-item .q-row .q-field input,
+        .question-item .q-row .q-field select {
+            width: 100%;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+            background: var(--ink);
+            color: var(--text);
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+
+        .question-item .q-row .q-field input:focus,
+        .question-item .q-row .q-field select:focus {
+            border-color: var(--signal);
+        }
+
+        .btn-secondary {
+            padding: 8px 20px;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--line);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.04);
+            color: var(--text);
+        }
+
+        .btn-save {
+            padding: 10px 28px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            background: var(--signal);
+            color: var(--ink);
+            transition: all 0.18s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 18px var(--signal-glow);
         }
 
         .designer-actions {
@@ -398,7 +576,7 @@
             color: var(--text);
         }
 
-        .btn-start-editing {
+        .btn-continue {
             padding: 10px 32px;
             border-radius: 10px;
             background: var(--signal);
@@ -413,85 +591,15 @@
             gap: 8px;
         }
 
-        .btn-start-editing:hover {
+        .btn-continue:hover:not(:disabled) {
             transform: translateY(-1px);
             box-shadow: 0 4px 20px var(--signal-glow);
         }
 
-        .form-hint {
-            color: var(--muted);
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .toggle-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .toggle-wrapper span {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .toggle {
-            width: 44px;
-            height: 24px;
-            background: var(--muted-dim);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            border: none;
-        }
-
-        .toggle.active {
-            background: var(--signal);
-        }
-
-        .toggle .toggle-slider {
-            width: 18px;
-            height: 18px;
-            background: #fff;
-            border-radius: 50%;
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            transition: all 0.3s ease;
-        }
-
-        .toggle.active .toggle-slider {
-            left: 23px;
-        }
-
-        .char-counter {
-            text-align: right;
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-
-        .variable-hint {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 11px;
-            color: var(--muted);
-            background: var(--panel-raised);
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin-top: 4px;
-        }
-
-        .variable-hint code {
-            background: var(--ink);
-            padding: 1px 6px;
-            border-radius: 3px;
-            font-size: 10px;
-            font-family: monospace;
-            color: var(--signal);
+        .btn-continue:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .toast-container {
@@ -551,34 +659,19 @@
             letter-spacing: 0.5px;
         }
 
-        .role-color-dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-            vertical-align: middle;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .role-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; height: 64px; }
             .nav-center { display: none; }
             .page-wrapper { padding: 16px; }
-            .defaults-grid { grid-template-columns: 1fr; }
-            .default-card.full-width { grid-column: 1; }
+            .form-row { grid-template-columns: 1fr; }
+            .section-card { padding: 16px; }
             .designer-progress { padding: 0; }
             .designer-progress::before { display: none; }
             .progress-step .step-label { display: none; }
             .designer-actions { flex-direction: column; gap: 12px; }
             .designer-actions .btn-back,
-            .designer-actions .btn-start-editing { width: 100%; justify-content: center; }
+            .designer-actions .btn-continue { width: 100%; justify-content: center; }
+            .question-item .q-row { flex-direction: column; }
         }
     </style>
 </head>
@@ -652,163 +745,222 @@
             </div>
         </div>
 
-        <h2 style="font-size:20px; font-weight:600; margin:0 0 4px; color:#fff;">Configure Panel Defaults <span style="font-size:13px; font-weight:400; color:var(--muted);">(Optional)</span></h2>
-        <p class="form-hint">Panel-wide defaults (optional). Any option on this panel can inherit these values instead of carrying its own.</p>
+        <!-- ============================================================ -->
+        <!-- SECTION 1: BASIC SETTINGS -->
+        <!-- ============================================================ -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Basic Settings</h3>
+                <span class="badge">Required</span>
+            </div>
 
-        <div class="note-box">
-            <i class="fas fa-info-circle"></i>
-            Skip this step to configure each option individually. You can always set or change panel defaults later from the panel's edit page.
+            <div class="form-group">
+                <label for="panelName">Panel Name</label>
+                <input type="text" id="panelName" value="Ticket King" placeholder="Enter a name for this panel">
+                <div class="form-hint">A descriptive name to identify this panel in your dashboard.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="ticketCategory">Ticket Category</label>
+                <select id="ticketCategory">
+                    <option value="">Select a category...</option>
+                    <option value="Support">Support</option>
+                    <option value="Billing">Billing</option>
+                    <option value="Technical">Technical</option>
+                    <option value="General">General</option>
+                </select>
+                <div class="form-hint">The category that user created tickets will be under.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="ticketChannelName">Ticket Channel Name</label>
+                <input type="text" id="ticketChannelName" value="{ticket-creator-username}-{total-tickets-opened}">
+                <div class="form-hint">Customize the name of the channel that is made when a user opens a ticket. Variables: <code>{ticket-creator-username}</code> <code>{total-tickets-opened}</code></div>
+            </div>
+
+            <div class="form-group">
+                <div class="toggle-wrapper">
+                    <button class="toggle active" type="button" role="switch" aria-checked="true" onclick="toggleSwitch(this)" id="canClose">
+                        <span class="toggle-slider"></span>
+                    </button>
+                    <span>Can Ticket Creator Close Ticket</span>
+                </div>
+                <div class="form-hint">If enabled, the user that opened the ticket can close it themselves. If disabled, only support team members can close it.</div>
+            </div>
         </div>
 
-        <div class="defaults-grid">
-            <!-- Default Categories -->
-            <div class="default-card full-width">
-                <div class="card-label">Default Categories</div>
-                <div class="card-hint">Categories used by options that inherit this field. Server-wide categories from your settings page also apply as overflow if these fill up.</div>
-                <div class="mode-selector">
-                    <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
-                    <button class="mode-btn" onclick="toggleMode(this)">Override</button>
-                </div>
-                <div class="server-default-indicator">
-                    <i class="fas fa-server"></i> Using the server-wide ticket categories.
-                </div>
-                <select style="margin-top:8px;" disabled>
-                    <option>Select category...</option>
-                    <option>Support Tickets</option>
-                    <option>Billing Tickets</option>
-                    <option>Technical Tickets</option>
-                </select>
+        <!-- ============================================================ -->
+        <!-- SECTION 2: TICKET ACCESS CONTROL -->
+        <!-- ============================================================ -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Ticket Access Control</h3>
+                <span class="badge">Live</span>
             </div>
 
-            <!-- Default Support Roles -->
-            <div class="default-card full-width">
-                <div class="card-label">Default Support Roles</div>
-                <div class="card-hint">Roles that can view and manage tickets opened from this panel. Server-wide support roles from your settings page always apply too.</div>
-                <div class="mode-selector">
-                    <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
-                    <button class="mode-btn" onclick="toggleMode(this)">Override</button>
-                </div>
-                <div class="server-default-indicator">
-                    <i class="fas fa-server"></i> Using the server-wide ticket roles.
-                </div>
-                <select multiple style="min-height:80px; margin-top:8px;" disabled id="supportRoles">
+            <div class="form-group">
+                <label>Blocked Roles: <span id="blockedCount">0/10</span></label>
+                <select multiple id="blockedRoles" onchange="updateRoleCount('blocked')">
                     <option value="">Loading roles...</option>
                 </select>
+                <div class="form-hint">Members with any one of these roles will not be able to open a ticket.</div>
             </div>
 
-            <!-- Default Ticket Name Format -->
-            <div class="default-card full-width">
-                <div class="card-label">Default Ticket Name Format</div>
-                <div class="card-hint">Channel name format used by inheriting options. Leave empty to use the built-in format.</div>
-                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                    <input type="text" value="ticket-{TICKET_NUMBER}" style="flex:1; min-width:200px;">
-                    <button class="mode-btn" style="padding:8px 16px; white-space:nowrap;" onclick="showVariables()">
-                        <i class="fas fa-plus"></i> Add Variable
+            <div class="form-group">
+                <label>Required Roles: <span id="requiredCount">0/10</span></label>
+                <select multiple id="requiredRoles" onchange="updateRoleCount('required')">
+                    <option value="">Loading roles...</option>
+                </select>
+                <div class="form-hint">Members with all of these roles will be able to open a ticket.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="maxTickets">Max concurrent open tickets</label>
+                <select id="maxTickets" style="max-width:200px;">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                </select>
+                <div class="form-hint">The maximum number of tickets a user may have open at once. If they reach this limit, they won't be able to open any new tickets until they close or resolve an existing one.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SECTION 3: SUPPORT TEAM & PERMISSIONS -->
+        <!-- ============================================================ -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Support Team & Permissions</h3>
+                <span class="badge">Live</span>
+            </div>
+
+            <div class="form-group">
+                <label>Support Team Roles: <span id="supportCount">0/2</span></label>
+                <select multiple id="supportRoles" onchange="updateRoleCount('support')">
+                    <option value="">Loading roles...</option>
+                </select>
+                <div class="form-hint">The roles which will be able to view and manage tickets. You can choose up to 2 roles.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="toggle-wrapper">
+                    <button class="toggle active" type="button" role="switch" aria-checked="true" onclick="toggleSwitch(this)" id="pingSupport">
+                        <span class="toggle-slider"></span>
                     </button>
+                    <span>Ping Support Roles</span>
                 </div>
-                <div class="variable-hint">
-                    <i class="fas fa-info-circle"></i> Variables: <code>{TICKET_NUMBER}</code> <code>{USERNAME}</code> <code>{USER_ID}</code>
-                </div>
+                <div class="form-hint">If any support roles have been added to the ticket template, the bot will automatically ping them when a ticket is created.</div>
             </div>
 
-            <!-- Default Ticket Embed Message -->
-            <div class="default-card full-width">
-                <div class="card-label">Default Ticket Embed Message</div>
-                <div class="card-hint">The message shown inside the ticket's opening embed. Leave empty to use the built-in greeting.</div>
-                <textarea rows="3" oninput="updateCharCount(this, 'embedCount', 2048)">Welcome to your ticket. A member of our support team will be with you shortly.</textarea>
-                <div class="char-counter"><span id="embedCount">0</span>/2048</div>
+            <div class="form-group">
+                <div class="toggle-wrapper">
+                    <button class="toggle active" type="button" role="switch" aria-checked="true" onclick="toggleSwitch(this)" id="ticketClaiming">
+                        <span class="toggle-slider"></span>
+                    </button>
+                    <span>Ticket Claiming</span>
+                </div>
+                <div class="form-hint">Allows support team members to claim a ticket via the claim button or /ticket claim, assigning the ticket to themselves.</div>
             </div>
 
-            <!-- Default Ticket Message Content -->
-            <div class="default-card full-width">
-                <div class="card-label">Default Ticket Message Content</div>
-                <div class="card-hint">Additional message sent alongside the ticket's opening embed. Leave empty to skip this extra message.</div>
-                <textarea rows="2" oninput="updateCharCount(this, 'messageCount', 1024)">Additional content sent above the embed...</textarea>
-                <div class="char-counter"><span id="messageCount">0</span>/1024</div>
-            </div>
-
-            <!-- Default Blocked Roles -->
-            <div class="default-card full-width">
-                <div class="card-label">Default Blocked Roles</div>
-                <div class="card-hint">Users with any of these roles will be blocked from using inheriting options. Server-wide blocked roles also apply.</div>
-                <div class="mode-selector">
-                    <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
-                    <button class="mode-btn" onclick="toggleMode(this)">Override</button>
-                </div>
-                <div class="server-default-indicator">
-                    <i class="fas fa-server"></i> Using the server-wide blocked roles.
-                </div>
-                <select multiple style="min-height:80px; margin-top:8px;" disabled id="blockedRoles">
-                    <option value="">Loading roles...</option>
+            <div class="form-group premium-feature">
+                <label>Action on User Leave <span class="premium-badge"><i class="fas fa-crown"></i> PREMIUM</span></label>
+                <select style="max-width:300px;" disabled>
+                    <option value="nothing">NOTHING</option>
+                    <option value="close">Close Ticket</option>
+                    <option value="transfer">Transfer Ticket</option>
                 </select>
+                <div class="form-hint">If a user leaves the server, the bot will perform the specified action on the ticket.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SECTION 4: TICKET FORM -->
+        <!-- ============================================================ -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Ticket Form</h3>
+                <span class="badge">Live</span>
+            </div>
+            <div class="section-desc">The form which will be opened when a user attempts to open a ticket (helpful for asking specific questions about their issue)</div>
+
+            <div class="form-group">
+                <label for="formDescription">Form Introduction</label>
+                <textarea id="formDescription" rows="2">Please explain your issue in full detail</textarea>
+                <div class="form-hint">This text will be shown at the top of the ticket form.</div>
             </div>
 
-            <!-- Default Ticket Open Log Channel -->
-            <div class="default-card full-width">
-                <div class="card-label">Default Ticket Open Log Channel</div>
-                <div class="card-hint">Channel where the open-ticket log embed is sent for tickets opened from this panel.</div>
-                <div class="mode-selector">
-                    <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
-                    <button class="mode-btn" onclick="toggleMode(this)">Override</button>
-                </div>
-                <div class="server-default-indicator">
-                    <i class="fas fa-server"></i> Using the server-wide opened-tickets log channel.
-                </div>
-                <select style="margin-top:8px;" disabled>
-                    <option>Select a channel...</option>
-                    <option>#ticket-logs</option>
-                    <option>#open-tickets</option>
-                </select>
+            <div class="section-desc" style="margin-top:12px;">
+                <strong>Questions: <span id="questionCount">1</span>/4</strong>
             </div>
 
-            <!-- Default Ticket Close Log Channel -->
-            <div class="default-card full-width">
-                <div class="card-label">Default Ticket Close Log Channel</div>
-                <div class="card-hint">Channel where the close-ticket log embed (with transcript link) is sent for tickets opened from this panel.</div>
-                <div class="mode-selector">
-                    <button class="mode-btn active" onclick="toggleMode(this)">Use server default</button>
-                    <button class="mode-btn" onclick="toggleMode(this)">Override</button>
-                </div>
-                <div class="server-default-indicator">
-                    <i class="fas fa-server"></i> Using the server-wide closed-tickets log channel.
-                </div>
-                <select style="margin-top:8px;" disabled>
-                    <option>Select a channel...</option>
-                    <option>#closed-tickets</option>
-                    <option>#ticket-archive</option>
-                </select>
-            </div>
-
-            <!-- Default Required Roles -->
-            <div class="default-card full-width">
-                <div class="card-label">Default Required Roles</div>
-                <div class="card-hint">Inheriting options will require any of these roles to open a ticket. Leave empty for no role requirement.</div>
-                <select multiple style="min-height:80px;" id="requiredRoles">
-                    <option value="">Loading roles...</option>
-                </select>
-            </div>
-
-            <!-- Steam ID Integration (Premium) -->
-            <div class="default-card full-width premium-feature">
-                <div class="card-label">Default Steam ID Integration <span class="premium-badge"><i class="fas fa-crown"></i> PREMIUM</span></div>
-                <div class="card-hint">Whether inheriting options prompt users to link their Steam account.</div>
-                <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
-                    <div class="toggle-wrapper">
-                        <button class="toggle" type="button" role="switch" aria-checked="false" onclick="toggleSwitch(this)" disabled style="opacity:0.5; cursor:not-allowed;">
-                            <span class="toggle-slider"></span>
-                        </button>
-                        <span style="font-size:13px; color:var(--muted);">Require Steam Linking</span>
+            <div id="questions-list">
+                <!-- Question 1 -->
+                <div class="question-item" data-index="0">
+                    <div class="q-header">
+                        <span class="q-number">●</span>
+                        <span class="q-title">Question 1</span>
+                    </div>
+                    <div class="q-desc">
+                        <strong>Question title</strong><br>
+                        Do you like capybaras?
+                    </div>
+                    <div class="q-desc">
+                        <strong>Description</strong><br>
+                        Please explain your answer in full detail
+                    </div>
+                    <div class="q-desc">
+                        <strong>Placeholder</strong><br>
+                        Please describe your issue in full detail.
+                    </div>
+                    <div class="q-row">
+                        <div class="q-field">
+                            <label>Question type</label>
+                            <select>
+                                <option value="short" selected>Short</option>
+                                <option value="paragraph">Paragraph</option>
+                            </select>
+                        </div>
+                        <div class="q-field">
+                            <label>Required answer</label>
+                            <div class="toggle-wrapper" style="margin-top:4px;">
+                                <button class="toggle active" type="button" role="switch" aria-checked="true" onclick="toggleSwitch(this)">
+                                    <span class="toggle-slider"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="q-field">
+                            <label>Min answer length</label>
+                            <input type="number" min="0" value="1">
+                        </div>
+                        <div class="q-field">
+                            <label>Max answer length</label>
+                            <input type="number" min="1" value="500">
+                        </div>
+                    </div>
+                    <div class="q-actions">
+                        <button onclick="showToast('Edit question functionality coming soon!', 'info')"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="danger" onclick="deleteQuestion(this)"><i class="fas fa-trash"></i> Delete</button>
                     </div>
                 </div>
             </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; align-items:center;">
+                <button class="btn-secondary" id="add-question-btn">
+                    <i class="fas fa-plus"></i> New question
+                </button>
+                <span style="font-size:12px; color:var(--muted);"><span id="questions-used-count">1</span>/4 questions used.</span>
+            </div>
         </div>
 
+        <!-- ============================================================ -->
+        <!-- ACTIONS -->
+        <!-- ============================================================ -->
         <div class="designer-actions">
             <a href="/servers/<%= locals.guild ? guild.id : '' %>/panels/create/step3?type=<%= panelType %>&style=<%= ticketStyle %>" class="btn-back">
                 <i class="fas fa-arrow-left"></i> Back
             </a>
-            <button class="btn-start-editing" onclick="startEditing()">
-                Start Editing <i class="fas fa-arrow-right"></i>
+            <button class="btn-continue" onclick="continueToEditor()">
+                Continue <i class="fas fa-arrow-right"></i>
             </button>
         </div>
 
@@ -822,9 +974,9 @@
         // ============ Fetch Roles from Discord ============
         async function fetchRoles() {
             const guildId = '<%= locals.guild ? guild.id : "" %>';
-            const supportSelect = document.getElementById('supportRoles');
             const blockedSelect = document.getElementById('blockedRoles');
             const requiredSelect = document.getElementById('requiredRoles');
+            const supportSelect = document.getElementById('supportRoles');
 
             try {
                 const response = await fetch(`/api/servers/${guildId}/roles`);
@@ -832,14 +984,13 @@
 
                 if (data.success && data.roles && data.roles.length > 0) {
                     // Populate all role selects
-                    [supportSelect, blockedSelect, requiredSelect].forEach(select => {
+                    [blockedSelect, requiredSelect, supportSelect].forEach(select => {
                         // Clear loading message
                         select.innerHTML = '';
 
                         data.roles.forEach(role => {
                             const option = document.createElement('option');
                             option.value = role.id;
-                            // Create a colored dot for the role
                             const colorHex = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#6C7A90';
                             option.innerHTML = `
                                 <span class="role-option">
@@ -847,150 +998,51 @@
                                     ${role.name}
                                 </span>
                             `;
-                            // Add data attributes for the role
                             option.dataset.color = colorHex;
                             option.dataset.position = role.position;
                             select.appendChild(option);
                         });
                     });
                 } else {
-                    // No roles found
-                    [supportSelect, blockedSelect, requiredSelect].forEach(select => {
+                    [blockedSelect, requiredSelect, supportSelect].forEach(select => {
                         select.innerHTML = '<option value="">No roles found</option>';
                     });
                 }
             } catch (error) {
                 console.error('Error fetching roles:', error);
-                [supportSelect, blockedSelect, requiredSelect].forEach(select => {
+                [blockedSelect, requiredSelect, supportSelect].forEach(select => {
                     select.innerHTML = '<option value="">Error loading roles</option>';
                 });
                 showToast('Failed to load roles', 'error');
             }
         }
 
-        // ============ Mode Toggle ============
-        function toggleMode(btn) {
-            const parent = btn.closest('.mode-selector');
-            const card = btn.closest('.default-card');
-            const select = card.querySelector('select');
-            const indicator = card.querySelector('.server-default-indicator');
+        // ============ Update Role Count ============
+        function updateRoleCount(type) {
+            const select = document.getElementById(type + 'Roles');
+            const countSpan = document.getElementById(type + 'Count');
+            const max = type === 'support' ? 2 : 10;
             
-            parent.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            const selected = Array.from(select.selectedOptions);
+            const count = selected.length;
             
-            const isOverride = btn.textContent.trim() === 'Override';
-            
-            if (select) {
-                select.disabled = !isOverride;
+            // Enforce max limit
+            if (count > max) {
+                // Deselect the last selected option
+                selected[selected.length - 1].selected = false;
+                countSpan.textContent = `${count - 1}/${max}`;
+                showToast(`You can select up to ${max} roles.`, 'error');
+                return;
             }
             
-            if (indicator) {
-                indicator.style.display = isOverride ? 'none' : 'block';
-            }
+            countSpan.textContent = `${count}/${max}`;
         }
 
         // ============ Toggle Switch ============
         function toggleSwitch(el) {
             el.classList.toggle('active');
-        }
-
-        // ============ Character Counter ============
-        function updateCharCount(input, id, max) {
-            const count = document.getElementById(id);
-            if (count) {
-                count.textContent = input.value.length;
-                if (input.value.length > max) {
-                    count.style.color = 'var(--red)';
-                } else {
-                    count.style.color = 'var(--muted)';
-                }
-            }
-        }
-
-        // ============ Show Variables ============
-        function showVariables() {
-            const variables = [
-                '{TICKET_NUMBER} - The ticket number',
-                '{USERNAME} - The user\'s username',
-                '{USER_ID} - The user\'s Discord ID',
-                '{SERVER_NAME} - The server name',
-                '{TICKET_CREATOR} - The ticket creator\'s mention',
-                '{TICKET_ID} - The ticket ID'
-            ];
-            alert('Available Variables:\n\n' + variables.join('\n'));
-        }
-
-        // ============ Start Editing ============
-        function startEditing() {
-            const type = '<%= panelType %>';
-            const style = '<%= ticketStyle %>';
-            const channel = '<%= sendChannel %>';
-
-            // Collect default settings from the form
-            const supportRolesSelect = document.getElementById('supportRoles');
-            const blockedRolesSelect = document.getElementById('blockedRoles');
-            const requiredRolesSelect = document.getElementById('requiredRoles');
-            
-            const supportRoles = Array.from(supportRolesSelect.selectedOptions).map(o => o.value);
-            const blockedRoles = Array.from(blockedRolesSelect.selectedOptions).map(o => o.value);
-            const requiredRoles = Array.from(requiredRolesSelect.selectedOptions).map(o => o.value);
-
-            const defaultCategories = document.querySelector('.default-card:first-child select')?.value || '';
-            const ticketNameFormat = document.querySelector('.default-card:nth-child(3) input')?.value || '';
-            const embedMessage = document.querySelector('.default-card:nth-child(4) textarea')?.value || '';
-            const messageContent = document.querySelector('.default-card:nth-child(5) textarea')?.value || '';
-            const openLogChannel = document.querySelector('.default-card:nth-child(7) select')?.value || '';
-            const closeLogChannel = document.querySelector('.default-card:nth-child(8) select')?.value || '';
-
-            const panelId = 'new_' + Date.now();
-
-            fetch('/api/panels/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    guildId: '<%= locals.guild ? guild.id : "" %>',
-                    name: 'New Panel',
-                    description: 'Click below to create a new ticket',
-                    type: type,
-                    style: style,
-                    channel: channel,
-                    config: {
-                        embeds: [{
-                            title: 'Tickets',
-                            description: 'Click below to create a new ticket',
-                            color: '#5865F2'
-                        }],
-                        buttons: [
-                            { label: 'Create Ticket', style: 'primary', emoji: '🎫' }
-                        ],
-                        rows: [
-                            { buttons: ['Create Ticket'] }
-                        ],
-                        defaults: {
-                            categories: defaultCategories,
-                            supportRoles: supportRoles,
-                            ticketNameFormat: ticketNameFormat,
-                            embedMessage: embedMessage,
-                            messageContent: messageContent,
-                            blockedRoles: blockedRoles,
-                            openLogChannel: openLogChannel,
-                            closeLogChannel: closeLogChannel,
-                            requiredRoles: requiredRoles
-                        }
-                    }
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = `/servers/<%= locals.guild ? guild.id : '' %>/panels/${data.panelId}/edit`;
-                } else {
-                    showToast('Error creating panel: ' + data.error, 'error');
-                }
-            })
-            .catch(error => {
-                showToast('Error: ' + error.message, 'error');
-            });
+            const isOn = el.classList.contains('active');
+            el.setAttribute('aria-checked', String(isOn));
         }
 
         // ============ Toast Notifications ============
@@ -1014,35 +1066,225 @@
             }, 4000);
         }
 
-        // ============ Initialize on Page Load ============
+        // ============ Question Management ============
+        let questionCounter = document.querySelectorAll('.question-item').length || 1;
+
+        function addQuestion() {
+            const list = document.getElementById('questions-list');
+            const count = list.querySelectorAll('.question-item').length;
+            
+            if (count >= 4) {
+                showToast('Maximum 4 questions allowed.', 'error');
+                return;
+            }
+
+            const newIndex = count;
+            const questionHtml = `
+                <div class="question-item" data-index="${newIndex}">
+                    <div class="q-header">
+                        <span class="q-number">●</span>
+                        <span class="q-title">Question ${newIndex + 1}</span>
+                    </div>
+                    <div class="q-desc">
+                        <strong>Question title</strong><br>
+                        New Question
+                    </div>
+                    <div class="q-desc">
+                        <strong>Description</strong><br>
+                        Please explain your answer in full detail
+                    </div>
+                    <div class="q-desc">
+                        <strong>Placeholder</strong><br>
+                        Please describe your issue in full detail.
+                    </div>
+                    <div class="q-row">
+                        <div class="q-field">
+                            <label>Question type</label>
+                            <select>
+                                <option value="short" selected>Short</option>
+                                <option value="paragraph">Paragraph</option>
+                            </select>
+                        </div>
+                        <div class="q-field">
+                            <label>Required answer</label>
+                            <div class="toggle-wrapper" style="margin-top:4px;">
+                                <button class="toggle active" type="button" role="switch" aria-checked="true" onclick="toggleSwitch(this)">
+                                    <span class="toggle-slider"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="q-field">
+                            <label>Min answer length</label>
+                            <input type="number" min="0" value="1">
+                        </div>
+                        <div class="q-field">
+                            <label>Max answer length</label>
+                            <input type="number" min="1" value="500">
+                        </div>
+                    </div>
+                    <div class="q-actions">
+                        <button onclick="showToast('Edit question functionality coming soon!', 'info')"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="danger" onclick="deleteQuestion(this)"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            `;
+            
+            list.insertAdjacentHTML('beforeend', questionHtml);
+            updateQuestionCounts();
+            showToast('New question added!', 'success');
+        }
+
+        function deleteQuestion(btn) {
+            const item = btn.closest('.question-item');
+            const list = document.getElementById('questions-list');
+            const count = list.querySelectorAll('.question-item').length;
+            
+            if (count <= 1) {
+                showToast('Cannot delete the last question. Add a new one first.', 'error');
+                return;
+            }
+            
+            item.remove();
+            updateQuestionCounts();
+            showToast('Question deleted.', 'info');
+        }
+
+        function updateQuestionCounts() {
+            const items = document.querySelectorAll('.question-item');
+            const count = items.length;
+            
+            document.getElementById('questionCount').textContent = count;
+            document.getElementById('questions-used-count').textContent = count;
+            
+            // Update question numbers
+            items.forEach((item, i) => {
+                const title = item.querySelector('.q-title');
+                if (title) {
+                    title.textContent = `Question ${i + 1}`;
+                }
+            });
+        }
+
+        // ============ Continue to Editor ============
+        function continueToEditor() {
+            // Collect all data from the form
+            const panelName = document.getElementById('panelName').value;
+            const ticketCategory = document.getElementById('ticketCategory').value;
+            const ticketChannelName = document.getElementById('ticketChannelName').value;
+            const canClose = document.getElementById('canClose').classList.contains('active');
+            const blockedRoles = Array.from(document.getElementById('blockedRoles').selectedOptions).map(o => o.value);
+            const requiredRoles = Array.from(document.getElementById('requiredRoles').selectedOptions).map(o => o.value);
+            const maxTickets = document.getElementById('maxTickets').value;
+            const supportRoles = Array.from(document.getElementById('supportRoles').selectedOptions).map(o => o.value);
+            const pingSupport = document.getElementById('pingSupport').classList.contains('active');
+            const ticketClaiming = document.getElementById('ticketClaiming').classList.contains('active');
+            const formDescription = document.getElementById('formDescription').value;
+
+            // Collect questions
+            const questions = [];
+            document.querySelectorAll('.question-item').forEach((item, index) => {
+                const title = item.querySelector('.q-desc strong')?.textContent === 'Question title' 
+                    ? item.querySelector('.q-desc:first-of-type')?.textContent?.replace('Question title', '').trim() 
+                    : `Question ${index + 1}`;
+                
+                const description = item.querySelector('.q-desc:nth-of-type(2)')?.textContent?.replace('Description', '').trim() || 'Please explain your answer in full detail';
+                const placeholder = item.querySelector('.q-desc:nth-of-type(3)')?.textContent?.replace('Placeholder', '').trim() || 'Please describe your issue in full detail.';
+                const type = item.querySelector('.q-field select')?.value || 'short';
+                const required = item.querySelector('.q-field .toggle')?.classList.contains('active') || false;
+                const minLength = parseInt(item.querySelector('.q-field input[type="number"]:first-of-type')?.value) || 1;
+                const maxLength = parseInt(item.querySelector('.q-field input[type="number"]:last-of-type')?.value) || 500;
+                
+                questions.push({
+                    title: title || `Question ${index + 1}`,
+                    description: description,
+                    placeholder: placeholder,
+                    type: type,
+                    required: required,
+                    minLength: minLength,
+                    maxLength: maxLength
+                });
+            });
+
+            const type = '<%= panelType %>';
+            const style = '<%= ticketStyle %>';
+            const channel = '<%= sendChannel %>';
+            const panelId = 'new_' + Date.now();
+
+            fetch('/api/panels/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    guildId: '<%= locals.guild ? guild.id : "" %>',
+                    name: panelName || 'New Panel',
+                    description: 'Click below to create a new ticket',
+                    type: type,
+                    style: style,
+                    channel: channel,
+                    config: {
+                        embeds: [{
+                            title: 'Tickets',
+                            description: 'Click below to create a new ticket',
+                            color: '#5865F2'
+                        }],
+                        buttons: [
+                            { label: 'Create Ticket', style: 'primary', emoji: '🎫' }
+                        ],
+                        rows: [
+                            { buttons: ['Create Ticket'] }
+                        ],
+                        ticketConfig: {
+                            category: ticketCategory,
+                            channelName: ticketChannelName,
+                            canClose: canClose,
+                            blockedRoles: blockedRoles,
+                            requiredRoles: requiredRoles,
+                            maxTickets: parseInt(maxTickets) || 3,
+                            supportRoles: supportRoles,
+                            pingSupport: pingSupport,
+                            ticketClaiming: ticketClaiming,
+                            formDescription: formDescription,
+                            questions: questions
+                        }
+                    }
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = `/servers/<%= locals.guild ? guild.id : '' %>/panels/${data.panelId}/edit`;
+                } else {
+                    showToast('Error creating panel: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, 'error');
+            });
+        }
+
+        // ============ Initialize ============
         document.addEventListener('DOMContentLoaded', function() {
             // Fetch roles from Discord
             fetchRoles();
-
-            // Initialize character counts
-            document.querySelectorAll('textarea[oninput*="updateCharCount"]').forEach(textarea => {
-                const match = textarea.getAttribute('oninput').match(/updateCharCount\(this,\s*['"]([^'"]+)['"]/);
-                if (match) {
-                    updateCharCount(textarea, match[1], 2048);
-                }
-            });
             
-            // Initialize mode buttons
-            document.querySelectorAll('.mode-selector').forEach(group => {
-                const activeBtn = group.querySelector('.mode-btn.active');
-                if (activeBtn) {
-                    toggleMode(activeBtn);
-                }
-            });
+            // Update role counts
+            updateRoleCount('blocked');
+            updateRoleCount('required');
+            updateRoleCount('support');
+
+            // Add question button
+            document.getElementById('add-question-btn').addEventListener('click', addQuestion);
+            
+            // Update question counts
+            updateQuestionCounts();
         });
 
         // Make functions globally accessible
-        window.toggleMode = toggleMode;
         window.toggleSwitch = toggleSwitch;
-        window.updateCharCount = updateCharCount;
-        window.showVariables = showVariables;
-        window.startEditing = startEditing;
         window.showToast = showToast;
+        window.addQuestion = addQuestion;
+        window.deleteQuestion = deleteQuestion;
+        window.updateRoleCount = updateRoleCount;
+        window.continueToEditor = continueToEditor;
     </script>
 
 </body>
