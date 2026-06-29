@@ -912,19 +912,21 @@ router.get('/api/servers/:guildId/channels', isAuthenticated, ensureValidToken, 
     try {
         const guildId = req.params.guildId;
         const botToken = process.env.DISCORD_TOKEN;
-        
+
         if (!botToken) {
             return res.status(500).json({ success: false, error: 'Bot token not configured' });
         }
-        
+
+        // Fetch channels from Discord API
         const response = await axios.get(`https://discord.com/api/guilds/${guildId}/channels`, {
             headers: {
                 Authorization: `Bot ${botToken}`
             }
         });
-        
+
+        // Filter and format channels (only text channels and categories)
         const channels = response.data
-            .filter(ch => ch.type === 0 || ch.type === 2 || ch.type === 4)
+            .filter(ch => ch.type === 0 || ch.type === 2 || ch.type === 4) // 0=text, 2=voice, 4=category
             .map(ch => ({
                 id: ch.id,
                 name: ch.name,
@@ -932,7 +934,7 @@ router.get('/api/servers/:guildId/channels', isAuthenticated, ensureValidToken, 
                 position: ch.position,
                 parent_id: ch.parent_id
             }));
-        
+
         res.json({ success: true, channels });
     } catch (error) {
         console.error('Error fetching channels:', error);
