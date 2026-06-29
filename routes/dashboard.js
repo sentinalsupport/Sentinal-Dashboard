@@ -310,7 +310,7 @@ router.get('/servers/:guildId/tickets', isAuthenticated, ensureValidToken, async
     }
 });
 
-// ============ SERVER PANELS (NEW - Single Page) ============
+// ============ SERVER PANELS ============
 router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const guildId = req.params.guildId;
@@ -326,13 +326,11 @@ router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async 
         const panels = await Panel.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
         console.log(`✅ Found ${panels.length} panels`);
         
-        res.render('application-panels', {
-            title: 'Application Panels — Sentinal',
+        res.render('panels', {
+            title: 'Panels — Sentinal',
             user: req.session.user,
             guild: { id: guildId },
             panels: panels,
-            editingPanel: null,
-            sendChannel: null,
             isAuthenticated: true
         });
     } catch (error) {
@@ -344,44 +342,58 @@ router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async 
     }
 });
 
-// ============ PANEL CREATE/EDIT (Single Page) ============
-router.get('/servers/:guildId/panels/create', isAuthenticated, ensureValidToken, async (req, res) => {
+// ============ SERVER AUTOMATION ============
+router.get('/servers/:guildId/automation', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const guildId = req.params.guildId;
-        const editId = req.query.edit;
-        let Panel;
+        console.log('📋 Loading automation settings for guild:', guildId);
+        
+        let GuildConfig;
         try {
-            Panel = require('../models/Panel');
+            GuildConfig = require('../models/GuildConfig');
         } catch (err) {
-            Panel = { findOne: async () => null };
+            GuildConfig = { findOne: async () => null };
         }
         
-        let editingPanel = null;
-        let sendChannel = null;
+        const config = await GuildConfig.findOne({ guildId }).catch(() => null);
         
-        if (editId) {
-            editingPanel = await Panel.findOne({ _id: editId, guildId });
-            if (editingPanel) {
-                sendChannel = editingPanel.channel;
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
             }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
         }
         
-        // Get all panels for the list view
-        const panels = await Panel.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
-        
-        res.render('application-panels', {
-            title: 'Application Panels — Sentinal',
+        res.render('automation', {
+            title: 'Auto Roles — Sentinal',
             user: req.session.user,
-            guild: { id: guildId },
-            panels: panels,
-            editingPanel: editingPanel,
-            sendChannel: sendChannel,
+            guild: guildData,
+            config: config || {},
             isAuthenticated: true
         });
     } catch (error) {
-        console.error('Error loading panel editor:', error);
+        console.error('Error loading automation:', error.message);
         res.status(500).render('error', {
-            message: 'Failed to load panel editor',
+            message: 'Failed to load automation settings',
             title: 'Error'
         });
     }
@@ -566,7 +578,6 @@ router.post('/api/panels', isAuthenticated, ensureValidToken, async (req, res) =
     }
 });
 
-// ============ API: CREATE PANEL ============
 router.post('/api/panels/create', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const Panel = require('../models/Panel');
@@ -579,7 +590,6 @@ router.post('/api/panels/create', isAuthenticated, ensureValidToken, async (req,
     }
 });
 
-// ============ API: SAVE PANEL ============
 router.post('/api/panels/:panelId/save', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const Panel = require('../models/Panel');
@@ -658,7 +668,6 @@ router.post('/api/panels/:id/toggle', isAuthenticated, ensureValidToken, async (
     }
 });
 
-// ============ API: DELETE PANEL ============
 router.delete('/api/panels/:id', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const Panel = require('../models/Panel');
