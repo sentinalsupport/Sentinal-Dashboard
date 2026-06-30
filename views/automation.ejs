@@ -480,39 +480,6 @@
             margin-top: 2px;
         }
 
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--line);
-        }
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-        .activity-item .activity-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--signal-tab);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--signal);
-            flex-shrink: 0;
-        }
-        .activity-item .activity-content {
-            flex: 1;
-        }
-        .activity-item .activity-content .activity-title {
-            font-size: 13px;
-            color: var(--text);
-        }
-        .activity-item .activity-content .activity-time {
-            font-size: 12px;
-            color: var(--muted-dim);
-        }
-
         .empty-activity {
             text-align: center;
             padding: 40px 20px;
@@ -1009,14 +976,25 @@
             const enabled = document.getElementById('enabled').classList.contains('active');
             const ignoreBots = document.getElementById('ignoreBots').classList.contains('active');
             
+            // Get selected role IDs from the DOM
+            const roleTags = document.querySelectorAll('#selectedRoles .role-tag');
+            const roles = [];
+            roleTags.forEach(tag => {
+                const roleId = tag.dataset.roleId;
+                if (roleId) roles.push(roleId);
+            });
+            
             const data = {
                 autoRoles: {
                     enabled: enabled,
                     ignoreBots: ignoreBots,
-                    roles: selectedRoles.map(r => r.id),
+                    roles: roles,
                     maxRoles: 2
                 }
             };
+
+            // Log what we're saving
+            console.log('Saving auto roles:', data);
 
             const saveBtn = document.querySelector('.action-buttons .btn-save');
             saveBtn.disabled = true;
@@ -1029,9 +1007,12 @@
             })
             .then(response => response.json())
             .then(data => {
+                console.log('Save response:', data);
                 if (data.success) {
                     hideUnsavedChanges();
                     showToast('✅ Auto roles settings saved!', 'success');
+                    // Reload the settings after save to ensure UI matches database
+                    setTimeout(() => loadAutoRoles(), 500);
                 } else {
                     showToast('❌ Error: ' + data.error, 'error');
                 }
@@ -1039,6 +1020,7 @@
                 saveBtn.innerHTML = '<i class="fas fa-save"></i> Save';
             })
             .catch(error => {
+                console.error('Save error:', error);
                 showToast('❌ Error: ' + error.message, 'error');
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = '<i class="fas fa-save"></i> Save';
@@ -1052,52 +1034,82 @@
                 const response = await fetch(`/api/config/${guildId}`);
                 const data = await response.json();
                 
-                if (data.success && data.config && data.config.autoRoles) {
-                    // Set enabled toggle
-                    if (data.config.autoRoles.enabled) {
-                        document.getElementById('enabled').classList.add('active');
-                    } else {
-                        document.getElementById('enabled').classList.remove('active');
-                    }
+                console.log('Loaded config:', data);
+                
+                if (data.success && data.config) {
+                    // Check if autoRoles exists
+                    const autoRoles = data.config.autoRoles;
                     
-                    // Set ignore bots toggle
-                    if (data.config.autoRoles.ignoreBots) {
-                        document.getElementById('ignoreBots').classList.add('active');
-                    } else {
-                        document.getElementById('ignoreBots').classList.remove('active');
-                    }
-                    
-                    // Load roles - get role IDs and fetch names
-                    const roleIds = data.config.autoRoles.roles || [];
-                    if (roleIds.length > 0) {
-                        // Fetch role names from Discord API
-                        const rolesResponse = await fetch(`/api/servers/${guildId}/roles`);
-                        const rolesData = await rolesResponse.json();
+                    if (autoRoles) {
+                        // Set enabled toggle
+                        if (autoRoles.enabled) {
+                            document.getElementById('enabled').classList.add('active');
+                            document.getElementById('enabled').setAttribute('aria-checked', 'true');
+                        } else {
+                            document.getElementById('enabled').classList.remove('active');
+                            document.getElementById('enabled').setAttribute('aria-checked', 'false');
+                        }
                         
-                        if (rolesData.success && rolesData.roles) {
+                        // Set ignore bots toggle
+                        if (autoRoles.ignoreBots) {
+                            document.getElementById('ignoreBots').classList.add('active');
+                            document.getElementById('ignoreBots').setAttribute('aria-checked', 'true');
+                        } else {
+                            document.getElementById('ignoreBots').classList.remove('active');
+                            document.getElementById('ignoreBots').setAttribute('aria-checked', 'false');
+                        }
+                        
+                        // Load roles
+                        const roleIds = autoRoles.roles || [];
+                        if (roleIds.length > 0) {
+                            // Fetch role names from Discord API
+                            const rolesResponse = await fetch(`/api/servers/${guildId}/roles`);
+                            const rolesData = await rolesResponse.json();
+                            
+                            if (rolesData.success && rolesData.roles) {
+                                selectedRoles = [];
+                                roleIds.forEach(id => {
+                                    const role = rolesData.roles.find(r => r.id === id);
+                                    if (role) {
+                                        const colorHex = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#6C7A90';
+                                        selectedRoles.push({
+                                            id: role.id,
+                                            name: role.name,
+                                            color: colorHex
+                                        });
+                                    }
+                                });
+                                updateSelectedRoles();
+                                updateStats();
+                            }
+                        } else {
                             selectedRoles = [];
-                            roleIds.forEach(id => {
-                                const role = rolesData.roles.find(r => r.id === id);
-                                if (role) {
-                                    const colorHex = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#6C7A90';
-                                    selectedRoles.push({
-                                        id: role.id,
-                                        name: role.name,
-                                        color: colorHex
-                                    });
-                                }
-                            });
                             updateSelectedRoles();
                             updateStats();
                         }
                     } else {
+                        // No autoRoles field, set defaults
+                        console.log('No autoRoles field found, using defaults');
+                        document.getElementById('enabled').classList.remove('active');
+                        document.getElementById('ignoreBots').classList.add('active');
                         selectedRoles = [];
                         updateSelectedRoles();
                         updateStats();
                     }
+                    
+                    hideUnsavedChanges();
+                } else {
+                    console.log('No config data found, using defaults');
+                    document.getElementById('enabled').classList.remove('active');
+                    document.getElementById('ignoreBots').classList.add('active');
+                    selectedRoles = [];
+                    updateSelectedRoles();
+                    updateStats();
+                    hideUnsavedChanges();
                 }
             } catch (error) {
                 console.error('Error loading auto roles:', error);
+                showToast('Error loading settings', 'error');
             }
         }
 
