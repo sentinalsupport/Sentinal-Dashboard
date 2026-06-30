@@ -10,43 +10,7 @@ const guildConfigSchema = new mongoose.Schema({
         type: String,
         default: '!'
     },
-    modLogChannel: {
-        type: String,
-        default: null
-    },
-    memberLogChannel: {
-        type: String,
-        default: null
-    },
-    welcomeChannel: {
-        type: String,
-        default: null
-    },
-    welcomeMessage: {
-        type: String,
-        default: 'Welcome {user} to {server}!'
-    },
-    // OLD - Keep for backward compatibility
-    autorole: {
-        type: String,
-        default: null
-    },
-    mutedRole: {
-        type: String,
-        default: null
-    },
-    verificationChannel: {
-        type: String,
-        default: null
-    },
-    verificationRole: {
-        type: String,
-        default: null
-    },
-    verificationEnabled: {
-        type: Boolean,
-        default: false
-    },
+    // ============ TICKET SETTINGS ============
     ticketCategory: {
         type: String,
         default: null
@@ -55,43 +19,15 @@ const guildConfigSchema = new mongoose.Schema({
         type: String,
         default: null
     },
-    applicationChannel: {
+    ticketLogChannel: {
         type: String,
         default: null
     },
-    giveawayChannel: {
+    ticketTranscriptChannel: {
         type: String,
         default: null
     },
-    xpEnabled: {
-        type: Boolean,
-        default: true
-    },
-    xpRate: {
-        type: Number,
-        default: 1
-    },
-    premium: {
-        type: Boolean,
-        default: false
-    },
-    premiumExpires: {
-        type: Date,
-        default: null
-    },
-    enabledFeatures: {
-        type: Array,
-        default: ['dashboardEnabled']
-    },
-    dashboardEnabled: {
-        type: Boolean,
-        default: true
-    },
-    blacklisted: {
-        type: Boolean,
-        default: false
-    },
-    // ============ NEW AUTO ROLES ============
+    // ============ AUTO ROLES ============
     autoRoles: {
         enabled: {
             type: Boolean,
@@ -109,10 +45,22 @@ const guildConfigSchema = new mongoose.Schema({
             default: 2
         }
     },
-    // ============ TICKET CONFIG ============
-    ticketLogChannel: {
+    // ============ OTHER ============
+    modLogChannel: {
         type: String,
         default: null
+    },
+    memberLogChannel: {
+        type: String,
+        default: null
+    },
+    welcomeChannel: {
+        type: String,
+        default: null
+    },
+    welcomeMessage: {
+        type: String,
+        default: 'Welcome {user} to {server}!'
     },
     createdAt: {
         type: Date,
