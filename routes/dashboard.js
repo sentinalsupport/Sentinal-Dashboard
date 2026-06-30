@@ -750,12 +750,52 @@ router.delete('/api/tickets/:id', isAuthenticated, ensureValidToken, async (req,
     }
 });
 
-// ============ API: SAVE SETTINGS ============
+// ============ API: CONFIG (GET) ============
+router.get('/api/config/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        let GuildConfig;
+        try {
+            GuildConfig = require('../models/GuildConfig');
+        } catch (err) {
+            return res.status(500).json({ 
+                success: false, 
+                error: 'GuildConfig model not found' 
+            });
+        }
+        
+        const config = await GuildConfig.findOne({ guildId });
+        
+        if (!config) {
+            // Return default config if not found
+            return res.json({
+                success: true,
+                config: {
+                    guildId: guildId,
+                    autoRoles: {
+                        enabled: false,
+                        ignoreBots: true,
+                        roles: [],
+                        maxRoles: 2
+                    }
+                }
+            });
+        }
+        
+        res.json({ success: true, config });
+    } catch (error) {
+        console.error('Error fetching config:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: CONFIG (POST - SAVE) ============
 router.post('/api/config/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const guildId = req.params.guildId;
         const settings = req.body;
         
+        // Verify user has admin access to this server
         const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
                 Authorization: `Bearer ${req.session.user.access_token}`
@@ -781,11 +821,38 @@ router.post('/api/config/:guildId', isAuthenticated, ensureValidToken, async (re
             });
         }
         
-        await GuildConfig.findOneAndUpdate(
-            { guildId },
-            settings,
-            { upsert: true, new: true }
-        );
+        // ✅ FIND OR CREATE - This is the important part!
+        let config = await GuildConfig.findOne({ guildId });
+        
+        if (!config) {
+            // Create new config if it doesn't exist
+            config = new GuildConfig({ guildId });
+        }
+        
+        // ✅ Update auto roles
+        if (settings.autoRoles) {
+            config.autoRoles = {
+                enabled: settings.autoRoles.enabled !== undefined ? settings.autoRoles.enabled : false,
+                ignoreBots: settings.autoRoles.ignoreBots !== undefined ? settings.autoRoles.ignoreBots : true,
+                roles: settings.autoRoles.roles || [],
+                maxRoles: settings.autoRoles.maxRoles || 2
+            };
+        }
+        
+        // Update other settings if provided
+        if (settings.welcomeMessage) config.welcomeMessage = settings.welcomeMessage;
+        if (settings.ticketCategory) config.ticketCategory = settings.ticketCategory;
+        if (settings.ticketSupportRole) config.ticketSupportRole = settings.ticketSupportRole;
+        if (settings.ticketLogChannel) config.ticketLogChannel = settings.ticketLogChannel;
+        if (settings.modLogChannel) config.modLogChannel = settings.modLogChannel;
+        if (settings.memberLogChannel) config.memberLogChannel = settings.memberLogChannel;
+        if (settings.welcomeChannel) config.welcomeChannel = settings.welcomeChannel;
+        
+        config.updatedAt = new Date();
+        await config.save();
+        
+        console.log('✅ Config saved for guild:', guildId);
+        console.log('   AutoRoles:', config.autoRoles);
         
         res.json({ success: true, message: 'Settings saved' });
     } catch (error) {
