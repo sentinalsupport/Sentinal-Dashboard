@@ -21,6 +21,7 @@
             --signal: #3DFFB8;
             --signal-tab: rgba(61,255,184,0.08);
             --signal-glow: rgba(61,255,184,0.15);
+            --signal-hover: rgba(61,255,184,0.18);
             --gold: #F5C842;
             --gold-tab: rgba(245,200,66,0.12);
             --violet: #8B7EFF;
@@ -326,141 +327,117 @@
             font-size: 24px;
             font-weight: 700;
             color: #fff;
-            margin: 32px 0 16px;
-            padding-bottom: 4px;
-            border-bottom: 2px solid var(--line);
+            margin: 0 0 8px;
+            padding-bottom: 0;
+            border-bottom: none;
         }
-        .section-header:first-of-type {
-            margin-top: 0;
-        }
-
-        /* Ticket System Styles */
-        .section-subheader {
-            margin: 32px 0 16px;
-        }
-        .section-subheader h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 4px;
-        }
-        .section-subheader .text-muted {
+        .section-sub {
             color: var(--muted);
-            font-size: 14px;
+            font-size: 15px;
+            margin-bottom: 32px;
         }
 
-        .template-details {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-size: 13px;
-            color: var(--muted);
-        }
-        .template-details span {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .template-details span i {
-            width: 18px;
-            color: var(--signal);
-            font-size: 14px;
-        }
-
-        .behavior-options {
-            padding: 4px 0;
-        }
-        .behavior-options label {
-            color: var(--text);
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .behavior-options input[type="radio"] {
-            accent-color: var(--signal);
-            margin-right: 8px;
-            cursor: pointer;
-        }
-
-        .module-grid {
+        /* ===== TICKET FEATURE GRID ===== */
+        .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
-            margin-bottom: 8px;
+            margin-top: 4px;
         }
 
-        .module-card {
+        .feature-card {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 14px;
-            padding: 22px 24px;
+            padding: 24px;
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
-        .module-card:hover {
+        .feature-card:hover {
             border-color: var(--line-bright);
+            transform: translateY(-2px);
         }
-        .module-card .card-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 6px;
+
+        .feature-card .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
         }
-        .module-card .card-header .card-title {
-            font-weight: 600;
-            font-size: 16px;
-            color: #fff;
+
+        .feature-card .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--signal-tab);
+            border: 1px solid rgba(61,255,184,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--signal);
+            font-size: 20px;
+            flex-shrink: 0;
         }
-        .module-card .card-header .card-badge {
-            font-size: 10px; font-weight: 700;
-            padding: 2px 12px; border-radius: 100px;
+
+        .feature-card .badge-new {
+            background: var(--violet-tab);
+            color: var(--violet);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 100px;
             text-transform: uppercase;
+            border: 1px solid rgba(139,126,255,0.2);
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+            margin-left: 12px;
         }
-        .module-card .card-header .card-badge.new {
-            background: var(--violet-tab); color: var(--violet);
+
+        .feature-card .card-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 6px;
+            font-family: 'Space Grotesk', sans-serif;
         }
-        .module-card .card-header .card-badge.live {
-            background: var(--signal-tab); color: var(--signal);
-        }
-        .module-card .card-desc {
+
+        .feature-card .card-desc {
             font-size: 14px;
             color: var(--muted);
-            margin-bottom: 16px;
-            line-height: 1.6;
+            line-height: 1.5;
             flex: 1;
+            margin-bottom: 20px;
         }
-        .module-card .card-actions {
-            display: flex; gap: 10px; flex-wrap: wrap;
+
+        .feature-card .card-actions {
             margin-top: auto;
         }
-        .module-card .card-actions .btn-config {
+
+        .feature-card .btn-config {
             padding: 8px 20px;
             border-radius: 8px;
             font-size: 13px;
             font-weight: 600;
-            cursor: pointer; border: none;
-            background: var(--signal-tab); color: var(--signal);
+            cursor: pointer;
+            border: none;
+            background: var(--signal-tab);
+            color: var(--signal);
             border: 1px solid rgba(61,255,184,0.2);
             transition: all 0.18s ease;
             text-decoration: none;
-            display: inline-flex; align-items: center; gap: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             height: 36px;
             font-family: 'Inter', sans-serif;
         }
-        .module-card .card-actions .btn-config:hover {
-            background: rgba(61,255,184,0.18);
+        .feature-card .btn-config:hover {
+            background: var(--signal-hover);
         }
-        .module-card .card-actions .btn-config i {
-            font-size: 14px;
-        }
-
-        /* Style for create new cards */
-        .module-card[style*="dashed"] {
-            background: transparent;
-            border-color: var(--line-bright);
-        }
-        .module-card[style*="dashed"]:hover {
-            background: rgba(255,255,255,0.03);
-            border-color: var(--signal);
+        .feature-card .btn-config i {
+            font-size: 13px;
         }
 
         .toast-container {
@@ -520,8 +497,11 @@
             letter-spacing: 0.5px;
         }
 
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 1200px) {
-            .module-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         @media (max-width: 1024px) {
             .page-wrapper { padding: 24px 32px 60px 5px; gap: 24px; }
@@ -549,9 +529,11 @@
             .server-header .icon { width: 48px; height: 48px; font-size: 20px; }
             .top-tabs { flex-wrap: wrap; }
             .top-tabs .tab { font-size: 14px; padding: 10px 18px; }
-            .module-grid { grid-template-columns: 1fr; }
-            .module-card { padding: 18px 20px; }
-            .module-card .card-title { font-size: 15px; }
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .feature-card { padding: 20px; }
             .search-box input { font-size: 14px; padding: 12px 16px; max-width: 100%; }
             .footer { padding: 20px 16px; }
             .section-header { font-size: 20px; }
@@ -723,178 +705,74 @@
                 </div>
             </div>
 
-            <!-- TICKETS - FULL IMPLEMENTATION -->
+            <!-- ─── TICKETS - REDESIGNED ─── -->
             <div class="module-panel" id="module-tickets">
                 <div class="section-header">Tickets</div>
-                
-                <!-- Ticket Templates Section -->
-                <div class="section-subheader">
-                    <h2>Ticket Templates</h2>
-                    <p class="text-muted">Create templates that define how tickets work in your server</p>
-                </div>
-                <div class="module-grid">
-                    <div class="module-card">
-                        <div class="card-header">
-                            <span class="card-title">Support Template</span>
-                            <span class="card-badge live">Live</span>
-                        </div>
-                        <div class="card-desc">
-                            <div class="template-details">
-                                <span><i class="fas fa-folder"></i> Category: Support</span>
-                                <span><i class="fas fa-file-alt"></i> Transcripts: #ticket-logs</span>
-                                <span><i class="fas fa-user-shield"></i> Staff Roles: @Support Team</span>
-                            </div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Edit template settings', 'info')">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn-config" onclick="showToast('Template duplicated!', 'success')">
-                                <i class="fas fa-copy"></i> Duplicate
-                            </button>
-                        </div>
-                    </div>
-                    <div class="module-card">
-                        <div class="card-header">
-                            <span class="card-title">Report Template</span>
-                            <span class="card-badge new">New</span>
-                        </div>
-                        <div class="card-desc">
-                            <div class="template-details">
-                                <span><i class="fas fa-folder"></i> Category: Reports</span>
-                                <span><i class="fas fa-file-alt"></i> Transcripts: #report-logs</span>
-                                <span><i class="fas fa-user-shield"></i> Staff Roles: @Moderators</span>
-                            </div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Edit template settings', 'info')">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn-config" onclick="showToast('Template duplicated!', 'success')">
-                                <i class="fas fa-copy"></i> Duplicate
-                            </button>
-                        </div>
-                    </div>
-                    <div class="module-card" style="border: 2px dashed var(--line-bright);">
-                        <div class="card-header">
-                            <span class="card-title">Create New Template</span>
-                        </div>
-                        <div class="card-desc">Create a new ticket template with custom settings</div>
-                        <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('New template creator opening...', 'info')" style="background: var(--signal-tab); color: var(--signal);">
-                                <i class="fas fa-plus"></i> Create Template
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <div class="section-sub">Manage your server's ticket system</div>
 
-                <!-- Ticket Panels Section -->
-                <div class="section-subheader" style="margin-top: 40px;">
-                    <h2>Ticket Panels</h2>
-                    <p class="text-muted">Create panels that users click to open tickets</p>
-                </div>
-                <div class="module-grid">
-                    <div class="module-card">
-                        <div class="card-header">
-                            <span class="card-title">Support Panel</span>
-                            <span class="card-badge live">Live</span>
-                        </div>
-                        <div class="card-desc">
-                            <div class="template-details">
-                                <span><i class="fas fa-tag"></i> Channel: #support-tickets</span>
-                                <span><i class="fas fa-file-signature"></i> Template: Support Template</span>
-                                <span><i class="fas fa-message"></i> "Need help? Click to create a ticket!"</span>
+                <div class="feature-grid">
+                    <!-- Templates -->
+                    <div class="feature-card">
+                        <div class="card-top">
+                            <div class="icon-box">
+                                <i class="fas fa-file-alt"></i>
                             </div>
                         </div>
+                        <div class="card-title">Templates</div>
+                        <div class="card-desc">Create tickets for users to open in your server.</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Send panel to Discord', 'info')">
-                                <i class="fas fa-paper-plane"></i> Send to Discord
-                            </button>
-                            <button class="btn-config" onclick="showToast('Edit panel settings', 'info')">
+                            <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets/templates" class="btn-config">
                                 <i class="fas fa-cog"></i> Configure
-                            </button>
+                            </a>
                         </div>
                     </div>
-                    <div class="module-card">
-                        <div class="card-header">
-                            <span class="card-title">Report Panel</span>
-                            <span class="card-badge new">New</span>
-                        </div>
-                        <div class="card-desc">
-                            <div class="template-details">
-                                <span><i class="fas fa-tag"></i> Channel: #report-tickets</span>
-                                <span><i class="fas fa-file-signature"></i> Template: Report Template</span>
-                                <span><i class="fas fa-message"></i> "Report an issue to staff"</span>
-                            </div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Send panel to Discord', 'info')">
-                                <i class="fas fa-paper-plane"></i> Send to Discord
-                            </button>
-                            <button class="btn-config" onclick="showToast('Edit panel settings', 'info')">
-                                <i class="fas fa-cog"></i> Configure
-                            </button>
-                        </div>
-                    </div>
-                    <div class="module-card" style="border: 2px dashed var(--line-bright);">
-                        <div class="card-header">
-                            <span class="card-title">Create New Panel</span>
-                        </div>
-                        <div class="card-desc">Create a new ticket panel linked to a template</div>
-                        <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('New panel creator opening...', 'info')" style="background: var(--signal-tab); color: var(--signal);">
-                                <i class="fas fa-plus"></i> Create Panel
-                            </button>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Behavior Settings -->
-                <div class="section-subheader" style="margin-top: 40px;">
-                    <h2>Ticket Behavior</h2>
-                    <p class="text-muted">Configure what happens when users open or leave tickets</p>
-                </div>
-                <div class="module-grid">
-                    <div class="module-card">
-                        <div class="card-header">
-                            <span class="card-title">When user leaves server</span>
-                            <span class="card-badge live">Live</span>
-                        </div>
-                        <div class="card-desc">
-                            <div class="behavior-options">
-                                <label style="display: block; margin: 6px 0;">
-                                    <input type="radio" name="leaveBehavior" checked> Do nothing
-                                </label>
-                                <label style="display: block; margin: 6px 0;">
-                                    <input type="radio" name="leaveBehavior"> Auto-close ticket
-                                </label>
-                                <label style="display: block; margin: 6px 0;">
-                                    <input type="radio" name="leaveBehavior"> Notify staff
-                                </label>
+                    <!-- Panels -->
+                    <div class="feature-card">
+                        <div class="card-top">
+                            <div class="icon-box">
+                                <i class="fas fa-th-large"></i>
                             </div>
                         </div>
+                        <div class="card-title">Panels</div>
+                        <div class="card-desc">Organize your tickets into panels.</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Behavior settings saved!', 'success')">
-                                <i class="fas fa-save"></i> Save Settings
-                            </button>
+                            <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets/panels" class="btn-config">
+                                <i class="fas fa-cog"></i> Configure
+                            </a>
                         </div>
                     </div>
-                    <div class="module-card">
-                        <div class="card-header">
-                            <span class="card-title">Transcript Settings</span>
-                            <span class="card-badge live">Live</span>
+
+                    <!-- Quick Responses -->
+                    <div class="feature-card">
+                        <div class="card-top">
+                            <div class="icon-box">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <span class="badge-new">NEW!</span>
                         </div>
-                        <div class="card-desc">
-                            <div class="template-details">
-                                <span><i class="fas fa-check-circle"></i> Save transcripts on close</span>
-                                <span><i class="fas fa-folder-open"></i> Transcript channel: #ticket-logs</span>
-                                <span><i class="fas fa-file-pdf"></i> Format: HTML / Text</span>
+                        <div class="card-title">Quick Responses</div>
+                        <div class="card-desc">Create reusable responses for common questions.</div>
+                        <div class="card-actions">
+                            <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets/quick-responses" class="btn-config">
+                                <i class="fas fa-cog"></i> Configure
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Transcripts -->
+                    <div class="feature-card">
+                        <div class="card-top">
+                            <div class="icon-box">
+                                <i class="fas fa-scroll"></i>
                             </div>
                         </div>
+                        <div class="card-title">Transcripts</div>
+                        <div class="card-desc">View all open and closed ticket transcripts.</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Transcript settings saved!', 'success')">
-                                <i class="fas fa-save"></i> Save Settings
-                            </button>
+                            <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets/transcripts" class="btn-config">
+                                <i class="fas fa-cog"></i> Configure
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1105,7 +983,7 @@
 
         function searchFeatures() {
             const query = document.getElementById('featureSearch').value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.module-card');
+            const cards = document.querySelectorAll('.module-card, .feature-card');
 
             cards.forEach(card => {
                 const title = card.querySelector('.card-title')?.textContent?.toLowerCase() || '';
