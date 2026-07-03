@@ -326,10 +326,36 @@ router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async 
         const panels = await Panel.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
         console.log(`✅ Found ${panels.length} panels`);
         
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
         res.render('panels', {
             title: 'Panels — Sentinal',
             user: req.session.user,
-            guild: { id: guildId },
+            guild: guildData,
             panels: panels,
             isAuthenticated: true
         });
@@ -367,25 +393,36 @@ router.get('/servers/:guildId/tickets/quick-responses', isAuthenticated, ensureV
         
         const config = await GuildConfig.findOne({ guildId }).catch(() => null);
         
-        // Check if user has access
-        const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
-            headers: {
-                Authorization: `Bearer ${req.session.user.access_token}`
-            }
-        });
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
         
-        const userGuild = guildsResponse.data.find(g => g.id === guildId);
-        if (!userGuild || !(userGuild.permissions & 0x8)) {
-            return res.status(403).render('error', {
-                message: 'You do not have administrator access to this server.',
-                title: 'Access Denied'
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
             });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
         }
         
         res.render('quick-responses', {
             title: 'Quick Responses — Sentinal',
             user: req.session.user,
-            guild: { id: guildId },
+            guild: guildData,
             responses: responses,
             config: config || {},
             isAuthenticated: true
@@ -427,25 +464,36 @@ router.get('/servers/:guildId/tickets/transcripts', isAuthenticated, ensureValid
         
         const config = await GuildConfig.findOne({ guildId }).catch(() => null);
         
-        // Check if user has access
-        const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
-            headers: {
-                Authorization: `Bearer ${req.session.user.access_token}`
-            }
-        });
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
         
-        const userGuild = guildsResponse.data.find(g => g.id === guildId);
-        if (!userGuild || !(userGuild.permissions & 0x8)) {
-            return res.status(403).render('error', {
-                message: 'You do not have administrator access to this server.',
-                title: 'Access Denied'
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
             });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
         }
         
         res.render('transcripts', {
             title: 'Transcripts — Sentinal',
             user: req.session.user,
-            guild: { id: guildId },
+            guild: guildData,
             transcripts: transcripts,
             config: config || {},
             isAuthenticated: true
@@ -731,6 +779,99 @@ router.post('/api/panels/:panelId/save', isAuthenticated, ensureValidToken, asyn
     }
 });
 
+// ✅ NEW: Send panel to Discord
+router.post('/api/panels/:panelId/send', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const panel = await Panel.findById(req.params.panelId);
+        
+        if (!panel) {
+            return res.status(404).json({ success: false, error: 'Panel not found' });
+        }
+        
+        // Get the guild ID
+        const guildId = req.body.guildId || panel.guildId;
+        if (!guildId) {
+            return res.status(400).json({ success: false, error: 'Guild ID is required' });
+        }
+        
+        // Send to Discord logic here
+        const botToken = process.env.DISCORD_TOKEN;
+        if (!botToken) {
+            return res.status(500).json({ success: false, error: 'Bot token not configured' });
+        }
+        
+        // Get the channel where the panel should be sent
+        const channelId = panel.channelId || panel.channel;
+        if (!channelId) {
+            return res.status(400).json({ success: false, error: 'No channel configured for this panel' });
+        }
+        
+        // Build the message with components (buttons/select menus)
+        const messagePayload = {
+            content: panel.message || 'Click a button below to open a ticket.',
+            embeds: panel.embed ? [panel.embed] : [],
+            components: panel.components || []
+        };
+        
+        // Send the message
+        const response = await axios.post(
+            `https://discord.com/api/channels/${channelId}/messages`,
+            messagePayload,
+            {
+                headers: {
+                    Authorization: `Bot ${botToken}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        
+        // Update panel with message ID for future updates
+        panel.messageId = response.data.id;
+        panel.syncStatus = 'synced';
+        panel.lastSent = new Date();
+        await panel.save();
+        
+        res.json({ success: true, messageId: response.data.id });
+    } catch (error) {
+        console.error('Error sending panel to Discord:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.response?.data?.message || error.message 
+        });
+    }
+});
+
+// ✅ NEW: Duplicate panel
+router.post('/api/panels/:panelId/duplicate', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const original = await Panel.findById(req.params.panelId);
+        
+        if (!original) {
+            return res.status(404).json({ success: false, error: 'Panel not found' });
+        }
+        
+        const newPanel = new Panel({
+            ...original.toObject(),
+            _id: undefined,
+            name: original.name + ' (Copy)',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            syncStatus: 'pending',
+            messageId: null,
+            lastSent: null,
+            ticketsOpened: 0
+        });
+        
+        await newPanel.save();
+        res.json({ success: true, panelId: newPanel._id });
+    } catch (error) {
+        console.error('Error duplicating panel:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 router.get('/api/panels/:id', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const Panel = require('../models/Panel');
@@ -753,13 +894,19 @@ router.put('/api/panels/:id', isAuthenticated, ensureValidToken, async (req, res
             return res.status(404).json({ success: false, error: 'Panel not found' });
         }
         
-        const { name, description, channel, applicationId, type, enabled } = req.body;
+        const { name, description, channel, applicationId, type, enabled, message, embed, components, templates, syncStatus } = req.body;
         panel.name = name || panel.name;
         panel.description = description || panel.description;
         panel.channel = channel || panel.channel;
         panel.applicationId = applicationId || panel.applicationId;
         panel.type = type || panel.type;
         if (enabled !== undefined) panel.enabled = enabled;
+        if (message !== undefined) panel.message = message;
+        if (embed !== undefined) panel.embed = embed;
+        if (components !== undefined) panel.components = components;
+        if (templates !== undefined) panel.templates = templates;
+        if (syncStatus !== undefined) panel.syncStatus = syncStatus;
+        panel.updatedAt = new Date();
         
         await panel.save();
         res.json({ success: true, panel: panel });
