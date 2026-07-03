@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Templates — Sentinal' %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --ink: #060A10;
+            --panel: #0D1520;
+            --panel-raised: #111D2C;
+            --panel-hover: #162033;
+            --line: rgba(255,255,255,0.07);
+            --line-bright: rgba(255,255,255,0.13);
+            --text: #E6EDF6;
+            --muted: #6C7A90;
+            --muted-dim: #3E4A5C;
+            --signal: #3DFFB8;
+            --signal-tab: rgba(61,255,184,0.08);
+            --signal-glow: rgba(61,255,184,0.15);
+            --signal-hover: rgba(61,255,184,0.18);
+            --gold: #F5C842;
+            --gold-tab: rgba(245,200,66,0.12);
+            --violet: #8B7EFF;
+            --violet-tab: rgba(139,126,255,0.12);
+            --red: #F87171;
+            --red-bg: rgba(248,113,113,0.08);
+            --red-border: rgba(248,113,113,0.22);
+            --discord: #5865F2;
+            --discord-hover: #4752C4;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--ink);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(6,10,16,0.9);
+            backdrop-filter: blur(28px) saturate(160%);
+            border-bottom: 1px solid var(--line);
+            padding: 0 48px;
+            height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 200;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-logo {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: var(--panel-raised); border: 1px solid var(--line-bright);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .brand-logo svg { width: 22px; height: 22px; }
+        .brand-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+        }
+        .nav-center { display: flex; align-items: center; gap: 8px; }
+        .nav-center a {
+            color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
+            padding: 8px 18px; border-radius: 10px; transition: all 0.18s ease;
+        }
+        .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .nav-center a.active { color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .user-pill {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--panel); border: 1px solid var(--line);
+            border-radius: 100px; padding: 6px 18px 6px 8px;
+        }
+        .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--panel-raised); overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700;
+        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 14px; font-weight: 500; color: var(--text); }
+        .user-plan {
+            font-size: 11px; font-weight: 600; color: var(--signal);
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.22);
+            border-radius: 100px; padding: 3px 10px; letter-spacing: 0.3px;
+        }
+        .logout-btn {
+            background: transparent; border: 1px solid var(--line); border-radius: 10px;
+            padding: 8px 14px; color: var(--muted); cursor: pointer; font-size: 14px;
+            transition: all 0.18s ease; text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+
+        .page-wrapper {
+            max-width: 100%;
+            margin: 0;
+            padding: 32px 48px 60px 5px;
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+            min-height: calc(100vh - 72px);
+        }
+
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 16px;
+            position: sticky;
+            top: 88px;
+            height: calc(100vh - 108px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin-left: -5px;
+            border-left: none;
+        }
+        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
+
+        .sidebar .server-info {
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 16px;
+        }
+        .sidebar .server-info .icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            background: var(--panel-raised); border: 1px solid var(--line);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 700;
+            overflow: hidden;
+            color: var(--signal);
+            margin-bottom: 8px;
+        }
+        .sidebar .server-info .icon img { width: 100%; height: 100%; object-fit: cover; }
+        .sidebar .server-info .name {
+            font-weight: 600; font-size: 15px;
+            color: #fff;
+        }
+        .sidebar .server-info .plan {
+            font-size: 11px;
+            color: var(--signal);
+            font-weight: 500;
+            background: var(--signal-tab);
+            padding: 2px 12px;
+            border-radius: 100px;
+            display: inline-block;
+            border: 1px solid rgba(61,255,184,0.2);
+        }
+        .sidebar .server-info .upgrade {
+            display: block;
+            margin-top: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: var(--gold-tab);
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            border: 1px solid rgba(245,200,66,0.2);
+        }
+        .sidebar .server-info .upgrade:hover { background: rgba(245,200,66,0.18); }
+
+        .sidebar .nav-section { padding: 0; }
+        .sidebar .section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted-dim);
+            padding: 10px 10px 6px;
+        }
+
+        .sidebar .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 2px;
+        }
+        .sidebar .nav-item:hover { 
+            background: rgba(255,255,255,0.06); 
+            color: var(--text); 
+        }
+        .sidebar .nav-item.active { 
+            background: var(--signal-tab); 
+            color: var(--signal); 
+        }
+        .sidebar .nav-item i { 
+            width: 20px; 
+            font-size: 16px; 
+            color: var(--muted-dim); 
+        }
+        .sidebar .nav-item.active i { 
+            color: var(--signal); 
+        }
+        .sidebar .nav-item .badge {
+            margin-left: auto;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 100px;
+            text-transform: uppercase;
+        }
+        .sidebar .nav-item .badge.live { background: var(--signal-tab); color: var(--signal); }
+        .sidebar .nav-item .badge.new { background: var(--violet-tab); color: var(--violet); }
+
+        .sidebar .divider { height: 1px; background: var(--line); margin: 10px 0; }
+
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .server-header {
+            display: flex; align-items: center; gap: 20px;
+            padding: 24px 0 20px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 28px;
+        }
+        .server-header .icon {
+            width: 64px; height: 64px; border-radius: 16px;
+            background: var(--panel-raised); border: 1px solid var(--line);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 700; overflow: hidden;
+            flex-shrink: 0; color: var(--signal);
+        }
+        .server-header .icon img { width: 100%; height: 100%; object-fit: cover; }
+        .server-header .info h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px; font-weight: 700; color: #fff;
+        }
+        .server-header .info p {
+            font-size: 15px; color: var(--muted);
+        }
+        .server-header .info p i { color: var(--signal); margin-right: 6px; }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .page-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .page-header .sub {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .btn-primary {
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: none;
+            background: var(--signal);
+            color: var(--ink);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary:hover {
+            background: #5dffc6;
+            transform: translateY(-1px);
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 20px;
+        }
+
+        .template-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 24px;
+            transition: all 0.2s ease;
+        }
+        .template-card:hover {
+            border-color: var(--line-bright);
+        }
+
+        .template-card .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .template-card .card-top .name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .template-card .card-top .status {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 100px;
+            text-transform: uppercase;
+        }
+        .status.active { background: var(--signal-tab); color: var(--signal); border: 1px solid rgba(61,255,184,0.2); }
+        .status.disabled { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+        .status.draft { background: var(--gold-tab); color: var(--gold); border: 1px solid rgba(245,200,66,0.2); }
+
+        .template-card .description {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .template-card .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+        }
+        .template-card .details .detail {
+            font-size: 12px;
+            color: var(--muted-dim);
+        }
+        .template-card .details .detail span {
+            color: var(--text);
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .template-card .panels-using {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: var(--violet-tab);
+            border-radius: 6px;
+            border: 1px solid rgba(139,126,255,0.1);
+        }
+        .template-card .panels-using .panel-tag {
+            display: inline-block;
+            background: var(--panel-raised);
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--text);
+            margin: 2px 4px 2px 0;
+        }
+
+        .template-card .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .template-card .actions .btn {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--muted);
+            transition: all 0.18s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .template-card .actions .btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+        }
+        .template-card .actions .btn-primary-small {
+            background: var(--signal-tab);
+            color: var(--signal);
+            border-color: rgba(61,255,184,0.2);
+        }
+        .template-card .actions .btn-primary-small:hover {
+            background: var(--signal-hover);
+        }
+        .template-card .actions .btn-danger {
+            color: var(--red);
+            border-color: var(--red-border);
+        }
+        .template-card .actions .btn-danger:hover {
+            background: var(--red-bg);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+        .empty-state .icon {
+            font-size: 48px;
+            color: var(--muted-dim);
+            margin-bottom: 16px;
+        }
+        .empty-state h3 {
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            width: 100%;
+        }
+        .toast {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--signal);
+        }
+        .toast .toast-icon { color: var(--signal); font-size: 18px; flex-shrink: 0; }
+        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
+        .toast .toast-close {
+            background: none; border: none;
+            color: var(--muted-dim); cursor: pointer;
+            font-size: 14px; padding: 4px;
+        }
+        .toast .toast-close:hover { color: var(--text); }
+        .toast.error { border-left-color: var(--red); }
+        .toast.error .toast-icon { color: var(--red); }
+        .toast.success { border-left-color: var(--signal); }
+        .toast.success .toast-icon { color: var(--signal); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(40px); }
+        }
+        .toast.hiding { animation: slideOut 0.3s ease forwards; }
+
+        .footer {
+            border-top: 1px solid var(--line);
+            margin-top: 60px;
+            padding: 28px 48px;
+            text-align: center;
+            color: var(--muted-dim);
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
+            .nav-center { display: none; }
+            .page-wrapper { padding: 16px; flex-direction: column; }
+            .sidebar {
+                width: 100%; position: relative; top: 0;
+                display: flex; flex-wrap: wrap; gap: 4px; padding: 12px;
+                border-radius: 12px; max-height: none; height: auto;
+                margin-left: 0;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+            }
+            .sidebar .server-info { display: none; }
+            .sidebar .nav-section { display: flex; flex-wrap: wrap; gap: 4px; }
+            .sidebar .section-title { display: none; }
+            .sidebar .nav-item { padding: 8px 16px; font-size: 14px; width: auto; }
+            .sidebar .divider { display: none; }
+            .server-header { flex-wrap: wrap; }
+            .server-header .info h1 { font-size: 22px; }
+            .server-header .icon { width: 48px; height: 48px; font-size: 20px; }
+            .templates-grid { grid-template-columns: 1fr; }
+            .template-card .details { grid-template-columns: 1fr; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .footer { padding: 20px 16px; }
+            .toast-container { bottom: 16px; right: 16px; max-width: calc(100% - 32px); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/dashboard" class="brand">
+            <div class="brand-logo">
+                <svg viewBox="0 0 245 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M104.4 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zM140.9 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z" fill="#3DFFB8"/>
+                    <path d="M189.5 20H55.5C44.7 20 36 28.7 36 39.5v140.9c0 10.8 8.7 19.5 19.5 19.5h113.5l-5.3-18.5 12.8 11.9 12.1 11.2L209 220V39.5C209 28.7 200.3 20 189.5 20zM155.7 152.1s-3.6-4.3-6.6-8.1c13.1-3.7 18.1-11.9 18.1-11.9-4.1 2.7-8 4.6-11.5 5.9-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.4 1.3-25.9-.1-5.7-1.1-10.6-2.6-14.7-4.3-2.3-.9-4.8-2-7.3-3.4-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.4-.3-2-1.1-3.1-1.9-3.1-1.9 4.7 4.3 9.3 6.5 21.7 10.2-2.9 3.8-6.6 8.1-6.6 8.1-22 0-32.1-15.2-32.1-15.2 0-32.2 14.4-58.4 14.4-58.4 14.4-10.8 28.1-10.5 28.1-10.5l1 1.2C99.2 87.7 87.9 97.4 87.9 97.4s2.9-1.6 7.8-3.8c14.1-6.2 25.3-7.9 29.9-8.3.8-.1 1.5-.2 2.3-.2 8.2-1 17.5-1.3 27.2.2 12.9 2 26.7 7.5 40.8 17.3 0 0-10.8-10.2-28.5-13.7l1.4-1.6s13.7-.3 28.1 10.5c0 0 14.4 26.2 14.4 58.4 0 0-10.2 15.2-32.1 15.2z" fill="#3DFFB8"/>
+                </svg>
+            </div>
+            <span class="brand-name">Sentinal</span>
+        </a>
+        <div class="nav-center">
+            <a href="/dashboard">Home</a>
+            <a href="/servers" class="active">Servers</a>
+            <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
+            <a href="#">Premium</a>
+        </div>
+        <div class="nav-right">
+            <div class="user-pill">
+                <div class="user-avatar">
+                    <% if (locals.user && user.avatar) { %>
+                        <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
+                    <% } else { %>
+                        <%= locals.user ? (user.username ? user.username.charAt(0).toUpperCase() : 'U') : 'U' %>
+                    <% } %>
+                </div>
+                <span class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></span>
+                <span class="user-plan">Free</span>
+            </div>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="page-wrapper">
+
+        <aside class="sidebar">
+            <div class="server-info">
+                <div class="icon">
+                    <% if (locals.guild && guild.icon) { %>
+                        <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
+                    <% } else { %>
+                        <%= locals.guild ? (guild.name ? guild.name.charAt(0).toUpperCase() : '?') : '?' %>
+                    <% } %>
+                </div>
+                <div class="name"><%= locals.guild ? guild.name : 'Server' %></div>
+                <div class="plan">Free</div>
+                <a href="#" class="upgrade" onclick="showToast('Upgrade to Premium!', 'info')">Upgrade to Premium</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Modules</div>
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>" class="nav-item">
+                    <i class="fas fa-th-large"></i> Overview
+                </a>
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets" class="nav-item active">
+                    <i class="fas fa-ticket-alt"></i> Tickets
+                    <span class="badge live">Live</span>
+                </a>
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>/automation" class="nav-item">
+                    <i class="fas fa-robot"></i> Automation
+                    <span class="badge new">New</span>
+                </a>
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>/security" class="nav-item">
+                    <i class="fas fa-shield-halved"></i> Security
+                    <span class="badge live">Live</span>
+                </a>
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>/community" class="nav-item">
+                    <i class="fas fa-users"></i> Community
+                    <span class="badge new">New</span>
+                </a>
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>/audit" class="nav-item">
+                    <i class="fas fa-clipboard-list"></i> Audit & Logs
+                </a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="nav-section">
+                <div class="section-title">Support</div>
+                <button class="nav-item" onclick="showToast('Support server coming soon!', 'info')">
+                    <i class="fas fa-headset"></i> Support Server
+                </button>
+            </div>
+        </aside>
+
+        <div class="content">
+
+            <div class="server-header">
+                <div class="icon">
+                    <% if (locals.guild && guild.icon) { %>
+                        <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
+                    <% } else { %>
+                        <%= locals.guild ? (guild.name ? guild.name.charAt(0).toUpperCase() : '?') : '?' %>
+                    <% } %>
+                </div>
+                <div class="info">
+                    <h1><%= locals.guild ? guild.name : 'Server' %></h1>
+                    <p><i class="fas fa-users"></i> <%= locals.guild ? (guild.approximate_member_count || 'N/A') : 'N/A' %> members</p>
+                </div>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <h1>Ticket Templates</h1>
+                    <div class="sub">Define how tickets behave in your server</div>
+                </div>
+                <button class="btn-primary" onclick="showToast('Create new template form opening...', 'info')">
+                    <i class="fas fa-plus"></i> Create Template
+                </button>
+            </div>
+
+            <div class="templates-grid">
+                <% if (locals.templates && templates.length > 0) { %>
+                    <% templates.forEach(template => { %>
+                        <div class="template-card">
+                            <div class="card-top">
+                                <span class="name"><%= template.name %></span>
+                                <span class="status <%= template.status || 'active' %>">
+                                    <%= template.status || 'Active' %>
+                                </span>
+                            </div>
+                            <div class="description"><%= template.description || 'No description provided.' %></div>
+                            <div class="details">
+                                <div class="detail">
+                                    Channel Name
+                                    <span><%= template.channelName || 'ticket-{user}' %></span>
+                                </div>
+                                <div class="detail">
+                                    Category
+                                    <span><%= template.category || 'Not set' %></span>
+                                </div>
+                                <div class="detail">
+                                    Max Tickets
+                                    <span><%= template.maxTickets || 3 %></span>
+                                </div>
+                                <div class="detail">
+                                    Support Roles
+                                    <span><%= template.supportRoles ? template.supportRoles.length : 0 %> roles</span>
+                                </div>
+                            </div>
+                            <div class="panels-using">
+                                <i class="fas fa-link"></i> Used by:
+                                <% if (template.panels && template.panels.length > 0) { %>
+                                    <% template.panels.forEach(panel => { %>
+                                        <span class="panel-tag"><%= panel %></span>
+                                    <% }) %>
+                                <% } else { %>
+                                    <span style="color: var(--muted-dim);">No panels using this template</span>
+                                <% } %>
+                            </div>
+                            <div class="actions">
+                                <a href="/servers/<%= guild.id %>/tickets/edit/<%= template._id %>" class="btn btn-primary-small">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button class="btn" onclick="showToast('Template duplicated!', 'success')">
+                                    <i class="fas fa-copy"></i> Duplicate
+                                </button>
+                                <button class="btn btn-danger" onclick="showToast('Delete template?', 'error')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="icon"><i class="fas fa-file-alt"></i></div>
+                        <h3>No Templates Yet</h3>
+                        <p>Create your first ticket template to get started.</p>
+                        <button class="btn-primary" style="margin-top: 16px;" onclick="showToast('Create new template form opening...', 'info')">
+                            <i class="fas fa-plus"></i> Create Template
+                        </button>
+                    </div>
+                <% } %>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="footer">
+        © 2026 SENTINAL — STATUS: OPERATIONAL
+    </footer>
+
+    <script>
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i></span>
+                <span class="toast-content">${message}</span>
+                <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+                }
+            }, 4000);
+        }
+
+        window.showToast = showToast;
+    </script>
+
+</body>
+</html>
