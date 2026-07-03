@@ -342,6 +342,123 @@ router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async 
     }
 });
 
+// ============ SERVER QUICK RESPONSES ============
+router.get('/servers/:guildId/tickets/quick-responses', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        console.log('📋 Loading quick responses for guild:', guildId);
+        
+        let QuickResponse;
+        try {
+            QuickResponse = require('../models/QuickResponse');
+        } catch (err) {
+            QuickResponse = { find: async () => [] };
+        }
+        
+        const responses = await QuickResponse.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        console.log(`✅ Found ${responses.length} quick responses`);
+        
+        let GuildConfig;
+        try {
+            GuildConfig = require('../models/GuildConfig');
+        } catch (err) {
+            GuildConfig = { findOne: async () => null };
+        }
+        
+        const config = await GuildConfig.findOne({ guildId }).catch(() => null);
+        
+        // Check if user has access
+        const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+            headers: {
+                Authorization: `Bearer ${req.session.user.access_token}`
+            }
+        });
+        
+        const userGuild = guildsResponse.data.find(g => g.id === guildId);
+        if (!userGuild || !(userGuild.permissions & 0x8)) {
+            return res.status(403).render('error', {
+                message: 'You do not have administrator access to this server.',
+                title: 'Access Denied'
+            });
+        }
+        
+        res.render('quick-responses', {
+            title: 'Quick Responses — Sentinal',
+            user: req.session.user,
+            guild: { id: guildId },
+            responses: responses,
+            config: config || {},
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading quick responses:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load quick responses',
+            title: 'Error'
+        });
+    }
+});
+
+// ============ SERVER TRANSCRIPTS ============
+router.get('/servers/:guildId/tickets/transcripts', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        console.log('📋 Loading transcripts for guild:', guildId);
+        
+        let Transcript;
+        try {
+            Transcript = require('../models/Transcript');
+        } catch (err) {
+            Transcript = { find: async () => [] };
+        }
+        
+        const transcripts = await Transcript.find({ guildId })
+            .sort({ createdAt: -1 })
+            .limit(50)
+            .catch(() => []);
+        console.log(`✅ Found ${transcripts.length} transcripts`);
+        
+        let GuildConfig;
+        try {
+            GuildConfig = require('../models/GuildConfig');
+        } catch (err) {
+            GuildConfig = { findOne: async () => null };
+        }
+        
+        const config = await GuildConfig.findOne({ guildId }).catch(() => null);
+        
+        // Check if user has access
+        const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+            headers: {
+                Authorization: `Bearer ${req.session.user.access_token}`
+            }
+        });
+        
+        const userGuild = guildsResponse.data.find(g => g.id === guildId);
+        if (!userGuild || !(userGuild.permissions & 0x8)) {
+            return res.status(403).render('error', {
+                message: 'You do not have administrator access to this server.',
+                title: 'Access Denied'
+            });
+        }
+        
+        res.render('transcripts', {
+            title: 'Transcripts — Sentinal',
+            user: req.session.user,
+            guild: { id: guildId },
+            transcripts: transcripts,
+            config: config || {},
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading transcripts:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load transcripts',
+            title: 'Error'
+        });
+    }
+});
+
 // ============ SERVER AUTOMATION ============
 router.get('/servers/:guildId/automation', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
@@ -750,6 +867,111 @@ router.delete('/api/tickets/:id', isAuthenticated, ensureValidToken, async (req,
     }
 });
 
+// ============ API: QUICK RESPONSES ============
+router.get('/api/quick-responses/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        let QuickResponse;
+        try {
+            QuickResponse = require('../models/QuickResponse');
+        } catch (err) {
+            return res.status(500).json({ success: false, error: 'QuickResponse model not found' });
+        }
+        
+        const responses = await QuickResponse.find({ guildId }).sort({ createdAt: -1 });
+        res.json({ success: true, responses });
+    } catch (error) {
+        console.error('Error fetching quick responses:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.post('/api/quick-responses', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const QuickResponse = require('../models/QuickResponse');
+        const response = await QuickResponse.create(req.body);
+        res.json({ success: true, response });
+    } catch (error) {
+        console.error('Error creating quick response:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.put('/api/quick-responses/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const QuickResponse = require('../models/QuickResponse');
+        const response = await QuickResponse.findById(req.params.id);
+        if (!response) {
+            return res.status(404).json({ success: false, error: 'Response not found' });
+        }
+        
+        const { name, content, enabled } = req.body;
+        response.name = name || response.name;
+        response.content = content || response.content;
+        if (enabled !== undefined) response.enabled = enabled;
+        
+        await response.save();
+        res.json({ success: true, response });
+    } catch (error) {
+        console.error('Error updating quick response:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.delete('/api/quick-responses/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const QuickResponse = require('../models/QuickResponse');
+        await QuickResponse.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting quick response:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: TRANSCRIPTS ============
+router.get('/api/transcripts/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        let Transcript;
+        try {
+            Transcript = require('../models/Transcript');
+        } catch (err) {
+            return res.status(500).json({ success: false, error: 'Transcript model not found' });
+        }
+        
+        const transcripts = await Transcript.find({ guildId })
+            .sort({ createdAt: -1 })
+            .limit(50);
+        res.json({ success: true, transcripts });
+    } catch (error) {
+        console.error('Error fetching transcripts:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.get('/api/transcripts/:guildId/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        const id = req.params.id;
+        let Transcript;
+        try {
+            Transcript = require('../models/Transcript');
+        } catch (err) {
+            return res.status(500).json({ success: false, error: 'Transcript model not found' });
+        }
+        
+        const transcript = await Transcript.findOne({ _id: id, guildId });
+        if (!transcript) {
+            return res.status(404).json({ success: false, error: 'Transcript not found' });
+        }
+        res.json({ success: true, transcript });
+    } catch (error) {
+        console.error('Error fetching transcript:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // ============ API: CONFIG (GET) ============
 router.get('/api/config/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
@@ -821,11 +1043,10 @@ router.post('/api/config/:guildId', isAuthenticated, ensureValidToken, async (re
             });
         }
         
-        // ✅ FIND OR CREATE - This is the important part!
+        // ✅ FIND OR CREATE
         let config = await GuildConfig.findOne({ guildId });
         
         if (!config) {
-            // Create new config if it doesn't exist
             config = new GuildConfig({ guildId });
         }
         
