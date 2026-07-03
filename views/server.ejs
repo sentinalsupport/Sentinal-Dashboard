@@ -107,7 +107,7 @@
 
         /* ============ SIDEBAR - FLUSH LEFT ============ */
         .sidebar {
-            width: 240px;
+            width: 280px;  /* CHANGED: from 240px to 280px - MAKES SIDEBAR BIGGER */
             flex-shrink: 0;
             background: var(--panel);
             border: 1px solid var(--line);
@@ -553,6 +553,11 @@
                     <i class="fas fa-users"></i> Community
                     <span class="badge new">New</span>
                 </a>
+                <!-- ✅ ADDED TICKETS LINK -->
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets" class="nav-item">
+                    <i class="fas fa-ticket-alt"></i> Tickets
+                    <span class="badge live">Live</span>
+                </a>
                 <a href="/servers/<%= locals.guild ? guild.id : '' %>/audit" class="nav-item">
                     <i class="fas fa-clipboard-list"></i> Audit & Logs
                 </a>
@@ -591,6 +596,8 @@
                 <button class="tab" onclick="showModule('automation')">Automation</button>
                 <button class="tab" onclick="showModule('security')">Security</button>
                 <button class="tab" onclick="showModule('community')">Community</button>
+                <!-- ✅ ADDED TICKETS TAB -->
+                <button class="tab" onclick="showModule('tickets')">Tickets</button>
                 <button class="tab" onclick="showModule('audit')">Audit & Logs</button>
             </div>
 
@@ -752,6 +759,62 @@
                         <div class="card-desc">Create and manage giveaways for your server members to enter.</div>
                         <div class="card-actions">
                             <button class="btn-config" onclick="showToast('Giveaways coming soon!', 'info')">
+                                <i class="fas fa-cog"></i> Configure
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ ADDED TICKETS PANEL -->
+            <!-- TICKETS -->
+            <div class="module-panel" id="module-tickets">
+                <div class="section-header">Tickets</div>
+                <div class="module-grid">
+                    <div class="module-card">
+                        <div class="card-header">
+                            <span class="card-title">Templates</span>
+                            <span class="card-badge live">Live</span>
+                        </div>
+                        <div class="card-desc">Create tickets for users to open in your server</div>
+                        <div class="card-actions">
+                            <button class="btn-config" onclick="showToast('Templates coming soon!', 'info')">
+                                <i class="fas fa-cog"></i> Configure
+                            </button>
+                        </div>
+                    </div>
+                    <div class="module-card">
+                        <div class="card-header">
+                            <span class="card-title">Panels</span>
+                            <span class="card-badge live">Live</span>
+                        </div>
+                        <div class="card-desc">Organize your tickets into panels</div>
+                        <div class="card-actions">
+                            <button class="btn-config" onclick="showToast('Panels coming soon!', 'info')">
+                                <i class="fas fa-cog"></i> Configure
+                            </button>
+                        </div>
+                    </div>
+                    <div class="module-card">
+                        <div class="card-header">
+                            <span class="card-title">Quick Responses</span>
+                            <span class="card-badge live">Live</span>
+                        </div>
+                        <div class="card-desc">Create quick responses to answer common questions</div>
+                        <div class="card-actions">
+                            <button class="btn-config" onclick="showToast('Quick responses coming soon!', 'info')">
+                                <i class="fas fa-cog"></i> Configure
+                            </button>
+                        </div>
+                    </div>
+                    <div class="module-card">
+                        <div class="card-header">
+                            <span class="card-title">Transcripts</span>
+                            <span class="card-badge live">Live</span>
+                        </div>
+                        <div class="card-desc">Get a comprehensive view of all open and closed tickets</div>
+                        <div class="card-actions">
+                            <button class="btn-config" onclick="showToast('Transcripts coming soon!', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
