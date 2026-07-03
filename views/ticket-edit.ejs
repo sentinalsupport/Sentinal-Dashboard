@@ -593,4 +593,491 @@
                                     <span class="status-dot <%= template ? template.status || 'active' : 'active' %>" id="statusDot"></span>
                                     <select id="status" name="status" class="form-control" onchange="updateStatusDot()">
                                         <option value="active" <%= template && template.status === 'active' ? 'selected' : '' %>>● Active</option>
-                                        <option value="draft" <%= template && template.status === 'draft' ? 'selected' : '' %>>
+                                        <option value="draft" <%= template && template.status === 'draft' ? 'selected' : '' %>>● Draft</option>
+                                        <option value="disabled" <%= template && template.status === 'disabled' ? 'selected' : '' %>>● Disabled</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== TICKET SETTINGS ===== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-sliders-h" style="color: var(--signal);"></i> Ticket Settings
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <select id="category" name="category" class="form-control">
+                                    <option value="">None</option>
+                                    <% if (channels) { %>
+                                        <% channels.filter(c => c.type === 4).forEach(cat => { %>
+                                            <option value="<%= cat.id %>" <%= template && template.category === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="transcriptChannel">Transcript Channel</label>
+                                <select id="transcriptChannel" name="transcriptChannel" class="form-control">
+                                    <option value="">None</option>
+                                    <% if (channels) { %>
+                                        <% channels.filter(c => c.type === 0).forEach(ch => { %>
+                                            <option value="<%= ch.id %>" <%= template && template.transcriptChannel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="channelName">Ticket Name Format</label>
+                                <select id="channelNamePreset" class="form-control" onchange="updateChannelName()">
+                                    <option value="ticket-{user}" <%= template && template.channelName === 'ticket-{user}' ? 'selected' : '' %>>ticket-{user}</option>
+                                    <option value="ticket-{number}" <%= template && template.channelName === 'ticket-{number}' ? 'selected' : '' %>>ticket-{number}</option>
+                                    <option value="support-{user}" <%= template && template.channelName === 'support-{user}' ? 'selected' : '' %>>support-{user}</option>
+                                    <option value="custom" <%= template && !['ticket-{user}','ticket-{number}','support-{user}'].includes(template.channelName) ? 'selected' : '' %>>custom...</option>
+                                </select>
+                                <input type="text" id="channelName" name="channelName" class="form-control" style="margin-top: 8px;" value="<%= template ? template.channelName : 'ticket-{user}' %>" placeholder="Custom format">
+                                <div class="help-text">Variables: {user}, {id}, {number}</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="topic">Channel Topic</label>
+                                <input type="text" id="topic" name="topic" class="form-control" value="<%= template ? template.topic : '' %>" placeholder="Optional channel topic">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== SUPPORT ROLES ===== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-user-shield" style="color: var(--signal);"></i> Support Roles
+                        </div>
+                        <div class="form-group">
+                            <label>Select Roles</label>
+                            <select id="supportRoles" class="form-control" style="margin-bottom: 8px;" onchange="addRoleChip()">
+                                <option value="">▼ Select roles...</option>
+                                <% if (roles) { %>
+                                    <% roles.forEach(role => { %>
+                                        <option value="<%= role.id %>|<%= role.name %>"><%= role.name %></option>
+                                    <% }) %>
+                                <% } %>
+                            </select>
+                            <div class="chip-container" id="roleChips">
+                                <% if (template && template.supportRoles) { %>
+                                    <% template.supportRoles.forEach(roleId => { %>
+                                        <% const role = roles.find(r => r.id === roleId); %>
+                                        <% if (role) { %>
+                                            <span class="chip" data-role-id="<%= role.id %>">
+                                                <%= role.name %>
+                                                <span class="remove" onclick="removeRoleChip(this)">×</span>
+                                            </span>
+                                        <% } %>
+                                    <% }) %>
+                                <% } %>
+                            </div>
+                            <input type="hidden" name="supportRoles" id="supportRolesHidden" value="<%= template && template.supportRoles ? template.supportRoles.join(',') : '' %>">
+                            <div class="help-text">Selected roles will have access to tickets</div>
+                        </div>
+                    </div>
+
+                    <!-- ===== PERMISSIONS ===== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-lock" style="color: var(--signal);"></i> Permissions
+                        </div>
+                        <div class="form-group">
+                            <label for="permissionPreset">Permission Preset</label>
+                            <select id="permissionPreset" class="form-control" onchange="updatePermissions()">
+                                <option value="support">Support</option>
+                                <option value="moderator">Moderator</option>
+                                <option value="admin">Admin</option>
+                                <option value="custom" <%= template && template.permissions ? 'selected' : '' %>>Custom</option>
+                            </select>
+                        </div>
+                        <div class="permission-grid" id="permissionGrid">
+                            <label><input type="checkbox" name="perm_close" <%= template && template.permissions && template.permissions.closeTicket ? 'checked' : '' %>> Close Ticket</label>
+                            <label><input type="checkbox" name="perm_delete" <%= template && template.permissions && template.permissions.deleteTicket ? 'checked' : '' %>> Delete Ticket</label>
+                            <label><input type="checkbox" name="perm_rename" <%= template && template.permissions && template.permissions.renameTicket ? 'checked' : '' %>> Rename Ticket</label>
+                            <label><input type="checkbox" name="perm_claim" <%= template && template.permissions && template.permissions.claimTicket ? 'checked' : '' %>> Claim Ticket</label>
+                            <label><input type="checkbox" name="perm_adduser" <%= template && template.permissions && template.permissions.addUser ? 'checked' : '' %>> Add Users</label>
+                            <label><input type="checkbox" name="perm_removeuser" <%= template && template.permissions && template.permissions.removeUser ? 'checked' : '' %>> Remove Users</label>
+                        </div>
+                    </div>
+
+                    <!-- ===== AUTO CLOSE ===== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-clock" style="color: var(--signal);"></i> Auto Close
+                        </div>
+                        <div class="form-group">
+                            <div class="toggle-wrapper">
+                                <div class="toggle <%= template && template.autoClose && template.autoClose.enabled ? 'active' : '' %>" onclick="toggleSwitch(this)">
+                                    <div class="toggle-knob"></div>
+                                </div>
+                                <span>Enable Auto Close</span>
+                            </div>
+                            <input type="hidden" name="autoCloseEnabled" id="autoCloseEnabled" value="<%= template && template.autoClose && template.autoClose.enabled ? 'true' : 'false' %>">
+                        </div>
+                        <div class="form-row" id="autoCloseSettings" style="<%= template && template.autoClose && template.autoClose.enabled ? '' : 'display: none;' %>">
+                            <div class="form-group">
+                                <label for="autoCloseTimeout">Time</label>
+                                <select id="autoCloseTimeout" name="autoCloseTimeout" class="form-control">
+                                    <option value="1" <%= template && template.autoClose && template.autoClose.timeout === 1 ? 'selected' : '' %>>1 hour</option>
+                                    <option value="6" <%= template && template.autoClose && template.autoClose.timeout === 6 ? 'selected' : '' %>>6 hours</option>
+                                    <option value="12" <%= template && template.autoClose && template.autoClose.timeout === 12 ? 'selected' : '' %>>12 hours</option>
+                                    <option value="24" <%= template && template.autoClose && template.autoClose.timeout === 24 ? 'selected' : '' %>>24 hours</option>
+                                    <option value="48" <%= template && template.autoClose && template.autoClose.timeout === 48 ? 'selected' : '' %>>48 hours</option>
+                                    <option value="168" <%= template && template.autoClose && template.autoClose.timeout === 168 ? 'selected' : '' %>>7 days</option>
+                                    <option value="720" <%= template && template.autoClose && template.autoClose.timeout === 720 ? 'selected' : '' %>>30 days</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="autoCloseReminder">Reminder (minutes before)</label>
+                                <input type="number" id="autoCloseReminder" name="autoCloseReminder" class="form-control" value="<%= template && template.autoClose ? template.autoClose.reminder || 15 : 15 %>" min="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== WELCOME MESSAGE ===== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-envelope" style="color: var(--signal);"></i> Welcome Message
+                        </div>
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(this, 'message')">Message</button>
+                            <button class="tab-btn" onclick="switchTab(this, 'embed')">Embed</button>
+                            <button class="tab-btn" onclick="switchTab(this, 'preview')">Preview</button>
+                        </div>
+                        <div id="tab-message" class="tab-content active">
+                            <div class="form-group">
+                                <label for="welcomeMessage">Message Content</label>
+                                <textarea id="welcomeMessage" name="welcomeMessage" class="form-control" rows="4" oninput="updatePreview()"><%= template ? template.welcomeMessage || 'Welcome {mention}!\n\nA member of our support team will assist you shortly.' : 'Welcome {mention}!\n\nA member of our support team will assist you shortly.' %></textarea>
+                                <div class="help-text">Variables: {user}, {mention}, {username}, {ticket}, {number}, {server}</div>
+                            </div>
+                        </div>
+                        <div id="tab-embed" class="tab-content">
+                            <div class="form-group">
+                                <label for="embedTitle">Embed Title</label>
+                                <input type="text" id="embedTitle" class="form-control" placeholder="🎫 Ticket Created" oninput="updatePreview()">
+                            </div>
+                            <div class="form-group">
+                                <label for="embedDescription">Embed Description</label>
+                                <textarea id="embedDescription" class="form-control" rows="3" placeholder="Your ticket has been created!" oninput="updatePreview()"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="embedColor">Color</label>
+                                    <input type="color" id="embedColor" class="form-control" value="#3DFFB8" style="padding: 4px; height: 44px;" oninput="updatePreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label for="embedFooter">Footer</label>
+                                    <input type="text" id="embedFooter" class="form-control" placeholder="Sentinal Ticket System" oninput="updatePreview()">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="embedImage">Image URL</label>
+                                <input type="text" id="embedImage" class="form-control" placeholder="https://example.com/image.png" oninput="updatePreview()">
+                            </div>
+                        </div>
+                        <div id="tab-preview" class="tab-content">
+                            <div class="embed-preview" id="embedPreview">
+                                <div class="embed-title" id="previewTitle">🎫 Ticket Created</div>
+                                <div class="embed-desc" id="previewDesc">Welcome {mention}! A member of our support team will assist you shortly.</div>
+                                <div class="embed-footer" id="previewFooter">Sentinal Ticket System</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== ADVANCED SETTINGS (Accordion) ===== -->
+                    <div class="form-section">
+                        <div class="accordion open">
+                            <div class="accordion-header" onclick="toggleAccordion(this)">
+                                <span>▼ Advanced Settings</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="accordion-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="maxTickets">Max Tickets per User</label>
+                                        <input type="number" id="maxTickets" name="maxTickets" class="form-control" value="<%= template ? template.maxTickets || 3 : 3 %>" min="1" max="10">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cooldown">Ticket Cooldown (seconds)</label>
+                                        <input type="number" id="cooldown" name="cooldown" class="form-control" value="<%= template ? template.cooldown || 600 : 600 %>" min="0">
+                                    </div>
+                                </div>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="pinWelcome" <%= template && template.pinWelcome ? 'checked' : '' %>> Pin Welcome Message</label>
+                                    <label><input type="checkbox" name="autoMentionSupport" <%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'checked' : '') : 'checked' %>> Auto Mention Support Roles</label>
+                                    <label><input type="checkbox" name="lockOnClose" <%= template && template.lockOnClose !== undefined ? (template.lockOnClose ? 'checked' : '') : 'checked' %>> Lock on Close</label>
+                                    <label><input type="checkbox" name="deleteOnClose" <%= template && template.deleteOnClose ? 'checked' : '' %>> Delete on Close</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== BUTTONS ===== -->
+                    <div class="btn-group">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Save Template
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="button" class="btn-danger" style="margin-left: auto;" onclick="deleteTemplate()">
+                            <i class="fas fa-trash"></i> Delete Template
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="footer">
+        © 2026 SENTINAL — STATUS: OPERATIONAL
+    </footer>
+
+    <script>
+        const templateId = '<%= template ? template._id : "" %>';
+        const guildId = '<%= guild.id %>';
+
+        // ===== TOAST =====
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i></span>
+                <span class="toast-content">${message}</span>
+                <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+                }
+            }, 4000);
+        }
+
+        // ===== STATUS DOT =====
+        function updateStatusDot() {
+            const status = document.getElementById('status').value;
+            const dot = document.getElementById('statusDot');
+            dot.className = 'status-dot ' + status;
+        }
+
+        // ===== CHANNEL NAME =====
+        function updateChannelName() {
+            const preset = document.getElementById('channelNamePreset').value;
+            const customInput = document.getElementById('channelName');
+            if (preset === 'custom') {
+                customInput.style.display = 'block';
+                customInput.value = '';
+            } else {
+                customInput.style.display = 'block';
+                customInput.value = preset;
+            }
+        }
+
+        // ===== ROLE CHIPS =====
+        function addRoleChip() {
+            const select = document.getElementById('supportRoles');
+            const value = select.value;
+            if (!value) return;
+            const [id, name] = value.split('|');
+            const container = document.getElementById('roleChips');
+            if (container.querySelector(`[data-role-id="${id}"]`)) {
+                select.value = '';
+                return;
+            }
+            const chip = document.createElement('span');
+            chip.className = 'chip';
+            chip.dataset.roleId = id;
+            chip.innerHTML = `${name} <span class="remove" onclick="removeRoleChip(this)">×</span>`;
+            container.appendChild(chip);
+            updateRoleHidden();
+            select.value = '';
+        }
+
+        function removeRoleChip(el) {
+            el.parentElement.remove();
+            updateRoleHidden();
+        }
+
+        function updateRoleHidden() {
+            const chips = document.querySelectorAll('#roleChips .chip');
+            const ids = Array.from(chips).map(c => c.dataset.roleId);
+            document.getElementById('supportRolesHidden').value = ids.join(',');
+        }
+
+        // ===== TOGGLE SWITCH =====
+        function toggleSwitch(el) {
+            el.classList.toggle('active');
+            const isActive = el.classList.contains('active');
+            document.getElementById('autoCloseEnabled').value = isActive ? 'true' : 'false';
+            document.getElementById('autoCloseSettings').style.display = isActive ? 'grid' : 'none';
+        }
+
+        // ===== PERMISSIONS =====
+        function updatePermissions() {
+            const preset = document.getElementById('permissionPreset').value;
+            const checkboxes = document.querySelectorAll('#permissionGrid input[type="checkbox"]');
+            
+            const presets = {
+                support: { close: true, delete: false, rename: false, claim: true, adduser: false, removeuser: false },
+                moderator: { close: true, delete: true, rename: true, claim: true, adduser: true, removeuser: true },
+                admin: { close: true, delete: true, rename: true, claim: true, adduser: true, removeuser: true }
+            };
+
+            if (preset !== 'custom') {
+                const p = presets[preset];
+                checkboxes.forEach(cb => {
+                    const name = cb.name.replace('perm_', '');
+                    cb.checked = p[name] || false;
+                });
+            }
+        }
+
+        // ===== TABS =====
+        function switchTab(el, tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        // ===== PREVIEW =====
+        function updatePreview() {
+            const message = document.getElementById('welcomeMessage').value || 'Welcome {mention}!';
+            document.getElementById('previewDesc').textContent = message;
+            
+            const title = document.getElementById('embedTitle').value || '🎫 Ticket Created';
+            document.getElementById('previewTitle').textContent = title;
+            
+            const footer = document.getElementById('embedFooter').value || 'Sentinal Ticket System';
+            document.getElementById('previewFooter').textContent = footer;
+            
+            const color = document.getElementById('embedColor').value || '#3DFFB8';
+            document.querySelector('.embed-preview').style.borderLeftColor = color;
+        }
+
+        // ===== ACCORDION =====
+        function toggleAccordion(el) {
+            const accordion = el.closest('.accordion');
+            accordion.classList.toggle('open');
+        }
+
+        // ===== SAVE TEMPLATE =====
+        async function saveTemplate(event) {
+            event.preventDefault();
+            const form = document.getElementById('templateForm');
+            const formData = new FormData(form);
+
+            const data = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                status: formData.get('status'),
+                category: formData.get('category'),
+                transcriptChannel: formData.get('transcriptChannel'),
+                channelName: formData.get('channelName'),
+                topic: formData.get('topic'),
+                welcomeMessage: formData.get('welcomeMessage'),
+                supportRoles: document.getElementById('supportRolesHidden').value.split(',').filter(Boolean),
+                maxTickets: parseInt(formData.get('maxTickets')) || 3,
+                cooldown: parseInt(formData.get('cooldown')) || 600,
+                pinWelcome: formData.get('pinWelcome') === 'on',
+                autoMentionSupport: formData.get('autoMentionSupport') === 'on',
+                lockOnClose: formData.get('lockOnClose') === 'on',
+                deleteOnClose: formData.get('deleteOnClose') === 'on',
+                autoClose: {
+                    enabled: document.getElementById('autoCloseEnabled').value === 'true',
+                    timeout: parseInt(formData.get('autoCloseTimeout')) || 48,
+                    reminder: parseInt(formData.get('autoCloseReminder')) || 15
+                },
+                permissions: {
+                    closeTicket: document.querySelector('input[name="perm_close"]').checked,
+                    deleteTicket: document.querySelector('input[name="perm_delete"]').checked,
+                    renameTicket: document.querySelector('input[name="perm_rename"]').checked,
+                    claimTicket: document.querySelector('input[name="perm_claim"]').checked,
+                    addUser: document.querySelector('input[name="perm_adduser"]').checked,
+                    removeUser: document.querySelector('input[name="perm_removeuser"]').checked
+                }
+            };
+
+            try {
+                const url = templateId ? `/api/tickets/${templateId}` : '/api/tickets';
+                const method = templateId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('✅ Template saved successfully!', 'success');
+                    if (!templateId) {
+                        setTimeout(() => {
+                            window.location.href = `/servers/${guildId}/tickets/templates`;
+                        }, 1500);
+                    }
+                } else {
+                    showToast('❌ Error: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // ===== DELETE TEMPLATE =====
+        function deleteTemplate() {
+            if (!templateId) return;
+            if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) return;
+            
+            fetch(`/api/tickets/${templateId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('✅ Template deleted successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = `/servers/${guildId}/tickets/templates`;
+                    }, 1500);
+                } else {
+                    showToast('❌ Error: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                showToast('❌ Error: ' + error.message, 'error');
+            });
+        }
+
+        // ===== INIT =====
+        updateStatusDot();
+        updatePreview();
+
+        window.showToast = showToast;
+        window.updateStatusDot = updateStatusDot;
+        window.updateChannelName = updateChannelName;
+        window.addRoleChip = addRoleChip;
+        window.removeRoleChip = removeRoleChip;
+        window.toggleSwitch = toggleSwitch;
+        window.updatePermissions = updatePermissions;
+        window.switchTab = switchTab;
+        window.updatePreview = updatePreview;
+        window.toggleAccordion = toggleAccordion;
+        window.saveTemplate = saveTemplate;
+        window.deleteTemplate = deleteTemplate;
+    </script>
+
+</body>
+</html>
