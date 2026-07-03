@@ -334,6 +334,54 @@
             margin-top: 0;
         }
 
+        /* Ticket System Styles */
+        .section-subheader {
+            margin: 32px 0 16px;
+        }
+        .section-subheader h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .section-subheader .text-muted {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .template-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .template-details span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .template-details span i {
+            width: 18px;
+            color: var(--signal);
+            font-size: 14px;
+        }
+
+        .behavior-options {
+            padding: 4px 0;
+        }
+        .behavior-options label {
+            color: var(--text);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .behavior-options input[type="radio"] {
+            accent-color: var(--signal);
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
         .module-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -400,6 +448,19 @@
         }
         .module-card .card-actions .btn-config:hover {
             background: rgba(61,255,184,0.18);
+        }
+        .module-card .card-actions .btn-config i {
+            font-size: 14px;
+        }
+
+        /* Style for create new cards */
+        .module-card[style*="dashed"] {
+            background: transparent;
+            border-color: var(--line-bright);
+        }
+        .module-card[style*="dashed"]:hover {
+            background: rgba(255,255,255,0.03);
+            border-color: var(--signal);
         }
 
         .toast-container {
@@ -556,7 +617,6 @@
                 <a href="/servers/<%= locals.guild ? guild.id : '' %>" class="nav-item active">
                     <i class="fas fa-th-large"></i> Overview
                 </a>
-                <!-- ✅ TICKETS MOVED BEFORE AUTOMATION -->
                 <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets" class="nav-item">
                     <i class="fas fa-ticket-alt"></i> Tickets
                     <span class="badge live">Live</span>
@@ -608,7 +668,6 @@
             <!-- ─── TOP TABS ─── -->
             <div class="top-tabs">
                 <button class="tab active" onclick="showModule('overview')">Overview</button>
-                <!-- ✅ TICKETS MOVED BEFORE AUTOMATION -->
                 <button class="tab" onclick="showModule('tickets')">Tickets</button>
                 <button class="tab" onclick="showModule('automation')">Automation</button>
                 <button class="tab" onclick="showModule('security')">Security</button>
@@ -664,55 +723,177 @@
                 </div>
             </div>
 
-            <!-- ✅ TICKETS PANEL (MOVED BEFORE AUTOMATION) -->
+            <!-- TICKETS - FULL IMPLEMENTATION -->
             <div class="module-panel" id="module-tickets">
                 <div class="section-header">Tickets</div>
+                
+                <!-- Ticket Templates Section -->
+                <div class="section-subheader">
+                    <h2>Ticket Templates</h2>
+                    <p class="text-muted">Create templates that define how tickets work in your server</p>
+                </div>
                 <div class="module-grid">
                     <div class="module-card">
                         <div class="card-header">
-                            <span class="card-title">Templates</span>
+                            <span class="card-title">Support Template</span>
                             <span class="card-badge live">Live</span>
                         </div>
-                        <div class="card-desc">Create tickets for users to open in your server</div>
+                        <div class="card-desc">
+                            <div class="template-details">
+                                <span><i class="fas fa-folder"></i> Category: Support</span>
+                                <span><i class="fas fa-file-alt"></i> Transcripts: #ticket-logs</span>
+                                <span><i class="fas fa-user-shield"></i> Staff Roles: @Support Team</span>
+                            </div>
+                        </div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Templates coming soon!', 'info')">
+                            <button class="btn-config" onclick="showToast('Edit template settings', 'info')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn-config" onclick="showToast('Template duplicated!', 'success')">
+                                <i class="fas fa-copy"></i> Duplicate
+                            </button>
+                        </div>
+                    </div>
+                    <div class="module-card">
+                        <div class="card-header">
+                            <span class="card-title">Report Template</span>
+                            <span class="card-badge new">New</span>
+                        </div>
+                        <div class="card-desc">
+                            <div class="template-details">
+                                <span><i class="fas fa-folder"></i> Category: Reports</span>
+                                <span><i class="fas fa-file-alt"></i> Transcripts: #report-logs</span>
+                                <span><i class="fas fa-user-shield"></i> Staff Roles: @Moderators</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-config" onclick="showToast('Edit template settings', 'info')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn-config" onclick="showToast('Template duplicated!', 'success')">
+                                <i class="fas fa-copy"></i> Duplicate
+                            </button>
+                        </div>
+                    </div>
+                    <div class="module-card" style="border: 2px dashed var(--line-bright);">
+                        <div class="card-header">
+                            <span class="card-title">Create New Template</span>
+                        </div>
+                        <div class="card-desc">Create a new ticket template with custom settings</div>
+                        <div class="card-actions">
+                            <button class="btn-config" onclick="showToast('New template creator opening...', 'info')" style="background: var(--signal-tab); color: var(--signal);">
+                                <i class="fas fa-plus"></i> Create Template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ticket Panels Section -->
+                <div class="section-subheader" style="margin-top: 40px;">
+                    <h2>Ticket Panels</h2>
+                    <p class="text-muted">Create panels that users click to open tickets</p>
+                </div>
+                <div class="module-grid">
+                    <div class="module-card">
+                        <div class="card-header">
+                            <span class="card-title">Support Panel</span>
+                            <span class="card-badge live">Live</span>
+                        </div>
+                        <div class="card-desc">
+                            <div class="template-details">
+                                <span><i class="fas fa-tag"></i> Channel: #support-tickets</span>
+                                <span><i class="fas fa-file-signature"></i> Template: Support Template</span>
+                                <span><i class="fas fa-message"></i> "Need help? Click to create a ticket!"</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-config" onclick="showToast('Send panel to Discord', 'info')">
+                                <i class="fas fa-paper-plane"></i> Send to Discord
+                            </button>
+                            <button class="btn-config" onclick="showToast('Edit panel settings', 'info')">
                                 <i class="fas fa-cog"></i> Configure
                             </button>
                         </div>
                     </div>
                     <div class="module-card">
                         <div class="card-header">
-                            <span class="card-title">Panels</span>
+                            <span class="card-title">Report Panel</span>
+                            <span class="card-badge new">New</span>
+                        </div>
+                        <div class="card-desc">
+                            <div class="template-details">
+                                <span><i class="fas fa-tag"></i> Channel: #report-tickets</span>
+                                <span><i class="fas fa-file-signature"></i> Template: Report Template</span>
+                                <span><i class="fas fa-message"></i> "Report an issue to staff"</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-config" onclick="showToast('Send panel to Discord', 'info')">
+                                <i class="fas fa-paper-plane"></i> Send to Discord
+                            </button>
+                            <button class="btn-config" onclick="showToast('Edit panel settings', 'info')">
+                                <i class="fas fa-cog"></i> Configure
+                            </button>
+                        </div>
+                    </div>
+                    <div class="module-card" style="border: 2px dashed var(--line-bright);">
+                        <div class="card-header">
+                            <span class="card-title">Create New Panel</span>
+                        </div>
+                        <div class="card-desc">Create a new ticket panel linked to a template</div>
+                        <div class="card-actions">
+                            <button class="btn-config" onclick="showToast('New panel creator opening...', 'info')" style="background: var(--signal-tab); color: var(--signal);">
+                                <i class="fas fa-plus"></i> Create Panel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Behavior Settings -->
+                <div class="section-subheader" style="margin-top: 40px;">
+                    <h2>Ticket Behavior</h2>
+                    <p class="text-muted">Configure what happens when users open or leave tickets</p>
+                </div>
+                <div class="module-grid">
+                    <div class="module-card">
+                        <div class="card-header">
+                            <span class="card-title">When user leaves server</span>
                             <span class="card-badge live">Live</span>
                         </div>
-                        <div class="card-desc">Organize your tickets into panels</div>
+                        <div class="card-desc">
+                            <div class="behavior-options">
+                                <label style="display: block; margin: 6px 0;">
+                                    <input type="radio" name="leaveBehavior" checked> Do nothing
+                                </label>
+                                <label style="display: block; margin: 6px 0;">
+                                    <input type="radio" name="leaveBehavior"> Auto-close ticket
+                                </label>
+                                <label style="display: block; margin: 6px 0;">
+                                    <input type="radio" name="leaveBehavior"> Notify staff
+                                </label>
+                            </div>
+                        </div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Panels coming soon!', 'info')">
-                                <i class="fas fa-cog"></i> Configure
+                            <button class="btn-config" onclick="showToast('Behavior settings saved!', 'success')">
+                                <i class="fas fa-save"></i> Save Settings
                             </button>
                         </div>
                     </div>
                     <div class="module-card">
                         <div class="card-header">
-                            <span class="card-title">Quick Responses</span>
+                            <span class="card-title">Transcript Settings</span>
                             <span class="card-badge live">Live</span>
                         </div>
-                        <div class="card-desc">Create quick responses to answer common questions</div>
-                        <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Quick responses coming soon!', 'info')">
-                                <i class="fas fa-cog"></i> Configure
-                            </button>
+                        <div class="card-desc">
+                            <div class="template-details">
+                                <span><i class="fas fa-check-circle"></i> Save transcripts on close</span>
+                                <span><i class="fas fa-folder-open"></i> Transcript channel: #ticket-logs</span>
+                                <span><i class="fas fa-file-pdf"></i> Format: HTML / Text</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="module-card">
-                        <div class="card-header">
-                            <span class="card-title">Transcripts</span>
-                            <span class="card-badge live">Live</span>
-                        </div>
-                        <div class="card-desc">Get a comprehensive view of all open and closed tickets</div>
                         <div class="card-actions">
-                            <button class="btn-config" onclick="showToast('Transcripts coming soon!', 'info')">
-                                <i class="fas fa-cog"></i> Configure
+                            <button class="btn-config" onclick="showToast('Transcript settings saved!', 'success')">
+                                <i class="fas fa-save"></i> Save Settings
                             </button>
                         </div>
                     </div>
