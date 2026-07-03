@@ -445,4 +445,268 @@
                 <span class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></span>
                 <span class="user-plan">Free</span>
             </div>
-            <a href="/logout" class="
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="page-wrapper">
+
+        <aside class="sidebar">
+            <div class="server-info">
+                <div class="icon">
+                    <% if (locals.guild && guild.icon) { %>
+                        <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
+                    <% } else { %>
+                        <%= locals.guild ? (guild.name ? guild.name.charAt(0).toUpperCase() : '?') : '?' %>
+                    <% } %>
+                </div>
+                <div class="name"><%= locals.guild ? guild.name : 'Server' %></div>
+                <div class="plan">Free</div>
+                <a href="#" class="upgrade" onclick="showToast('Upgrade to Premium!', 'info')">Upgrade to Premium</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Modules</div>
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>" class="nav-item">
+                    <i class="fas fa-th-large"></i> Overview
+                </a>
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets" class="nav-item">
+                    <i class="fas fa-ticket"></i> Tickets
+                    <span class="badge live">Live</span>
+                </a>
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>/panels" class="nav-item active">
+                    <i class="fas fa-clipboard"></i> Panels
+                    <span class="badge live">Live</span>
+                </a>
+                <a href="/servers/<%= locals.guild ? guild.id : '' %>/applications" class="nav-item">
+                    <i class="fas fa-file-alt"></i> Applications
+                    <span class="badge live">Live</span>
+                </a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="nav-section">
+                <div class="section-title">Support</div>
+                <button class="nav-item" onclick="showToast('Support server coming soon!', 'info')">
+                    <i class="fas fa-headset"></i> Support Server
+                </button>
+            </div>
+        </aside>
+
+        <div class="content">
+
+            <div class="page-header">
+                <div>
+                    <h1>Create Panel</h1>
+                    <p>Create a new ticket panel for your server</p>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <form id="panelForm" onsubmit="createPanel(event)">
+                    <input type="hidden" name="guildId" value="<%= guild.id %>">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Panel Name *</label>
+                            <input type="text" id="name" name="name" class="form-control" placeholder="e.g., Support Panel" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select id="status" name="status" class="form-control">
+                                <option value="active">Active</option>
+                                <option value="disabled">Disabled</option>
+                                <option value="draft">Draft</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" class="form-control" placeholder="Describe what this panel is for..." rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="channelId">Discord Channel *</label>
+                        <select id="channelId" name="channelId" class="form-control" required>
+                            <option value="">Select a channel...</option>
+                        </select>
+                        <div class="help-text">The channel where this panel will be sent</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Panel Message</label>
+                        <textarea id="message" name="message" class="form-control" rows="3" placeholder="Need help? Click a button below to create a ticket."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="type">Panel Type</label>
+                            <select id="type" name="type" class="form-control">
+                                <option value="buttons">Buttons</option>
+                                <option value="select">Select Menu</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="requireConfirmation">Require Confirmation</label>
+                            <select id="requireConfirmation" name="requireConfirmation" class="form-control">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Templates</label>
+                        <div class="help-text">Select which templates this panel will use</div>
+                        <div id="templateList" style="margin-top: 8px;"></div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-plus"></i> Create Panel
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="window.history.back()">
+                            <i class="fas fa-arrow-left"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="footer">
+        © 2026 SENTINAL — STATUS: OPERATIONAL
+    </footer>
+
+    <script>
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i></span>
+                <span class="toast-content">${message}</span>
+                <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+                }
+            }, 4000);
+        }
+
+        // Load channels
+        async function loadChannels() {
+            const guildId = '<%= guild.id %>';
+            try {
+                const response = await fetch(`/api/servers/${guildId}/channels`);
+                const data = await response.json();
+                if (data.success) {
+                    const select = document.getElementById('channelId');
+                    data.channels.forEach(channel => {
+                        const option = document.createElement('option');
+                        option.value = channel.id;
+                        option.textContent = `#${channel.name}`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading channels:', error);
+            }
+        }
+
+        // Load templates
+        async function loadTemplates() {
+            const guildId = '<%= guild.id %>';
+            try {
+                const response = await fetch(`/api/tickets/templates/${guildId}`);
+                const data = await response.json();
+                if (data.success && data.templates.length > 0) {
+                    const container = document.getElementById('templateList');
+                    data.templates.forEach(template => {
+                        const checkbox = document.createElement('div');
+                        checkbox.style.margin = '6px 0';
+                        checkbox.innerHTML = `
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" name="templates" value="${template._id}" style="accent-color: var(--signal);">
+                                <span style="color: var(--text);">${template.name}</span>
+                                <span style="font-size: 11px; color: var(--muted);">(${template.status})</span>
+                            </label>
+                        `;
+                        container.appendChild(checkbox);
+                    });
+                } else {
+                    document.getElementById('templateList').innerHTML = `
+                        <div style="color: var(--muted-dim); font-size: 13px; padding: 12px; background: var(--panel-raised); border-radius: 8px;">
+                            No templates found. Create a ticket template first.
+                            <a href="/servers/<%= guild.id %>/tickets/templates" style="color: var(--signal); text-decoration: none; margin-left: 8px;">Create Template →</a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading templates:', error);
+            }
+        }
+
+        // Create panel
+        async function createPanel(event) {
+            event.preventDefault();
+            const form = document.getElementById('panelForm');
+            const formData = new FormData(form);
+            
+            const templates = [];
+            document.querySelectorAll('input[name="templates"]:checked').forEach(el => {
+                templates.push(el.value);
+            });
+
+            const data = {
+                guildId: formData.get('guildId'),
+                name: formData.get('name'),
+                description: formData.get('description'),
+                status: formData.get('status'),
+                channelId: formData.get('channelId'),
+                message: formData.get('message'),
+                type: formData.get('type'),
+                requireConfirmation: formData.get('requireConfirmation') === 'true',
+                templates: templates,
+                syncStatus: 'pending'
+            };
+
+            try {
+                const response = await fetch('/api/panels', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('✅ Panel created successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = `/servers/<%= guild.id %>/panels`;
+                    }, 1500);
+                } else {
+                    showToast('❌ Error: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Initialize
+        loadChannels();
+        loadTemplates();
+
+        window.showToast = showToast;
+    </script>
+
+</body>
+</html>
