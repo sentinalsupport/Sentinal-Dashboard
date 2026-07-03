@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Same styles as panels.ejs but with template-specific styling */
         :root {
             --ink: #060A10;
             --panel: #0D1520;
@@ -252,6 +251,7 @@
             align-items: center;
             gap: 8px;
             font-family: 'Inter', sans-serif;
+            text-decoration: none;
         }
         .btn-primary:hover {
             transform: translateY(-1px);
@@ -412,6 +412,7 @@
             border: 2px dashed var(--line);
             border-radius: 14px;
             margin-top: 20px;
+            grid-column: 1 / -1;
         }
         .empty-state .empty-icon {
             font-size: 56px;
@@ -506,6 +507,7 @@
             .sidebar .divider { display: none; }
             .templates-grid { grid-template-columns: 1fr; }
             .template-card .card-details { grid-template-columns: 1fr; }
+            .page-header { flex-direction: column; align-items: flex-start; }
             .footer { padding: 20px 16px; }
             .toast-container { bottom: 16px; right: 16px; max-width: calc(100% - 32px); }
         }
@@ -599,9 +601,9 @@
                     <h1>Ticket Templates</h1>
                     <p>Define how tickets behave in your server</p>
                 </div>
-                <button class="btn-primary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/create'">
+                <a href="/servers/<%= guild.id %>/tickets/create" class="btn-primary">
                     <i class="fas fa-plus"></i> Create Template
-                </button>
+                </a>
             </div>
 
             <% if (templates && templates.length > 0) { %>
@@ -661,9 +663,9 @@
                     <div class="empty-icon">📄</div>
                     <h3>No Templates Yet</h3>
                     <p>Create your first ticket template to define how tickets behave in your server.</p>
-                    <button class="btn-primary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/create'">
+                    <a href="/servers/<%= guild.id %>/tickets/create" class="btn-primary">
                         <i class="fas fa-plus"></i> Create Template
-                    </button>
+                    </a>
                 </div>
             <% } %>
 
