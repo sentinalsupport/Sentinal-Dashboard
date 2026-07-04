@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Same styles as templates/create.ejs - I'll keep it concise */
         :root {
             --ink: #060A10;
             --panel: #0D1520;
@@ -41,45 +40,607 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-        /* Same navbar, sidebar, form styles as templates/create.ejs - copy from above */
-        .navbar { /* ... same as templates/create.ejs ... */ }
-        .page-wrapper { /* ... same ... */ }
-        .sidebar { /* ... same ... */ }
-        .content { /* ... same ... */ }
-        .form-container { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 32px; max-width: 900px; }
-        .form-group { margin-bottom: 24px; }
-        .form-group label { display: block; font-weight: 600; font-size: 14px; color: var(--text); margin-bottom: 6px; }
-        .form-group .help-text { font-size: 12px; color: var(--muted); margin-top: 4px; }
-        .form-control { width: 100%; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-raised); color: var(--text); font-size: 14px; font-family: 'Inter', sans-serif; transition: all 0.18s ease; }
-        .form-control:focus { outline: none; border-color: var(--signal); box-shadow: 0 0 0 4px var(--signal-glow); }
-        .form-control::placeholder { color: var(--muted-dim); }
-        select.form-control { appearance: none; cursor: pointer; }
-        textarea.form-control { resize: vertical; min-height: 100px; font-family: 'Inter', sans-serif; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .btn-primary { padding: 10px 24px; border-radius: 10px; border: none; background: var(--signal); color: var(--ink); font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s ease; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--signal-glow); }
-        .btn-secondary { padding: 10px 24px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--text); font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; font-family: 'Inter', sans-serif; }
-        .btn-secondary:hover { background: rgba(255,255,255,0.05); }
-        .btn-group { display: flex; gap: 12px; margin-top: 8px; }
-        .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600; color: #fff; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
-        .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 0; }
-        .checkbox-group label { display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer; }
-        .checkbox-group input[type="checkbox"] { accent-color: var(--signal); width: 16px; height: 16px; cursor: pointer; }
-        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: 100%; }
-        .toast { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 20px; display: flex; align-items: center; gap: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); animation: slideIn 0.3s ease; backdrop-filter: blur(10px); border-left: 4px solid var(--signal); }
-        .toast .toast-icon { color: var(--signal); font-size: 18px; flex-shrink: 0; }
-        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
-        .toast .toast-close { background: none; border: none; color: var(--muted-dim); cursor: pointer; font-size: 14px; padding: 4px; }
-        .toast .toast-close:hover { color: var(--text); }
-        .toast.error { border-left-color: var(--red); }
-        .toast.error .toast-icon { color: var(--red); }
-        .toast.success { border-left-color: var(--signal); }
-        .toast.success .toast-icon { color: var(--signal); }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
-        .toast.hiding { animation: slideOut 0.3s ease forwards; }
-        .footer { border-top: 1px solid var(--line); margin-top: 60px; padding: 28px 48px; text-align: center; color: var(--muted-dim); font-size: 13px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px; }
-        @media (max-width: 768px) { /* ... same responsive styles ... */ }
+
+        .navbar {
+            background: rgba(6,10,16,0.9);
+            backdrop-filter: blur(28px) saturate(160%);
+            border-bottom: 1px solid var(--line);
+            padding: 0 48px;
+            height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 200;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-logo {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: var(--panel-raised); border: 1px solid var(--line-bright);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .brand-logo svg { width: 22px; height: 22px; }
+        .brand-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+        }
+        .nav-center { display: flex; align-items: center; gap: 8px; }
+        .nav-center a {
+            color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
+            padding: 8px 18px; border-radius: 10px; transition: all 0.18s ease;
+        }
+        .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .nav-center a.active { color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .user-pill {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--panel); border: 1px solid var(--line);
+            border-radius: 100px; padding: 6px 18px 6px 8px;
+        }
+        .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--panel-raised); overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700;
+        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 14px; font-weight: 500; color: var(--text); }
+        .user-plan {
+            font-size: 11px; font-weight: 600; color: var(--signal);
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.22);
+            border-radius: 100px; padding: 3px 10px; letter-spacing: 0.3px;
+        }
+        .logout-btn {
+            background: transparent; border: 1px solid var(--line); border-radius: 10px;
+            padding: 8px 14px; color: var(--muted); cursor: pointer; font-size: 14px;
+            transition: all 0.18s ease; text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+
+        .page-wrapper {
+            max-width: 100%;
+            margin: 0;
+            padding: 32px 48px 60px 5px;
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+            min-height: calc(100vh - 72px);
+        }
+
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 0 14px 14px 0;
+            padding: 16px 18px;
+            position: sticky;
+            top: 88px;
+            height: calc(100vh - 108px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin-left: -5px;
+            border-left: none;
+        }
+        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
+
+        .sidebar .server-info {
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 12px;
+        }
+        .sidebar .server-info .icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: var(--panel-raised); border: 1px solid var(--line);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 700;
+            overflow: hidden;
+            color: var(--signal);
+            margin-bottom: 6px;
+        }
+        .sidebar .server-info .icon img { width: 100%; height: 100%; object-fit: cover; }
+        .sidebar .server-info .name {
+            font-weight: 600; font-size: 14px;
+            color: #fff;
+        }
+        .sidebar .server-info .plan {
+            font-size: 10px;
+            color: var(--signal);
+            font-weight: 500;
+            background: var(--signal-tab);
+            padding: 2px 12px;
+            border-radius: 100px;
+            display: inline-block;
+            border: 1px solid rgba(61,255,184,0.2);
+        }
+        .sidebar .server-info .upgrade {
+            display: block;
+            margin-top: 8px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: var(--gold-tab);
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            border: 1px solid rgba(245,200,66,0.2);
+            transition: all 0.2s ease;
+        }
+        .sidebar .server-info .upgrade:hover { background: rgba(245,200,66,0.18); }
+
+        .sidebar .nav-section { padding: 0; }
+        .sidebar .section-title {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted-dim);
+            padding: 10px 8px 6px;
+        }
+        .sidebar .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        .sidebar .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+        .sidebar .nav-item.active { background: var(--signal-tab); color: var(--signal); }
+        .sidebar .nav-item i { width: 18px; font-size: 14px; color: var(--muted-dim); }
+        .sidebar .nav-item.active i { color: var(--signal); }
+        .sidebar .nav-item .badge {
+            margin-left: auto;
+            font-size: 7px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 100px;
+            text-transform: uppercase;
+        }
+        .sidebar .nav-item .badge.live { background: var(--signal-tab); color: var(--signal); }
+        .sidebar .nav-item .badge.new { background: var(--violet-tab); color: var(--violet); }
+
+        .sidebar .divider { height: 1px; background: var(--line); margin: 8px 0; }
+
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+        .page-header .breadcrumb {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .page-header .breadcrumb a {
+            color: var(--signal);
+            text-decoration: none;
+        }
+        .page-header .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .page-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 4px;
+        }
+        .page-header p {
+            color: var(--muted);
+            font-size: 16px;
+            margin-top: 4px;
+        }
+
+        .form-container {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 32px;
+            max-width: 900px;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+        .form-section .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .form-group label .required {
+            color: var(--red);
+            margin-left: 2px;
+        }
+        .form-group .help-text {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: var(--panel-raised);
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.18s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--signal);
+            box-shadow: 0 0 0 4px var(--signal-glow);
+        }
+        .form-control::placeholder {
+            color: var(--muted-dim);
+        }
+        select.form-control {
+            appearance: none;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236C7A90' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 8px 0;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 400;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+        }
+        .checkbox-group input[type="checkbox"] {
+            accent-color: var(--signal);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: none;
+            background: var(--signal);
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--signal-glow);
+        }
+        .btn-secondary {
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            width: 100%;
+        }
+        .toast {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--signal);
+        }
+        .toast .toast-icon {
+            color: var(--signal);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .toast .toast-content {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.4;
+        }
+        .toast .toast-close {
+            background: none;
+            border: none;
+            color: var(--muted-dim);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+        }
+        .toast .toast-close:hover {
+            color: var(--text);
+        }
+        .toast.error {
+            border-left-color: var(--red);
+        }
+        .toast.error .toast-icon {
+            color: var(--red);
+        }
+        .toast.success {
+            border-left-color: var(--signal);
+        }
+        .toast.success .toast-icon {
+            color: var(--signal);
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+        }
+        .toast.hiding {
+            animation: slideOut 0.3s ease forwards;
+        }
+
+        .footer {
+            border-top: 1px solid var(--line);
+            margin-top: 60px;
+            padding: 28px 48px;
+            text-align: center;
+            color: var(--muted-dim);
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        /* Preview Box */
+        .preview-box {
+            background: var(--panel-raised);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-top: 12px;
+        }
+        .preview-box .preview-label {
+            font-size: 12px;
+            color: var(--muted-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .preview-box .preview-content {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .preview-box .preview-content .preview-message {
+            color: var(--text);
+            padding: 12px;
+            background: var(--panel);
+            border-radius: 8px;
+            border-left: 3px solid var(--signal);
+        }
+
+        /* Template Selection */
+        .template-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .template-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--panel-raised);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+        .template-item:hover {
+            border-color: var(--line-bright);
+        }
+        .template-item input[type="checkbox"] {
+            accent-color: var(--signal);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .template-item .template-name {
+            font-size: 14px;
+            color: var(--text);
+        }
+        .template-item .template-status {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 100px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        .template-item .template-status.active {
+            background: var(--signal-tab);
+            color: var(--signal);
+        }
+        .template-item .template-status.draft {
+            background: var(--gold-tab);
+            color: var(--gold);
+        }
+        .template-item .template-status.disabled {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 16px;
+                height: 64px;
+                flex-wrap: wrap;
+            }
+            .nav-center {
+                display: none;
+            }
+            .page-wrapper {
+                padding: 16px;
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                padding: 12px;
+                border-radius: 12px;
+                max-height: none;
+                height: auto;
+                margin-left: 0;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+            }
+            .sidebar .server-info {
+                display: none;
+            }
+            .sidebar .nav-section {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .sidebar .section-title {
+                display: none;
+            }
+            .sidebar .nav-item {
+                padding: 6px 14px;
+                font-size: 13px;
+                width: auto;
+            }
+            .sidebar .divider {
+                display: none;
+            }
+            .form-container {
+                padding: 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .template-list {
+                grid-template-columns: 1fr;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn-group button {
+                width: 100%;
+            }
+            .footer {
+                padding: 20px 16px;
+            }
+            .toast-container {
+                bottom: 16px;
+                right: 16px;
+                max-width: calc(100% - 32px);
+            }
+        }
     </style>
 </head>
 <body>
@@ -167,80 +728,151 @@
 
             <div class="page-header">
                 <div>
+                    <div class="breadcrumb">
+                        <a href="/servers/<%= guild.id %>/panels">Panels</a>
+                        <span style="color: var(--muted-dim);"> / </span>
+                        <span>Create Panel</span>
+                    </div>
                     <h1>Create Panel</h1>
-                    <p>Create a new ticket panel for your server</p>
+                    <p>Create a new ticket panel that users can interact with in Discord</p>
                 </div>
             </div>
 
             <div class="form-container">
                 <form id="panelForm" onsubmit="createPanel(event)">
-                    <input type="hidden" name="guildId" value="<%= guild.id %>">
 
-                    <div class="section-title">Panel Information</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="name">Panel Name *</label>
-                            <input type="text" id="name" name="name" class="form-control" placeholder="e.g., Support Panel" required>
+                    <!-- ===== PANEL INFORMATION ===== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-info-circle" style="color: var(--signal);"></i>
+                            Panel Information
                         </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Panel Name <span class="required">*</span></label>
+                                <input type="text" id="name" name="name" class="form-control" placeholder="e.g., Support Panel" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="status">Status</label>
+                                <select id="status" name="status" class="form-control">
+                                    <option value="active">Active</option>
+                                    <option value="draft">Draft</option>
+                                    <option value="disabled">Disabled</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label for="status">Status</label>
-                            <select id="status" name="status" class="form-control">
-                                <option value="active">Active</option>
-                                <option value="draft">Draft</option>
-                                <option value="disabled">Disabled</option>
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" class="form-control" placeholder="Describe what this panel is for..." rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- ===== DISCORD SETTINGS ===== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fab fa-discord" style="color: var(--signal);"></i>
+                            Discord Settings
+                        </div>
+
+                        <div class="form-group">
+                            <label for="channelId">Discord Channel <span class="required">*</span></label>
+                            <select id="channelId" name="channelId" class="form-control" required>
+                                <option value="">Select a channel...</option>
+                                <% if (channels && channels.length > 0) { %>
+                                    <% channels.forEach(function(ch) { %>
+                                        <option value="<%= ch.id %>">#<%= ch.name %></option>
+                                    <% }) %>
+                                <% } else { %>
+                                    <option value="" disabled>No channels found - make sure the bot is in the server</option>
+                                <% } %>
                             </select>
+                            <div class="help-text">The Discord channel where this panel will be sent</div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea id="description" name="description" class="form-control" placeholder="Describe what this panel is for..." rows="2"></textarea>
-                    </div>
 
-                    <div class="section-title">Discord Settings</div>
-                    <div class="form-group">
-                        <label for="channelId">Discord Channel *</label>
-                        <select id="channelId" name="channelId" class="form-control" required>
-                            <option value="">Select a channel...</option>
-                        </select>
-                        <div class="help-text">The channel where this panel will be sent</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Panel Message</label>
-                        <textarea id="message" name="message" class="form-control" rows="3" placeholder="Need help? Click a button below to create a ticket."></textarea>
-                    </div>
+                        <div class="form-group">
+                            <label for="message">Panel Message</label>
+                            <textarea id="message" name="message" class="form-control" rows="3" placeholder="Need help? Click a button below to create a ticket."></textarea>
+                            <div class="help-text">This message will appear above the ticket buttons</div>
+                        </div>
 
-                    <div class="section-title">Templates</div>
-                    <div class="form-group">
-                        <label>Templates</label>
-                        <div class="help-text">Select which templates this panel will use</div>
-                        <div id="templateList" style="margin-top: 8px;">
-                            <% if (templates && templates.length > 0) { %>
-                                <% templates.forEach(template => { %>
-                                    <div style="margin: 6px 0;">
-                                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                            <input type="checkbox" name="templates" value="<%= template._id %>" style="accent-color: var(--signal);">
-                                            <span style="color: var(--text);"><%= template.name %></span>
-                                            <span style="font-size: 11px; color: var(--muted);">(<%= template.status %>)</span>
-                                        </label>
-                                    </div>
-                                <% }) %>
-                            <% } else { %>
-                                <div style="color: var(--muted-dim); font-size: 13px; padding: 12px; background: var(--panel-raised); border-radius: 8px;">
-                                    No active templates found. Create a ticket template first.
-                                    <a href="/servers/<%= guild.id %>/tickets/create" style="color: var(--signal); text-decoration: none; margin-left: 8px;">Create Template →</a>
+                        <!-- Live Preview -->
+                        <div class="preview-box">
+                            <div class="preview-label">📋 Live Preview</div>
+                            <div class="preview-content">
+                                <div class="preview-message" id="previewMessage">Need help? Click a button below to create a ticket.</div>
+                                <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+                                    <span style="padding: 6px 16px; background: var(--signal); color: var(--ink); border-radius: 6px; font-size: 13px; font-weight: 600;">📩 Support</span>
+                                    <span style="padding: 6px 16px; background: var(--panel-raised); color: var(--muted); border-radius: 6px; font-size: 13px; border: 1px solid var(--line);">📋 Report</span>
                                 </div>
-                            <% } %>
+                                <div style="margin-top: 8px; font-size: 12px; color: var(--muted-dim);">Buttons will appear based on selected templates below</div>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- ===== TEMPLATES ===== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-file-alt" style="color: var(--signal);"></i>
+                            Templates
+                        </div>
+
+                        <div class="form-group">
+                            <label>Select Templates</label>
+                            <div class="help-text">Choose which ticket templates this panel will use. Each selected template becomes a button.</div>
+
+                            <div class="template-list">
+                                <% if (templates && templates.length > 0) { %>
+                                    <% templates.forEach(function(template) { %>
+                                        <label class="template-item">
+                                            <input type="checkbox" name="templates" value="<%= template._id %>">
+                                            <span class="template-name"><%= template.name %></span>
+                                            <span class="template-status <%= template.status || 'active' %>"><%= template.status || 'Active' %></span>
+                                        </label>
+                                    <% }) %>
+                                <% } else { %>
+                                    <div style="grid-column: 1 / -1; color: var(--muted-dim); padding: 16px; text-align: center; background: var(--panel-raised); border-radius: 8px;">
+                                        <i class="fas fa-info-circle" style="display: block; font-size: 24px; margin-bottom: 8px;"></i>
+                                        No active templates found.
+                                        <a href="/servers/<%= guild.id %>/tickets/create" style="color: var(--signal); text-decoration: none; display: block; margin-top: 4px;">
+                                            Create a template first →
+                                        </a>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== BUTTONS ===== -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-bolt" style="color: var(--signal);"></i>
+                            Button Settings
+                        </div>
+
+                        <div class="form-group">
+                            <label for="buttonStyle">Button Style</label>
+                            <select id="buttonStyle" name="buttonStyle" class="form-control">
+                                <option value="primary">Primary (Blue)</option>
+                                <option value="secondary">Secondary (Grey)</option>
+                                <option value="success">Success (Green)</option>
+                                <option value="danger">Danger (Red)</option>
+                            </select>
+                            <div class="help-text">Style applied to all buttons in this panel</div>
+                        </div>
+                    </div>
+
+                    <!-- ===== BUTTONS ===== -->
                     <div class="btn-group">
                         <button type="submit" class="btn-primary">
                             <i class="fas fa-plus"></i> Create Panel
                         </button>
-                        <button type="button" class="btn-secondary" onclick="window.history.back()">
-                            <i class="fas fa-arrow-left"></i> Cancel
+                        <button type="button" class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/panels'">
+                            <i class="fas fa-times"></i> Cancel
                         </button>
                     </div>
+
                 </form>
             </div>
 
@@ -252,93 +884,78 @@
     </footer>
 
     <script>
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
+        function showToast(message, type) {
+            type = type || 'info';
+            var container = document.getElementById('toastContainer');
+            var toast = document.createElement('div');
             toast.className = 'toast ' + type;
+            var icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
             toast.innerHTML = `
-                <span class="toast-icon"><i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i></span>
+                <span class="toast-icon"><i class="fas fa-${icon}"></i></span>
                 <span class="toast-content">${message}</span>
-                <button class="toast-close" onclick="this.closest('.toast').classList.add('hiding'); setTimeout(() => this.closest('.toast').remove(), 300);">
+                <button class="toast-close" onclick="this.parentElement.remove();">
                     <i class="fas fa-times"></i>
                 </button>
             `;
             container.appendChild(toast);
-            setTimeout(() => {
-                if (toast.parentNode) {
+            setTimeout(function() {
+                if (toast.parentElement) {
                     toast.classList.add('hiding');
-                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+                    setTimeout(function() { if (toast.parentElement) toast.remove(); }, 300);
                 }
             }, 4000);
         }
 
-        // Load channels
-        async function loadChannels() {
-            const guildId = '<%= guild.id %>';
-            try {
-                const response = await fetch(`/api/servers/${guildId}/channels`);
-                const data = await response.json();
-                if (data.success) {
-                    const select = document.getElementById('channelId');
-                    data.channels.forEach(channel => {
-                        const option = document.createElement('option');
-                        option.value = channel.id;
-                        const prefix = channel.type === 0 ? '#' : channel.type === 2 ? '🔊' : channel.type === 4 ? '📁' : '';
-                        option.textContent = `${prefix} ${channel.name}`;
-                        select.appendChild(option);
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading channels:', error);
-            }
-        }
+        // Live preview
+        document.getElementById('message').addEventListener('input', function() {
+            var preview = document.getElementById('previewMessage');
+            preview.textContent = this.value || 'Need help? Click a button below to create a ticket.';
+        });
 
-        // Create panel
         async function createPanel(event) {
             event.preventDefault();
-            const form = document.getElementById('panelForm');
-            const formData = new FormData(form);
-            
-            const templates = [];
-            document.querySelectorAll('input[name="templates"]:checked').forEach(el => {
+            var form = document.getElementById('panelForm');
+            var formData = new FormData(form);
+
+            var templates = [];
+            document.querySelectorAll('input[name="templates"]:checked').forEach(function(el) {
                 templates.push(el.value);
             });
 
-            const data = {
-                guildId: formData.get('guildId'),
+            var data = {
+                guildId: '<%= guild.id %>',
                 name: formData.get('name'),
                 description: formData.get('description'),
                 status: formData.get('status'),
                 channelId: formData.get('channelId'),
                 message: formData.get('message'),
                 templates: templates,
-                syncStatus: 'pending'
+                syncStatus: 'pending',
+                type: 'buttons'
             };
 
             try {
-                const response = await fetch('/api/panels', {
+                var response = await fetch('/api/panels', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                const result = await response.json();
+                var result = await response.json();
                 if (result.success) {
                     showToast('✅ Panel created successfully!', 'success');
-                    setTimeout(() => {
-                        window.location.href = `/servers/<%= guild.id %>/panels`;
+                    setTimeout(function() {
+                        window.location.href = '/servers/<%= guild.id %>/panels';
                     }, 1500);
                 } else {
-                    showToast('❌ Error: ' + result.error, 'error');
+                    showToast('❌ Error: ' + (result.error || 'Unknown error'), 'error');
                 }
             } catch (error) {
                 showToast('❌ Error: ' + error.message, 'error');
             }
         }
 
-        // Initialize
-        loadChannels();
-
         window.showToast = showToast;
+        window.createPanel = createPanel;
     </script>
 
 </body>
