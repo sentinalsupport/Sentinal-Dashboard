@@ -245,7 +245,73 @@ router.get('/servers/:guildId/applications', isAuthenticated, ensureValidToken, 
         } catch (err) {
             GuildConfig = { findOne: async () => null };
         }
+        // ============ SERVER TICKETS PANELS ============
+router.get('/servers/:guildId/tickets/panels', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        console.log('📋 Loading ticket panels for guild:', guildId);
         
+        let Panel;
+        try {
+            Panel = require('../models/Panel');
+        } catch (err) {
+            Panel = { find: async () => [] };
+        }
+        
+        const panels = await Panel.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        console.log(`✅ Found ${panels.length} panels`);
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
+        // Get all templates for the template dropdown in panels
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { find: async () => [] };
+        }
+        const templates = await TicketTemplate.find({ guildId, status: 'active' }).catch(() => []);
+        
+        res.render('panels', {
+            title: 'Panels — Sentinal',
+            user: req.session.user,
+            guild: guildData,
+            panels: panels,
+            templates: templates,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading ticket panels:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load panels',
+            title: 'Error'
+        });
+    }
+});
         const config = await GuildConfig.findOne({ guildId }).catch(() => null);
         
         res.render('applications', {
