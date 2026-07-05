@@ -1008,11 +1008,13 @@ router.get('/servers/:guildId/tickets/edit/:id', isAuthenticated, ensureValidTok
                         Authorization: `Bot ${botToken}`
                     }
                 });
-                roles = rolesResponse.data.map(r => ({
-                    id: r.id,
-                    name: r.name,
-                    color: r.color
-                }));
+                roles = rolesResponse.data.map(function(r) {
+                    return {
+                        id: r.id,
+                        name: r.name,
+                        color: r.color
+                    };
+                });
             } catch (err) {
                 console.warn('Could not fetch roles:', err.message);
             }
@@ -1027,15 +1029,25 @@ router.get('/servers/:guildId/tickets/edit/:id', isAuthenticated, ensureValidTok
                     }
                 });
                 channels = channelsResponse.data
-                    .filter(ch => ch.type === 0 || ch.type === 2 || ch.type === 4)
-                    .map(ch => ({
-                        id: ch.id,
-                        name: ch.name,
-                        type: ch.type
-                    }));
+                    .filter(function(ch) { return ch.type === 0 || ch.type === 2 || ch.type === 4; })
+                    .map(function(ch) {
+                        return {
+                            id: ch.id,
+                            name: ch.name,
+                            type: ch.type
+                        };
+                    });
             } catch (err) {
                 console.warn('Could not fetch channels:', err.message);
             }
+        }
+        
+        // ✅ FETCH ALL TEMPLATES FOR THE DROPDOWN
+        let allTemplates = [];
+        try {
+            allTemplates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(function() { return []; });
+        } catch (err) {
+            console.warn('Could not fetch templates:', err.message);
         }
         
         let guildData = {
@@ -1051,7 +1063,7 @@ router.get('/servers/:guildId/tickets/edit/:id', isAuthenticated, ensureValidTok
                     Authorization: `Bearer ${req.session.user.access_token}`
                 }
             });
-            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            const userGuild = guildsResponse.data.find(function(g) { return g.id === guildId; });
             if (userGuild) {
                 guildData = {
                     id: userGuild.id,
@@ -1071,6 +1083,7 @@ router.get('/servers/:guildId/tickets/edit/:id', isAuthenticated, ensureValidTok
             template: template,
             roles: roles,
             channels: channels,
+            templates: allTemplates, // ✅ THIS IS THE KEY FIX
             isAuthenticated: true
         });
     } catch (error) {
