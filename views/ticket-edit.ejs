@@ -527,41 +527,79 @@
             padding: 20px; max-height: 500px;
         }
 
-        /* ===== STEPPER / QUANTITY CONTROL ===== */
-        .stepper-field { display: flex; flex-direction: column; gap: 10px; }
-        .stepper {
-            display: inline-flex; align-items: center;
-            background: var(--panel-raised); border: 1px solid var(--line);
-            border-radius: 10px; overflow: hidden; width: fit-content;
-            transition: all 0.18s ease;
+        /* ===== QUOTA CARDS (Max Tickets / Cooldown) ===== */
+        .quota-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .quota-card {
+            position: relative;
+            background: linear-gradient(160deg, var(--panel-raised) 0%, var(--panel) 100%);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 22px 22px 20px;
+            overflow: hidden;
         }
-        .stepper:focus-within { border-color: var(--signal); box-shadow: 0 0 0 4px var(--signal-glow); }
-        .stepper-btn {
-            width: 40px; height: 42px; display: flex; align-items: center; justify-content: center;
-            background: transparent; border: none; color: var(--muted); font-size: 12px;
-            cursor: pointer; transition: all 0.15s ease; flex-shrink: 0;
+        .quota-card::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 160px; height: 160px;
+            background: radial-gradient(circle, var(--signal-glow), transparent 70%);
+            pointer-events: none;
         }
-        .stepper-btn:hover:not(:disabled) { background: rgba(255,255,255,0.06); color: var(--signal); }
-        .stepper-btn:active:not(:disabled) { background: var(--signal-tab); }
-        .stepper-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-        .stepper-value {
-            width: 64px; height: 42px; text-align: center; background: transparent;
-            border: none; border-left: 1px solid var(--line); border-right: 1px solid var(--line);
-            color: #fff; font-weight: 700; font-size: 16px; font-family: 'Space Grotesk', sans-serif;
+        .quota-card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 16px; position: relative; z-index: 1;
         }
-        .stepper-value:focus { outline: none; }
-        .stepper-value::-webkit-inner-spin-button, .stepper-value::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        .stepper-unit {
-            font-size: 12px; color: var(--muted); font-weight: 500; margin-left: 2px;
+        .quota-icon {
+            width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.2);
+            color: var(--signal); display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
         }
-        .preset-row { display: flex; gap: 6px; flex-wrap: wrap; }
-        .preset-chip {
-            padding: 5px 14px; border-radius: 100px; border: 1px solid var(--line);
-            background: transparent; color: var(--muted); font-size: 12px; font-weight: 600;
-            cursor: pointer; transition: all 0.15s ease; font-family: 'Inter', sans-serif;
+        .quota-card-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .quota-label { font-weight: 700; font-size: 14px; color: #fff; }
+        .quota-sublabel { font-size: 11.5px; color: var(--muted); }
+        .quota-display {
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            padding: 4px 0 20px; position: relative; z-index: 1;
         }
-        .preset-chip:hover { border-color: var(--line-bright); color: var(--text); }
-        .preset-chip.active { background: var(--signal-tab); border-color: rgba(61,255,184,0.3); color: var(--signal); }
+        .quota-number {
+            font-family: 'Space Grotesk', sans-serif; font-size: 42px; font-weight: 700;
+            color: #fff; line-height: 1; letter-spacing: -0.5px;
+            transition: transform 0.15s ease;
+        }
+        .quota-number.cooldown { font-size: 26px; }
+        .quota-number.bump { transform: scale(1.12); }
+        .quota-tickets-visual {
+            display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;
+            max-width: 220px;
+        }
+        .quota-tickets-visual i {
+            font-size: 13px; color: var(--muted-dim);
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+        .quota-tickets-visual i.filled { color: var(--signal); text-shadow: 0 0 10px var(--signal-glow); }
+        .quota-slider {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 6px; border-radius: 100px; outline: none; cursor: pointer;
+            background: linear-gradient(to right, var(--signal) 0%, var(--signal) var(--fill, 30%), rgba(255,255,255,0.08) var(--fill, 30%), rgba(255,255,255,0.08) 100%);
+            margin: 4px 0 10px; position: relative; z-index: 1;
+        }
+        .quota-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
+            background: #fff; border: 4px solid var(--signal); cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.45); transition: transform 0.12s ease;
+        }
+        .quota-slider::-webkit-slider-thumb:active { transform: scale(1.18); }
+        .quota-slider::-moz-range-thumb {
+            width: 24px; height: 24px; border-radius: 50%; background: #fff;
+            border: 4px solid var(--signal); cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+        }
+        .quota-slider::-moz-range-track { background: transparent; }
+        .quota-slider-marks {
+            display: flex; justify-content: space-between; font-size: 10.5px;
+            color: var(--muted-dim); font-weight: 700; letter-spacing: 0.3px;
+            padding: 0 2px; position: relative; z-index: 1;
+        }
 
         /* ===== PERMISSION CHECKBOXES ===== */
         .permission-grid {
@@ -696,6 +734,7 @@
             .form-container { padding: 20px; }
             .form-row { grid-template-columns: 1fr; }
             .form-row-3 { grid-template-columns: 1fr; }
+            .quota-grid { grid-template-columns: 1fr; }
             .permission-grid { grid-template-columns: 1fr; }
             .btn-group { flex-direction: column; }
             .btn-group button { width: 100%; }
@@ -1035,42 +1074,37 @@
                                 <span class="arrow">▼</span>
                             </div>
                             <div class="accordion-body">
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="maxTickets">Max Tickets per User</label>
-                                        <div class="stepper-field">
-                                            <div class="stepper">
-                                                <button type="button" class="stepper-btn" onclick="stepNumber('maxTickets', -1)"><i class="fas fa-minus"></i></button>
-                                                <input type="number" id="maxTickets" name="maxTickets" class="stepper-value" value="<%= template ? template.maxTickets || 3 : 3 %>" min="1" max="10" oninput="clampStepper('maxTickets',1,10); syncPresetRow('maxTickets')">
-                                                <button type="button" class="stepper-btn" onclick="stepNumber('maxTickets', 1)"><i class="fas fa-plus"></i></button>
-                                            </div>
-                                            <div class="preset-row" data-presets-for="maxTickets">
-                                                <button type="button" class="preset-chip" data-value="1" onclick="setStepper('maxTickets',1)">1</button>
-                                                <button type="button" class="preset-chip" data-value="3" onclick="setStepper('maxTickets',3)">3</button>
-                                                <button type="button" class="preset-chip" data-value="5" onclick="setStepper('maxTickets',5)">5</button>
-                                                <button type="button" class="preset-chip" data-value="10" onclick="setStepper('maxTickets',10)">10</button>
+                                <div class="quota-grid">
+                                    <div class="quota-card">
+                                        <div class="quota-card-header">
+                                            <div class="quota-icon"><i class="fas fa-ticket"></i></div>
+                                            <div class="quota-card-title">
+                                                <span class="quota-label">Max Tickets per User</span>
+                                                <span class="quota-sublabel">How many can be open at once</span>
                                             </div>
                                         </div>
-                                        <div class="help-text">How many tickets one user can have open at the same time</div>
+                                        <div class="quota-display">
+                                            <span class="quota-number" id="maxTicketsDisplay"><%= template ? template.maxTickets || 3 : 3 %></span>
+                                            <div class="quota-tickets-visual" id="maxTicketsVisual"></div>
+                                        </div>
+                                        <input type="range" id="maxTickets" name="maxTickets" class="quota-slider" min="1" max="10" step="1" value="<%= template ? template.maxTickets || 3 : 3 %>" oninput="onMaxTicketsChange(this.value)">
+                                        <div class="quota-slider-marks"><span>1</span><span>10</span></div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="cooldown">Ticket Cooldown</label>
-                                        <div class="stepper-field">
-                                            <div class="stepper">
-                                                <button type="button" class="stepper-btn" onclick="stepCooldown(-60)"><i class="fas fa-minus"></i></button>
-                                                <input type="number" id="cooldown" name="cooldown" class="stepper-value" value="<%= template ? template.cooldown || 600 : 600 %>" min="0" step="60" oninput="clampStepper('cooldown',0,86400); syncPresetRow('cooldown'); updateCooldownLabel()">
-                                                <button type="button" class="stepper-btn" onclick="stepCooldown(60)"><i class="fas fa-plus"></i></button>
-                                            </div>
-                                            <div class="preset-row" data-presets-for="cooldown">
-                                                <button type="button" class="preset-chip" data-value="0" onclick="setStepper('cooldown',0); updateCooldownLabel()">None</button>
-                                                <button type="button" class="preset-chip" data-value="60" onclick="setStepper('cooldown',60); updateCooldownLabel()">1m</button>
-                                                <button type="button" class="preset-chip" data-value="300" onclick="setStepper('cooldown',300); updateCooldownLabel()">5m</button>
-                                                <button type="button" class="preset-chip" data-value="600" onclick="setStepper('cooldown',600); updateCooldownLabel()">10m</button>
-                                                <button type="button" class="preset-chip" data-value="1800" onclick="setStepper('cooldown',1800); updateCooldownLabel()">30m</button>
-                                                <button type="button" class="preset-chip" data-value="3600" onclick="setStepper('cooldown',3600); updateCooldownLabel()">1h</button>
+
+                                    <div class="quota-card">
+                                        <div class="quota-card-header">
+                                            <div class="quota-icon"><i class="fas fa-hourglass-half"></i></div>
+                                            <div class="quota-card-title">
+                                                <span class="quota-label">Ticket Cooldown</span>
+                                                <span class="quota-sublabel">Wait time between tickets</span>
                                             </div>
                                         </div>
-                                        <div class="help-text" id="cooldownLabel">Time a user must wait before opening another ticket</div>
+                                        <div class="quota-display">
+                                            <span class="quota-number cooldown" id="cooldownDisplay">10 minutes</span>
+                                        </div>
+                                        <input type="hidden" id="cooldown" name="cooldown" value="<%= template ? template.cooldown || 600 : 600 %>">
+                                        <input type="range" id="cooldownIndex" class="quota-slider" min="0" max="8" step="1" value="3" oninput="onCooldownChange(this.value)">
+                                        <div class="quota-slider-marks"><span>None</span><span>24h</span></div>
                                     </div>
                                 </div>
                                 <div class="checkbox-group" style="display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 0;">
@@ -1204,65 +1238,66 @@
             document.querySelector('.embed-preview').style.borderLeftColor = color;
         }
 
-        // ===== STEPPER CONTROLS (Max Tickets / Cooldown) =====
-        function clampStepper(id, min, max) {
-            const input = document.getElementById(id);
-            let val = parseInt(input.value);
-            if (isNaN(val)) val = min;
-            val = Math.min(max, Math.max(min, val));
-            input.value = val;
-            return val;
+        // ===== QUOTA CARDS (Max Tickets slider + Cooldown slider) =====
+        function updateSliderFill(el) {
+            const min = parseFloat(el.min) || 0;
+            const max = parseFloat(el.max) || 100;
+            const val = parseFloat(el.value) || 0;
+            const percent = ((val - min) / (max - min)) * 100;
+            el.style.setProperty('--fill', percent + '%');
         }
 
-        function stepNumber(id, delta) {
-            const input = document.getElementById(id);
-            const min = parseInt(input.min) || 0;
-            const max = parseInt(input.max) || 999;
-            let val = (parseInt(input.value) || 0) + delta;
-            val = Math.min(max, Math.max(min, val));
-            input.value = val;
-            syncPresetRow(id);
+        function bumpNumber(el) {
+            el.classList.remove('bump');
+            requestAnimationFrame(() => el.classList.add('bump'));
+            setTimeout(() => el.classList.remove('bump'), 150);
         }
 
-        function stepCooldown(deltaSeconds) {
-            const input = document.getElementById('cooldown');
-            let val = (parseInt(input.value) || 0) + deltaSeconds;
-            val = Math.min(86400, Math.max(0, val));
-            input.value = val;
-            syncPresetRow('cooldown');
-            updateCooldownLabel();
-        }
+        function onMaxTicketsChange(value) {
+            value = parseInt(value);
+            const display = document.getElementById('maxTicketsDisplay');
+            display.textContent = value;
+            bumpNumber(display);
 
-        function setStepper(id, value) {
-            document.getElementById(id).value = value;
-            syncPresetRow(id);
-        }
-
-        function syncPresetRow(id) {
-            const input = document.getElementById(id);
-            const row = document.querySelector(`.preset-row[data-presets-for="${id}"]`);
-            if (!row) return;
-            row.querySelectorAll('.preset-chip').forEach(chip => {
-                chip.classList.toggle('active', chip.dataset.value === String(input.value));
-            });
-        }
-
-        function updateCooldownLabel() {
-            const seconds = parseInt(document.getElementById('cooldown').value) || 0;
-            const label = document.getElementById('cooldownLabel');
-            if (seconds === 0) {
-                label.textContent = 'Users can open a new ticket immediately after closing one';
-                return;
+            const visual = document.getElementById('maxTicketsVisual');
+            visual.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-ticket' + (i <= value ? ' filled' : '');
+                visual.appendChild(icon);
             }
-            let text;
-            if (seconds < 3600) {
-                const mins = Math.round(seconds / 60);
-                text = `${mins} minute${mins === 1 ? '' : 's'}`;
-            } else {
-                const hrs = Math.round((seconds / 3600) * 10) / 10;
-                text = `${hrs} hour${hrs === 1 ? '' : 's'}`;
-            }
-            label.textContent = `Users must wait ${text} before opening another ticket`;
+            updateSliderFill(document.getElementById('maxTickets'));
+        }
+
+        const COOLDOWN_PRESETS = [0, 60, 300, 600, 1800, 3600, 7200, 21600, 86400];
+        const COOLDOWN_LABELS = ['No cooldown', '1 minute', '5 minutes', '10 minutes', '30 minutes', '1 hour', '2 hours', '6 hours', '24 hours'];
+
+        function findCooldownIndex(seconds) {
+            let idx = COOLDOWN_PRESETS.indexOf(seconds);
+            if (idx !== -1) return idx;
+            return COOLDOWN_PRESETS.reduce((closest, val, i) =>
+                Math.abs(val - seconds) < Math.abs(COOLDOWN_PRESETS[closest] - seconds) ? i : closest, 0);
+        }
+
+        function onCooldownChange(index) {
+            index = parseInt(index);
+            const seconds = COOLDOWN_PRESETS[index];
+            document.getElementById('cooldown').value = seconds;
+            const display = document.getElementById('cooldownDisplay');
+            display.textContent = COOLDOWN_LABELS[index];
+            bumpNumber(display);
+            updateSliderFill(document.getElementById('cooldownIndex'));
+        }
+
+        function initQuotaCards() {
+            const maxTickets = document.getElementById('maxTickets');
+            onMaxTicketsChange(maxTickets.value);
+
+            const cooldownHidden = document.getElementById('cooldown');
+            const initialSeconds = parseInt(cooldownHidden.value) || 0;
+            const idx = findCooldownIndex(initialSeconds);
+            document.getElementById('cooldownIndex').value = idx;
+            onCooldownChange(idx);
         }
 
         // ===== ACCORDION =====
@@ -1577,23 +1612,17 @@
         }
 
         // ===== INIT =====
-        function initStepperControls() {
-            syncPresetRow('maxTickets');
-            syncPresetRow('cooldown');
-            updateCooldownLabel();
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             initModernDropdowns();
-            initStepperControls();
+            initQuotaCards();
         });
 
         // Also run now if DOM already loaded
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => { initModernDropdowns(); initStepperControls(); });
+            document.addEventListener('DOMContentLoaded', () => { initModernDropdowns(); initQuotaCards(); });
         } else {
             initModernDropdowns();
-            initStepperControls();
+            initQuotaCards();
         }
 
         // ===== EXPOSE FUNCTIONS =====
@@ -1607,12 +1636,9 @@
         window.saveTemplate = saveTemplate;
         window.deleteTemplate = deleteTemplate;
         window.initModernDropdowns = initModernDropdowns;
-        window.stepNumber = stepNumber;
-        window.stepCooldown = stepCooldown;
-        window.setStepper = setStepper;
-        window.syncPresetRow = syncPresetRow;
-        window.clampStepper = clampStepper;
-        window.updateCooldownLabel = updateCooldownLabel;
+        window.onMaxTicketsChange = onMaxTicketsChange;
+        window.onCooldownChange = onCooldownChange;
+        window.initQuotaCards = initQuotaCards;
     </script>
 
 </body>
