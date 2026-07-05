@@ -527,6 +527,42 @@
             padding: 20px; max-height: 500px;
         }
 
+        /* ===== STEPPER / QUANTITY CONTROL ===== */
+        .stepper-field { display: flex; flex-direction: column; gap: 10px; }
+        .stepper {
+            display: inline-flex; align-items: center;
+            background: var(--panel-raised); border: 1px solid var(--line);
+            border-radius: 10px; overflow: hidden; width: fit-content;
+            transition: all 0.18s ease;
+        }
+        .stepper:focus-within { border-color: var(--signal); box-shadow: 0 0 0 4px var(--signal-glow); }
+        .stepper-btn {
+            width: 40px; height: 42px; display: flex; align-items: center; justify-content: center;
+            background: transparent; border: none; color: var(--muted); font-size: 12px;
+            cursor: pointer; transition: all 0.15s ease; flex-shrink: 0;
+        }
+        .stepper-btn:hover:not(:disabled) { background: rgba(255,255,255,0.06); color: var(--signal); }
+        .stepper-btn:active:not(:disabled) { background: var(--signal-tab); }
+        .stepper-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .stepper-value {
+            width: 64px; height: 42px; text-align: center; background: transparent;
+            border: none; border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+            color: #fff; font-weight: 700; font-size: 16px; font-family: 'Space Grotesk', sans-serif;
+        }
+        .stepper-value:focus { outline: none; }
+        .stepper-value::-webkit-inner-spin-button, .stepper-value::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .stepper-unit {
+            font-size: 12px; color: var(--muted); font-weight: 500; margin-left: 2px;
+        }
+        .preset-row { display: flex; gap: 6px; flex-wrap: wrap; }
+        .preset-chip {
+            padding: 5px 14px; border-radius: 100px; border: 1px solid var(--line);
+            background: transparent; color: var(--muted); font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: all 0.15s ease; font-family: 'Inter', sans-serif;
+        }
+        .preset-chip:hover { border-color: var(--line-bright); color: var(--text); }
+        .preset-chip.active { background: var(--signal-tab); border-color: rgba(61,255,184,0.3); color: var(--signal); }
+
         /* ===== PERMISSION CHECKBOXES ===== */
         .permission-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
@@ -1002,11 +1038,39 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="maxTickets">Max Tickets per User</label>
-                                        <input type="number" id="maxTickets" name="maxTickets" class="form-control" value="<%= template ? template.maxTickets || 3 : 3 %>" min="1" max="10">
+                                        <div class="stepper-field">
+                                            <div class="stepper">
+                                                <button type="button" class="stepper-btn" onclick="stepNumber('maxTickets', -1)"><i class="fas fa-minus"></i></button>
+                                                <input type="number" id="maxTickets" name="maxTickets" class="stepper-value" value="<%= template ? template.maxTickets || 3 : 3 %>" min="1" max="10" oninput="clampStepper('maxTickets',1,10); syncPresetRow('maxTickets')">
+                                                <button type="button" class="stepper-btn" onclick="stepNumber('maxTickets', 1)"><i class="fas fa-plus"></i></button>
+                                            </div>
+                                            <div class="preset-row" data-presets-for="maxTickets">
+                                                <button type="button" class="preset-chip" data-value="1" onclick="setStepper('maxTickets',1)">1</button>
+                                                <button type="button" class="preset-chip" data-value="3" onclick="setStepper('maxTickets',3)">3</button>
+                                                <button type="button" class="preset-chip" data-value="5" onclick="setStepper('maxTickets',5)">5</button>
+                                                <button type="button" class="preset-chip" data-value="10" onclick="setStepper('maxTickets',10)">10</button>
+                                            </div>
+                                        </div>
+                                        <div class="help-text">How many tickets one user can have open at the same time</div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="cooldown">Ticket Cooldown (seconds)</label>
-                                        <input type="number" id="cooldown" name="cooldown" class="form-control" value="<%= template ? template.cooldown || 600 : 600 %>" min="0">
+                                        <label for="cooldown">Ticket Cooldown</label>
+                                        <div class="stepper-field">
+                                            <div class="stepper">
+                                                <button type="button" class="stepper-btn" onclick="stepCooldown(-60)"><i class="fas fa-minus"></i></button>
+                                                <input type="number" id="cooldown" name="cooldown" class="stepper-value" value="<%= template ? template.cooldown || 600 : 600 %>" min="0" step="60" oninput="clampStepper('cooldown',0,86400); syncPresetRow('cooldown'); updateCooldownLabel()">
+                                                <button type="button" class="stepper-btn" onclick="stepCooldown(60)"><i class="fas fa-plus"></i></button>
+                                            </div>
+                                            <div class="preset-row" data-presets-for="cooldown">
+                                                <button type="button" class="preset-chip" data-value="0" onclick="setStepper('cooldown',0); updateCooldownLabel()">None</button>
+                                                <button type="button" class="preset-chip" data-value="60" onclick="setStepper('cooldown',60); updateCooldownLabel()">1m</button>
+                                                <button type="button" class="preset-chip" data-value="300" onclick="setStepper('cooldown',300); updateCooldownLabel()">5m</button>
+                                                <button type="button" class="preset-chip" data-value="600" onclick="setStepper('cooldown',600); updateCooldownLabel()">10m</button>
+                                                <button type="button" class="preset-chip" data-value="1800" onclick="setStepper('cooldown',1800); updateCooldownLabel()">30m</button>
+                                                <button type="button" class="preset-chip" data-value="3600" onclick="setStepper('cooldown',3600); updateCooldownLabel()">1h</button>
+                                            </div>
+                                        </div>
+                                        <div class="help-text" id="cooldownLabel">Time a user must wait before opening another ticket</div>
                                     </div>
                                 </div>
                                 <div class="checkbox-group" style="display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 0;">
@@ -1138,6 +1202,67 @@
             
             const color = document.getElementById('embedColor').value || '#3DFFB8';
             document.querySelector('.embed-preview').style.borderLeftColor = color;
+        }
+
+        // ===== STEPPER CONTROLS (Max Tickets / Cooldown) =====
+        function clampStepper(id, min, max) {
+            const input = document.getElementById(id);
+            let val = parseInt(input.value);
+            if (isNaN(val)) val = min;
+            val = Math.min(max, Math.max(min, val));
+            input.value = val;
+            return val;
+        }
+
+        function stepNumber(id, delta) {
+            const input = document.getElementById(id);
+            const min = parseInt(input.min) || 0;
+            const max = parseInt(input.max) || 999;
+            let val = (parseInt(input.value) || 0) + delta;
+            val = Math.min(max, Math.max(min, val));
+            input.value = val;
+            syncPresetRow(id);
+        }
+
+        function stepCooldown(deltaSeconds) {
+            const input = document.getElementById('cooldown');
+            let val = (parseInt(input.value) || 0) + deltaSeconds;
+            val = Math.min(86400, Math.max(0, val));
+            input.value = val;
+            syncPresetRow('cooldown');
+            updateCooldownLabel();
+        }
+
+        function setStepper(id, value) {
+            document.getElementById(id).value = value;
+            syncPresetRow(id);
+        }
+
+        function syncPresetRow(id) {
+            const input = document.getElementById(id);
+            const row = document.querySelector(`.preset-row[data-presets-for="${id}"]`);
+            if (!row) return;
+            row.querySelectorAll('.preset-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.value === String(input.value));
+            });
+        }
+
+        function updateCooldownLabel() {
+            const seconds = parseInt(document.getElementById('cooldown').value) || 0;
+            const label = document.getElementById('cooldownLabel');
+            if (seconds === 0) {
+                label.textContent = 'Users can open a new ticket immediately after closing one';
+                return;
+            }
+            let text;
+            if (seconds < 3600) {
+                const mins = Math.round(seconds / 60);
+                text = `${mins} minute${mins === 1 ? '' : 's'}`;
+            } else {
+                const hrs = Math.round((seconds / 3600) * 10) / 10;
+                text = `${hrs} hour${hrs === 1 ? '' : 's'}`;
+            }
+            label.textContent = `Users must wait ${text} before opening another ticket`;
         }
 
         // ===== ACCORDION =====
@@ -1452,15 +1577,23 @@
         }
 
         // ===== INIT =====
+        function initStepperControls() {
+            syncPresetRow('maxTickets');
+            syncPresetRow('cooldown');
+            updateCooldownLabel();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             initModernDropdowns();
+            initStepperControls();
         });
 
         // Also run now if DOM already loaded
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initModernDropdowns);
+            document.addEventListener('DOMContentLoaded', () => { initModernDropdowns(); initStepperControls(); });
         } else {
             initModernDropdowns();
+            initStepperControls();
         }
 
         // ===== EXPOSE FUNCTIONS =====
@@ -1474,6 +1607,12 @@
         window.saveTemplate = saveTemplate;
         window.deleteTemplate = deleteTemplate;
         window.initModernDropdowns = initModernDropdowns;
+        window.stepNumber = stepNumber;
+        window.stepCooldown = stepCooldown;
+        window.setStepper = setStepper;
+        window.syncPresetRow = syncPresetRow;
+        window.clampStepper = clampStepper;
+        window.updateCooldownLabel = updateCooldownLabel;
     </script>
 
 </body>
