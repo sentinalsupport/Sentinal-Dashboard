@@ -879,7 +879,7 @@
                         </div>
                     </div>
 
-                    <!-- CUSTOM BUTTONS (Up to 7) -->
+                    <!-- CUSTOM BUTTONS -->
                     <div class="form-section">
                         <div class="section-title">
                             <i class="fas fa-bolt" style="color: var(--signal);"></i>
@@ -985,6 +985,8 @@
         var guildId = '<%= guild.id %>';
         var MAX_BUTTONS = 7;
         var buttons = [];
+        
+        // Pass templates data from server to client
         var templatesData = <%= JSON.stringify(templates || []) %>;
 
         // ===== TOAST =====
@@ -1201,6 +1203,7 @@
                 card.className = 'button-card';
                 card.dataset.index = index;
 
+                // Build template options from JavaScript data (NOT EJS)
                 var templateOptions = '<option value="">Select template...</option>';
                 if (templatesData && templatesData.length > 0) {
                     templatesData.forEach(function(t) {
