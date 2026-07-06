@@ -15,7 +15,6 @@ const transcriptSchema = new mongoose.Schema({
         required: true
     },
     
-    // User Information
     userId: {
         type: String,
         required: true
@@ -57,7 +56,6 @@ const transcriptSchema = new mongoose.Schema({
         default: Date.now
     },
     
-    // Stats
     totalMessages: {
         type: Number,
         default: 0
@@ -65,16 +63,6 @@ const transcriptSchema = new mongoose.Schema({
     participants: {
         type: [String],
         default: []
-    },
-    
-    // Storage
-    fileUrl: {
-        type: String,
-        default: null
-    },
-    fileId: {
-        type: String,
-        default: null
     },
     
     createdAt: {
