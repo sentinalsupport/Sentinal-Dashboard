@@ -59,9 +59,7 @@
         .brand-logo {
             width: 40px; height: 40px; border-radius: 12px;
             background: var(--panel-raised); border: 1px solid var(--line-bright);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
         .brand-logo svg { width: 22px; height: 22px; }
         .brand-name {
@@ -75,11 +73,24 @@
         }
         .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
         .nav-center a.active { color: #fff; }
-        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .nav-right .actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .user-pill {
-            display: flex; align-items: center; gap: 12px;
-            background: var(--panel); border: 1px solid var(--line);
-            border-radius: 100px; padding: 6px 18px 6px 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 100px;
+            padding: 6px 18px 6px 8px;
         }
         .user-avatar {
             width: 32px; height: 32px; border-radius: 50%;
@@ -102,6 +113,61 @@
         }
         .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
+        .navbar .btn-save {
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+            background: var(--signal);
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .navbar .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--signal-glow);
+        }
+        .navbar .btn-publish {
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+            background: var(--violet);
+            color: #fff;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .navbar .btn-publish:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(139,126,255,0.3);
+        }
+        .navbar .btn-cancel {
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .navbar .btn-cancel:hover { background: rgba(255,255,255,0.05); }
+
         /* ===== PAGE WRAPPER ===== */
         .page-wrapper {
             max-width: 100%;
@@ -113,95 +179,264 @@
             min-height: calc(100vh - 72px);
         }
 
-        /* ===== SIDEBAR ===== */
-        .sidebar {
-            width: 280px;
+        /* ===== LEFT SIDEBAR ===== */
+        .sidebar-left {
+            width: 240px;
             flex-shrink: 0;
             background: var(--panel);
             border: 1px solid var(--line);
-            border-radius: 0 14px 14px 0;
-            padding: 16px 18px;
+            border-radius: 14px;
+            padding: 16px 12px;
             position: sticky;
             top: 88px;
             height: calc(100vh - 108px);
             overflow-y: auto;
-            overflow-x: hidden;
-            margin-left: -5px;
-            border-left: none;
         }
-        .sidebar::-webkit-scrollbar { width: 3px; }
-        .sidebar::-webkit-scrollbar-track { background: transparent; }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
+        .sidebar-left::-webkit-scrollbar { width: 3px; }
+        .sidebar-left::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-left::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
 
-        .sidebar .server-info {
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--line);
-            margin-bottom: 12px;
+        .sidebar-left .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 2px;
         }
-        .sidebar .server-info .icon {
-            width: 40px; height: 40px; border-radius: 10px;
-            background: var(--panel-raised); border: 1px solid var(--line);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; font-weight: 700;
-            overflow: hidden;
+        .sidebar-left .nav-item:hover {
+            background: rgba(255,255,255,0.04);
+            color: var(--text);
+        }
+        .sidebar-left .nav-item.active {
+            background: var(--signal-tab);
             color: var(--signal);
-            margin-bottom: 6px;
         }
-        .sidebar .server-info .icon img { width: 100%; height: 100%; object-fit: cover; }
-        .sidebar .server-info .name { font-weight: 600; font-size: 14px; color: #fff; }
-        .sidebar .server-info .plan {
-            font-size: 10px; color: var(--signal); font-weight: 500;
-            background: var(--signal-tab); padding: 2px 12px; border-radius: 100px;
-            display: inline-block; border: 1px solid rgba(61,255,184,0.2);
+        .sidebar-left .nav-item i {
+            width: 18px;
+            font-size: 14px;
+            color: var(--muted-dim);
         }
-        .sidebar .server-info .upgrade {
-            display: block; margin-top: 8px; padding: 6px 12px; border-radius: 8px;
-            background: var(--gold-tab); color: var(--gold); font-size: 11px;
-            font-weight: 600; text-decoration: none; text-align: center;
-            border: 1px solid rgba(245,200,66,0.2); transition: all 0.2s ease;
+        .sidebar-left .nav-item.active i { color: var(--signal); }
+        .sidebar-left .nav-item .badge {
+            margin-left: auto;
+            font-size: 7px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 100px;
+            text-transform: uppercase;
         }
-        .sidebar .server-info .upgrade:hover { background: rgba(245,200,66,0.18); }
+        .sidebar-left .nav-item .badge.live { background: var(--signal-tab); color: var(--signal); }
+        .sidebar-left .divider { height: 1px; background: var(--line); margin: 8px 0; }
 
-        .sidebar .nav-section { padding: 0; }
-        .sidebar .section-title {
-            font-size: 9px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.8px; color: var(--muted-dim); padding: 10px 8px 6px;
-        }
-        .sidebar .nav-item {
-            display: flex; align-items: center; gap: 12px; padding: 8px 12px;
-            border-radius: 8px; color: var(--muted); text-decoration: none;
-            font-size: 13px; font-weight: 500; transition: all 0.18s ease;
-            cursor: pointer; border: none; background: none; width: 100%; text-align: left;
-        }
-        .sidebar .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
-        .sidebar .nav-item.active { background: var(--signal-tab); color: var(--signal); }
-        .sidebar .nav-item i { width: 18px; font-size: 14px; color: var(--muted-dim); }
-        .sidebar .nav-item.active i { color: var(--signal); }
-        .sidebar .nav-item .badge {
-            margin-left: auto; font-size: 7px; font-weight: 700; padding: 2px 8px;
-            border-radius: 100px; text-transform: uppercase;
-        }
-        .sidebar .nav-item .badge.live { background: var(--signal-tab); color: var(--signal); }
-        .sidebar .nav-item .badge.new { background: var(--violet-tab); color: var(--violet); }
-        .sidebar .divider { height: 1px; background: var(--line); margin: 8px 0; }
-
+        /* ===== CONTENT AREA ===== */
         .content {
             flex: 1;
             min-width: 0;
-            display: flex;
-            gap: 32px;
-            align-items: flex-start;
         }
 
-        /* ===== FORM CONTENT ===== */
-        .form-content {
+        /* ===== TABS ===== */
+        .tabs-container {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .tabs-header {
+            display: flex;
+            gap: 4px;
+            padding: 12px 20px 0 20px;
+            border-bottom: 1px solid var(--line);
+            overflow-x: auto;
+            background: var(--panel-raised);
+        }
+        .tabs-header .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            color: var(--muted);
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+        .tabs-header .tab-btn:hover { color: var(--text); }
+        .tabs-header .tab-btn.active {
+            color: var(--signal);
+            border-bottom-color: var(--signal);
+        }
+        .tabs-body {
+            padding: 24px;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ===== FORM ELEMENTS ===== */
+        .form-group { margin-bottom: 20px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .form-group label .label-desc {
+            font-weight: 400;
+            font-size: 11px;
+            color: var(--muted);
+            margin-left: 6px;
+        }
+        .form-group .help-text {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--panel-raised);
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.18s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--signal);
+            box-shadow: 0 0 0 3px var(--signal-glow);
+        }
+        .form-control::placeholder { color: var(--muted-dim); }
+        select.form-control { appearance: none; cursor: pointer; }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 60px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        /* ===== BUTTON GRID ===== */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .button-card {
+            background: var(--panel-raised);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 14px 16px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .button-card:hover { border-color: var(--line-bright); }
+        .button-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .button-card .card-header .btn-label {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .button-card .card-header .btn-remove {
+            background: none;
+            border: none;
+            color: var(--muted-dim);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 2px 6px;
+            transition: all 0.18s ease;
+        }
+        .button-card .card-header .btn-remove:hover { color: var(--red); }
+        .button-card .card-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .button-card .card-row .form-group {
             flex: 1;
-            min-width: 0;
+            min-width: 70px;
+            margin-bottom: 0;
+        }
+        .button-card .card-row .form-group label {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        .button-card .card-row .form-control {
+            padding: 4px 8px;
+            font-size: 12px;
+            min-height: 30px;
+        }
+        .button-card .card-preview {
+            margin-top: 8px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            background: var(--signal-tab);
+            color: var(--signal);
+            border: 1px solid rgba(61,255,184,0.2);
+        }
+        .btn-add-button {
+            padding: 12px 16px;
+            border: 2px dashed var(--line);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 12px;
+        }
+        .btn-add-button:hover {
+            border-color: var(--signal);
+            color: var(--signal);
+            background: var(--signal-tab);
+        }
+        .btn-add-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .button-count {
+            font-size: 11px;
+            color: var(--muted);
+            margin-left: 6px;
         }
 
         /* ===== PREVIEW SIDEBAR ===== */
         .preview-sidebar {
-            width: 380px;
+            width: 340px;
             flex-shrink: 0;
             position: sticky;
             top: 88px;
@@ -220,55 +455,54 @@
             padding: 20px;
         }
         .preview-card .preview-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
-        /* ===== DISCORD PREVIEW ===== */
         .discord-preview {
             background: #1a1a2e;
             border-radius: 10px;
-            padding: 16px;
+            padding: 14px;
             border: 1px solid var(--line);
         }
         .discord-preview .preview-header {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .discord-preview .preview-header .avatar {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             background: var(--signal);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 12px;
             color: var(--ink);
             flex-shrink: 0;
         }
         .discord-preview .preview-header .name {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text);
         }
         .discord-preview .preview-header .time {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--muted-dim);
             margin-left: auto;
         }
         .discord-preview .preview-message {
             color: var(--text);
-            font-size: 14px;
-            line-height: 1.6;
-            padding: 8px 0;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 6px 0;
             white-space: pre-wrap;
             word-break: break-word;
         }
@@ -276,34 +510,34 @@
             background: var(--panel-raised);
             border-left: 4px solid var(--signal);
             border-radius: 4px;
-            padding: 12px 16px;
-            margin-top: 8px;
+            padding: 10px 14px;
+            margin-top: 6px;
         }
         .discord-preview .preview-embed .embed-title {
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14px;
             color: #fff;
         }
         .discord-preview .preview-embed .embed-desc {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--muted);
             margin-top: 4px;
         }
         .discord-preview .preview-embed .embed-footer {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--muted-dim);
-            margin-top: 8px;
+            margin-top: 6px;
         }
         .discord-preview .preview-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 6px;
+            margin-top: 10px;
         }
         .discord-preview .preview-buttons .preview-btn {
-            padding: 4px 14px;
+            padding: 3px 12px;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             border: none;
             cursor: default;
@@ -312,522 +546,6 @@
         .preview-btn.secondary { background: #4e5d73; color: #fff; }
         .preview-btn.success { background: #57F287; color: #000; }
         .preview-btn.danger { background: #ED4245; color: #fff; }
-
-        /* ===== PAGE HEADER ===== */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-        .page-header h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-        }
-        .page-header .breadcrumb {
-            color: var(--muted);
-            font-size: 14px;
-        }
-        .page-header .breadcrumb a { color: var(--signal); text-decoration: none; }
-        .page-header .breadcrumb a:hover { text-decoration: underline; }
-
-        /* ===== FORM CONTAINER ===== */
-        .form-container {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 32px;
-        }
-
-        /* ===== SECTION ===== */
-        .form-section {
-            margin-bottom: 32px;
-        }
-        .form-section:last-child { margin-bottom: 0; }
-        .form-section .section-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .form-section .section-desc {
-            font-size: 13px;
-            color: var(--muted);
-            margin-bottom: 16px;
-        }
-
-        /* ===== FORM ELEMENTS ===== */
-        .form-group { margin-bottom: 20px; }
-        .form-group:last-child { margin-bottom: 0; }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
-        .form-group label .label-desc {
-            font-weight: 400;
-            font-size: 12px;
-            color: var(--muted);
-            margin-left: 6px;
-        }
-        .form-group .help-text {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-        .form-control {
-            width: 100%;
-            padding: 10px 16px;
-            border-radius: 10px;
-            border: 1px solid var(--line);
-            background: var(--panel-raised);
-            color: var(--text);
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.18s ease;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: var(--signal);
-            box-shadow: 0 0 0 4px var(--signal-glow);
-        }
-        .form-control::placeholder { color: var(--muted-dim); }
-        select.form-control { appearance: none; cursor: pointer; }
-        textarea.form-control { resize: vertical; min-height: 80px; font-family: 'Inter', sans-serif; }
-
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-
-        /* ===== BUTTON GRID ===== */
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-            margin-top: 12px;
-        }
-        .button-card {
-            background: var(--panel-raised);
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 16px 18px;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-        .button-card:hover {
-            border-color: var(--line-bright);
-        }
-        .button-card .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .button-card .card-header .btn-label {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text);
-            font-family: 'Space Grotesk', sans-serif;
-        }
-        .button-card .card-header .btn-remove {
-            background: none;
-            border: none;
-            color: var(--muted-dim);
-            cursor: pointer;
-            font-size: 14px;
-            padding: 4px 6px;
-            transition: all 0.18s ease;
-        }
-        .button-card .card-header .btn-remove:hover {
-            color: var(--red);
-        }
-        .button-card .card-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .button-card .card-row .form-group {
-            flex: 1;
-            min-width: 80px;
-            margin-bottom: 0;
-        }
-        .button-card .card-row .form-group label {
-            font-size: 11px;
-            color: var(--muted);
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-        .button-card .card-row .form-control {
-            padding: 6px 10px;
-            font-size: 13px;
-            min-height: 34px;
-        }
-        .button-card .card-preview {
-            margin-top: 10px;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-block;
-            background: var(--signal-tab);
-            color: var(--signal);
-            border: 1px solid rgba(61,255,184,0.2);
-        }
-        .button-card .card-preview.preview-primary { background: rgba(88,101,242,0.15); color: #5865F2; border-color: rgba(88,101,242,0.2); }
-        .button-card .card-preview.preview-secondary { background: rgba(78,93,115,0.15); color: #4e5d73; border-color: rgba(78,93,115,0.2); }
-        .button-card .card-preview.preview-success { background: rgba(87,242,135,0.15); color: #57F287; border-color: rgba(87,242,135,0.2); }
-        .button-card .card-preview.preview-danger { background: rgba(237,66,69,0.15); color: #ED4245; border-color: rgba(237,66,69,0.2); }
-
-        .btn-add-button {
-            padding: 14px 20px;
-            border: 2px dashed var(--line);
-            border-radius: 12px;
-            background: transparent;
-            color: var(--muted);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.18s ease;
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            margin-top: 12px;
-        }
-        .btn-add-button:hover {
-            border-color: var(--signal);
-            color: var(--signal);
-            background: var(--signal-tab);
-        }
-        .btn-add-button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            border-color: var(--muted-dim);
-            color: var(--muted-dim);
-        }
-
-        .button-count {
-            font-size: 12px;
-            color: var(--muted);
-            margin-left: 8px;
-        }
-
-        /* ===== QUOTA CARDS ===== */
-        .quota-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .quota-card {
-            position: relative;
-            background: linear-gradient(160deg, var(--panel-raised) 0%, var(--panel) 100%);
-            border: 1px solid var(--line);
-            border-radius: 18px;
-            padding: 22px 22px 20px;
-            overflow: hidden;
-        }
-        .quota-card::before {
-            content: '';
-            position: absolute;
-            top: -60px; right: -60px;
-            width: 160px; height: 160px;
-            background: radial-gradient(circle, var(--signal-glow), transparent 70%);
-            pointer-events: none;
-        }
-        .quota-card-header {
-            display: flex; align-items: center; gap: 12px;
-            margin-bottom: 16px; position: relative; z-index: 1;
-        }
-        .quota-icon {
-            width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
-            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.2);
-            color: var(--signal); display: flex; align-items: center; justify-content: center;
-            font-size: 15px;
-        }
-        .quota-card-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-        .quota-label { font-weight: 700; font-size: 14px; color: #fff; }
-        .quota-sublabel { font-size: 11.5px; color: var(--muted); }
-        .quota-display {
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
-            padding: 4px 0 20px; position: relative; z-index: 1;
-        }
-        .quota-number {
-            font-family: 'Space Grotesk', sans-serif; font-size: 42px; font-weight: 700;
-            color: #fff; line-height: 1; letter-spacing: -0.5px;
-            transition: transform 0.15s ease;
-        }
-        .quota-number.cooldown { font-size: 26px; }
-        .quota-number.bump { transform: scale(1.12); }
-        .quota-tickets-visual {
-            display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;
-            max-width: 220px;
-        }
-        .quota-tickets-visual i {
-            font-size: 13px; color: var(--muted-dim);
-            transition: color 0.2s ease, text-shadow 0.2s ease;
-        }
-        .quota-tickets-visual i.filled { color: var(--signal); text-shadow: 0 0 10px var(--signal-glow); }
-        .quota-slider {
-            -webkit-appearance: none; appearance: none;
-            width: 100%; height: 6px; border-radius: 100px; outline: none; cursor: pointer;
-            background: linear-gradient(to right, var(--signal) 0%, var(--signal) var(--fill, 30%), rgba(255,255,255,0.08) var(--fill, 30%), rgba(255,255,255,0.08) 100%);
-            margin: 4px 0 10px; position: relative; z-index: 1;
-        }
-        .quota-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
-            background: #fff; border: 4px solid var(--signal); cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.45); transition: transform 0.12s ease;
-        }
-        .quota-slider::-webkit-slider-thumb:active { transform: scale(1.18); }
-        .quota-slider::-moz-range-thumb {
-            width: 24px; height: 24px; border-radius: 50%; background: #fff;
-            border: 4px solid var(--signal); cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.45);
-        }
-        .quota-slider::-moz-range-track { background: transparent; }
-        .quota-slider-marks {
-            display: flex; justify-content: space-between; font-size: 10.5px;
-            color: var(--muted-dim); font-weight: 700; letter-spacing: 0.3px;
-            padding: 0 2px; position: relative; z-index: 1;
-        }
-
-        /* ===== PERMISSION CHECKBOXES ===== */
-        .permission-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-        }
-        .permission-grid label {
-            display: flex; align-items: center; gap: 8px;
-            font-weight: 400;
-            font-size: 14px;
-            color: var(--text);
-            cursor: pointer;
-            padding: 4px 0;
-        }
-        .permission-grid input[type="checkbox"] {
-            accent-color: var(--signal);
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
-
-        /* ===== TOGGLE SWITCH ===== */
-        .toggle-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .toggle {
-            width: 48px;
-            height: 28px;
-            background: var(--muted-dim);
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            flex-shrink: 0;
-        }
-        .toggle.active { background: var(--signal); }
-        .toggle .toggle-knob {
-            width: 22px;
-            height: 22px;
-            background: #fff;
-            border-radius: 50%;
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            transition: all 0.3s ease;
-        }
-        .toggle.active .toggle-knob { left: 23px; }
-
-        /* ===== ACCORDION ===== */
-        .accordion {
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
-        .accordion:last-child { margin-bottom: 0; }
-        .accordion-header {
-            padding: 14px 20px;
-            background: var(--panel-raised);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text);
-        }
-        .accordion-header:hover { background: var(--panel-hover); }
-        .accordion-header .arrow { transition: transform 0.3s ease; }
-        .accordion.open .accordion-header .arrow { transform: rotate(180deg); }
-        .accordion-body {
-            padding: 0 20px;
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .accordion.open .accordion-body {
-            padding: 20px;
-            max-height: 2000px;
-        }
-
-        /* ===== ROLE CHIP PICKER ===== */
-        .role-picker-card {
-            background: linear-gradient(160deg, var(--panel-raised) 0%, var(--panel) 100%);
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 20px;
-        }
-        .role-picker-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .role-picker-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text);
-        }
-        .role-picker-count {
-            font-size: 11.5px;
-            font-weight: 700;
-            color: var(--muted);
-            background: var(--panel-raised);
-            border: 1px solid var(--line);
-            padding: 3px 11px;
-            border-radius: 100px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        .role-picker-count.full {
-            color: var(--signal);
-            border-color: rgba(61,255,184,0.3);
-            background: var(--signal-tab);
-        }
-        .role-chip-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .role-chip-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 8px 14px;
-            border-radius: 100px;
-            border: 1px solid var(--line);
-            background: var(--panel-raised);
-            color: var(--text);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            user-select: none;
-            font-family: 'Inter', sans-serif;
-        }
-        .role-chip-btn:hover:not(.disabled) {
-            border-color: var(--line-bright);
-            transform: translateY(-1px);
-        }
-        .role-chip-btn.selected {
-            background: var(--signal-tab);
-            border-color: rgba(61,255,184,0.35);
-            color: var(--signal);
-        }
-        .role-chip-btn .role-chip-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        .role-chip-btn .role-chip-remove {
-            font-size: 11px;
-            opacity: 0.7;
-            display: inline-flex;
-        }
-        .role-chip-btn.disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .role-chip-empty {
-            font-size: 13px;
-            color: var(--muted-dim);
-            padding: 6px 0;
-        }
-
-        /* ===== BUTTONS ===== */
-        .btn-primary {
-            padding: 10px 24px;
-            border-radius: 10px;
-            border: none;
-            background: var(--signal);
-            color: var(--ink);
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 20px var(--signal-glow);
-        }
-        .btn-secondary {
-            padding: 10px 24px;
-            border-radius: 10px;
-            border: 1px solid var(--line);
-            background: transparent;
-            color: var(--text);
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-secondary:hover { background: rgba(255,255,255,0.05); }
-        .btn-danger {
-            padding: 10px 24px;
-            border-radius: 10px;
-            border: 1px solid var(--red-border);
-            background: var(--red-bg);
-            color: var(--red);
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-danger:hover { background: rgba(248,113,113,0.2); }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-            flex-wrap: wrap;
-        }
 
         /* ===== TOAST ===== */
         .toast-container {
@@ -890,8 +608,30 @@
             letter-spacing: 0.5px;
         }
 
-        @media (max-width: 1024px) {
-            .content { flex-direction: column; }
+        @media (max-width: 1400px) {
+            .preview-sidebar { width: 280px; }
+        }
+        @media (max-width: 1200px) {
+            .page-wrapper { padding: 24px 32px 60px 5px; gap: 24px; }
+            .sidebar-left { width: 200px; }
+            .preview-sidebar { width: 260px; }
+        }
+        @media (max-width: 992px) {
+            .page-wrapper { flex-direction: column; }
+            .sidebar-left {
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: auto;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                padding: 12px;
+                border-radius: 12px;
+                max-height: none;
+            }
+            .sidebar-left .nav-item { padding: 6px 14px; font-size: 13px; width: auto; }
+            .sidebar-left .divider { display: none; }
             .preview-sidebar {
                 width: 100%;
                 position: relative;
@@ -899,45 +639,19 @@
                 height: auto;
                 max-height: none;
             }
-            .page-wrapper { padding: 24px 32px 60px 5px; gap: 24px; }
-            .sidebar { width: 240px; }
+            .content { flex-direction: column; }
         }
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
             .nav-center { display: none; }
             .page-wrapper { padding: 16px; flex-direction: column; }
-            .sidebar {
-                width: 100%;
-                position: relative;
-                top: 0;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 4px;
-                padding: 12px;
-                border-radius: 12px;
-                max-height: none;
-                height: auto;
-                margin-left: 0;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-            }
-            .sidebar .server-info { display: none; }
-            .sidebar .nav-section { display: flex; flex-wrap: wrap; gap: 4px; }
-            .sidebar .section-title { display: none; }
-            .sidebar .nav-item { padding: 6px 14px; font-size: 13px; width: auto; }
-            .sidebar .divider { display: none; }
-            .form-container { padding: 20px; }
+            .tabs-header { padding: 8px 12px 0 12px; }
+            .tabs-body { padding: 16px; }
             .form-row { grid-template-columns: 1fr; }
-            .form-row-3 { grid-template-columns: 1fr; }
-            .quota-grid { grid-template-columns: 1fr; }
-            .permission-grid { grid-template-columns: 1fr; }
             .button-grid { grid-template-columns: 1fr; }
-            .btn-group { flex-direction: column; }
-            .btn-group button { width: 100%; }
+            .navbar .actions .btn-label { display: none; }
             .footer { padding: 20px 16px; }
             .toast-container { bottom: 16px; right: 16px; max-width: calc(100% - 32px); }
-            .preview-sidebar { width: 100%; position: relative; top: 0; height: auto; }
-            .content { flex-direction: column; }
         }
     </style>
 </head>
@@ -961,6 +675,17 @@
             <a href="#">Premium</a>
         </div>
         <div class="nav-right">
+            <div class="actions">
+                <button class="btn-cancel" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
+                    <i class="fas fa-times"></i> <span class="btn-label">Cancel</span>
+                </button>
+                <button class="btn-save" onclick="saveTemplate(event)">
+                    <i class="fas fa-save"></i> <span class="btn-label">Save</span>
+                </button>
+                <button class="btn-publish" onclick="publishTemplate()">
+                    <i class="fas fa-rocket"></i> <span class="btn-label">Publish Panel</span>
+                </button>
+            </div>
             <div class="user-pill">
                 <div class="user-avatar">
                     <% if (locals.user && user.avatar) { %>
@@ -980,382 +705,304 @@
 
     <div class="page-wrapper">
 
-        <!-- ===== SIDEBAR ===== -->
-        <aside class="sidebar">
-            <div class="server-info">
-                <div class="icon">
-                    <% if (locals.guild && guild.icon) { %>
-                        <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
-                    <% } else { %>
-                        <%= locals.guild ? (guild.name ? guild.name.charAt(0).toUpperCase() : '?') : '?' %>
-                    <% } %>
-                </div>
-                <div class="name"><%= locals.guild ? guild.name : 'Server' %></div>
-                <div class="plan">Free</div>
-                <a href="#" class="upgrade" onclick="showToast('Upgrade to Premium!', 'info')">Upgrade to Premium</a>
+        <!-- ===== LEFT SIDEBAR ===== -->
+        <aside class="sidebar-left">
+            <div class="nav-item active" onclick="switchTab('general')">
+                <i class="fas fa-cog"></i> General
             </div>
-
-            <div class="nav-section">
-                <div class="section-title">Modules</div>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>" class="nav-item">
-                    <i class="fas fa-th-large"></i> Overview
-                </a>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets" class="nav-item active">
-                    <i class="fas fa-ticket"></i> Tickets
-                    <span class="badge live">Live</span>
-                </a>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>/panels" class="nav-item">
-                    <i class="fas fa-clipboard"></i> Panels
-                    <span class="badge live">Live</span>
-                </a>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>/applications" class="nav-item">
-                    <i class="fas fa-file-alt"></i> Applications
-                    <span class="badge live">Live</span>
-                </a>
+            <div class="nav-item" onclick="switchTab('panel')">
+                <i class="fas fa-clipboard"></i> Panel
             </div>
-
+            <div class="nav-item" onclick="switchTab('embed')">
+                <i class="fas fa-image"></i> Embed
+            </div>
+            <div class="nav-item" onclick="switchTab('buttons')">
+                <i class="fas fa-bolt"></i> Buttons
+                <span class="badge live" id="buttonBadge">0</span>
+            </div>
             <div class="divider"></div>
-
-            <div class="nav-section">
-                <div class="section-title">Support</div>
-                <button class="nav-item" onclick="showToast('Support server coming soon!', 'info')">
-                    <i class="fas fa-headset"></i> Support Server
-                </button>
+            <div class="nav-item" onclick="switchTab('roles')">
+                <i class="fas fa-user-shield"></i> Roles
+            </div>
+            <div class="nav-item" onclick="switchTab('permissions')">
+                <i class="fas fa-lock"></i> Permissions
+            </div>
+            <div class="nav-item" onclick="switchTab('automation')">
+                <i class="fas fa-robot"></i> Automation
+            </div>
+            <div class="nav-item" onclick="switchTab('advanced')">
+                <i class="fas fa-sliders-h"></i> Advanced
             </div>
         </aside>
 
-        <!-- ===== MAIN CONTENT ===== -->
+        <!-- ===== CONTENT AREA ===== -->
         <div class="content">
 
-            <div class="form-content">
-
-                <div class="page-header">
-                    <div>
-                        <div class="breadcrumb">
-                            <a href="/servers/<%= guild.id %>/tickets/templates">Templates</a>
-                            <span style="color: var(--muted-dim);"> / </span>
-                            <span>Edit Template</span>
-                        </div>
-                        <h1><%= template ? template.name : 'Edit Template' %></h1>
-                    </div>
-                    <div>
-                        <button class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </button>
-                    </div>
+            <div class="tabs-container">
+                <!-- Tab Headers -->
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="general" onclick="switchTab('general')">General</button>
+                    <button class="tab-btn" data-tab="panel" onclick="switchTab('panel')">Panel</button>
+                    <button class="tab-btn" data-tab="embed" onclick="switchTab('embed')">Embed</button>
+                    <button class="tab-btn" data-tab="buttons" onclick="switchTab('buttons')">Buttons</button>
+                    <button class="tab-btn" data-tab="roles" onclick="switchTab('roles')">Roles</button>
+                    <button class="tab-btn" data-tab="permissions" onclick="switchTab('permissions')">Permissions</button>
+                    <button class="tab-btn" data-tab="automation" onclick="switchTab('automation')">Automation</button>
+                    <button class="tab-btn" data-tab="advanced" onclick="switchTab('advanced')">Advanced</button>
                 </div>
 
-                <div class="form-container">
-                    <form id="templateForm" onsubmit="saveTemplate(event)">
+                <!-- Tab Body -->
+                <div class="tabs-body">
 
-                        <!-- ===== GENERAL SECTION ===== -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="fas fa-cog" style="color: var(--signal);"></i> General
-                            </div>
+                    <!-- ===== GENERAL TAB ===== -->
+                    <div class="tab-content active" id="tab-general">
+                        <div class="form-group">
+                            <label for="name">Panel Name</label>
+                            <input type="text" id="name" name="name" class="form-control" value="<%= template ? template.name : '' %>" placeholder="e.g., Support Tickets" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" class="form-control" rows="2" placeholder="Describe what this template does..."><%= template ? template.description : '' %></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select id="status" name="status" class="form-control">
+                                <option value="active" <%= template && template.status === 'active' ? 'selected' : '' %>>Active</option>
+                                <option value="draft" <%= template && template.status === 'draft' ? 'selected' : '' %>>Draft</option>
+                                <option value="disabled" <%= template && template.status === 'disabled' ? 'selected' : '' %>>Disabled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ===== PANEL TAB ===== -->
+                    <div class="tab-content" id="tab-panel">
+                        <div class="form-row">
                             <div class="form-group">
-                                <label for="name">Name</label>
-                                <input type="text" id="name" name="name" class="form-control" value="<%= template ? template.name : '' %>" placeholder="e.g., Support" required>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="description">Description</label>
-                                    <input type="text" id="description" name="description" class="form-control" value="<%= template ? template.description : '' %>" placeholder="Optional description">
-                                    <div class="help-text">A short description to help you identify this template</div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="status">Status <span class="label-desc">Controls if this template is active</span></label>
-                                    <select id="status" name="status" class="form-control">
-                                        <option value="active" <%= template && template.status === 'active' ? 'selected' : '' %>>🟢 Active - Templates can be used</option>
-                                        <option value="draft" <%= template && template.status === 'draft' ? 'selected' : '' %>>🟡 Draft - Not yet ready for use</option>
-                                        <option value="disabled" <%= template && template.status === 'disabled' ? 'selected' : '' %>>🔴 Disabled - Temporarily unavailable</option>
-                                    </select>
-                                    <div class="help-text"><strong>Active:</strong> Template is live and can be used • <strong>Draft:</strong> Template is being worked on • <strong>Disabled:</strong> Template is paused</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ===== TICKET SETTINGS ===== -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="fas fa-sliders-h" style="color: var(--signal);"></i> Ticket Settings
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="category">Category <span class="label-desc">Where tickets are created</span></label>
-                                    <select id="category" name="category" class="form-control">
-                                        <option value="">None</option>
-                                        <% if (channels) { %>
-                                            <% channels.filter(function(c) { return c.type === 4; }).forEach(function(cat) { %>
-                                                <option value="<%= cat.id %>" <%= template && template.category === cat.id ? 'selected' : '' %>><%= cat.name %></option>
-                                            <% }) %>
-                                        <% } %>
-                                    </select>
-                                    <div class="help-text">The Discord category where new ticket channels will be created</div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="transcriptChannel">Transcript Channel <span class="label-desc">Where transcripts are saved</span></label>
-                                    <select id="transcriptChannel" name="transcriptChannel" class="form-control">
-                                        <option value="">None</option>
-                                        <% if (channels) { %>
-                                            <% channels.filter(function(c) { return c.type === 0; }).forEach(function(ch) { %>
-                                                <option value="<%= ch.id %>" <%= template && template.transcriptChannel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
-                                            <% }) %>
-                                        <% } %>
-                                    </select>
-                                    <div class="help-text">Channel where ticket transcripts will be sent when tickets are closed</div>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="channelName">Ticket Name Format <span class="label-desc">How tickets are named</span></label>
-                                    <select id="channelNamePreset" class="form-control" onchange="updateChannelName()">
-                                        <option value="ticket-{user}" <%= template && template.channelName === 'ticket-{user}' ? 'selected' : '' %>>ticket-{user}</option>
-                                        <option value="ticket-{number}" <%= template && template.channelName === 'ticket-{number}' ? 'selected' : '' %>>ticket-{number}</option>
-                                        <option value="support-{user}" <%= template && template.channelName === 'support-{user}' ? 'selected' : '' %>>support-{user}</option>
-                                        <option value="report-{number}" <%= template && template.channelName === 'report-{number}' ? 'selected' : '' %>>report-{number}</option>
-                                        <option value="custom" <%= template && !['ticket-{user}','ticket-{number}','support-{user}','report-{number}'].includes(template.channelName) ? 'selected' : '' %>>Custom...</option>
-                                    </select>
-                                    <input type="text" id="channelName" name="channelName" class="form-control" style="margin-top: 8px;" value="<%= template ? template.channelName : 'ticket-{user}' %>" placeholder="Custom format">
-                                    <div class="help-text"><strong>Variables:</strong> {user} = username, {id} = user ID, {number} = ticket count</div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="topic">Channel Topic <span class="label-desc">Optional topic for tickets</span></label>
-                                    <input type="text" id="topic" name="topic" class="form-control" value="<%= template ? template.topic : '' %>" placeholder="Optional channel topic">
-                                    <div class="help-text">A short topic that appears at the top of the ticket channel</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ===== SUPPORT ROLES ===== -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="fas fa-user-shield" style="color: var(--signal);"></i> Support Roles
-                            </div>
-                            <div class="role-picker-card">
-                                <div class="role-picker-header">
-                                    <span class="role-picker-title">Who gets access to every ticket</span>
-                                    <span class="role-picker-count" id="rolePickerCount">0/3 selected</span>
-                                </div>
-                                <select id="supportRoles" multiple style="display:none;">
-                                    <% if (roles) { %>
-                                        <% roles.forEach(function(role) { %>
-                                            <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.supportRoles && template.supportRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                <label for="category">Category</label>
+                                <select id="category" name="category" class="form-control">
+                                    <option value="">None</option>
+                                    <% if (channels) { %>
+                                        <% channels.filter(function(c) { return c.type === 4; }).forEach(function(cat) { %>
+                                            <option value="<%= cat.id %>" <%= template && template.category === cat.id ? 'selected' : '' %>><%= cat.name %></option>
                                         <% }) %>
                                     <% } %>
                                 </select>
-                                <div class="role-chip-grid" id="roleChipGrid"></div>
-                            </div>
-                            <div class="help-text">Tap up to 3 roles. Tap a selected one again to remove it.</div>
-                        </div>
-
-                        <!-- ===== PERMISSIONS ===== -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="fas fa-lock" style="color: var(--signal);"></i> Permissions
+                                <div class="help-text">Discord category for ticket channels</div>
                             </div>
                             <div class="form-group">
-                                <label for="permissionPreset">Permission Preset</label>
-                                <select id="permissionPreset" class="form-control" onchange="updatePermissions()">
-                                    <option value="support">Support - Basic ticket management</option>
-                                    <option value="moderator">Moderator - Full ticket management</option>
-                                    <option value="admin">Admin - All permissions</option>
-                                    <option value="custom" <%= template && template.permissions ? 'selected' : '' %>>Custom - Manual selection below</option>
+                                <label for="transcriptChannel">Transcript Channel</label>
+                                <select id="transcriptChannel" name="transcriptChannel" class="form-control">
+                                    <option value="">None</option>
+                                    <% if (channels) { %>
+                                        <% channels.filter(function(c) { return c.type === 0; }).forEach(function(ch) { %>
+                                            <option value="<%= ch.id %>" <%= template && template.transcriptChannel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                        <% }) %>
+                                    <% } %>
                                 </select>
-                                <div class="help-text">Choose a preset or select custom to manually configure permissions</div>
+                                <div class="help-text">Where transcripts are sent</div>
                             </div>
-                            <div class="permission-grid" id="permissionGrid">
-                                <label><input type="checkbox" name="perm_close" <%= template && template.permissions && template.permissions.closeTicket ? 'checked' : '' %>> Close Ticket</label>
-                                <label><input type="checkbox" name="perm_delete" <%= template && template.permissions && template.permissions.deleteTicket ? 'checked' : '' %>> Delete Ticket</label>
-                                <label><input type="checkbox" name="perm_rename" <%= template && template.permissions && template.permissions.renameTicket ? 'checked' : '' %>> Rename Ticket</label>
-                                <label><input type="checkbox" name="perm_claim" <%= template && template.permissions && template.permissions.claimTicket ? 'checked' : '' %>> Claim Ticket</label>
-                                <label><input type="checkbox" name="perm_adduser" <%= template && template.permissions && template.permissions.addUser ? 'checked' : '' %>> Add Users</label>
-                                <label><input type="checkbox" name="perm_removeuser" <%= template && template.permissions && template.permissions.removeUser ? 'checked' : '' %>> Remove Users</label>
-                            </div>
-                            <div class="help-text">Permissions control what staff can do inside tickets</div>
                         </div>
-
-                        <!-- ===== AUTO CLOSE ===== -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="fas fa-clock" style="color: var(--signal);"></i> Auto Close
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="channelName">Ticket Name Format</label>
+                                <select id="channelNamePreset" class="form-control" onchange="updateChannelName()">
+                                    <option value="ticket-{user}" <%= template && template.channelName === 'ticket-{user}' ? 'selected' : '' %>>ticket-{user}</option>
+                                    <option value="ticket-{number}" <%= template && template.channelName === 'ticket-{number}' ? 'selected' : '' %>>ticket-{number}</option>
+                                    <option value="support-{user}" <%= template && template.channelName === 'support-{user}' ? 'selected' : '' %>>support-{user}</option>
+                                    <option value="custom" <%= template && !['ticket-{user}','ticket-{number}','support-{user}'].includes(template.channelName) ? 'selected' : '' %>>Custom...</option>
+                                </select>
+                                <input type="text" id="channelName" name="channelName" class="form-control" style="margin-top: 6px;" value="<%= template ? template.channelName : 'ticket-{user}' %>" placeholder="Custom format">
+                                <div class="help-text">Variables: {user}, {id}, {number}</div>
                             </div>
                             <div class="form-group">
-                                <div class="toggle-wrapper">
-                                    <div class="toggle <%= template && template.autoClose && template.autoClose.enabled ? 'active' : '' %>" onclick="toggleSwitch(this)">
-                                        <div class="toggle-knob"></div>
-                                    </div>
-                                    <span>Enable Auto Close</span>
-                                </div>
-                                <input type="hidden" name="autoCloseEnabled" id="autoCloseEnabled" value="<%= template && template.autoClose && template.autoClose.enabled ? 'true' : 'false' %>">
-                                <div class="help-text">Automatically close tickets after a period of inactivity</div>
-                            </div>
-                            <div class="form-row" id="autoCloseSettings" style="<%= template && template.autoClose && template.autoClose.enabled ? '' : 'display: none;' %>">
-                                <div class="form-group">
-                                    <label for="autoCloseTimeout">Time <span class="label-desc">How long to wait</span></label>
-                                    <select id="autoCloseTimeout" name="autoCloseTimeout" class="form-control">
-                                        <option value="0">Never</option>
-                                        <option value="30" <%= template && template.autoClose && template.autoClose.timeout === 30 ? 'selected' : '' %>>30 Minutes</option>
-                                        <option value="60" <%= template && template.autoClose && template.autoClose.timeout === 60 ? 'selected' : '' %>>1 Hour</option>
-                                        <option value="360" <%= template && template.autoClose && template.autoClose.timeout === 360 ? 'selected' : '' %>>6 Hours</option>
-                                        <option value="720" <%= template && template.autoClose && template.autoClose.timeout === 720 ? 'selected' : '' %>>12 Hours</option>
-                                        <option value="1440" <%= template && template.autoClose && template.autoClose.timeout === 1440 ? 'selected' : '' %>>24 Hours</option>
-                                        <option value="2880" <%= template && template.autoClose && template.autoClose.timeout === 2880 ? 'selected' : '' %>>48 Hours</option>
-                                        <option value="10080" <%= template && template.autoClose && template.autoClose.timeout === 10080 ? 'selected' : '' %>>7 Days</option>
-                                        <option value="43200" <%= template && template.autoClose && template.autoClose.timeout === 43200 ? 'selected' : '' %>>30 Days</option>
-                                    </select>
-                                    <div class="help-text">Time of inactivity before auto-closing</div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="autoCloseReminder">Reminder <span class="label-desc">Minutes before closing</span></label>
-                                    <input type="number" id="autoCloseReminder" name="autoCloseReminder" class="form-control" value="<%= template && template.autoClose ? template.autoClose.reminder || 15 : 15 %>" min="1">
-                                    <div class="help-text">Send a warning message this many minutes before auto-closing</div>
-                                </div>
+                                <label for="topic">Channel Topic</label>
+                                <input type="text" id="topic" name="topic" class="form-control" value="<%= template ? template.topic : '' %>" placeholder="Optional channel topic">
                             </div>
                         </div>
-
-                        <!-- ===== WELCOME MESSAGE ===== -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="fas fa-envelope" style="color: var(--signal);"></i> Welcome Message
-                            </div>
-                            <div class="form-group">
-                                <label for="welcomeMessage">Message Content</label>
-                                <textarea id="welcomeMessage" name="welcomeMessage" class="form-control" rows="4" oninput="updatePreview()"><%= template ? template.welcomeMessage || 'Welcome {mention}!\n\nA member of our support team will assist you shortly.' : 'Welcome {mention}!\n\nA member of our support team will assist you shortly.' %></textarea>
-                                <div class="help-text"><strong>Variables:</strong> {user} = username, {mention} = @mention, {username} = username, {ticket} = ticket ID, {number} = ticket number, {server} = server name</div>
-                            </div>
-                        </div>
-
-                        <!-- ===== CUSTOM BUTTONS ===== -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <i class="fas fa-bolt" style="color: var(--signal);"></i>
-                                Custom Buttons
-                                <span class="button-count" id="buttonCount">0 / 7</span>
-                            </div>
-                            <div class="section-desc">Add up to 7 custom buttons that users will see when creating a ticket. Each button can have its own label, emoji, color, and template.</div>
-
-                            <div id="buttonContainer">
-                                <div class="button-grid" id="buttonGrid">
-                                    <!-- Buttons will be rendered here -->
-                                </div>
-                            </div>
-                            <button type="button" class="btn-add-button" id="addButtonBtn" onclick="addButton()">
-                                <i class="fas fa-plus"></i> Add Button
-                            </button>
-                        </div>
-
-                        <!-- ===== ADVANCED SETTINGS ===== -->
-                        <div class="form-section">
-                            <div class="accordion open">
-                                <div class="accordion-header" onclick="toggleAccordion(this)">
-                                    <span>▼ Advanced Settings</span>
-                                    <span class="arrow">▼</span>
-                                </div>
-                                <div class="accordion-body">
-                                    <div class="quota-grid">
-                                        <div class="quota-card">
-                                            <div class="quota-card-header">
-                                                <div class="quota-icon"><i class="fas fa-ticket"></i></div>
-                                                <div class="quota-card-title">
-                                                    <span class="quota-label">Max Tickets per User</span>
-                                                    <span class="quota-sublabel">How many can be open at once</span>
-                                                </div>
-                                            </div>
-                                            <div class="quota-display">
-                                                <span class="quota-number" id="maxTicketsDisplay"><%= template ? template.maxTickets || 3 : 3 %></span>
-                                                <div class="quota-tickets-visual" id="maxTicketsVisual"></div>
-                                            </div>
-                                            <input type="range" id="maxTickets" name="maxTickets" class="quota-slider" min="1" max="10" step="1" value="<%= template ? template.maxTickets || 3 : 3 %>" oninput="onMaxTicketsChange(this.value)">
-                                            <div class="quota-slider-marks"><span>1</span><span>10</span></div>
-                                        </div>
-
-                                        <div class="quota-card">
-                                            <div class="quota-card-header">
-                                                <div class="quota-icon"><i class="fas fa-hourglass-half"></i></div>
-                                                <div class="quota-card-title">
-                                                    <span class="quota-label">Ticket Cooldown</span>
-                                                    <span class="quota-sublabel">Wait time between tickets</span>
-                                                </div>
-                                            </div>
-                                            <div class="quota-display">
-                                                <span class="quota-number cooldown" id="cooldownDisplay">10 minutes</span>
-                                            </div>
-                                            <input type="hidden" id="cooldown" name="cooldown" value="<%= template ? template.cooldown || 600 : 600 %>">
-                                            <input type="range" id="cooldownIndex" class="quota-slider" min="0" max="8" step="1" value="3" oninput="onCooldownChange(this.value)">
-                                            <div class="quota-slider-marks"><span>None</span><span>24h</span></div>
-                                        </div>
-                                    </div>
-                                    <div class="checkbox-group" style="display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 0;">
-                                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
-                                            <input type="checkbox" name="pinWelcome" <%= template && template.pinWelcome ? 'checked' : '' %> style="accent-color: var(--signal);"> Pin Welcome Message
-                                            <span class="label-desc" style="font-weight: 400; font-size: 12px; color: var(--muted);">Pin the welcome message in the ticket channel</span>
-                                        </label>
-                                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
-                                            <input type="checkbox" name="autoMentionSupport" <%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'checked' : '') : 'checked' %> style="accent-color: var(--signal);"> Auto Mention Support Roles
-                                            <span class="label-desc" style="font-weight: 400; font-size: 12px; color: var(--muted);">Mention support roles when a ticket is created</span>
-                                        </label>
-                                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
-                                            <input type="checkbox" name="lockOnClose" <%= template && template.lockOnClose !== undefined ? (template.lockOnClose ? 'checked' : '') : 'checked' %> style="accent-color: var(--signal);"> Lock on Close
-                                            <span class="label-desc" style="font-weight: 400; font-size: 12px; color: var(--muted);">Lock the channel when closed instead of deleting</span>
-                                        </label>
-                                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
-                                            <input type="checkbox" name="deleteOnClose" <%= template && template.deleteOnClose ? 'checked' : '' %> style="accent-color: var(--signal);"> Delete on Close
-                                            <span class="label-desc" style="font-weight: 400; font-size: 12px; color: var(--muted);">Delete the channel when closed (no transcript saved)</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ===== BUTTONS ===== -->
-                        <div class="btn-group">
-                            <button type="submit" class="btn-primary">
-                                <i class="fas fa-save"></i> Save Template
-                            </button>
-                            <button type="button" class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
-                                <i class="fas fa-times"></i> Cancel
-                            </button>
-                            <button type="button" class="btn-danger" style="margin-left: auto;" onclick="deleteTemplate()">
-                                <i class="fas fa-trash"></i> Delete Template
-                            </button>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
-
-            <!-- ===== PREVIEW SIDEBAR ===== -->
-            <div class="preview-sidebar">
-                <div class="preview-card">
-                    <div class="preview-title">📱 Live Discord Preview</div>
-                    <div class="discord-preview">
-                        <div class="preview-header">
-                            <div class="avatar">S</div>
-                            <span class="name">Sentinal</span>
-                            <span class="time">Today at 12:00 PM</span>
-                        </div>
-                        <div class="preview-message" id="previewMessage">Welcome @user! A member of our support team will assist you shortly.</div>
-                        <div class="preview-embed" id="previewEmbed" style="display: none;">
-                            <div class="embed-title" id="previewEmbedTitle">🎫 Ticket Created</div>
-                            <div class="embed-desc" id="previewEmbedDesc">Your ticket has been created!</div>
-                            <div class="embed-footer" id="previewEmbedFooter">Sentinal Ticket System</div>
-                        </div>
-                        <div class="preview-buttons">
-                            <button class="preview-btn primary">🟢 Claim Ticket</button>
-                            <button class="preview-btn secondary">🔘 Unclaim</button>
-                            <button class="preview-btn primary">📝 Staff Note</button>
-                            <button class="preview-btn danger">🔒 Close</button>
-                            <button class="preview-btn secondary">📄 Transcript</button>
-                            <button class="preview-btn secondary">💬 Saved Reply</button>
-                            <button class="preview-btn secondary">⭐ Rate</button>
-                        </div>
-                        <div class="help-text" style="margin-top: 12px;">This is how the ticket will look when created</div>
                     </div>
+
+                    <!-- ===== EMBED TAB ===== -->
+                    <div class="tab-content" id="tab-embed">
+                        <div class="form-group">
+                            <label for="embedTitle">Title</label>
+                            <input type="text" id="embedTitle" class="form-control" placeholder="🎫 Ticket Created" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label for="embedDescription">Description</label>
+                            <textarea id="embedDescription" class="form-control" rows="3" placeholder="Your ticket has been created!" oninput="updatePreview()"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="embedColor">Color</label>
+                                <input type="color" id="embedColor" class="form-control" value="#3DFFB8" style="padding: 2px; height: 38px;" oninput="updatePreview()">
+                            </div>
+                            <div class="form-group">
+                                <label for="embedFooter">Footer</label>
+                                <input type="text" id="embedFooter" class="form-control" placeholder="Sentinal Ticket System" oninput="updatePreview()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== BUTTONS TAB ===== -->
+                    <div class="tab-content" id="tab-buttons">
+                        <div class="section-desc" style="margin-bottom: 12px; font-size: 13px; color: var(--muted);">
+                            Add up to 7 custom buttons. Each button opens a ticket using the selected template.
+                        </div>
+                        <div id="buttonContainer">
+                            <div class="button-grid" id="buttonGrid"></div>
+                        </div>
+                        <button type="button" class="btn-add-button" id="addButtonBtn" onclick="addButton()">
+                            <i class="fas fa-plus"></i> Add Button
+                        </button>
+                    </div>
+
+                    <!-- ===== ROLES TAB ===== -->
+                    <div class="tab-content" id="tab-roles">
+                        <div class="role-picker-card" style="background: var(--panel-raised); border-radius: 10px; padding: 16px; border: 1px solid var(--line);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 12px; flex-wrap: wrap;">
+                                <span style="font-size: 13px; font-weight: 600; color: var(--text);">Support Roles</span>
+                                <span class="role-picker-count" id="rolePickerCount" style="font-size: 11px; font-weight: 700; color: var(--muted); background: var(--panel-raised); border: 1px solid var(--line); padding: 2px 10px; border-radius: 100px;">0/3 selected</span>
+                            </div>
+                            <select id="supportRoles" multiple style="display:none;">
+                                <% if (roles) { %>
+                                    <% roles.forEach(function(role) { %>
+                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.supportRoles && template.supportRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                    <% }) %>
+                                <% } %>
+                            </select>
+                            <div class="role-chip-grid" id="roleChipGrid" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+                            <div class="help-text" style="margin-top: 8px;">Tap up to 3 roles. Tap a selected one again to remove it.</div>
+                        </div>
+                    </div>
+
+                    <!-- ===== PERMISSIONS TAB ===== -->
+                    <div class="tab-content" id="tab-permissions">
+                        <div class="form-group">
+                            <label for="permissionPreset">Permission Preset</label>
+                            <select id="permissionPreset" class="form-control" onchange="updatePermissions()">
+                                <option value="support">Support - Basic ticket management</option>
+                                <option value="moderator">Moderator - Full ticket management</option>
+                                <option value="admin">Admin - All permissions</option>
+                                <option value="custom" <%= template && template.permissions ? 'selected' : '' %>>Custom</option>
+                            </select>
+                        </div>
+                        <div class="permission-grid" id="permissionGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--text); cursor: pointer; padding: 4px 0;">
+                                <input type="checkbox" name="perm_close" <%= template && template.permissions && template.permissions.closeTicket ? 'checked' : '' %>> Close Ticket
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--text); cursor: pointer; padding: 4px 0;">
+                                <input type="checkbox" name="perm_delete" <%= template && template.permissions && template.permissions.deleteTicket ? 'checked' : '' %>> Delete Ticket
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--text); cursor: pointer; padding: 4px 0;">
+                                <input type="checkbox" name="perm_rename" <%= template && template.permissions && template.permissions.renameTicket ? 'checked' : '' %>> Rename Ticket
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--text); cursor: pointer; padding: 4px 0;">
+                                <input type="checkbox" name="perm_claim" <%= template && template.permissions && template.permissions.claimTicket ? 'checked' : '' %>> Claim Ticket
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--text); cursor: pointer; padding: 4px 0;">
+                                <input type="checkbox" name="perm_adduser" <%= template && template.permissions && template.permissions.addUser ? 'checked' : '' %>> Add Users
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--text); cursor: pointer; padding: 4px 0;">
+                                <input type="checkbox" name="perm_removeuser" <%= template && template.permissions && template.permissions.removeUser ? 'checked' : '' %>> Remove Users
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- ===== AUTOMATION TAB ===== -->
+                    <div class="tab-content" id="tab-automation">
+                        <div class="form-group">
+                            <div class="toggle-wrapper" style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+                                <div class="toggle <%= template && template.autoClose && template.autoClose.enabled ? 'active' : '' %>" onclick="toggleSwitch(this)" style="width: 40px; height: 22px; background: var(--muted-dim); border-radius: 11px; cursor: pointer; transition: all 0.3s ease; position: relative; flex-shrink: 0;">
+                                    <div class="toggle-knob" style="width: 18px; height: 18px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: all 0.3s ease;"></div>
+                                </div>
+                                <span style="font-weight: 500; font-size: 13px; color: var(--text);">Auto Close</span>
+                            </div>
+                            <input type="hidden" name="autoCloseEnabled" id="autoCloseEnabled" value="<%= template && template.autoClose && template.autoClose.enabled ? 'true' : 'false' %>">
+                            <div class="help-text">Automatically close tickets after inactivity</div>
+                        </div>
+                        <div class="form-row" id="autoCloseSettings" style="<%= template && template.autoClose && template.autoClose.enabled ? '' : 'display: none;' %>">
+                            <div class="form-group">
+                                <label for="autoCloseTimeout">Timeout</label>
+                                <select id="autoCloseTimeout" name="autoCloseTimeout" class="form-control">
+                                    <option value="0">Never</option>
+                                    <option value="30" <%= template && template.autoClose && template.autoClose.timeout === 30 ? 'selected' : '' %>>30 Minutes</option>
+                                    <option value="60" <%= template && template.autoClose && template.autoClose.timeout === 60 ? 'selected' : '' %>>1 Hour</option>
+                                    <option value="360" <%= template && template.autoClose && template.autoClose.timeout === 360 ? 'selected' : '' %>>6 Hours</option>
+                                    <option value="720" <%= template && template.autoClose && template.autoClose.timeout === 720 ? 'selected' : '' %>>12 Hours</option>
+                                    <option value="1440" <%= template && template.autoClose && template.autoClose.timeout === 1440 ? 'selected' : '' %>>24 Hours</option>
+                                    <option value="2880" <%= template && template.autoClose && template.autoClose.timeout === 2880 ? 'selected' : '' %>>48 Hours</option>
+                                    <option value="10080" <%= template && template.autoClose && template.autoClose.timeout === 10080 ? 'selected' : '' %>>7 Days</option>
+                                    <option value="43200" <%= template && template.autoClose && template.autoClose.timeout === 43200 ? 'selected' : '' %>>30 Days</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="autoCloseReminder">Reminder (minutes)</label>
+                                <input type="number" id="autoCloseReminder" name="autoCloseReminder" class="form-control" value="<%= template && template.autoClose ? template.autoClose.reminder || 15 : 15 %>" min="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== ADVANCED TAB ===== -->
+                    <div class="tab-content" id="tab-advanced">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="maxTickets">Max Tickets per User</label>
+                                <input type="number" id="maxTickets" name="maxTickets" class="form-control" value="<%= template ? template.maxTickets || 3 : 3 %>" min="1" max="10">
+                                <div class="help-text">How many tickets a user can open at once</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cooldown">Cooldown (seconds)</label>
+                                <input type="number" id="cooldown" name="cooldown" class="form-control" value="<%= template ? template.cooldown || 600 : 600 %>" min="0">
+                                <div class="help-text">Wait time between ticket creation</div>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--text); cursor: pointer;">
+                                <input type="checkbox" name="pinWelcome" <%= template && template.pinWelcome ? 'checked' : '' %> style="accent-color: var(--signal);"> Pin Welcome Message
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--text); cursor: pointer;">
+                                <input type="checkbox" name="autoMentionSupport" <%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'checked' : '') : 'checked' %> style="accent-color: var(--signal);"> Auto Mention Support
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--text); cursor: pointer;">
+                                <input type="checkbox" name="lockOnClose" <%= template && template.lockOnClose !== undefined ? (template.lockOnClose ? 'checked' : '') : 'checked' %> style="accent-color: var(--signal);"> Lock on Close
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--text); cursor: pointer;">
+                                <input type="checkbox" name="deleteOnClose" <%= template && template.deleteOnClose ? 'checked' : '' %> style="accent-color: var(--signal);"> Delete on Close
+                            </label>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
         </div>
+
+        <!-- ===== PREVIEW SIDEBAR ===== -->
+        <div class="preview-sidebar">
+            <div class="preview-card">
+                <div class="preview-title">📱 Live Preview</div>
+                <div class="discord-preview">
+                    <div class="preview-header">
+                        <div class="avatar">S</div>
+                        <span class="name">Sentinal</span>
+                        <span class="time">Today</span>
+                    </div>
+                    <div class="preview-message" id="previewMessage">Welcome @user! A member of our support team will assist you shortly.</div>
+                    <div class="preview-embed" id="previewEmbed" style="display: none;">
+                        <div class="embed-title" id="previewEmbedTitle">🎫 Ticket Created</div>
+                        <div class="embed-desc" id="previewEmbedDesc">Your ticket has been created!</div>
+                        <div class="embed-footer" id="previewEmbedFooter">Sentinal</div>
+                    </div>
+                    <div class="preview-buttons" id="previewButtons">
+                        <button class="preview-btn primary">🟢 Claim</button>
+                        <button class="preview-btn secondary">📝 Note</button>
+                        <button class="preview-btn danger">🔒 Close</button>
+                    </div>
+                </div>
+                <div class="help-text" style="margin-top: 8px; font-size: 11px; color: var(--muted);">Live updates while you type</div>
+            </div>
+        </div>
+
     </div>
 
     <footer class="footer">
@@ -1390,6 +1037,31 @@
                     setTimeout(function() { if (toast.parentElement) toast.remove(); }, 300);
                 }
             }, 4000);
+        }
+
+        // ===== TAB SWITCHING =====
+        function switchTab(tab) {
+            // Update sidebar
+            document.querySelectorAll('.sidebar-left .nav-item').forEach(function(el) {
+                el.classList.remove('active');
+                if (el.textContent.trim().toLowerCase().includes(tab)) {
+                    el.classList.add('active');
+                }
+            });
+            // Update tab headers
+            document.querySelectorAll('.tab-btn').forEach(function(el) {
+                el.classList.remove('active');
+                if (el.dataset.tab === tab) {
+                    el.classList.add('active');
+                }
+            });
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(function(el) {
+                el.classList.remove('active');
+                if (el.id === 'tab-' + tab) {
+                    el.classList.add('active');
+                }
+            });
         }
 
         // ===== CHANNEL NAME =====
@@ -1434,69 +1106,6 @@
             }
         }
 
-        // ===== QUOTA CARDS =====
-        function updateSliderFill(el) {
-            var min = parseFloat(el.min) || 0;
-            var max = parseFloat(el.max) || 100;
-            var val = parseFloat(el.value) || 0;
-            var percent = ((val - min) / (max - min)) * 100;
-            el.style.setProperty('--fill', percent + '%');
-        }
-
-        function bumpNumber(el) {
-            el.classList.remove('bump');
-            requestAnimationFrame(function() { el.classList.add('bump'); });
-            setTimeout(function() { el.classList.remove('bump'); }, 150);
-        }
-
-        function onMaxTicketsChange(value) {
-            value = parseInt(value);
-            var display = document.getElementById('maxTicketsDisplay');
-            display.textContent = value;
-            bumpNumber(display);
-
-            var visual = document.getElementById('maxTicketsVisual');
-            visual.innerHTML = '';
-            for (var i = 1; i <= 10; i++) {
-                var icon = document.createElement('i');
-                icon.className = 'fas fa-ticket' + (i <= value ? ' filled' : '');
-                visual.appendChild(icon);
-            }
-            updateSliderFill(document.getElementById('maxTickets'));
-        }
-
-        var COOLDOWN_PRESETS = [0, 60, 300, 600, 1800, 3600, 7200, 21600, 86400];
-        var COOLDOWN_LABELS = ['No cooldown', '1 minute', '5 minutes', '10 minutes', '30 minutes', '1 hour', '2 hours', '6 hours', '24 hours'];
-
-        function findCooldownIndex(seconds) {
-            var idx = COOLDOWN_PRESETS.indexOf(seconds);
-            if (idx !== -1) return idx;
-            return COOLDOWN_PRESETS.reduce(function(closest, val, i) {
-                return Math.abs(val - seconds) < Math.abs(COOLDOWN_PRESETS[closest] - seconds) ? i : closest;
-            }, 0);
-        }
-
-        function onCooldownChange(index) {
-            index = parseInt(index);
-            var seconds = COOLDOWN_PRESETS[index];
-            document.getElementById('cooldown').value = seconds;
-            var display = document.getElementById('cooldownDisplay');
-            display.textContent = COOLDOWN_LABELS[index];
-            bumpNumber(display);
-            updateSliderFill(document.getElementById('cooldownIndex'));
-        }
-
-        function initQuotaCards() {
-            var maxTickets = document.getElementById('maxTickets');
-            onMaxTicketsChange(maxTickets.value);
-
-            var cooldownHidden = document.getElementById('cooldown');
-            var initialSeconds = parseInt(cooldownHidden.value) || 0;
-            var idx = findCooldownIndex(initialSeconds);
-            document.getElementById('cooldownIndex').value = idx;
-            onCooldownChange(idx);
-        }
-
         // ===== ROLE CHIP PICKER =====
         var ROLE_PICK_LIMIT = 3;
 
@@ -1514,6 +1123,7 @@
                 var empty = document.createElement('div');
                 empty.className = 'role-chip-empty';
                 empty.textContent = 'No roles found on this server';
+                empty.style.cssText = 'font-size: 13px; color: var(--muted-dim); padding: 6px 0;';
                 grid.appendChild(empty);
                 return;
             }
@@ -1523,10 +1133,11 @@
                 var btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'role-chip-btn' + (opt.selected ? ' selected' : '') + (!opt.selected && atLimit ? ' disabled' : '');
+                btn.style.cssText = 'display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 100px; border: 1px solid var(--line); background: var(--panel-raised); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; user-select: none; font-family: Inter, sans-serif;';
 
                 var dot = document.createElement('span');
                 dot.className = 'role-chip-dot';
-                dot.style.background = opt.dataset.color || '#3DFFB8';
+                dot.style.cssText = 'width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: ' + (opt.dataset.color || '#3DFFB8') + ';';
                 btn.appendChild(dot);
 
                 var label = document.createElement('span');
@@ -1537,6 +1148,7 @@
                     var remove = document.createElement('span');
                     remove.className = 'role-chip-remove';
                     remove.innerHTML = '<i class="fas fa-times"></i>';
+                    remove.style.cssText = 'font-size: 10px; opacity: 0.7; display: inline-flex;';
                     btn.appendChild(remove);
                 }
 
@@ -1556,17 +1168,18 @@
             });
 
             countLabel.textContent = selectedCount + '/' + ROLE_PICK_LIMIT + ' selected';
-            countLabel.classList.toggle('full', selectedCount >= ROLE_PICK_LIMIT);
+            countLabel.style.color = selectedCount >= ROLE_PICK_LIMIT ? 'var(--signal)' : 'var(--muted)';
         }
 
         // ===== CUSTOM BUTTONS =====
         function renderButtons() {
             var grid = document.getElementById('buttonGrid');
-            var countLabel = document.getElementById('buttonCount');
+            var countLabel = document.getElementById('buttonBadge');
             var addBtn = document.getElementById('addButtonBtn');
 
             grid.innerHTML = '';
-            countLabel.textContent = buttons.length + ' / ' + MAX_BUTTONS;
+            if (countLabel) countLabel.textContent = buttons.length;
+
             addBtn.disabled = buttons.length >= MAX_BUTTONS;
 
             var colorOptions = ['primary', 'secondary', 'success', 'danger'];
@@ -1581,9 +1194,7 @@
             buttons.forEach(function(btn, index) {
                 var card = document.createElement('div');
                 card.className = 'button-card';
-                card.dataset.index = index;
 
-                // Build template options from JavaScript data
                 var templateOptions = '<option value="">Select template...</option>';
                 if (templatesData && templatesData.length > 0) {
                     templatesData.forEach(function(t) {
@@ -1602,11 +1213,11 @@
                     <div class="card-row">
                         <div class="form-group">
                             <label>Label</label>
-                            <input type="text" class="form-control" value="${btn.label || ''}" placeholder="e.g., Support" onchange="updateButton(${index}, 'label', this.value)">
+                            <input type="text" class="form-control" value="${btn.label || ''}" placeholder="Support" onchange="updateButton(${index}, 'label', this.value)">
                         </div>
                         <div class="form-group">
                             <label>Emoji</label>
-                            <input type="text" class="form-control" value="${btn.emoji || ''}" placeholder="📩" onchange="updateButton(${index}, 'emoji', this.value)">
+                            <input type="text" class="form-control" value="${btn.emoji || ''}" placeholder="🎫" onchange="updateButton(${index}, 'emoji', this.value)">
                         </div>
                     </div>
                     <div class="card-row">
@@ -1632,6 +1243,8 @@
 
                 grid.appendChild(card);
             });
+
+            updatePreviewButtons();
         }
 
         function addButton() {
@@ -1662,53 +1275,94 @@
 
         // ===== PREVIEW =====
         function updatePreview() {
-            var message = document.getElementById('welcomeMessage').value || 'Welcome {mention}! A member of our support team will assist you shortly.';
-            document.getElementById('previewMessage').textContent = message;
+            var message = document.getElementById('welcomeMessage') ? document.getElementById('welcomeMessage').value : 'Welcome {mention}! A member of our support team will assist you shortly.';
+            var previewMessage = document.getElementById('previewMessage');
+            if (previewMessage) previewMessage.textContent = message;
+
+            var embedTitle = document.getElementById('embedTitle');
+            var embedDesc = document.getElementById('embedDescription');
+            var embedFooter = document.getElementById('embedFooter');
+            var embedColor = document.getElementById('embedColor');
+
+            var previewEmbed = document.getElementById('previewEmbed');
+            var previewEmbedTitle = document.getElementById('previewEmbedTitle');
+            var previewEmbedDesc = document.getElementById('previewEmbedDesc');
+            var previewEmbedFooter = document.getElementById('previewEmbedFooter');
+
+            if (embedTitle && embedTitle.value) {
+                previewEmbed.style.display = 'block';
+                if (previewEmbedTitle) previewEmbedTitle.textContent = embedTitle.value;
+            } else {
+                previewEmbed.style.display = 'none';
+            }
+
+            if (embedDesc && embedDesc.value) {
+                if (previewEmbedDesc) previewEmbedDesc.textContent = embedDesc.value;
+            }
+
+            if (embedFooter && embedFooter.value) {
+                if (previewEmbedFooter) previewEmbedFooter.textContent = embedFooter.value;
+            }
+
+            if (embedColor && previewEmbed) {
+                previewEmbed.style.borderLeftColor = embedColor.value;
+            }
         }
 
-        // ===== ACCORDION =====
-        function toggleAccordion(el) {
-            var accordion = el.closest('.accordion');
-            accordion.classList.toggle('open');
+        function updatePreviewButtons() {
+            var container = document.getElementById('previewButtons');
+            if (!container) return;
+
+            container.innerHTML = '';
+            if (buttons.length === 0) {
+                container.innerHTML = '<button class="preview-btn primary">🟢 Claim</button><button class="preview-btn secondary">📝 Note</button><button class="preview-btn danger">🔒 Close</button>';
+                return;
+            }
+
+            buttons.forEach(function(btn) {
+                var colorMap = { primary: 'primary', secondary: 'secondary', success: 'success', danger: 'danger' };
+                var btnEl = document.createElement('button');
+                btnEl.className = 'preview-btn ' + (colorMap[btn.color] || 'primary');
+                btnEl.textContent = (btn.emoji || '📩') + ' ' + (btn.label || 'Button');
+                container.appendChild(btnEl);
+            });
         }
 
         // ===== SAVE TEMPLATE =====
         async function saveTemplate(event) {
-            event.preventDefault();
-            var form = document.getElementById('templateForm');
-            var formData = new FormData(form);
+            if (event) event.preventDefault();
 
             var supportRolesSelect = document.getElementById('supportRoles');
             var supportRoles = Array.from(supportRolesSelect.selectedOptions).map(function(opt) { return opt.value; }).filter(function(v) { return v; });
 
             var data = {
-                name: formData.get('name'),
-                description: formData.get('description'),
-                status: formData.get('status'),
-                category: formData.get('category'),
-                transcriptChannel: formData.get('transcriptChannel'),
-                channelName: formData.get('channelName'),
-                topic: formData.get('topic'),
-                welcomeMessage: formData.get('welcomeMessage'),
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                status: document.getElementById('status').value,
+                category: document.getElementById('category').value,
+                transcriptChannel: document.getElementById('transcriptChannel').value,
+                channelName: document.getElementById('channelName').value,
+                topic: document.getElementById('topic').value,
+                welcomeMessage: document.getElementById('welcomeMessage') ? document.getElementById('welcomeMessage').value : '',
                 supportRoles: supportRoles,
-                maxTickets: parseInt(formData.get('maxTickets')) || 3,
-                cooldown: parseInt(formData.get('cooldown')) || 600,
-                pinWelcome: formData.get('pinWelcome') === 'on',
-                autoMentionSupport: formData.get('autoMentionSupport') === 'on',
-                lockOnClose: formData.get('lockOnClose') === 'on',
-                deleteOnClose: formData.get('deleteOnClose') === 'on',
+                maxTickets: parseInt(document.getElementById('maxTickets').value) || 3,
+                cooldown: parseInt(document.getElementById('cooldown').value) || 600,
+                pinWelcome: document.querySelector('input[name="pinWelcome"]') ? document.querySelector('input[name="pinWelcome"]').checked : false,
+                autoMentionSupport: document.querySelector('input[name="autoMentionSupport"]') ? document.querySelector('input[name="autoMentionSupport"]').checked : true,
+                lockOnClose: document.querySelector('input[name="lockOnClose"]') ? document.querySelector('input[name="lockOnClose"]').checked : true,
+                deleteOnClose: document.querySelector('input[name="deleteOnClose"]') ? document.querySelector('input[name="deleteOnClose"]').checked : false,
                 autoClose: {
                     enabled: document.getElementById('autoCloseEnabled').value === 'true',
-                    timeout: parseInt(formData.get('autoCloseTimeout')) || 0,
-                    reminder: parseInt(formData.get('autoCloseReminder')) || 15
+                    timeout: parseInt(document.getElementById('autoCloseTimeout').value) || 0,
+                    reminder: parseInt(document.getElementById('autoCloseReminder').value) || 15
                 },
                 permissions: {
-                    closeTicket: document.querySelector('input[name="perm_close"]').checked,
-                    deleteTicket: document.querySelector('input[name="perm_delete"]').checked,
-                    renameTicket: document.querySelector('input[name="perm_rename"]').checked,
-                    claimTicket: document.querySelector('input[name="perm_claim"]').checked,
-                    addUser: document.querySelector('input[name="perm_adduser"]').checked,
-                    removeUser: document.querySelector('input[name="perm_removeuser"]').checked
+                    closeTicket: document.querySelector('input[name="perm_close"]') ? document.querySelector('input[name="perm_close"]').checked : false,
+                    deleteTicket: document.querySelector('input[name="perm_delete"]') ? document.querySelector('input[name="perm_delete"]').checked : false,
+                    renameTicket: document.querySelector('input[name="perm_rename"]') ? document.querySelector('input[name="perm_rename"]').checked : false,
+                    claimTicket: document.querySelector('input[name="perm_claim"]') ? document.querySelector('input[name="perm_claim"]').checked : false,
+                    addUser: document.querySelector('input[name="perm_adduser"]') ? document.querySelector('input[name="perm_adduser"]').checked : false,
+                    removeUser: document.querySelector('input[name="perm_removeuser"]') ? document.querySelector('input[name="perm_removeuser"]').checked : false
                 },
                 customButtons: buttons
             };
@@ -1738,6 +1392,17 @@
             }
         }
 
+        // ===== PUBLISH TEMPLATE =====
+        function publishTemplate() {
+            showToast('🚀 Publishing panel to Discord...', 'info');
+            // This would call the publish API
+            // For now, just save and then redirect
+            saveTemplate();
+            setTimeout(function() {
+                window.location.href = '/servers/' + guildId + '/panels';
+            }, 2000);
+        }
+
         // ===== DELETE TEMPLATE =====
         function deleteTemplate() {
             if (!templateId) return;
@@ -1765,23 +1430,26 @@
 
         // ===== INIT =====
         document.addEventListener('DOMContentLoaded', function() {
-            initQuotaCards();
             renderRoleChips();
             loadButtons();
             updateChannelName();
             updatePreview();
+
+            // Add welcome message listener if it exists
+            var welcomeMsg = document.getElementById('welcomeMessage');
+            if (welcomeMsg) {
+                welcomeMsg.addEventListener('input', updatePreview);
+            }
         });
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
-                initQuotaCards();
                 renderRoleChips();
                 loadButtons();
                 updateChannelName();
                 updatePreview();
             });
         } else {
-            initQuotaCards();
             renderRoleChips();
             loadButtons();
             updateChannelName();
@@ -1790,15 +1458,13 @@
 
         // ===== EXPOSE FUNCTIONS =====
         window.showToast = showToast;
+        window.switchTab = switchTab;
         window.updateChannelName = updateChannelName;
         window.toggleSwitch = toggleSwitch;
         window.updatePermissions = updatePermissions;
-        window.toggleAccordion = toggleAccordion;
         window.saveTemplate = saveTemplate;
+        window.publishTemplate = publishTemplate;
         window.deleteTemplate = deleteTemplate;
-        window.onMaxTicketsChange = onMaxTicketsChange;
-        window.onCooldownChange = onCooldownChange;
-        window.initQuotaCards = initQuotaCards;
         window.renderRoleChips = renderRoleChips;
         window.addButton = addButton;
         window.removeButton = removeButton;
@@ -1807,6 +1473,7 @@
         window.renderButtons = renderButtons;
         window.loadButtons = loadButtons;
         window.updatePreview = updatePreview;
+        window.updatePreviewButtons = updatePreviewButtons;
     </script>
 
 </body>
