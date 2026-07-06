@@ -40,22 +40,6 @@ const ticketTemplateSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
-    adminRoles: {
-        type: [String],
-        default: []
-    },
-    moderatorRoles: {
-        type: [String],
-        default: []
-    },
-    allowedUsers: {
-        type: [String],
-        default: []
-    },
-    allowedRoles: {
-        type: [String],
-        default: []
-    },
     
     // Permission Options
     permissions: {
@@ -75,19 +59,7 @@ const ticketTemplateSchema = new mongoose.Schema({
     },
     cooldown: {
         type: Number,
-        default: 600 // seconds
-    },
-    minAccountAge: {
-        type: Number,
-        default: 0 // days
-    },
-    minServerMembership: {
-        type: Number,
-        default: 0 // days
-    },
-    preventDuplicates: {
-        type: Boolean,
-        default: false
+        default: 600
     },
     
     // Welcome Message
@@ -95,31 +67,12 @@ const ticketTemplateSchema = new mongoose.Schema({
         type: String,
         default: 'Welcome {mention}!\n\nA member of our support team will assist you shortly.'
     },
-    welcomeEmbed: {
-        type: Object,
-        default: null
-    },
-    
-    // Ticket Actions
-    actions: {
-        close: { type: Boolean, default: true },
-        reopen: { type: Boolean, default: false },
-        delete: { type: Boolean, default: false },
-        claim: { type: Boolean, default: true },
-        rename: { type: Boolean, default: false },
-        transfer: { type: Boolean, default: false },
-        addUser: { type: Boolean, default: false },
-        removeUser: { type: Boolean, default: false },
-        transcript: { type: Boolean, default: true },
-        lock: { type: Boolean, default: false },
-        unlock: { type: Boolean, default: false }
-    },
     
     // Auto Close
     autoClose: {
         enabled: { type: Boolean, default: false },
-        timeout: { type: Number, default: 48 }, // hours
-        reminder: { type: Number, default: 15 } // minutes
+        timeout: { type: Number, default: 48 },
+        reminder: { type: Number, default: 15 }
     },
     
     // Transcript Settings
@@ -132,41 +85,20 @@ const ticketTemplateSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    transcriptDestination: {
-        type: String,
-        enum: ['channel', 'dm', 'link'],
-        default: 'channel'
-    },
-    
-    // Logging
-    logEvents: {
-        created: { type: Boolean, default: true },
-        closed: { type: Boolean, default: true },
-        deleted: { type: Boolean, default: true },
-        renamed: { type: Boolean, default: true },
-        userAdded: { type: Boolean, default: true },
-        userRemoved: { type: Boolean, default: true },
-        claimed: { type: Boolean, default: true }
-    },
     
     // Advanced Options
-    autoArchive: { type: Boolean, default: false },
-    lockOnClose: { type: Boolean, default: true },
-    deleteOnClose: { type: Boolean, default: false },
     pinWelcome: { type: Boolean, default: false },
     autoMentionSupport: { type: Boolean, default: true },
+    lockOnClose: { type: Boolean, default: true },
+    deleteOnClose: { type: Boolean, default: false },
     
-    // Form
-    formDescription: {
-        type: String,
-        default: ''
-    },
-    questions: {
+    // Custom Buttons
+    customButtons: {
         type: [{
-            question: String,
-            required: Boolean,
-            type: { type: String, enum: ['text', 'number', 'boolean', 'select'] },
-            options: [String]
+            label: String,
+            emoji: String,
+            color: { type: String, enum: ['primary', 'secondary', 'success', 'danger'], default: 'primary' },
+            templateId: String
         }],
         default: []
     },
