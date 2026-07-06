@@ -183,7 +183,133 @@
         .sidebar .nav-item .badge.new { background: var(--violet-tab); color: var(--violet); }
         .sidebar .divider { height: 1px; background: var(--line); margin: 8px 0; }
 
-        .content { flex: 1; min-width: 0; }
+        .content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+        }
+
+        /* ===== FORM CONTENT ===== */
+        .form-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ===== PREVIEW SIDEBAR ===== */
+        .preview-sidebar {
+            width: 380px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 88px;
+            height: calc(100vh - 108px);
+            overflow-y: auto;
+            padding: 0 0 20px 0;
+        }
+        .preview-sidebar::-webkit-scrollbar { width: 3px; }
+        .preview-sidebar::-webkit-scrollbar-track { background: transparent; }
+        .preview-sidebar::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
+
+        .preview-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 20px;
+        }
+        .preview-card .preview-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        /* ===== DISCORD PREVIEW ===== */
+        .discord-preview {
+            background: #1a1a2e;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid var(--line);
+        }
+        .discord-preview .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .discord-preview .preview-header .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--signal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--ink);
+            flex-shrink: 0;
+        }
+        .discord-preview .preview-header .name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+        }
+        .discord-preview .preview-header .time {
+            font-size: 12px;
+            color: var(--muted-dim);
+            margin-left: auto;
+        }
+        .discord-preview .preview-message {
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 8px 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .discord-preview .preview-embed {
+            background: var(--panel-raised);
+            border-left: 4px solid var(--signal);
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin-top: 8px;
+        }
+        .discord-preview .preview-embed .embed-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #fff;
+        }
+        .discord-preview .preview-embed .embed-desc {
+            font-size: 14px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+        .discord-preview .preview-embed .embed-footer {
+            font-size: 12px;
+            color: var(--muted-dim);
+            margin-top: 8px;
+        }
+        .discord-preview .preview-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .discord-preview .preview-buttons .preview-btn {
+            padding: 4px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            cursor: default;
+        }
+        .preview-btn.primary { background: #5865F2; color: #fff; }
+        .preview-btn.secondary { background: #4e5d73; color: #fff; }
+        .preview-btn.success { background: #57F287; color: #000; }
+        .preview-btn.danger { background: #ED4245; color: #fff; }
 
         /* ===== PAGE HEADER ===== */
         .page-header {
@@ -213,7 +339,6 @@
             border: 1px solid var(--line);
             border-radius: 14px;
             padding: 32px;
-            max-width: 1000px;
         }
 
         /* ===== SECTION ===== */
@@ -230,27 +355,50 @@
             padding-bottom: 8px;
             border-bottom: 1px solid var(--line);
             display: flex;
-            align-items: center; gap: 10px;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-section .section-desc {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 16px;
         }
 
         /* ===== FORM ELEMENTS ===== */
         .form-group { margin-bottom: 20px; }
         .form-group:last-child { margin-bottom: 0; }
         .form-group label {
-            display: block; font-weight: 600; font-size: 14px;
-            color: var(--text); margin-bottom: 6px;
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .form-group label .label-desc {
+            font-weight: 400;
+            font-size: 12px;
+            color: var(--muted);
+            margin-left: 6px;
         }
         .form-group .help-text {
-            font-size: 12px; color: var(--muted); margin-top: 4px;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
         }
         .form-control {
-            width: 100%; padding: 10px 16px; border-radius: 10px;
-            border: 1px solid var(--line); background: var(--panel-raised);
-            color: var(--text); font-size: 14px; font-family: 'Inter', sans-serif;
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: var(--panel-raised);
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
             transition: all 0.18s ease;
         }
         .form-control:focus {
-            outline: none; border-color: var(--signal);
+            outline: none;
+            border-color: var(--signal);
             box-shadow: 0 0 0 4px var(--signal-glow);
         }
         .form-control::placeholder { color: var(--muted-dim); }
@@ -455,52 +603,80 @@
         }
         .permission-grid label {
             display: flex; align-items: center; gap: 8px;
-            font-weight: 400; font-size: 14px; color: var(--text);
-            cursor: pointer; padding: 4px 0;
+            font-weight: 400;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+            padding: 4px 0;
         }
         .permission-grid input[type="checkbox"] {
-            accent-color: var(--signal); width: 16px; height: 16px;
+            accent-color: var(--signal);
+            width: 16px;
+            height: 16px;
             cursor: pointer;
         }
 
         /* ===== TOGGLE SWITCH ===== */
         .toggle-wrapper {
-            display: flex; align-items: center; gap: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         .toggle {
-            width: 48px; height: 28px; background: var(--muted-dim);
-            border-radius: 14px; cursor: pointer; transition: all 0.3s ease;
-            position: relative; flex-shrink: 0;
+            width: 48px;
+            height: 28px;
+            background: var(--muted-dim);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            flex-shrink: 0;
         }
         .toggle.active { background: var(--signal); }
         .toggle .toggle-knob {
-            width: 22px; height: 22px; background: #fff;
-            border-radius: 50%; position: absolute; top: 3px; left: 3px;
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
             transition: all 0.3s ease;
         }
         .toggle.active .toggle-knob { left: 23px; }
 
         /* ===== ACCORDION ===== */
         .accordion {
-            border: 1px solid var(--line); border-radius: 10px;
-            overflow: hidden; margin-bottom: 12px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
         }
         .accordion:last-child { margin-bottom: 0; }
         .accordion-header {
-            padding: 14px 20px; background: var(--panel-raised);
-            cursor: pointer; display: flex; justify-content: space-between;
-            align-items: center; transition: all 0.2s ease;
-            font-weight: 600; font-size: 14px; color: var(--text);
+            padding: 14px 20px;
+            background: var(--panel-raised);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
         }
         .accordion-header:hover { background: var(--panel-hover); }
         .accordion-header .arrow { transition: transform 0.3s ease; }
         .accordion.open .accordion-header .arrow { transform: rotate(180deg); }
         .accordion-body {
-            padding: 0 20px; max-height: 0; overflow: hidden;
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
             transition: all 0.3s ease;
         }
         .accordion.open .accordion-body {
-            padding: 20px; max-height: 2000px;
+            padding: 20px;
+            max-height: 2000px;
         }
 
         /* ===== ROLE CHIP PICKER ===== */
@@ -511,80 +687,180 @@
             padding: 20px;
         }
         .role-picker-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 14px; gap: 12px; flex-wrap: wrap;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
-        .role-picker-title { font-size: 13px; font-weight: 600; color: var(--text); }
+        .role-picker-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
         .role-picker-count {
-            font-size: 11.5px; font-weight: 700; color: var(--muted);
-            background: var(--panel-raised); border: 1px solid var(--line);
-            padding: 3px 11px; border-radius: 100px; transition: all 0.2s ease;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--muted);
+            background: var(--panel-raised);
+            border: 1px solid var(--line);
+            padding: 3px 11px;
+            border-radius: 100px;
+            transition: all 0.2s ease;
             white-space: nowrap;
         }
-        .role-picker-count.full { color: var(--signal); border-color: rgba(61,255,184,0.3); background: var(--signal-tab); }
-        .role-chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        .role-picker-count.full {
+            color: var(--signal);
+            border-color: rgba(61,255,184,0.3);
+            background: var(--signal-tab);
+        }
+        .role-chip-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
         .role-chip-btn {
-            display: inline-flex; align-items: center; gap: 7px;
-            padding: 8px 14px; border-radius: 100px; border: 1px solid var(--line);
-            background: var(--panel-raised); color: var(--text); font-size: 13px; font-weight: 600;
-            cursor: pointer; transition: all 0.15s ease; user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            border-radius: 100px;
+            border: 1px solid var(--line);
+            background: var(--panel-raised);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
             font-family: 'Inter', sans-serif;
         }
-        .role-chip-btn:hover:not(.disabled) { border-color: var(--line-bright); transform: translateY(-1px); }
-        .role-chip-btn.selected { background: var(--signal-tab); border-color: rgba(61,255,184,0.35); color: var(--signal); }
-        .role-chip-btn .role-chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .role-chip-btn .role-chip-remove { font-size: 11px; opacity: 0.7; display: inline-flex; }
-        .role-chip-btn.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
-        .role-chip-empty { font-size: 13px; color: var(--muted-dim); padding: 6px 0; }
+        .role-chip-btn:hover:not(.disabled) {
+            border-color: var(--line-bright);
+            transform: translateY(-1px);
+        }
+        .role-chip-btn.selected {
+            background: var(--signal-tab);
+            border-color: rgba(61,255,184,0.35);
+            color: var(--signal);
+        }
+        .role-chip-btn .role-chip-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .role-chip-btn .role-chip-remove {
+            font-size: 11px;
+            opacity: 0.7;
+            display: inline-flex;
+        }
+        .role-chip-btn.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .role-chip-empty {
+            font-size: 13px;
+            color: var(--muted-dim);
+            padding: 6px 0;
+        }
 
         /* ===== BUTTONS ===== */
         .btn-primary {
-            padding: 10px 24px; border-radius: 10px; border: none;
-            background: var(--signal); color: var(--ink); font-weight: 700;
-            font-size: 14px; cursor: pointer; transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif; display: inline-flex;
-            align-items: center; gap: 8px;
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: none;
+            background: var(--signal);
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--signal-glow); }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--signal-glow);
+        }
         .btn-secondary {
-            padding: 10px 24px; border-radius: 10px; border: 1px solid var(--line);
-            background: transparent; color: var(--text); font-weight: 600;
-            font-size: 14px; cursor: pointer; transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif; display: inline-flex;
-            align-items: center; gap: 8px;
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         .btn-secondary:hover { background: rgba(255,255,255,0.05); }
         .btn-danger {
-            padding: 10px 24px; border-radius: 10px; border: 1px solid var(--red-border);
-            background: var(--red-bg); color: var(--red); font-weight: 600;
-            font-size: 14px; cursor: pointer; transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif; display: inline-flex;
-            align-items: center; gap: 8px;
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: 1px solid var(--red-border);
+            background: var(--red-bg);
+            color: var(--red);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         .btn-danger:hover { background: rgba(248,113,113,0.2); }
 
         .btn-group {
-            display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
         }
 
         /* ===== TOAST ===== */
         .toast-container {
-            position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-            display: flex; flex-direction: column; gap: 10px; max-width: 380px;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
             width: 100%;
         }
         .toast {
-            background: var(--panel); border: 1px solid var(--line);
-            border-radius: 12px; padding: 14px 20px; display: flex;
-            align-items: center; gap: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-            animation: slideIn 0.3s ease; backdrop-filter: blur(10px);
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
             border-left: 4px solid var(--signal);
         }
         .toast .toast-icon { color: var(--signal); font-size: 18px; flex-shrink: 0; }
         .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
         .toast .toast-close {
-            background: none; border: none; color: var(--muted-dim);
-            cursor: pointer; font-size: 14px; padding: 4px;
+            background: none;
+            border: none;
+            color: var(--muted-dim);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
         }
         .toast .toast-close:hover { color: var(--text); }
         .toast.error { border-left-color: var(--red); }
@@ -603,20 +879,50 @@
 
         .footer {
             border-top: 1px solid var(--line);
-            margin-top: 60px; padding: 28px 48px; text-align: center;
-            color: var(--muted-dim); font-size: 13px;
-            font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.5px;
+            margin-top: 60px;
+            padding: 28px 48px;
+            text-align: center;
+            color: var(--muted-dim);
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.5px;
         }
 
+        @media (max-width: 1024px) {
+            .content {
+                flex-direction: column;
+            }
+            .preview-sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: auto;
+                max-height: none;
+            }
+            .page-wrapper {
+                padding: 24px 32px 60px 5px;
+                gap: 24px;
+            }
+            .sidebar { width: 240px; }
+        }
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
             .nav-center { display: none; }
             .page-wrapper { padding: 16px; flex-direction: column; }
             .sidebar {
-                width: 100%; position: relative; top: 0; display: flex;
-                flex-wrap: wrap; gap: 4px; padding: 12px; border-radius: 12px;
-                max-height: none; height: auto; margin-left: 0;
-                border: 1px solid var(--line); border-radius: 12px;
+                width: 100%;
+                position: relative;
+                top: 0;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                padding: 12px;
+                border-radius: 12px;
+                max-height: none;
+                height: auto;
+                margin-left: 0;
+                border: 1px solid var(--line);
+                border-radius: 12px;
             }
             .sidebar .server-info { display: none; }
             .sidebar .nav-section { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -633,6 +939,15 @@
             .btn-group button { width: 100%; }
             .footer { padding: 20px 16px; }
             .toast-container { bottom: 16px; right: 16px; max-width: calc(100% - 32px); }
+            .preview-sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: auto;
+            }
+            .content {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -722,285 +1037,332 @@
         <!-- ===== MAIN CONTENT ===== -->
         <div class="content">
 
-            <div class="page-header">
-                <div>
-                    <div class="breadcrumb">
-                        <a href="/servers/<%= guild.id %>/tickets/templates">Templates</a>
-                        <span style="color: var(--muted-dim);"> / </span>
-                        <span>Edit Template</span>
+            <div class="form-content">
+
+                <div class="page-header">
+                    <div>
+                        <div class="breadcrumb">
+                            <a href="/servers/<%= guild.id %>/tickets/templates">Templates</a>
+                            <span style="color: var(--muted-dim);"> / </span>
+                            <span>Edit Template</span>
+                        </div>
+                        <h1><%= template ? template.name : 'Edit Template' %></h1>
                     </div>
-                    <h1><%= template ? template.name : 'Edit Template' %></h1>
+                    <div>
+                        <button class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                    </div>
                 </div>
-                <div>
-                    <button class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
-                        <i class="fas fa-arrow-left"></i> Back
-                    </button>
+
+                <div class="form-container">
+                    <form id="templateForm" onsubmit="saveTemplate(event)">
+
+                        <!-- ===== GENERAL SECTION ===== -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-cog" style="color: var(--signal);"></i> General
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" name="name" class="form-control" value="<%= template ? template.name : '' %>" placeholder="e.g., Support" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <input type="text" id="description" name="description" class="form-control" value="<%= template ? template.description : '' %>" placeholder="Optional description">
+                                    <div class="help-text">A short description to help you identify this template</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="status">Status <span class="label-desc">Controls if this template is active</span></label>
+                                    <select id="status" name="status" class="form-control">
+                                        <option value="active" <%= template && template.status === 'active' ? 'selected' : '' %>>🟢 Active - Templates can be used</option>
+                                        <option value="draft" <%= template && template.status === 'draft' ? 'selected' : '' %>>🟡 Draft - Not yet ready for use</option>
+                                        <option value="disabled" <%= template && template.status === 'disabled' ? 'selected' : '' %>>🔴 Disabled - Temporarily unavailable</option>
+                                    </select>
+                                    <div class="help-text"><strong>Active:</strong> Template is live and can be used • <strong>Draft:</strong> Template is being worked on • <strong>Disabled:</strong> Template is paused</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== TICKET SETTINGS ===== -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-sliders-h" style="color: var(--signal);"></i> Ticket Settings
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="category">Category <span class="label-desc">Where tickets are created</span></label>
+                                    <select id="category" name="category" class="form-control">
+                                        <option value="">None</option>
+                                        <% if (channels) { %>
+                                            <% channels.filter(function(c) { return c.type === 4; }).forEach(function(cat) { %>
+                                                <option value="<%= cat.id %>" <%= template && template.category === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                                            <% }) %>
+                                        <% } %>
+                                    </select>
+                                    <div class="help-text">The Discord category where new ticket channels will be created</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="transcriptChannel">Transcript Channel <span class="label-desc">Where transcripts are saved</span></label>
+                                    <select id="transcriptChannel" name="transcriptChannel" class="form-control">
+                                        <option value="">None</option>
+                                        <% if (channels) { %>
+                                            <% channels.filter(function(c) { return c.type === 0; }).forEach(function(ch) { %>
+                                                <option value="<%= ch.id %>" <%= template && template.transcriptChannel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                            <% }) %>
+                                        <% } %>
+                                    </select>
+                                    <div class="help-text">Channel where ticket transcripts will be sent when tickets are closed</div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="channelName">Ticket Name Format <span class="label-desc">How tickets are named</span></label>
+                                    <select id="channelNamePreset" class="form-control" onchange="updateChannelName()">
+                                        <option value="ticket-{user}" <%= template && template.channelName === 'ticket-{user}' ? 'selected' : '' %>>ticket-{user}</option>
+                                        <option value="ticket-{number}" <%= template && template.channelName === 'ticket-{number}' ? 'selected' : '' %>>ticket-{number}</option>
+                                        <option value="support-{user}" <%= template && template.channelName === 'support-{user}' ? 'selected' : '' %>>support-{user}</option>
+                                        <option value="report-{number}" <%= template && template.channelName === 'report-{number}' ? 'selected' : '' %>>report-{number}</option>
+                                        <option value="custom" <%= template && !['ticket-{user}','ticket-{number}','support-{user}','report-{number}'].includes(template.channelName) ? 'selected' : '' %>>Custom...</option>
+                                    </select>
+                                    <input type="text" id="channelName" name="channelName" class="form-control" style="margin-top: 8px;" value="<%= template ? template.channelName : 'ticket-{user}' %>" placeholder="Custom format">
+                                    <div class="help-text"><strong>Variables:</strong> {user} = username, {id} = user ID, {number} = ticket count</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="topic">Channel Topic <span class="label-desc">Optional topic for tickets</span></label>
+                                    <input type="text" id="topic" name="topic" class="form-control" value="<%= template ? template.topic : '' %>" placeholder="Optional channel topic">
+                                    <div class="help-text">A short topic that appears at the top of the ticket channel</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== SUPPORT ROLES ===== -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-user-shield" style="color: var(--signal);"></i> Support Roles
+                            </div>
+                            <div class="role-picker-card">
+                                <div class="role-picker-header">
+                                    <span class="role-picker-title">Who gets access to every ticket</span>
+                                    <span class="role-picker-count" id="rolePickerCount">0/3 selected</span>
+                                </div>
+                                <select id="supportRoles" multiple style="display:none;">
+                                    <% if (roles) { %>
+                                        <% roles.forEach(function(role) { %>
+                                            <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.supportRoles && template.supportRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
+                                <div class="role-chip-grid" id="roleChipGrid"></div>
+                            </div>
+                            <div class="help-text">Tap up to 3 roles. Tap a selected one again to remove it.</div>
+                        </div>
+
+                        <!-- ===== PERMISSIONS ===== -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-lock" style="color: var(--signal);"></i> Permissions
+                            </div>
+                            <div class="form-group">
+                                <label for="permissionPreset">Permission Preset</label>
+                                <select id="permissionPreset" class="form-control" onchange="updatePermissions()">
+                                    <option value="support">Support - Basic ticket management</option>
+                                    <option value="moderator">Moderator - Full ticket management</option>
+                                    <option value="admin">Admin - All permissions</option>
+                                    <option value="custom" <%= template && template.permissions ? 'selected' : '' %>>Custom - Manual selection below</option>
+                                </select>
+                                <div class="help-text">Choose a preset or select custom to manually configure permissions</div>
+                            </div>
+                            <div class="permission-grid" id="permissionGrid">
+                                <label><input type="checkbox" name="perm_close" <%= template && template.permissions && template.permissions.closeTicket ? 'checked' : '' %>> Close Ticket</label>
+                                <label><input type="checkbox" name="perm_delete" <%= template && template.permissions && template.permissions.deleteTicket ? 'checked' : '' %>> Delete Ticket</label>
+                                <label><input type="checkbox" name="perm_rename" <%= template && template.permissions && template.permissions.renameTicket ? 'checked' : '' %>> Rename Ticket</label>
+                                <label><input type="checkbox" name="perm_claim" <%= template && template.permissions && template.permissions.claimTicket ? 'checked' : '' %>> Claim Ticket</label>
+                                <label><input type="checkbox" name="perm_adduser" <%= template && template.permissions && template.permissions.addUser ? 'checked' : '' %>> Add Users</label>
+                                <label><input type="checkbox" name="perm_removeuser" <%= template && template.permissions && template.permissions.removeUser ? 'checked' : '' %>> Remove Users</label>
+                            </div>
+                            <div class="help-text">Permissions control what staff can do inside tickets</div>
+                        </div>
+
+                        <!-- ===== AUTO CLOSE ===== -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-clock" style="color: var(--signal);"></i> Auto Close
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-wrapper">
+                                    <div class="toggle <%= template && template.autoClose && template.autoClose.enabled ? 'active' : '' %>" onclick="toggleSwitch(this)">
+                                        <div class="toggle-knob"></div>
+                                    </div>
+                                    <span>Enable Auto Close</span>
+                                </div>
+                                <input type="hidden" name="autoCloseEnabled" id="autoCloseEnabled" value="<%= template && template.autoClose && template.autoClose.enabled ? 'true' : 'false' %>">
+                                <div class="help-text">Automatically close tickets after a period of inactivity</div>
+                            </div>
+                            <div class="form-row" id="autoCloseSettings" style="<%= template && template.autoClose && template.autoClose.enabled ? '' : 'display: none;' %>">
+                                <div class="form-group">
+                                    <label for="autoCloseTimeout">Time <span class="label-desc">How long to wait</span></label>
+                                    <select id="autoCloseTimeout" name="autoCloseTimeout" class="form-control">
+                                        <option value="0">Never</option>
+                                        <option value="30" <%= template && template.autoClose && template.autoClose.timeout === 30 ? 'selected' : '' %>>30 Minutes</option>
+                                        <option value="60" <%= template && template.autoClose && template.autoClose.timeout === 60 ? 'selected' : '' %>>1 Hour</option>
+                                        <option value="360" <%= template && template.autoClose && template.autoClose.timeout === 360 ? 'selected' : '' %>>6 Hours</option>
+                                        <option value="720" <%= template && template.autoClose && template.autoClose.timeout === 720 ? 'selected' : '' %>>12 Hours</option>
+                                        <option value="1440" <%= template && template.autoClose && template.autoClose.timeout === 1440 ? 'selected' : '' %>>24 Hours</option>
+                                        <option value="2880" <%= template && template.autoClose && template.autoClose.timeout === 2880 ? 'selected' : '' %>>48 Hours</option>
+                                        <option value="10080" <%= template && template.autoClose && template.autoClose.timeout === 10080 ? 'selected' : '' %>>7 Days</option>
+                                        <option value="43200" <%= template && template.autoClose && template.autoClose.timeout === 43200 ? 'selected' : '' %>>30 Days</option>
+                                    </select>
+                                    <div class="help-text">Time of inactivity before auto-closing</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="autoCloseReminder">Reminder <span class="label-desc">Minutes before closing</span></label>
+                                    <input type="number" id="autoCloseReminder" name="autoCloseReminder" class="form-control" value="<%= template && template.autoClose ? template.autoClose.reminder || 15 : 15 %>" min="1">
+                                    <div class="help-text">Send a warning message this many minutes before auto-closing</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== WELCOME MESSAGE ===== -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-envelope" style="color: var(--signal);"></i> Welcome Message
+                            </div>
+                            <div class="form-group">
+                                <label for="welcomeMessage">Message Content</label>
+                                <textarea id="welcomeMessage" name="welcomeMessage" class="form-control" rows="4" oninput="updatePreview()"><%= template ? template.welcomeMessage || 'Welcome {mention}!\n\nA member of our support team will assist you shortly.' : 'Welcome {mention}!\n\nA member of our support team will assist you shortly.' %></textarea>
+                                <div class="help-text"><strong>Variables:</strong> {user} = username, {mention} = @mention, {username} = username, {ticket} = ticket ID, {number} = ticket number, {server} = server name</div>
+                            </div>
+                        </div>
+
+                        <!-- ===== CUSTOM BUTTONS ===== -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-bolt" style="color: var(--signal);"></i>
+                                Custom Buttons
+                                <span class="button-count" id="buttonCount">0 / 7</span>
+                            </div>
+                            <div class="section-desc">Add up to 7 custom buttons that users will see when creating a ticket. Each button can have its own label, emoji, color, and template.</div>
+
+                            <div id="buttonContainer">
+                                <div class="button-grid" id="buttonGrid">
+                                    <!-- Buttons will be rendered here -->
+                                </div>
+                            </div>
+                            <button type="button" class="btn-add-button" id="addButtonBtn" onclick="addButton()">
+                                <i class="fas fa-plus"></i> Add Button
+                            </button>
+                        </div>
+
+                        <!-- ===== ADVANCED SETTINGS ===== -->
+                        <div class="form-section">
+                            <div class="accordion open">
+                                <div class="accordion-header" onclick="toggleAccordion(this)">
+                                    <span>▼ Advanced Settings</span>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="accordion-body">
+                                    <div class="quota-grid">
+                                        <div class="quota-card">
+                                            <div class="quota-card-header">
+                                                <div class="quota-icon"><i class="fas fa-ticket"></i></div>
+                                                <div class="quota-card-title">
+                                                    <span class="quota-label">Max Tickets per User</span>
+                                                    <span class="quota-sublabel">How many can be open at once</span>
+                                                </div>
+                                            </div>
+                                            <div class="quota-display">
+                                                <span class="quota-number" id="maxTicketsDisplay"><%= template ? template.maxTickets || 3 : 3 %></span>
+                                                <div class="quota-tickets-visual" id="maxTicketsVisual"></div>
+                                            </div>
+                                            <input type="range" id="maxTickets" name="maxTickets" class="quota-slider" min="1" max="10" step="1" value="<%= template ? template.maxTickets || 3 : 3 %>" oninput="onMaxTicketsChange(this.value)">
+                                            <div class="quota-slider-marks"><span>1</span><span>10</span></div>
+                                        </div>
+
+                                        <div class="quota-card">
+                                            <div class="quota-card-header">
+                                                <div class="quota-icon"><i class="fas fa-hourglass-half"></i></div>
+                                                <div class="quota-card-title">
+                                                    <span class="quota-label">Ticket Cooldown</span>
+                                                    <span class="quota-sublabel">Wait time between tickets</span>
+                                                </div>
+                                            </div>
+                                            <div class="quota-display">
+                                                <span class="quota-number cooldown" id="cooldownDisplay">10 minutes</span>
+                                            </div>
+                                            <input type="hidden" id="cooldown" name="cooldown" value="<%= template ? template.cooldown || 600 : 600 %>">
+                                            <input type="range" id="cooldownIndex" class="quota-slider" min="0" max="8" step="1" value="3" oninput="onCooldownChange(this.value)">
+                                            <div class="quota-slider-marks"><span>None</span><span>24h</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="checkbox-group" style="display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 0;">
+                                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
+                                            <input type="checkbox" name="pinWelcome" <%= template && template.pinWelcome ? 'checked' : '' %> style="accent-color: var(--signal);"> Pin Welcome Message
+                                            <span class="label-desc" style="font-weight: 400; font-size: 12px; color: var(--muted);">Pin the welcome message in the ticket channel</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
+                                            <input type="checkbox" name="autoMentionSupport" <%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'checked' : '') : 'checked' %> style="accent-color: var(--signal);"> Auto Mention Support Roles
+                                            <span class="label-desc" style="font-weight: 400; font-size: 12px; color: var(--muted);">Mention support roles when a ticket is created</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
+                                            <input type="checkbox" name="lockOnClose" <%= template && template.lockOnClose !== undefined ? (template.lockOnClose ? 'checked' : '') : 'checked' %> style="accent-color: var(--signal);"> Lock on Close
+                                            <span class="label-desc" style="font-weight: 400; font-size: 12px; color: var(--muted);">Lock the channel when closed instead of deleting</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
+                                            <input type="checkbox" name="deleteOnClose" <%= template && template.deleteOnClose ? 'checked' : '' %> style="accent-color: var(--signal);"> Delete on Close
+                                            <span class="label-desc" style="font-weight: 400; font-size: 12px; color: var(--muted);">Delete the channel when closed (no transcript saved)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== BUTTONS ===== -->
+                        <div class="btn-group">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i> Save Template
+                            </button>
+                            <button type="button" class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button type="button" class="btn-danger" style="margin-left: auto;" onclick="deleteTemplate()">
+                                <i class="fas fa-trash"></i> Delete Template
+                            </button>
+                        </div>
+
+                    </form>
                 </div>
             </div>
 
-            <div class="form-container">
-                <form id="templateForm" onsubmit="saveTemplate(event)">
-
-                    <!-- ===== GENERAL SECTION ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-cog" style="color: var(--signal);"></i> General
+            <!-- ===== PREVIEW SIDEBAR ===== -->
+            <div class="preview-sidebar">
+                <div class="preview-card">
+                    <div class="preview-title">📱 Live Discord Preview</div>
+                    <div class="discord-preview">
+                        <div class="preview-header">
+                            <div class="avatar">S</div>
+                            <span class="name">Sentinal</span>
+                            <span class="time">Today at 12:00 PM</span>
                         </div>
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" id="name" name="name" class="form-control" value="<%= template ? template.name : '' %>" placeholder="e.g., Support" required>
+                        <div class="preview-message" id="previewMessage">Welcome @user! A member of our support team will assist you shortly.</div>
+                        <div class="preview-embed" id="previewEmbed" style="display: none;">
+                            <div class="embed-title" id="previewEmbedTitle">🎫 Ticket Created</div>
+                            <div class="embed-desc" id="previewEmbedDesc">Your ticket has been created!</div>
+                            <div class="embed-footer" id="previewEmbedFooter">Sentinal Ticket System</div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="description">Description</label>
-                                <input type="text" id="description" name="description" class="form-control" value="<%= template ? template.description : '' %>" placeholder="Optional description">
-                            </div>
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <select id="status" name="status" class="form-control">
-                                    <option value="active" <%= template && template.status === 'active' ? 'selected' : '' %>>Active</option>
-                                    <option value="draft" <%= template && template.status === 'draft' ? 'selected' : '' %>>Draft</option>
-                                    <option value="disabled" <%= template && template.status === 'disabled' ? 'selected' : '' %>>Disabled</option>
-                                </select>
-                            </div>
+                        <div class="preview-buttons">
+                            <button class="preview-btn primary">🟢 Claim Ticket</button>
+                            <button class="preview-btn secondary">🔘 Unclaim</button>
+                            <button class="preview-btn primary">📝 Staff Note</button>
+                            <button class="preview-btn danger">🔒 Close</button>
+                            <button class="preview-btn secondary">📄 Transcript</button>
+                            <button class="preview-btn secondary">💬 Saved Reply</button>
+                            <button class="preview-btn secondary">⭐ Rate</button>
                         </div>
+                        <div class="help-text" style="margin-top: 12px;">This is how the ticket will look when created</div>
                     </div>
-
-                    <!-- ===== TICKET SETTINGS ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-sliders-h" style="color: var(--signal);"></i> Ticket Settings
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="category">Category</label>
-                                <select id="category" name="category" class="form-control">
-                                    <option value="">None</option>
-                                    <% if (channels) { %>
-                                        <% channels.filter(function(c) { return c.type === 4; }).forEach(function(cat) { %>
-                                            <option value="<%= cat.id %>" <%= template && template.category === cat.id ? 'selected' : '' %>><%= cat.name %></option>
-                                        <% }) %>
-                                    <% } %>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="transcriptChannel">Transcript Channel</label>
-                                <select id="transcriptChannel" name="transcriptChannel" class="form-control">
-                                    <option value="">None</option>
-                                    <% if (channels) { %>
-                                        <% channels.filter(function(c) { return c.type === 0; }).forEach(function(ch) { %>
-                                            <option value="<%= ch.id %>" <%= template && template.transcriptChannel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
-                                        <% }) %>
-                                    <% } %>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="channelName">Ticket Name Format</label>
-                                <select id="channelNamePreset" class="form-control" onchange="updateChannelName()">
-                                    <option value="ticket-{user}" <%= template && template.channelName === 'ticket-{user}' ? 'selected' : '' %>>ticket-{user}</option>
-                                    <option value="ticket-{number}" <%= template && template.channelName === 'ticket-{number}' ? 'selected' : '' %>>ticket-{number}</option>
-                                    <option value="support-{user}" <%= template && template.channelName === 'support-{user}' ? 'selected' : '' %>>support-{user}</option>
-                                    <option value="report-{number}" <%= template && template.channelName === 'report-{number}' ? 'selected' : '' %>>report-{number}</option>
-                                    <option value="custom" <%= template && !['ticket-{user}','ticket-{number}','support-{user}','report-{number}'].includes(template.channelName) ? 'selected' : '' %>>Custom...</option>
-                                </select>
-                                <input type="text" id="channelName" name="channelName" class="form-control" style="margin-top: 8px;" value="<%= template ? template.channelName : 'ticket-{user}' %>" placeholder="Custom format">
-                                <div class="help-text">Variables: {user}, {id}, {number}</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="topic">Channel Topic</label>
-                                <input type="text" id="topic" name="topic" class="form-control" value="<%= template ? template.topic : '' %>" placeholder="Optional channel topic">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ===== SUPPORT ROLES ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-user-shield" style="color: var(--signal);"></i> Support Roles
-                        </div>
-                        <div class="role-picker-card">
-                            <div class="role-picker-header">
-                                <span class="role-picker-title">Who gets access to every ticket</span>
-                                <span class="role-picker-count" id="rolePickerCount">0/3 selected</span>
-                            </div>
-                            <select id="supportRoles" multiple style="display:none;">
-                                <% if (roles) { %>
-                                    <% roles.forEach(function(role) { %>
-                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.supportRoles && template.supportRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
-                                    <% }) %>
-                                <% } %>
-                            </select>
-                            <div class="role-chip-grid" id="roleChipGrid"></div>
-                        </div>
-                        <div class="help-text">Tap up to 3 roles. Tap a selected one again to remove it.</div>
-                    </div>
-
-                    <!-- ===== PERMISSIONS ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-lock" style="color: var(--signal);"></i> Permissions
-                        </div>
-                        <div class="form-group">
-                            <label for="permissionPreset">Permission Preset</label>
-                            <select id="permissionPreset" class="form-control" onchange="updatePermissions()">
-                                <option value="support">Support</option>
-                                <option value="moderator">Moderator</option>
-                                <option value="admin">Admin</option>
-                                <option value="custom" <%= template && template.permissions ? 'selected' : '' %>>Custom</option>
-                            </select>
-                        </div>
-                        <div class="permission-grid" id="permissionGrid">
-                            <label><input type="checkbox" name="perm_close" <%= template && template.permissions && template.permissions.closeTicket ? 'checked' : '' %>> Close Ticket</label>
-                            <label><input type="checkbox" name="perm_delete" <%= template && template.permissions && template.permissions.deleteTicket ? 'checked' : '' %>> Delete Ticket</label>
-                            <label><input type="checkbox" name="perm_rename" <%= template && template.permissions && template.permissions.renameTicket ? 'checked' : '' %>> Rename Ticket</label>
-                            <label><input type="checkbox" name="perm_claim" <%= template && template.permissions && template.permissions.claimTicket ? 'checked' : '' %>> Claim Ticket</label>
-                            <label><input type="checkbox" name="perm_adduser" <%= template && template.permissions && template.permissions.addUser ? 'checked' : '' %>> Add Users</label>
-                            <label><input type="checkbox" name="perm_removeuser" <%= template && template.permissions && template.permissions.removeUser ? 'checked' : '' %>> Remove Users</label>
-                        </div>
-                    </div>
-
-                    <!-- ===== AUTO CLOSE ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-clock" style="color: var(--signal);"></i> Auto Close
-                        </div>
-                        <div class="form-group">
-                            <div class="toggle-wrapper">
-                                <div class="toggle <%= template && template.autoClose && template.autoClose.enabled ? 'active' : '' %>" onclick="toggleSwitch(this)">
-                                    <div class="toggle-knob"></div>
-                                </div>
-                                <span>Enable Auto Close</span>
-                            </div>
-                            <input type="hidden" name="autoCloseEnabled" id="autoCloseEnabled" value="<%= template && template.autoClose && template.autoClose.enabled ? 'true' : 'false' %>">
-                        </div>
-                        <div class="form-row" id="autoCloseSettings" style="<%= template && template.autoClose && template.autoClose.enabled ? '' : 'display: none;' %>">
-                            <div class="form-group">
-                                <label for="autoCloseTimeout">Time</label>
-                                <select id="autoCloseTimeout" name="autoCloseTimeout" class="form-control">
-                                    <option value="0">Never</option>
-                                    <option value="30" <%= template && template.autoClose && template.autoClose.timeout === 30 ? 'selected' : '' %>>30 Minutes</option>
-                                    <option value="60" <%= template && template.autoClose && template.autoClose.timeout === 60 ? 'selected' : '' %>>1 Hour</option>
-                                    <option value="360" <%= template && template.autoClose && template.autoClose.timeout === 360 ? 'selected' : '' %>>6 Hours</option>
-                                    <option value="720" <%= template && template.autoClose && template.autoClose.timeout === 720 ? 'selected' : '' %>>12 Hours</option>
-                                    <option value="1440" <%= template && template.autoClose && template.autoClose.timeout === 1440 ? 'selected' : '' %>>24 Hours</option>
-                                    <option value="2880" <%= template && template.autoClose && template.autoClose.timeout === 2880 ? 'selected' : '' %>>48 Hours</option>
-                                    <option value="10080" <%= template && template.autoClose && template.autoClose.timeout === 10080 ? 'selected' : '' %>>7 Days</option>
-                                    <option value="43200" <%= template && template.autoClose && template.autoClose.timeout === 43200 ? 'selected' : '' %>>30 Days</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="autoCloseReminder">Reminder (minutes before)</label>
-                                <input type="number" id="autoCloseReminder" name="autoCloseReminder" class="form-control" value="<%= template && template.autoClose ? template.autoClose.reminder || 15 : 15 %>" min="1">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ===== WELCOME MESSAGE ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-envelope" style="color: var(--signal);"></i> Welcome Message
-                        </div>
-                        <div class="form-group">
-                            <label for="welcomeMessage">Message Content</label>
-                            <textarea id="welcomeMessage" name="welcomeMessage" class="form-control" rows="4"><%= template ? template.welcomeMessage || 'Welcome {mention}!\n\nA member of our support team will assist you shortly.' : 'Welcome {mention}!\n\nA member of our support team will assist you shortly.' %></textarea>
-                            <div class="help-text">Variables: {user}, {mention}, {username}, {ticket}, {number}, {server}</div>
-                        </div>
-                    </div>
-
-                    <!-- ===== CUSTOM BUTTONS ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-bolt" style="color: var(--signal);"></i>
-                            Custom Buttons
-                            <span class="button-count" id="buttonCount">0 / 7</span>
-                        </div>
-                        <div class="help-text" style="margin-bottom: 12px;">Add up to 7 custom buttons. Users will see these options when creating a ticket.</div>
-                        
-                        <div id="buttonContainer">
-                            <div class="button-grid" id="buttonGrid">
-                                <!-- Buttons will be rendered here -->
-                            </div>
-                        </div>
-                        <button type="button" class="btn-add-button" id="addButtonBtn" onclick="addButton()">
-                            <i class="fas fa-plus"></i> Add Button
-                        </button>
-                    </div>
-
-                    <!-- ===== ADVANCED SETTINGS ===== -->
-                    <div class="form-section">
-                        <div class="accordion open">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <span>▼ Advanced Settings</span>
-                                <span class="arrow">▼</span>
-                            </div>
-                            <div class="accordion-body">
-                                <div class="quota-grid">
-                                    <div class="quota-card">
-                                        <div class="quota-card-header">
-                                            <div class="quota-icon"><i class="fas fa-ticket"></i></div>
-                                            <div class="quota-card-title">
-                                                <span class="quota-label">Max Tickets per User</span>
-                                                <span class="quota-sublabel">How many can be open at once</span>
-                                            </div>
-                                        </div>
-                                        <div class="quota-display">
-                                            <span class="quota-number" id="maxTicketsDisplay"><%= template ? template.maxTickets || 3 : 3 %></span>
-                                            <div class="quota-tickets-visual" id="maxTicketsVisual"></div>
-                                        </div>
-                                        <input type="range" id="maxTickets" name="maxTickets" class="quota-slider" min="1" max="10" step="1" value="<%= template ? template.maxTickets || 3 : 3 %>" oninput="onMaxTicketsChange(this.value)">
-                                        <div class="quota-slider-marks"><span>1</span><span>10</span></div>
-                                    </div>
-
-                                    <div class="quota-card">
-                                        <div class="quota-card-header">
-                                            <div class="quota-icon"><i class="fas fa-hourglass-half"></i></div>
-                                            <div class="quota-card-title">
-                                                <span class="quota-label">Ticket Cooldown</span>
-                                                <span class="quota-sublabel">Wait time between tickets</span>
-                                            </div>
-                                        </div>
-                                        <div class="quota-display">
-                                            <span class="quota-number cooldown" id="cooldownDisplay">10 minutes</span>
-                                        </div>
-                                        <input type="hidden" id="cooldown" name="cooldown" value="<%= template ? template.cooldown || 600 : 600 %>">
-                                        <input type="range" id="cooldownIndex" class="quota-slider" min="0" max="8" step="1" value="3" oninput="onCooldownChange(this.value)">
-                                        <div class="quota-slider-marks"><span>None</span><span>24h</span></div>
-                                    </div>
-                                </div>
-                                <div class="checkbox-group" style="display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 0;">
-                                    <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
-                                        <input type="checkbox" name="pinWelcome" <%= template && template.pinWelcome ? 'checked' : '' %> style="accent-color: var(--signal);"> Pin Welcome Message
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
-                                        <input type="checkbox" name="autoMentionSupport" <%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'checked' : '') : 'checked' %> style="accent-color: var(--signal);"> Auto Mention Support Roles
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
-                                        <input type="checkbox" name="lockOnClose" <%= template && template.lockOnClose !== undefined ? (template.lockOnClose ? 'checked' : '') : 'checked' %> style="accent-color: var(--signal);"> Lock on Close
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 14px; color: var(--text); cursor: pointer;">
-                                        <input type="checkbox" name="deleteOnClose" <%= template && template.deleteOnClose ? 'checked' : '' %> style="accent-color: var(--signal);"> Delete on Close
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ===== BUTTONS ===== -->
-                    <div class="btn-group">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i> Save Template
-                        </button>
-                        <button type="button" class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                        <button type="button" class="btn-danger" style="margin-left: auto;" onclick="deleteTemplate()">
-                            <i class="fas fa-trash"></i> Delete Template
-                        </button>
-                    </div>
-
-                </form>
+                </div>
             </div>
 
         </div>
@@ -1066,7 +1428,7 @@
         function updatePermissions() {
             var preset = document.getElementById('permissionPreset').value;
             var checkboxes = document.querySelectorAll('#permissionGrid input[type="checkbox"]');
-            
+
             var presets = {
                 support: { close: true, delete: false, rename: false, claim: true, adduser: false, removeuser: false },
                 moderator: { close: true, delete: true, rename: true, claim: true, adduser: true, removeuser: true },
@@ -1212,7 +1574,7 @@
             var grid = document.getElementById('buttonGrid');
             var countLabel = document.getElementById('buttonCount');
             var addBtn = document.getElementById('addButtonBtn');
-            
+
             grid.innerHTML = '';
             countLabel.textContent = buttons.length + ' / ' + MAX_BUTTONS;
             addBtn.disabled = buttons.length >= MAX_BUTTONS;
@@ -1231,7 +1593,7 @@
                 card.className = 'button-card';
                 card.dataset.index = index;
 
-                // Build template options from JavaScript data (NOT EJS)
+                // Build template options from JavaScript data
                 var templateOptions = '<option value="">Select template...</option>';
                 if (templatesData && templatesData.length > 0) {
                     templatesData.forEach(function(t) {
@@ -1299,7 +1661,6 @@
         }
 
         function loadButtons() {
-            // Load existing buttons from template data
             var templateButtons = <%= template ? (template.customButtons ? JSON.stringify(template.customButtons) : '[]') : '[]' %>;
             if (Array.isArray(templateButtons)) {
                 buttons = templateButtons;
@@ -1307,6 +1668,12 @@
                 buttons = [];
             }
             renderButtons();
+        }
+
+        // ===== PREVIEW =====
+        function updatePreview() {
+            var message = document.getElementById('welcomeMessage').value || 'Welcome {mention}! A member of our support team will assist you shortly.';
+            document.getElementById('previewMessage').textContent = message;
         }
 
         // ===== ACCORDION =====
@@ -1359,7 +1726,7 @@
             try {
                 var url = templateId ? '/api/tickets/' + templateId : '/api/tickets';
                 var method = templateId ? 'PUT' : 'POST';
-                
+
                 var response = await fetch(url, {
                     method: method,
                     headers: { 'Content-Type': 'application/json' },
@@ -1385,7 +1752,7 @@
         function deleteTemplate() {
             if (!templateId) return;
             if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) return;
-            
+
             fetch('/api/tickets/' + templateId, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
@@ -1412,21 +1779,23 @@
             renderRoleChips();
             loadButtons();
             updateChannelName();
+            updatePreview();
         });
 
-        // Also run now if DOM already loaded
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() { 
-                initQuotaCards(); 
-                renderRoleChips(); 
-                loadButtons(); 
-                updateChannelName(); 
+            document.addEventListener('DOMContentLoaded', function() {
+                initQuotaCards();
+                renderRoleChips();
+                loadButtons();
+                updateChannelName();
+                updatePreview();
             });
         } else {
             initQuotaCards();
             renderRoleChips();
             loadButtons();
             updateChannelName();
+            updatePreview();
         }
 
         // ===== EXPOSE FUNCTIONS =====
@@ -1447,6 +1816,7 @@
         window.buttons = buttons;
         window.renderButtons = renderButtons;
         window.loadButtons = loadButtons;
+        window.updatePreview = updatePreview;
     </script>
 
 </body>
