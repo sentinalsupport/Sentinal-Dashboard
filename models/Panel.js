@@ -56,14 +56,7 @@ const panelSchema = new mongoose.Schema({
             templateId: String,
             templateName: String,
             confirmationRequired: { type: Boolean, default: false },
-            disabled: { type: Boolean, default: false },
-            placeholder: String,
-            options: [{
-                label: String,
-                value: String,
-                emoji: String,
-                default: Boolean
-            }]
+            disabled: { type: Boolean, default: false }
         }],
         default: []
     },
@@ -97,32 +90,6 @@ const panelSchema = new mongoose.Schema({
         type: String,
         enum: ['synced', 'pending', 'deleted'],
         default: 'pending'
-    },
-    
-    // Advanced Options
-    requireVerificationRole: {
-        type: String,
-        default: ''
-    },
-    requireServerMembership: {
-        type: Number,
-        default: 0
-    },
-    cooldown: {
-        type: Number,
-        default: 0
-    },
-    maintenanceMode: {
-        type: Boolean,
-        default: false
-    },
-    anonymousTickets: {
-        type: Boolean,
-        default: false
-    },
-    requireConfirmation: {
-        type: Boolean,
-        default: true
     },
     
     createdAt: {
