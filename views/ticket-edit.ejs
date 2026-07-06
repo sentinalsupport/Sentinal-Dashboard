@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== ROOT ===== */
         :root {
             --ink: #060A10;
             --panel: #0D1520;
@@ -45,13 +44,10 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-
-        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
 
-        /* ===== NAVBAR ===== */
         .navbar {
             background: rgba(6,10,16,0.85);
             backdrop-filter: blur(20px) saturate(160%);
@@ -143,9 +139,7 @@
             display: inline-flex; align-items: center; gap: 6px;
         }
         .btn-publish:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
-        .btn-label { display: inline; }
 
-        /* ===== PAGE WRAPPER ===== */
         .page-wrapper {
             max-width: 100%;
             margin: 0;
@@ -220,14 +214,12 @@
         .sidebar .nav-item .badge.live { background: var(--signal-tab); color: var(--signal); }
         .sidebar .divider { height: 1px; background: var(--line); margin: 8px 0; }
 
-        /* ===== CONTENT AREA ===== */
         .content {
             flex: 1;
             min-width: 0;
             max-width: 100%;
         }
 
-        /* ===== EDITOR PANEL ===== */
         .editor-panel {
             background: var(--panel);
             border: 1px solid var(--line);
@@ -236,7 +228,6 @@
             box-shadow: var(--shadow);
         }
 
-        /* ===== TAB CONTENT ===== */
         .tab-content {
             display: none;
             padding: 32px;
@@ -261,7 +252,6 @@
             margin-bottom: 24px;
         }
 
-        /* ===== SETTINGS CARD ===== */
         .settings-card {
             background: var(--panel-raised);
             border: 1px solid var(--line);
@@ -281,11 +271,6 @@
             align-items: center;
             gap: 8px;
         }
-        .settings-card .card-label .tooltip {
-            color: var(--muted-dim);
-            font-size: 11px;
-            cursor: help;
-        }
         .settings-card .card-desc {
             font-size: 12px;
             color: var(--muted);
@@ -295,7 +280,6 @@
             width: 100%;
         }
 
-        /* ===== FORM CONTROLS ===== */
         .form-control {
             width: 100%;
             padding: 8px 14px;
@@ -327,9 +311,8 @@
             font-family: 'Inter', sans-serif;
         }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
 
-        /* ===== TOGGLE SWITCH ===== */
+        /* ===== TOGGLE ===== */
         .toggle-wrapper {
             display: flex;
             align-items: center;
@@ -363,11 +346,6 @@
             font-weight: 500;
             color: var(--text);
         }
-        .toggle-desc {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
 
         /* ===== PERMISSION TOGGLE CARD ===== */
         .perm-card {
@@ -379,6 +357,7 @@
             border: 1px solid var(--line);
             border-radius: 8px;
             transition: var(--transition);
+            margin-bottom: 6px;
         }
         .perm-card:hover { border-color: var(--line-bright); }
         .perm-card .perm-info { flex: 1; }
@@ -457,12 +436,6 @@
         }
         .role-chip .remove:hover { opacity: 1; color: var(--red); }
         .role-chip.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
-        .role-count {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--muted);
-        }
-        .role-count.full { color: var(--signal); }
 
         /* ===== BUTTON CARDS ===== */
         .btn-grid {
@@ -565,21 +538,8 @@
             opacity: 0.4;
             cursor: not-allowed;
         }
-        .btn-count {
-            font-size: 11px;
-            color: var(--muted);
-            margin-left: 6px;
-        }
 
-        /* ===== EMBED BUILDER ===== */
-        .embed-fields {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        .embed-fields .field-full { grid-column: 1 / -1; }
-
-        /* ===== STICKY ACTION BAR ===== */
+        /* ===== ACTION BAR ===== */
         .action-bar {
             position: sticky;
             bottom: 0;
@@ -631,7 +591,7 @@
         }
         .action-bar .btn-publish-action:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
 
-        /* ===== PREVIEW SIDEBAR ===== */
+        /* ===== PREVIEW ===== */
         .preview-sidebar {
             width: 380px;
             flex-shrink: 0;
@@ -823,7 +783,17 @@
         }
         .toast.hiding { animation: slideOut 0.3s ease forwards; }
 
-        /* ===== RESPONSIVE ===== */
+        .footer {
+            border-top: 1px solid var(--line);
+            margin-top: 60px;
+            padding: 28px 48px;
+            text-align: center;
+            color: var(--muted-dim);
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
         @media (max-width: 1400px) {
             .preview-sidebar { width: 340px; }
         }
@@ -859,14 +829,11 @@
                 max-height: none;
             }
             .tab-content { padding: 20px; }
-            .embed-fields { grid-template-columns: 1fr; }
             .btn-grid { grid-template-columns: 1fr; }
             .form-row { grid-template-columns: 1fr; }
-            .form-row-3 { grid-template-columns: 1fr; }
             .action-bar { padding: 12px 16px; flex-wrap: wrap; justify-content: center; }
             .navbar { padding: 0 16px; }
             .navbar-center { display: none; }
-            .btn-label { display: none; }
         }
         @media (max-width: 768px) {
             .page-wrapper { padding: 12px; }
@@ -959,13 +926,13 @@
             </button>
         </aside>
 
-        <!-- ===== CONTENT AREA ===== -->
+        <!-- ===== CONTENT ===== -->
         <div class="content">
 
             <div class="editor-panel">
                 <form id="templateForm">
 
-                    <!-- ===== GENERAL TAB ===== -->
+                    <!-- ===== GENERAL ===== -->
                     <div class="tab-content active" id="tab-general">
                         <div class="page-title">General Settings</div>
                         <div class="page-desc">Configure the basic information for this ticket template.</div>
@@ -993,7 +960,7 @@
                         </div>
                     </div>
 
-                    <!-- ===== PANEL TAB ===== -->
+                    <!-- ===== PANEL ===== -->
                     <div class="tab-content" id="tab-panel">
                         <div class="page-title">Panel Configuration</div>
                         <div class="page-desc">Configure how tickets are displayed and organized.</div>
@@ -1044,7 +1011,7 @@
                         </div>
                     </div>
 
-                    <!-- ===== EMBED TAB ===== -->
+                    <!-- ===== EMBED ===== -->
                     <div class="tab-content" id="tab-embed">
                         <div class="page-title">Embed Builder</div>
                         <div class="page-desc">Customize the welcome message embedded in each ticket.</div>
@@ -1082,7 +1049,7 @@
                         </div>
                     </div>
 
-                    <!-- ===== BUTTONS TAB ===== -->
+                    <!-- ===== BUTTONS ===== -->
                     <div class="tab-content" id="tab-buttons">
                         <div class="page-title">Ticket Buttons</div>
                         <div class="page-desc">Add up to 7 custom buttons. Each button opens a ticket using the selected template.</div>
@@ -1095,7 +1062,7 @@
                         </button>
                     </div>
 
-                    <!-- ===== ROLES TAB ===== -->
+                    <!-- ===== ROLES ===== -->
                     <div class="tab-content" id="tab-roles">
                         <div class="page-title">Support Roles</div>
                         <div class="page-desc">Select which roles have access to tickets created with this template.</div>
@@ -1112,12 +1079,12 @@
                             </select>
                             <div class="role-chip-grid" id="roleChipGrid"></div>
                             <div style="margin-top: 8px; font-size: 11px; color: var(--muted);">
-                                <span class="role-count" id="rolePickerCount">0/3 selected</span>
+                                <span id="rolePickerCount">0/3 selected</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ===== PERMISSIONS TAB ===== -->
+                    <!-- ===== PERMISSIONS ===== -->
                     <div class="tab-content" id="tab-permissions">
                         <div class="page-title">Permissions</div>
                         <div class="page-desc">Configure what staff can do inside tickets.</div>
@@ -1209,7 +1176,7 @@
                         <input type="hidden" name="perm_removeuser" id="perm_removeuser" value="<%= template && template.permissions && template.permissions.removeUser ? 'true' : 'false' %>">
                     </div>
 
-                    <!-- ===== AUTOMATION TAB ===== -->
+                    <!-- ===== AUTOMATION ===== -->
                     <div class="tab-content" id="tab-automation">
                         <div class="page-title">Automation</div>
                         <div class="page-desc">Configure automatic behavior for tickets.</div>
@@ -1309,7 +1276,7 @@
                         </div>
                     </div>
 
-                    <!-- ===== ADVANCED TAB ===== -->
+                    <!-- ===== ADVANCED ===== -->
                     <div class="tab-content" id="tab-advanced">
                         <div class="page-title">Advanced Settings</div>
                         <div class="page-desc">Additional configuration options for power users.</div>
@@ -1349,7 +1316,7 @@
                         </div>
                     </div>
 
-                    <!-- ===== STICKY ACTION BAR ===== -->
+                    <!-- ===== ACTION BAR ===== -->
                     <div class="action-bar">
                         <button type="button" class="btn btn-cancel-action" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
                             <i class="fas fa-times"></i> Cancel
@@ -1370,7 +1337,7 @@
 
         </div>
 
-        <!-- ===== PREVIEW SIDEBAR ===== -->
+        <!-- ===== PREVIEW ===== -->
         <div class="preview-sidebar">
             <div class="preview-card">
                 <div class="preview-header">
@@ -1408,7 +1375,6 @@
     </div>
 
     <script>
-        // ===== VARIABLES =====
         var templateId = '<%= template ? template._id : "" %>';
         var guildId = '<%= guild.id %>';
         var MAX_BUTTONS = 7;
@@ -1440,14 +1406,22 @@
 
         // ===== TAB SWITCHING =====
         function switchTab(tab) {
-            document.querySelectorAll('.sidebar .nav-item').forEach(function(el) {
-                el.classList.remove('active');
-                if (el.dataset.tab === tab) el.classList.add('active');
-            });
-            document.querySelectorAll('.tab-content').forEach(function(el) {
-                el.classList.remove('active');
-                if (el.id === 'tab-' + tab) el.classList.add('active');
-            });
+            // Update sidebar buttons
+            var navItems = document.querySelectorAll('.sidebar .nav-item');
+            for (var i = 0; i < navItems.length; i++) {
+                navItems[i].classList.remove('active');
+                if (navItems[i].getAttribute('data-tab') === tab) {
+                    navItems[i].classList.add('active');
+                }
+            }
+            // Update tab content
+            var tabContents = document.querySelectorAll('.tab-content');
+            for (var j = 0; j < tabContents.length; j++) {
+                tabContents[j].classList.remove('active');
+                if (tabContents[j].id === 'tab-' + tab) {
+                    tabContents[j].classList.add('active');
+                }
+            }
         }
 
         // ===== CHANNEL NAME =====
@@ -1464,7 +1438,7 @@
             }
         }
 
-        // ===== TOGGLE SWITCH =====
+        // ===== TOGGLES =====
         function toggleSwitch(el) {
             el.classList.toggle('active');
             var isActive = el.classList.contains('active');
