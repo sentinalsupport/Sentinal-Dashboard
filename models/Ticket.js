@@ -45,27 +45,23 @@ const ticketSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-    
-    // Messages
-    messages: {
-        type: [{
-            userId: String,
-            username: String,
-            content: String,
-            timestamp: Date,
-            attachments: [String]
-        }],
-        default: []
+    closedBy: {
+        type: String,
+        default: null
+    },
+    closedAt: {
+        type: Date,
+        default: null
+    },
+    reason: {
+        type: String,
+        default: ''
     },
     
     // Metadata
     openedAt: {
         type: Date,
         default: Date.now
-    },
-    closedAt: {
-        type: Date,
-        default: null
     },
     lastActivity: {
         type: Date,
@@ -86,15 +82,6 @@ const ticketSchema = new mongoose.Schema({
     transcriptId: {
         type: String,
         default: null
-    },
-    
-    // Questions/Form Responses
-    responses: {
-        type: [{
-            question: String,
-            answer: String
-        }],
-        default: []
     },
     
     createdAt: {
