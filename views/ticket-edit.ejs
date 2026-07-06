@@ -59,7 +59,9 @@
         .brand-logo {
             width: 40px; height: 40px; border-radius: 12px;
             background: var(--panel-raised); border: 1px solid var(--line-bright);
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .brand-logo svg { width: 22px; height: 22px; }
         .brand-name {
@@ -889,9 +891,7 @@
         }
 
         @media (max-width: 1024px) {
-            .content {
-                flex-direction: column;
-            }
+            .content { flex-direction: column; }
             .preview-sidebar {
                 width: 100%;
                 position: relative;
@@ -899,10 +899,7 @@
                 height: auto;
                 max-height: none;
             }
-            .page-wrapper {
-                padding: 24px 32px 60px 5px;
-                gap: 24px;
-            }
+            .page-wrapper { padding: 24px 32px 60px 5px; gap: 24px; }
             .sidebar { width: 240px; }
         }
         @media (max-width: 768px) {
@@ -939,15 +936,8 @@
             .btn-group button { width: 100%; }
             .footer { padding: 20px 16px; }
             .toast-container { bottom: 16px; right: 16px; max-width: calc(100% - 32px); }
-            .preview-sidebar {
-                width: 100%;
-                position: relative;
-                top: 0;
-                height: auto;
-            }
-            .content {
-                flex-direction: column;
-            }
+            .preview-sidebar { width: 100%; position: relative; top: 0; height: auto; }
+            .content { flex-direction: column; }
         }
     </style>
 </head>
