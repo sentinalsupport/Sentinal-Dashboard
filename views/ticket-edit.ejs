@@ -41,14 +41,19 @@
             overflow-x: hidden;
         }
 
+        /* ===== NAVBAR ===== */
         .navbar {
             background: rgba(6,10,16,0.9);
             backdrop-filter: blur(28px) saturate(160%);
             border-bottom: 1px solid var(--line);
             padding: 0 48px;
             height: 72px;
-            display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 200;
         }
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .brand-logo {
@@ -95,6 +100,7 @@
         }
         .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
+        /* ===== PAGE WRAPPER ===== */
         .page-wrapper {
             max-width: 100%;
             margin: 0;
@@ -105,6 +111,7 @@
             min-height: calc(100vh - 72px);
         }
 
+        /* ===== SIDEBAR ===== */
         .sidebar {
             width: 280px;
             flex-shrink: 0;
@@ -178,20 +185,29 @@
 
         .content { flex: 1; min-width: 0; }
 
+        /* ===== PAGE HEADER ===== */
         .page-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
         }
         .page-header h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px; font-weight: 700; color: #fff;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
         }
         .page-header .breadcrumb {
-            color: var(--muted); font-size: 14px;
+            color: var(--muted);
+            font-size: 14px;
         }
         .page-header .breadcrumb a { color: var(--signal); text-decoration: none; }
         .page-header .breadcrumb a:hover { text-decoration: underline; }
 
+        /* ===== FORM CONTAINER ===== */
         .form-container {
             background: var(--panel);
             border: 1px solid var(--line);
@@ -200,6 +216,7 @@
             max-width: 1000px;
         }
 
+        /* ===== SECTION ===== */
         .form-section {
             margin-bottom: 32px;
         }
@@ -212,9 +229,11 @@
             margin-bottom: 16px;
             padding-bottom: 8px;
             border-bottom: 1px solid var(--line);
-            display: flex; align-items: center; gap: 10px;
+            display: flex;
+            align-items: center; gap: 10px;
         }
 
+        /* ===== FORM ELEMENTS ===== */
         .form-group { margin-bottom: 20px; }
         .form-group:last-child { margin-bottom: 0; }
         .form-group label {
@@ -241,6 +260,7 @@
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
 
+        /* ===== BUTTON GRID ===== */
         .button-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -355,6 +375,7 @@
             margin-left: 8px;
         }
 
+        /* ===== QUOTA CARDS ===== */
         .quota-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .quota-card {
             position: relative;
@@ -428,6 +449,7 @@
             padding: 0 2px; position: relative; z-index: 1;
         }
 
+        /* ===== PERMISSION CHECKBOXES ===== */
         .permission-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
         }
@@ -441,6 +463,7 @@
             cursor: pointer;
         }
 
+        /* ===== TOGGLE SWITCH ===== */
         .toggle-wrapper {
             display: flex; align-items: center; gap: 12px;
         }
@@ -457,6 +480,7 @@
         }
         .toggle.active .toggle-knob { left: 23px; }
 
+        /* ===== ACCORDION ===== */
         .accordion {
             border: 1px solid var(--line); border-radius: 10px;
             overflow: hidden; margin-bottom: 12px;
@@ -479,6 +503,7 @@
             padding: 20px; max-height: 2000px;
         }
 
+        /* ===== ROLE CHIP PICKER ===== */
         .role-picker-card {
             background: linear-gradient(160deg, var(--panel-raised) 0%, var(--panel) 100%);
             border: 1px solid var(--line);
@@ -512,6 +537,7 @@
         .role-chip-btn.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
         .role-chip-empty { font-size: 13px; color: var(--muted-dim); padding: 6px 0; }
 
+        /* ===== BUTTONS ===== */
         .btn-primary {
             padding: 10px 24px; border-radius: 10px; border: none;
             background: var(--signal); color: var(--ink); font-weight: 700;
@@ -520,7 +546,6 @@
             align-items: center; gap: 8px;
         }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--signal-glow); }
-        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
         .btn-secondary {
             padding: 10px 24px; border-radius: 10px; border: 1px solid var(--line);
             background: transparent; color: var(--text); font-weight: 600;
@@ -537,12 +562,12 @@
             align-items: center; gap: 8px;
         }
         .btn-danger:hover { background: rgba(248,113,113,0.2); }
-        .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .btn-group {
             display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;
         }
 
+        /* ===== TOAST ===== */
         .toast-container {
             position: fixed; bottom: 24px; right: 24px; z-index: 9999;
             display: flex; flex-direction: column; gap: 10px; max-width: 380px;
@@ -613,6 +638,7 @@
 </head>
 <body>
 
+    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <a href="/dashboard" class="brand">
             <div class="brand-logo">
@@ -649,6 +675,7 @@
 
     <div class="page-wrapper">
 
+        <!-- ===== SIDEBAR ===== -->
         <aside class="sidebar">
             <div class="server-info">
                 <div class="icon">
@@ -660,7 +687,7 @@
                 </div>
                 <div class="name"><%= locals.guild ? guild.name : 'Server' %></div>
                 <div class="plan">Free</div>
-                <a href="#" class="upgrade" onclick="showToast('Upgrade to Premium!', 'info'); return false;">Upgrade to Premium</a>
+                <a href="#" class="upgrade" onclick="showToast('Upgrade to Premium!', 'info')">Upgrade to Premium</a>
             </div>
 
             <div class="nav-section">
@@ -692,6 +719,7 @@
             </div>
         </aside>
 
+        <!-- ===== MAIN CONTENT ===== -->
         <div class="content">
 
             <div class="page-header">
@@ -701,7 +729,7 @@
                         <span style="color: var(--muted-dim);"> / </span>
                         <span>Edit Template</span>
                     </div>
-                    <h1 id="pageTitle"><%= template ? template.name : 'Edit Template' %></h1>
+                    <h1><%= template ? template.name : 'Edit Template' %></h1>
                 </div>
                 <div>
                     <button class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
@@ -713,7 +741,7 @@
             <div class="form-container">
                 <form id="templateForm" onsubmit="saveTemplate(event)">
 
-                    <!-- GENERAL SECTION -->
+                    <!-- ===== GENERAL SECTION ===== -->
                     <div class="form-section">
                         <div class="section-title">
                             <i class="fas fa-cog" style="color: var(--signal);"></i> General
@@ -738,7 +766,7 @@
                         </div>
                     </div>
 
-                    <!-- TICKET SETTINGS -->
+                    <!-- ===== TICKET SETTINGS ===== -->
                     <div class="form-section">
                         <div class="section-title">
                             <i class="fas fa-sliders-h" style="color: var(--signal);"></i> Ticket Settings
@@ -787,7 +815,7 @@
                         </div>
                     </div>
 
-                    <!-- SUPPORT ROLES -->
+                    <!-- ===== SUPPORT ROLES ===== -->
                     <div class="form-section">
                         <div class="section-title">
                             <i class="fas fa-user-shield" style="color: var(--signal);"></i> Support Roles
@@ -809,7 +837,7 @@
                         <div class="help-text">Tap up to 3 roles. Tap a selected one again to remove it.</div>
                     </div>
 
-                    <!-- PERMISSIONS -->
+                    <!-- ===== PERMISSIONS ===== -->
                     <div class="form-section">
                         <div class="section-title">
                             <i class="fas fa-lock" style="color: var(--signal);"></i> Permissions
@@ -820,7 +848,7 @@
                                 <option value="support">Support</option>
                                 <option value="moderator">Moderator</option>
                                 <option value="admin">Admin</option>
-                                <option value="custom">Custom</option>
+                                <option value="custom" <%= template && template.permissions ? 'selected' : '' %>>Custom</option>
                             </select>
                         </div>
                         <div class="permission-grid" id="permissionGrid">
@@ -833,7 +861,7 @@
                         </div>
                     </div>
 
-                    <!-- AUTO CLOSE -->
+                    <!-- ===== AUTO CLOSE ===== -->
                     <div class="form-section">
                         <div class="section-title">
                             <i class="fas fa-clock" style="color: var(--signal);"></i> Auto Close
@@ -869,7 +897,7 @@
                         </div>
                     </div>
 
-                    <!-- WELCOME MESSAGE -->
+                    <!-- ===== WELCOME MESSAGE ===== -->
                     <div class="form-section">
                         <div class="section-title">
                             <i class="fas fa-envelope" style="color: var(--signal);"></i> Welcome Message
@@ -881,7 +909,7 @@
                         </div>
                     </div>
 
-                    <!-- CUSTOM BUTTONS -->
+                    <!-- ===== CUSTOM BUTTONS ===== -->
                     <div class="form-section">
                         <div class="section-title">
                             <i class="fas fa-bolt" style="color: var(--signal);"></i>
@@ -889,7 +917,7 @@
                             <span class="button-count" id="buttonCount">0 / 7</span>
                         </div>
                         <div class="help-text" style="margin-bottom: 12px;">Add up to 7 custom buttons. Users will see these options when creating a ticket.</div>
-
+                        
                         <div id="buttonContainer">
                             <div class="button-grid" id="buttonGrid">
                                 <!-- Buttons will be rendered here -->
@@ -900,7 +928,7 @@
                         </button>
                     </div>
 
-                    <!-- ADVANCED SETTINGS -->
+                    <!-- ===== ADVANCED SETTINGS ===== -->
                     <div class="form-section">
                         <div class="accordion open">
                             <div class="accordion-header" onclick="toggleAccordion(this)">
@@ -959,15 +987,15 @@
                         </div>
                     </div>
 
-                    <!-- BUTTONS -->
+                    <!-- ===== BUTTONS ===== -->
                     <div class="btn-group">
-                        <button type="submit" class="btn-primary" id="saveBtn">
+                        <button type="submit" class="btn-primary">
                             <i class="fas fa-save"></i> Save Template
                         </button>
                         <button type="button" class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'">
                             <i class="fas fa-times"></i> Cancel
                         </button>
-                        <button type="button" class="btn-danger" id="deleteBtn" style="margin-left: auto;" onclick="deleteTemplate()">
+                        <button type="button" class="btn-danger" style="margin-left: auto;" onclick="deleteTemplate()">
                             <i class="fas fa-trash"></i> Delete Template
                         </button>
                     </div>
@@ -987,9 +1015,7 @@
         var guildId = '<%= guild.id %>';
         var MAX_BUTTONS = 7;
         var buttons = [];
-
-        // Pass templates data from server to client
-        var templatesData = <%- JSON.stringify(templates || []) %>;
+        var templatesData = <%= JSON.stringify(templates || []) %>;
 
         // ===== TOAST =====
         function showToast(message, type) {
@@ -998,14 +1024,13 @@
             var toast = document.createElement('div');
             toast.className = 'toast ' + type;
             var icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
-            toast.innerHTML =
-                '<span class="toast-icon"><i class="fas fa-' + icon + '"></i></span>' +
-                '<span class="toast-content"></span>' +
-                '<button class="toast-close"><i class="fas fa-times"></i></button>';
-            toast.querySelector('.toast-content').textContent = message;
-            toast.querySelector('.toast-close').addEventListener('click', function() {
-                toast.remove();
-            });
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="fas fa-${icon}"></i></span>
+                <span class="toast-content">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove();">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
             container.appendChild(toast);
             setTimeout(function() {
                 if (toast.parentElement) {
@@ -1016,14 +1041,15 @@
         }
 
         // ===== CHANNEL NAME =====
-        var CHANNEL_NAME_PRESETS = ['ticket-{user}', 'ticket-{number}', 'support-{user}', 'report-{number}'];
         function updateChannelName() {
             var preset = document.getElementById('channelNamePreset');
             var customInput = document.getElementById('channelName');
             if (preset.value === 'custom') {
+                customInput.style.display = 'block';
                 customInput.value = '';
                 customInput.focus();
             } else {
+                customInput.style.display = 'block';
                 customInput.value = preset.value;
             }
         }
@@ -1037,39 +1063,23 @@
         }
 
         // ===== PERMISSIONS =====
-        var PERMISSION_PRESETS = {
-            support: { close: true, delete: false, rename: false, claim: true, adduser: false, removeuser: false },
-            moderator: { close: true, delete: true, rename: true, claim: true, adduser: true, removeuser: true },
-            admin: { close: true, delete: true, rename: true, claim: true, adduser: true, removeuser: true }
-        };
-
         function updatePermissions() {
             var preset = document.getElementById('permissionPreset').value;
             var checkboxes = document.querySelectorAll('#permissionGrid input[type="checkbox"]');
+            
+            var presets = {
+                support: { close: true, delete: false, rename: false, claim: true, adduser: false, removeuser: false },
+                moderator: { close: true, delete: true, rename: true, claim: true, adduser: true, removeuser: true },
+                admin: { close: true, delete: true, rename: true, claim: true, adduser: true, removeuser: true }
+            };
 
             if (preset !== 'custom') {
-                var p = PERMISSION_PRESETS[preset];
+                var p = presets[preset];
                 checkboxes.forEach(function(cb) {
                     var name = cb.name.replace('perm_', '');
-                    cb.checked = !!p[name];
+                    cb.checked = p[name] || false;
                 });
             }
-        }
-
-        // Detects which preset (if any) matches the current checkbox state,
-        // and keeps the dropdown in sync when someone hand-edits a checkbox.
-        function detectPermissionPreset() {
-            var current = {};
-            document.querySelectorAll('#permissionGrid input[type="checkbox"]').forEach(function(cb) {
-                current[cb.name.replace('perm_', '')] = cb.checked;
-            });
-            var presetSelect = document.getElementById('permissionPreset');
-            for (var key in PERMISSION_PRESETS) {
-                var p = PERMISSION_PRESETS[key];
-                var matches = Object.keys(p).every(function(k) { return !!p[k] === !!current[k]; });
-                if (matches) { presetSelect.value = key; return; }
-            }
-            presetSelect.value = 'custom';
         }
 
         // ===== QUOTA CARDS =====
@@ -1153,7 +1163,6 @@
                 empty.className = 'role-chip-empty';
                 empty.textContent = 'No roles found on this server';
                 grid.appendChild(empty);
-                countLabel.textContent = '0/' + ROLE_PICK_LIMIT + ' selected';
                 return;
             }
 
@@ -1203,7 +1212,7 @@
             var grid = document.getElementById('buttonGrid');
             var countLabel = document.getElementById('buttonCount');
             var addBtn = document.getElementById('addButtonBtn');
-
+            
             grid.innerHTML = '';
             countLabel.textContent = buttons.length + ' / ' + MAX_BUTTONS;
             addBtn.disabled = buttons.length >= MAX_BUTTONS;
@@ -1231,42 +1240,43 @@
                     });
                 }
 
-                card.innerHTML =
-                    '<div class="card-header">' +
-                        '<span class="btn-label">Button ' + (index + 1) + '</span>' +
-                        '<button type="button" class="btn-remove" onclick="removeButton(' + index + ')">' +
-                            '<i class="fas fa-times"></i>' +
-                        '</button>' +
-                    '</div>' +
-                    '<div class="card-row">' +
-                        '<div class="form-group">' +
-                            '<label>Label</label>' +
-                            '<input type="text" class="form-control" value="' + (btn.label || '').replace(/"/g, '&quot;') + '" placeholder="e.g., Support" oninput="updateButton(' + index + ', \'label\', this.value)">' +
-                        '</div>' +
-                        '<div class="form-group">' +
-                            '<label>Emoji</label>' +
-                            '<input type="text" class="form-control" value="' + (btn.emoji || '').replace(/"/g, '&quot;') + '" placeholder="📩" oninput="updateButton(' + index + ', \'emoji\', this.value)">' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="card-row">' +
-                        '<div class="form-group">' +
-                            '<label>Color</label>' +
-                            '<select class="form-control" onchange="updateButton(' + index + ', \'color\', this.value)">' +
-                                colorOptions.map(function(c) {
-                                    return '<option value="' + c + '" ' + (btn.color === c ? 'selected' : '') + '>' + colorLabels[colorOptions.indexOf(c)] + '</option>';
-                                }).join('') +
-                            '</select>' +
-                        '</div>' +
-                        '<div class="form-group">' +
-                            '<label>Template</label>' +
-                            '<select class="form-control" onchange="updateButton(' + index + ', \'templateId\', this.value)">' +
-                                templateOptions +
-                            '</select>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="card-preview ' + (colorClasses[btn.color] || 'preview-primary') + '">' +
-                        (btn.emoji || '📩') + ' ' + (btn.label || 'Button Label') +
-                    '</div>';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="btn-label">Button ${index + 1}</span>
+                        <button type="button" class="btn-remove" onclick="removeButton(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="card-row">
+                        <div class="form-group">
+                            <label>Label</label>
+                            <input type="text" class="form-control" value="${btn.label || ''}" placeholder="e.g., Support" onchange="updateButton(${index}, 'label', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Emoji</label>
+                            <input type="text" class="form-control" value="${btn.emoji || ''}" placeholder="📩" onchange="updateButton(${index}, 'emoji', this.value)">
+                        </div>
+                    </div>
+                    <div class="card-row">
+                        <div class="form-group">
+                            <label>Color</label>
+                            <select class="form-control" onchange="updateButton(${index}, 'color', this.value)">
+                                ${colorOptions.map(function(c) {
+                                    return `<option value="${c}" ${btn.color === c ? 'selected' : ''}>${colorLabels[colorOptions.indexOf(c)]}</option>`;
+                                }).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Template</label>
+                            <select class="form-control" onchange="updateButton(${index}, 'templateId', this.value)">
+                                ${templateOptions}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-preview ${colorClasses[btn.color] || 'preview-primary'}">
+                        ${btn.emoji || '📩'} ${btn.label || 'Button Label'}
+                    </div>
+                `;
 
                 grid.appendChild(card);
             });
@@ -1285,25 +1295,17 @@
 
         function updateButton(index, field, value) {
             buttons[index][field] = value;
-            // For label/emoji, patch the preview in place instead of a full
-            // re-render, so the input doesn't lose focus/caret while typing.
-            if (field === 'label' || field === 'emoji') {
-                var card = document.querySelector('.button-card[data-index="' + index + '"]');
-                if (card) {
-                    var preview = card.querySelector('.card-preview');
-                    if (preview) {
-                        preview.textContent = (buttons[index].emoji || '📩') + ' ' + (buttons[index].label || 'Button Label');
-                    }
-                }
-            } else {
-                renderButtons();
-            }
+            renderButtons();
         }
 
         function loadButtons() {
             // Load existing buttons from template data
-            var templateButtons = <%- template && template.customButtons ? JSON.stringify(template.customButtons) : '[]' %>;
-            buttons = Array.isArray(templateButtons) ? templateButtons : [];
+            var templateButtons = <%= template ? (template.customButtons ? JSON.stringify(template.customButtons) : '[]') : '[]' %>;
+            if (Array.isArray(templateButtons)) {
+                buttons = templateButtons;
+            } else {
+                buttons = [];
+            }
             renderButtons();
         }
 
@@ -1314,24 +1316,8 @@
         }
 
         // ===== SAVE TEMPLATE =====
-        function setSaving(isSaving) {
-            var btn = document.getElementById('saveBtn');
-            btn.disabled = isSaving;
-            btn.innerHTML = isSaving
-                ? '<i class="fas fa-spinner fa-spin"></i> Saving...'
-                : '<i class="fas fa-save"></i> Save Template';
-        }
-
         async function saveTemplate(event) {
             event.preventDefault();
-
-            var name = document.getElementById('name').value.trim();
-            if (!name) {
-                showToast('❌ Name is required.', 'error');
-                document.getElementById('name').focus();
-                return;
-            }
-
             var form = document.getElementById('templateForm');
             var formData = new FormData(form);
 
@@ -1370,18 +1356,16 @@
                 customButtons: buttons
             };
 
-            setSaving(true);
             try {
                 var url = templateId ? '/api/tickets/' + templateId : '/api/tickets';
                 var method = templateId ? 'PUT' : 'POST';
-
+                
                 var response = await fetch(url, {
                     method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 var result = await response.json();
-                setSaving(false);
                 if (result.success) {
                     showToast('✅ Template saved successfully!', 'success');
                     if (!templateId) {
@@ -1393,7 +1377,6 @@
                     showToast('❌ Error: ' + result.error, 'error');
                 }
             } catch (error) {
-                setSaving(false);
                 showToast('❌ Error: ' + error.message, 'error');
             }
         }
@@ -1402,10 +1385,7 @@
         function deleteTemplate() {
             if (!templateId) return;
             if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) return;
-
-            var btn = document.getElementById('deleteBtn');
-            btn.disabled = true;
-
+            
             fetch('/api/tickets/' + templateId, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
@@ -1418,34 +1398,35 @@
                         window.location.href = '/servers/' + guildId + '/tickets/templates';
                     }, 1500);
                 } else {
-                    btn.disabled = false;
                     showToast('❌ Error: ' + data.error, 'error');
                 }
             })
             .catch(function(error) {
-                btn.disabled = false;
                 showToast('❌ Error: ' + error.message, 'error');
             });
         }
 
-        // ===== INIT (runs exactly once) =====
-        function init() {
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', function() {
             initQuotaCards();
             renderRoleChips();
             loadButtons();
             updateChannelName();
-            detectPermissionPreset();
+        });
 
-            // Keep the preset dropdown in sync if someone hand-checks a box.
-            document.querySelectorAll('#permissionGrid input[type="checkbox"]').forEach(function(cb) {
-                cb.addEventListener('change', detectPermissionPreset);
-            });
-        }
-
+        // Also run now if DOM already loaded
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
+            document.addEventListener('DOMContentLoaded', function() { 
+                initQuotaCards(); 
+                renderRoleChips(); 
+                loadButtons(); 
+                updateChannelName(); 
+            });
         } else {
-            init();
+            initQuotaCards();
+            renderRoleChips();
+            loadButtons();
+            updateChannelName();
         }
 
         // ===== EXPOSE FUNCTIONS =====
