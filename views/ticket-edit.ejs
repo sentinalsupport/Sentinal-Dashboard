@@ -635,23 +635,24 @@
     </style>
 </head>
 <body>
+
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
-        <a href="#" class="brand">
+        <a href="/dashboard" class="brand">
             <div class="brand-logo">
                 <svg viewBox="0 0 245 240" fill="none"><path d="M104.4 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zM140.9 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z" fill="#3DFFB8"/><path d="M189.5 20H55.5C44.7 20 36 28.7 36 39.5v140.9c0 10.8 8.7 19.5 19.5 19.5h113.5l-5.3-18.5 12.8 11.9 12.1 11.2L209 220V39.5C209 28.7 200.3 20 189.5 20zM155.7 152.1s-3.6-4.3-6.6-8.1c13.1-3.7 18.1-11.9 18.1-11.9-4.1 2.7-8 4.6-11.5 5.9-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.4 1.3-25.9-.1-5.7-1.1-10.6-2.6-14.7-4.3-2.3-.9-4.8-2-7.3-3.4-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.4-.3-2-1.1-3.1-1.9-3.1-1.9 4.7 4.3 9.3 6.5 21.7 10.2-2.9 3.8-6.6 8.1-6.6 8.1-22 0-32.1-15.2-32.1-15.2 0-32.2 14.4-58.4 14.4-58.4 14.4-10.8 28.1-10.5 28.1-10.5l1 1.2C99.2 87.7 87.9 97.4 87.9 97.4s2.9-1.6 7.8-3.8c14.1-6.2 25.3-7.9 29.9-8.3.8-.1 1.5-.2 2.3-.2 8.2-1 17.5-1.3 27.2.2 12.9 2 26.7 7.5 40.8 17.3 0 0-10.8-10.2-28.5-13.7l1.4-1.6s13.7-.3 28.1 10.5c0 0 14.4 26.2 14.4 58.4 0 0-10.2 15.2-32.1 15.2z" fill="#3DFFB8"/></svg>
             </div>
             <span class="brand-name">Sentinal</span>
         </a>
         <div class="navbar-center">
-            <a href="#">Home</a>
-            <a href="#" class="active">Servers</a>
+            <a href="/dashboard">Home</a>
+            <a href="/servers" class="active">Servers</a>
             <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
             <a href="#">Premium</a>
         </div>
         <div class="navbar-right">
             <div class="actions">
-                <button class="btn-cancel" onclick="cancelEdit()"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn-cancel" onclick="window.location.href='/servers/1514945177389760512/tickets/templates'"><i class="fas fa-times"></i> Cancel</button>
                 <button class="btn-save" onclick="saveTemplate(event)"><i class="fas fa-save"></i> Save</button>
                 <button class="btn-publish" onclick="publishTemplate()"><i class="fas fa-rocket"></i> Publish</button>
             </div>
@@ -660,7 +661,7 @@
                 <span class="user-name">Alex</span>
                 <span class="user-plan">Free</span>
             </div>
-            <a href="#" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
         </div>
     </nav>
 
@@ -675,7 +676,7 @@
                 <p>Define how a ticket behaves in your server</p>
             </div>
             <div class="header-actions">
-                <button class="btn btn-cancel-header" onclick="cancelEdit()"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn btn-cancel-header" onclick="window.location.href='/servers/1514945177389760512/tickets/templates'"><i class="fas fa-times"></i> Cancel</button>
                 <button class="btn btn-draft-header" onclick="saveDraft()"><i class="fas fa-file-alt"></i> Draft</button>
                 <button class="btn btn-save-header" onclick="saveTemplate(event)"><i class="fas fa-save"></i> Save</button>
                 <button class="btn btn-publish-header" onclick="publishTemplate()"><i class="fas fa-rocket"></i> Publish</button>
@@ -685,6 +686,7 @@
         <!-- ===== FORM CONTAINER ===== -->
         <div class="form-container">
             <form id="templateForm" onsubmit="return false;">
+                <input type="hidden" name="guildId" value="1514945177389760512">
 
                 <!-- ===== BASIC INFORMATION ===== -->
                 <div class="form-section">
@@ -1000,7 +1002,7 @@ A member of our support team will assist you shortly.</textarea>
 
                 <!-- ===== ACTION BAR ===== -->
                 <div class="action-bar">
-                    <button type="button" class="btn btn-cancel-action" onclick="cancelEdit()"><i class="fas fa-times"></i> Cancel</button>
+                    <button type="button" class="btn btn-cancel-action" onclick="window.location.href='/servers/1514945177389760512/tickets/templates'"><i class="fas fa-times"></i> Cancel</button>
                     <button type="button" class="btn btn-draft" onclick="saveDraft()"><i class="fas fa-file-alt"></i> Save Draft</button>
                     <button type="button" class="btn btn-save-action" onclick="saveTemplate(event)"><i class="fas fa-save"></i> Save Changes</button>
                     <button type="button" class="btn btn-publish-action" onclick="publishTemplate()"><i class="fas fa-rocket"></i> Publish Panel</button>
@@ -1027,7 +1029,7 @@ A member of our support team will assist you shortly.</textarea>
             { _id: 'tpl2', name: 'Billing' },
             { _id: 'tpl3', name: 'Bug Report' }
         ];
-        var savedTemplates = []; // acts as our "database" of saved templates for this session
+        var savedTemplates = [];
 
         // ===== TOAST =====
         function showToast(message, type) {
@@ -1267,6 +1269,7 @@ A member of our support team will assist you shortly.</textarea>
                 return;
             }
 
+            // Simulate API call
             savedTemplates.push(JSON.parse(JSON.stringify(data)));
             console.log('Saved template:', data);
             showToast('✅ Template saved successfully!', 'success');
@@ -1282,10 +1285,17 @@ A member of our support team will assist you shortly.</textarea>
             document.getElementById('status').value = 'active';
             saveTemplate();
             showToast('🚀 Publishing panel...', 'info');
+            setTimeout(function() {
+                window.location.href = '/servers/1514945177389760512/panels';
+            }, 2000);
         }
 
-        function cancelEdit() {
-            showToast('Cancelled — no changes were made', 'info');
+        function deleteTemplate() {
+            if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) return;
+            showToast('🗑️ Template deleted', 'info');
+            setTimeout(function() {
+                window.location.href = '/servers/1514945177389760512/tickets/templates';
+            }, 1500);
         }
 
         // ===== INIT =====
@@ -1302,6 +1312,25 @@ A member of our support team will assist you shortly.</textarea>
         } else {
             init();
         }
+
+        // ===== EXPOSE =====
+        window.showToast = showToast;
+        window.updateChannelName = updateChannelName;
+        window.toggleSwitch = toggleSwitch;
+        window.toggleBool = toggleBool;
+        window.togglePerm = togglePerm;
+        window.updatePermissions = updatePermissions;
+        window.saveTemplate = saveTemplate;
+        window.saveDraft = saveDraft;
+        window.publishTemplate = publishTemplate;
+        window.deleteTemplate = deleteTemplate;
+        window.renderRoleChips = renderRoleChips;
+        window.addButton = addButton;
+        window.removeButton = removeButton;
+        window.updateButton = updateButton;
+        window.renderButtons = renderButtons;
+        window.collectFormData = collectFormData;
     </script>
+
 </body>
 </html>
