@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Same styles as before - keep all the CSS */
         :root {
             --ink: #060A10;
             --panel: #0D1520;
@@ -705,6 +706,8 @@
         <!-- ===== FORM CONTAINER ===== -->
         <div class="form-container">
             <form id="templateForm" onsubmit="return false;">
+                <!-- ✅ ADD THIS HIDDEN INPUT -->
+                <input type="hidden" name="guildId" value="<%= guild.id %>">
 
                 <!-- ===== BASIC INFORMATION ===== -->
                 <div class="form-section">
@@ -1237,6 +1240,7 @@ A member of our support team will assist you shortly.</textarea>
             var supportRoles = Array.from(supportRolesSelect.selectedOptions).map(function(opt) { return opt.value; }).filter(function(v) { return v; });
 
             var data = {
+                guildId: '<%= guild.id %>',  // ✅ ADDED guildId
                 name: document.getElementById('name').value,
                 description: document.getElementById('description').value,
                 status: document.getElementById('status').value,
