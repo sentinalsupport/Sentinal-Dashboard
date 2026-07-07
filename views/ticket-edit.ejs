@@ -657,8 +657,8 @@
                 <button class="btn-publish" onclick="publishTemplate()"><i class="fas fa-rocket"></i> Publish</button>
             </div>
             <div class="user-pill">
-                <div class="user-avatar">A</div>
-                <span class="user-name">Alex</span>
+                <div class="user-avatar" id="userAvatar">A</div>
+                <span class="user-name" id="userName">User</span>
                 <span class="user-plan">Free</span>
             </div>
             <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
@@ -1018,7 +1018,33 @@ A member of our support team will assist you shortly.</textarea>
     </footer>
 
     <script>
-        // ===== MOCK IN-MEMORY DATA STORE (stands in for a backend) =====
+        // ===== SIMULATED USER DATA (matches your Discord session) =====
+        // Replace this block with your actual server-side user object
+        var currentUser = {
+            id: '123456789012345678',
+            username: 'YourDiscordUsername',
+            global_name: 'Your Display Name',
+            avatar: null // set to avatar hash if available
+        };
+
+        // ===== UPDATE NAVBAR WITH USER DATA =====
+        function updateUserUI() {
+            var avatarEl = document.getElementById('userAvatar');
+            var nameEl = document.getElementById('userName');
+
+            if (currentUser) {
+                var displayName = currentUser.global_name || currentUser.username || 'User';
+                nameEl.textContent = displayName;
+
+                if (currentUser.avatar) {
+                    avatarEl.innerHTML = '<img src="https://cdn.discordapp.com/avatars/' + currentUser.id + '/' + currentUser.avatar + '.png" alt="Avatar">';
+                } else {
+                    avatarEl.textContent = displayName.charAt(0).toUpperCase();
+                }
+            }
+        }
+
+        // ===== MOCK DATA STORE =====
         var MAX_BUTTONS = 7;
         var buttons = [
             { label: 'General Support', emoji: '🎫', color: 'primary', templateId: '' },
@@ -1215,7 +1241,7 @@ A member of our support team will assist you shortly.</textarea>
             renderButtons();
         }
 
-        // ===== SAVE / CANCEL FUNCTIONS (mocked — no backend required) =====
+        // ===== SAVE FUNCTIONS =====
         function collectFormData() {
             var supportRolesSelect = document.getElementById('supportRoles');
             var supportRoles = Array.from(supportRolesSelect.selectedOptions).map(function(opt) { return opt.value; }).filter(function(v) { return v; });
@@ -1269,7 +1295,6 @@ A member of our support team will assist you shortly.</textarea>
                 return;
             }
 
-            // Simulate API call
             savedTemplates.push(JSON.parse(JSON.stringify(data)));
             console.log('Saved template:', data);
             showToast('✅ Template saved successfully!', 'success');
@@ -1300,6 +1325,7 @@ A member of our support team will assist you shortly.</textarea>
 
         // ===== INIT =====
         function init() {
+            updateUserUI();
             renderRoleChips();
             renderButtons();
             updateChannelName();
