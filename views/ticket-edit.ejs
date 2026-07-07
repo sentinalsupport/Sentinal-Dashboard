@@ -48,7 +48,6 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
 
-        /* ===== NAVBAR ===== */
         .navbar {
             background: rgba(6,10,16,0.85);
             backdrop-filter: blur(20px) saturate(160%);
@@ -141,14 +140,12 @@
         }
         .btn-publish:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
 
-        /* ===== PAGE WRAPPER ===== */
         .page-wrapper {
             max-width: 1200px;
             margin: 0 auto;
             padding: 24px 32px 80px 32px;
         }
 
-        /* ===== PAGE HEADER ===== */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -209,7 +206,6 @@
         }
         .btn-publish-header:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
 
-        /* ===== FORM CONTAINER ===== */
         .form-container {
             background: var(--panel);
             border: 1px solid var(--line);
@@ -218,7 +214,6 @@
             box-shadow: var(--shadow);
         }
 
-        /* ===== SECTION ===== */
         .form-section {
             margin-bottom: 32px;
             padding-bottom: 32px;
@@ -242,7 +237,6 @@
             margin-bottom: 20px;
         }
 
-        /* ===== SETTINGS CARD ===== */
         .settings-card {
             background: var(--panel-raised);
             border: 1px solid var(--line);
@@ -265,7 +259,6 @@
             margin-bottom: 8px;
         }
 
-        /* ===== FORM ELEMENTS ===== */
         .form-control {
             width: 100%;
             padding: 8px 14px;
@@ -298,7 +291,6 @@
         }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-        /* ===== TOGGLE ===== */
         .toggle-wrapper {
             display: flex;
             align-items: center;
@@ -332,7 +324,6 @@
             color: var(--text);
         }
 
-        /* ===== PERMISSION TOGGLE CARD ===== */
         .perm-card {
             display: flex;
             justify-content: space-between;
@@ -377,7 +368,6 @@
         }
         .mini-toggle.active .knob { left: 18px; }
 
-        /* ===== ROLE CHIPS ===== */
         .role-chip-grid {
             display: flex;
             flex-wrap: wrap;
@@ -419,7 +409,6 @@
         .role-chip .remove:hover { opacity: 1; color: var(--red); }
         .role-chip.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 
-        /* ===== BUTTON CARDS ===== */
         .btn-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -521,7 +510,6 @@
             cursor: not-allowed;
         }
 
-        /* ===== ACTION BAR ===== */
         .action-bar {
             position: sticky;
             bottom: 0;
@@ -574,7 +562,6 @@
         }
         .btn-publish-action:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
 
-        /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
             bottom: 24px;
@@ -649,7 +636,6 @@
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <a href="/dashboard" class="brand">
             <div class="brand-logo">
@@ -688,7 +674,6 @@
 
     <div class="page-wrapper">
 
-        <!-- ===== PAGE HEADER ===== -->
         <div class="page-header">
             <div>
                 <h1><%= template ? template.name : 'Edit Template' %></h1>
@@ -702,11 +687,11 @@
             </div>
         </div>
 
-        <!-- ===== FORM CONTAINER ===== -->
         <div class="form-container">
             <form id="templateForm" onsubmit="return false;">
+                <input type="hidden" name="guildId" value="<%= guild.id %>">
 
-                <!-- ===== BASIC INFORMATION ===== -->
+                <!-- BASIC INFORMATION -->
                 <div class="form-section">
                     <div class="section-title">Basic Information</div>
                     <div class="section-desc">Configure the basic details for this ticket template.</div>
@@ -734,7 +719,7 @@
                     </div>
                 </div>
 
-                <!-- ===== TICKET APPEARANCE ===== -->
+                <!-- TICKET APPEARANCE -->
                 <div class="form-section">
                     <div class="section-title">Ticket Appearance</div>
                     <div class="section-desc">Configure how tickets look and where they are created.</div>
@@ -772,7 +757,7 @@
                     </div>
                 </div>
 
-                <!-- ===== WELCOME MESSAGE ===== -->
+                <!-- WELCOME MESSAGE -->
                 <div class="form-section">
                     <div class="section-title">Welcome Message</div>
                     <div class="section-desc">The message sent when a ticket is created. Supports Discord markdown.</div>
@@ -785,7 +770,7 @@
                     </div>
                 </div>
 
-                <!-- ===== EMBED SETTINGS ===== -->
+                <!-- EMBED SETTINGS -->
                 <div class="form-section">
                     <div class="section-title">Embed Settings</div>
                     <div class="section-desc">Customize the embed that appears with the welcome message.</div>
@@ -816,7 +801,7 @@
                     </div>
                 </div>
 
-                <!-- ===== CUSTOM BUTTONS ===== -->
+                <!-- CUSTOM BUTTONS -->
                 <div class="form-section">
                     <div class="section-title">Custom Buttons</div>
                     <div class="section-desc">Add up to 7 custom buttons. Users will see these options when creating a ticket.</div>
@@ -829,7 +814,7 @@
                     </button>
                 </div>
 
-                <!-- ===== SUPPORT ROLES ===== -->
+                <!-- SUPPORT ROLES -->
                 <div class="form-section">
                     <div class="section-title">Support Roles</div>
                     <div class="section-desc">Select which roles have access to tickets created with this template.</div>
@@ -851,7 +836,7 @@
                     </div>
                 </div>
 
-                <!-- ===== PERMISSIONS ===== -->
+                <!-- PERMISSIONS -->
                 <div class="form-section">
                     <div class="section-title">Permissions</div>
                     <div class="section-desc">Configure what staff can do inside tickets.</div>
@@ -901,7 +886,7 @@
                     <input type="hidden" name="perm_removeuser" id="perm_removeuser" value="<%= template && template.permissions && template.permissions.removeUser ? 'true' : 'false' %>">
                 </div>
 
-                <!-- ===== AUTOMATION ===== -->
+                <!-- AUTOMATION -->
                 <div class="form-section">
                     <div class="section-title">Automation</div>
                     <div class="section-desc">Configure automatic behavior for tickets.</div>
@@ -979,7 +964,7 @@
                     </div>
                 </div>
 
-                <!-- ===== ADVANCED SETTINGS ===== -->
+                <!-- ADVANCED SETTINGS -->
                 <div class="form-section">
                     <div class="section-title">Advanced Settings</div>
                     <div class="section-desc">Additional configuration options for power users.</div>
@@ -1022,7 +1007,7 @@
                     </div>
                 </div>
 
-                <!-- ===== ACTION BAR ===== -->
+                <!-- ACTION BAR -->
                 <div class="action-bar">
                     <button type="button" class="btn btn-cancel-action" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'"><i class="fas fa-times"></i> Cancel</button>
                     <button type="button" class="btn btn-draft" onclick="saveDraft()"><i class="fas fa-file-alt"></i> Save Draft</button>
@@ -1172,11 +1157,9 @@
         // ===== BUTTONS =====
         function renderButtons() {
             var grid = document.getElementById('buttonGrid');
-            var badge = document.getElementById('buttonBadge');
             var addBtn = document.getElementById('addButtonBtn');
 
             grid.innerHTML = '';
-            if (badge) badge.textContent = buttons.length;
             addBtn.disabled = buttons.length >= MAX_BUTTONS;
 
             var colorOptions = ['primary', 'secondary', 'success', 'danger'];
@@ -1256,6 +1239,7 @@
             var supportRoles = Array.from(supportRolesSelect.selectedOptions).map(function(opt) { return opt.value; }).filter(function(v) { return v; });
 
             var data = {
+                guildId: '<%= guild.id %>',
                 name: document.getElementById('name').value,
                 description: document.getElementById('description').value,
                 status: document.getElementById('status').value,
@@ -1334,6 +1318,30 @@
             }, 2000);
         }
 
+        function deleteTemplate() {
+            if (!templateId) return;
+            if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) return;
+
+            fetch('/api/tickets/' + templateId, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    showToast('✅ Template deleted successfully!', 'success');
+                    setTimeout(function() {
+                        window.location.href = '/servers/' + guildId + '/tickets/templates';
+                    }, 1500);
+                } else {
+                    showToast('❌ Error: ' + data.error, 'error');
+                }
+            })
+            .catch(function(error) {
+                showToast('❌ Error: ' + error.message, 'error');
+            });
+        }
+
         // ===== INIT =====
         document.addEventListener('DOMContentLoaded', function() {
             renderRoleChips();
@@ -1363,6 +1371,7 @@
         window.saveTemplate = saveTemplate;
         window.saveDraft = saveDraft;
         window.publishTemplate = publishTemplate;
+        window.deleteTemplate = deleteTemplate;
         window.renderRoleChips = renderRoleChips;
         window.addButton = addButton;
         window.removeButton = removeButton;
