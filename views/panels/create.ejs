@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title || 'Create Panel — Sentinal' %></title>
+    <title><%= title || 'Edit Template — Sentinal' %></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -13,14 +13,14 @@
             --panel: #0D1520;
             --panel-raised: #111D2C;
             --panel-hover: #162033;
-            --line: rgba(255,255,255,0.07);
-            --line-bright: rgba(255,255,255,0.13);
+            --line: rgba(255,255,255,0.06);
+            --line-bright: rgba(255,255,255,0.1);
             --text: #E6EDF6;
             --muted: #6C7A90;
             --muted-dim: #3E4A5C;
             --signal: #3DFFB8;
             --signal-tab: rgba(61,255,184,0.08);
-            --signal-glow: rgba(61,255,184,0.15);
+            --signal-glow: rgba(61,255,184,0.12);
             --signal-hover: rgba(61,255,184,0.18);
             --gold: #F5C842;
             --gold-tab: rgba(245,200,66,0.12);
@@ -31,6 +31,10 @@
             --red-border: rgba(248,113,113,0.22);
             --discord: #5865F2;
             --discord-hover: #4752C4;
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -40,363 +44,483 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
 
         .navbar {
-            background: rgba(6,10,16,0.9);
-            backdrop-filter: blur(28px) saturate(160%);
+            background: rgba(6,10,16,0.85);
+            backdrop-filter: blur(20px) saturate(160%);
             border-bottom: 1px solid var(--line);
-            padding: 0 48px;
-            height: 72px;
-            display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 200;
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .brand-logo {
-            width: 40px; height: 40px; border-radius: 12px;
+            width: 34px; height: 34px; border-radius: 10px;
             background: var(--panel-raised); border: 1px solid var(--line-bright);
             display: flex; align-items: center; justify-content: center;
         }
-        .brand-logo svg { width: 22px; height: 22px; }
+        .brand-logo svg { width: 18px; height: 18px; }
         .brand-name {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+            font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
         }
-        .nav-center { display: flex; align-items: center; gap: 8px; }
-        .nav-center a {
-            color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
-            padding: 8px 18px; border-radius: 10px; transition: all 0.18s ease;
+        .navbar-center { display: flex; align-items: center; gap: 6px; }
+        .navbar-center a {
+            color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500;
+            padding: 6px 14px; border-radius: 8px; transition: var(--transition);
         }
-        .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-        .nav-center a.active { color: #fff; }
-        .nav-right { display: flex; align-items: center; gap: 16px; }
-        .user-pill {
-            display: flex; align-items: center; gap: 12px;
-            background: var(--panel); border: 1px solid var(--line);
-            border-radius: 100px; padding: 6px 18px 6px 8px;
-        }
-        .user-avatar {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: var(--panel-raised); overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: 700;
-        }
-        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .user-name { font-size: 14px; font-weight: 500; color: var(--text); }
-        .user-plan {
-            font-size: 11px; font-weight: 600; color: var(--signal);
-            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.22);
-            border-radius: 100px; padding: 3px 10px; letter-spacing: 0.3px;
-        }
-        .logout-btn {
-            background: transparent; border: 1px solid var(--line); border-radius: 10px;
-            padding: 8px 14px; color: var(--muted); cursor: pointer; font-size: 14px;
-            transition: all 0.18s ease; text-decoration: none;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
-
-        .page-wrapper {
-            max-width: 100%;
-            margin: 0;
-            padding: 32px 48px 60px 5px;
-            display: flex;
-            gap: 32px;
-            align-items: flex-start;
-            min-height: calc(100vh - 72px);
-        }
-
-        .sidebar {
-            width: 280px;
-            flex-shrink: 0;
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 0 14px 14px 0;
-            padding: 16px 18px;
-            position: sticky;
-            top: 88px;
-            height: calc(100vh - 108px);
-            overflow-y: auto;
-            overflow-x: hidden;
-            margin-left: -5px;
-            border-left: none;
-        }
-        .sidebar::-webkit-scrollbar { width: 3px; }
-        .sidebar::-webkit-scrollbar-track { background: transparent; }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
-
-        .sidebar .server-info {
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--line);
-            margin-bottom: 12px;
-        }
-        .sidebar .server-info .icon {
-            width: 40px; height: 40px; border-radius: 10px;
-            background: var(--panel-raised); border: 1px solid var(--line);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; font-weight: 700;
-            overflow: hidden;
-            color: var(--signal);
-            margin-bottom: 6px;
-        }
-        .sidebar .server-info .icon img { width: 100%; height: 100%; object-fit: cover; }
-        .sidebar .server-info .name {
-            font-weight: 600; font-size: 14px;
-            color: #fff;
-        }
-        .sidebar .server-info .plan {
-            font-size: 10px;
-            color: var(--signal);
-            font-weight: 500;
-            background: var(--signal-tab);
-            padding: 2px 12px;
-            border-radius: 100px;
-            display: inline-block;
-            border: 1px solid rgba(61,255,184,0.2);
-        }
-        .sidebar .server-info .upgrade {
-            display: block;
-            margin-top: 8px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            background: var(--gold-tab);
-            color: var(--gold);
-            font-size: 11px;
-            font-weight: 600;
-            text-decoration: none;
-            text-align: center;
-            border: 1px solid rgba(245,200,66,0.2);
-            transition: all 0.2s ease;
-        }
-        .sidebar .server-info .upgrade:hover { background: rgba(245,200,66,0.18); }
-
-        .sidebar .nav-section { padding: 0; }
-        .sidebar .section-title {
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--muted-dim);
-            padding: 10px 8px 6px;
-        }
-        .sidebar .nav-item {
+        .navbar-center a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+        .navbar-center a.active { color: #fff; background: rgba(255,255,255,0.06); }
+        .navbar-right {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.18s ease;
-            cursor: pointer;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
         }
-        .sidebar .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
-        .sidebar .nav-item.active { background: var(--signal-tab); color: var(--signal); }
-        .sidebar .nav-item i { width: 18px; font-size: 14px; color: var(--muted-dim); }
-        .sidebar .nav-item.active i { color: var(--signal); }
-        .sidebar .nav-item .badge {
-            margin-left: auto;
-            font-size: 7px;
-            font-weight: 700;
-            padding: 2px 8px;
+        .navbar-right .actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--panel);
+            border: 1px solid var(--line);
             border-radius: 100px;
-            text-transform: uppercase;
+            padding: 4px 14px 4px 4px;
         }
-        .sidebar .nav-item .badge.live { background: var(--signal-tab); color: var(--signal); }
-        .sidebar .nav-item .badge.new { background: var(--violet-tab); color: var(--violet); }
+        .user-avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--panel-raised); overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700;
+        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 12px; font-weight: 500; color: var(--text); }
+        .user-plan {
+            font-size: 9px; font-weight: 600; color: var(--signal);
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.2);
+            border-radius: 100px; padding: 2px 8px; letter-spacing: 0.3px;
+        }
+        .logout-btn {
+            background: transparent; border: 1px solid var(--line); border-radius: 8px;
+            padding: 6px 12px; color: var(--muted); cursor: pointer; font-size: 12px;
+            transition: var(--transition); text-decoration: none;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
-        .sidebar .divider { height: 1px; background: var(--line); margin: 8px 0; }
+        .btn-cancel {
+            padding: 6px 16px; border-radius: 8px; border: 1px solid var(--line);
+            background: transparent; color: var(--text); font-weight: 500; font-size: 12px;
+            cursor: pointer; transition: var(--transition); font-family: 'Inter', sans-serif;
+        }
+        .btn-cancel:hover { background: rgba(255,255,255,0.05); }
+        .btn-save {
+            padding: 6px 16px; border-radius: 8px; border: none;
+            background: var(--signal); color: var(--ink); font-weight: 600; font-size: 12px;
+            cursor: pointer; transition: var(--transition); font-family: 'Inter', sans-serif;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--signal-glow); }
+        .btn-publish {
+            padding: 6px 16px; border-radius: 8px; border: none;
+            background: var(--violet); color: #fff; font-weight: 600; font-size: 12px;
+            cursor: pointer; transition: var(--transition); font-family: 'Inter', sans-serif;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-publish:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
 
-        .content {
-            flex: 1;
-            min-width: 0;
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 32px 80px 32px;
         }
 
         .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 24px;
-        }
-        .page-header .breadcrumb {
-            color: var(--muted);
-            font-size: 14px;
-        }
-        .page-header .breadcrumb a {
-            color: var(--signal);
-            text-decoration: none;
-        }
-        .page-header .breadcrumb a:hover {
-            text-decoration: underline;
+            flex-wrap: wrap;
+            gap: 16px;
         }
         .page-header h1 {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 28px;
             font-weight: 700;
             color: #fff;
-            margin-top: 4px;
         }
         .page-header p {
+            font-size: 14px;
             color: var(--muted);
-            font-size: 16px;
             margin-top: 4px;
         }
+        .page-header .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .page-header .header-actions .btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-cancel-header {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+        .btn-cancel-header:hover { background: rgba(255,255,255,0.05); }
+        .btn-draft-header {
+            background: var(--gold-tab);
+            color: var(--gold);
+            border: 1px solid rgba(245,200,66,0.2);
+        }
+        .btn-draft-header:hover { background: rgba(245,200,66,0.18); }
+        .btn-save-header {
+            background: var(--signal);
+            color: var(--ink);
+        }
+        .btn-save-header:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--signal-glow); }
+        .btn-publish-header {
+            background: var(--violet);
+            color: #fff;
+        }
+        .btn-publish-header:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
 
         .form-container {
             background: var(--panel);
             border: 1px solid var(--line);
-            border-radius: 14px;
+            border-radius: var(--radius);
             padding: 32px;
-            max-width: 900px;
+            box-shadow: var(--shadow);
         }
 
         .form-section {
             margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--line);
         }
         .form-section:last-child {
             margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
         }
         .form-section .section-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             color: #fff;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-bottom: 4px;
         }
-
-        .form-group {
+        .form-section .section-desc {
+            font-size: 13px;
+            color: var(--muted);
             margin-bottom: 20px;
         }
-        .form-group:last-child {
-            margin-bottom: 0;
+
+        .settings-card {
+            background: var(--panel-raised);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            transition: var(--transition);
         }
-        .form-group label {
-            display: block;
+        .settings-card:hover { border-color: var(--line-bright); }
+        .settings-card:last-child { margin-bottom: 0; }
+        .settings-card .card-label {
+            font-size: 13px;
             font-weight: 600;
-            font-size: 14px;
             color: var(--text);
-            margin-bottom: 6px;
+            margin-bottom: 2px;
         }
-        .form-group label .required {
-            color: var(--red);
-            margin-left: 2px;
-        }
-        .form-group .help-text {
+        .settings-card .card-desc {
             font-size: 12px;
             color: var(--muted);
+            margin-bottom: 8px;
+        }
+        .settings-card .validation-error {
+            color: var(--red);
+            font-size: 12px;
             margin-top: 4px;
         }
+
         .form-control {
             width: 100%;
-            padding: 10px 16px;
-            border-radius: 10px;
+            padding: 8px 14px;
+            border-radius: 8px;
             border: 1px solid var(--line);
-            background: var(--panel-raised);
+            background: var(--panel);
             color: var(--text);
-            font-size: 14px;
+            font-size: 13px;
             font-family: 'Inter', sans-serif;
-            transition: all 0.18s ease;
+            transition: var(--transition);
+            outline: none;
         }
         .form-control:focus {
-            outline: none;
             border-color: var(--signal);
-            box-shadow: 0 0 0 4px var(--signal-glow);
+            box-shadow: 0 0 0 3px var(--signal-glow);
         }
-        .form-control::placeholder {
-            color: var(--muted-dim);
-        }
+        .form-control::placeholder { color: var(--muted-dim); }
         select.form-control {
             appearance: none;
             cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236C7A90' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236C7A90' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 16px center;
+            background-position: right 12px center;
+            padding-right: 32px;
         }
         textarea.form-control {
             resize: vertical;
-            min-height: 80px;
+            min-height: 60px;
             font-family: 'Inter', sans-serif;
         }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .toggle {
+            width: 40px;
+            height: 22px;
+            background: var(--muted-dim);
+            border-radius: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .toggle.active { background: var(--signal); }
+        .toggle .toggle-knob {
+            width: 18px; height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .toggle.active .toggle-knob { left: 20px; }
+        .toggle-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
         }
 
-        .checkbox-group {
+        .role-selector-wrapper {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            padding: 8px 0;
+            gap: 8px;
+            align-items: center;
         }
-        .checkbox-group label {
+        .role-selector-wrapper .role-chip-grid {
+            flex: 1;
+            min-width: 200px;
+        }
+        .role-selector-wrapper .counter {
+            font-size: 12px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+        .match-mode-selector {
             display: flex;
-            align-items: center;
             gap: 8px;
-            font-weight: 400;
-            font-size: 14px;
-            color: var(--text);
-            cursor: pointer;
+            margin-top: 6px;
         }
-        .checkbox-group input[type="checkbox"] {
-            accent-color: var(--signal);
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            padding: 10px 24px;
-            border-radius: 10px;
-            border: none;
-            background: var(--signal);
-            color: var(--ink);
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 20px var(--signal-glow);
-        }
-        .btn-secondary {
-            padding: 10px 24px;
-            border-radius: 10px;
+        .match-mode-selector .btn-match {
+            padding: 4px 12px;
+            border-radius: 6px;
             border: 1px solid var(--line);
             background: transparent;
-            color: var(--text);
+            color: var(--muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+        .match-mode-selector .btn-match.active {
+            background: var(--signal-tab);
+            border-color: var(--signal);
+            color: var(--signal);
+        }
+        .match-mode-selector .btn-match:hover { border-color: var(--line-bright); }
+
+        .question-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .question-card .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .question-card .question-header .q-title {
             font-weight: 600;
             font-size: 14px;
+        }
+        .question-card .question-header .q-remove {
+            background: none;
+            border: none;
+            color: var(--muted-dim);
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
+            font-size: 14px;
+        }
+        .question-card .question-header .q-remove:hover { color: var(--red); }
+        .question-card .q-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .question-card .q-row .q-field label {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 500;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .question-card .q-row .q-field .form-control {
+            padding: 4px 8px;
+            font-size: 12px;
+            min-height: 28px;
+        }
+        .question-card .q-toggle-row {
+            display: flex;
             align-items: center;
             gap: 8px;
+            margin-top: 6px;
         }
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.05);
+        .question-card .q-toggle-row .mini-toggle {
+            width: 32px;
+            height: 18px;
+            background: var(--muted-dim);
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .question-card .q-toggle-row .mini-toggle.active { background: var(--signal); }
+        .question-card .q-toggle-row .mini-toggle .knob {
+            width: 14px; height: 14px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+        .question-card .q-toggle-row .mini-toggle.active .knob { left: 16px; }
+        .question-card .q-toggle-row .q-toggle-label {
+            font-size: 12px;
+            color: var(--text);
         }
 
-        .btn-group {
+        .btn-add {
+            padding: 10px 16px;
+            border: 2px dashed var(--line);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
             display: flex;
-            gap: 12px;
-            margin-top: 24px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 12px;
+        }
+        .btn-add:hover {
+            border-color: var(--signal);
+            color: var(--signal);
+            background: var(--signal-tab);
+        }
+        .btn-add:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .action-bar {
+            position: sticky;
+            bottom: 0;
+            background: rgba(6,10,16,0.92);
+            backdrop-filter: blur(16px) saturate(160%);
+            border-top: 1px solid var(--line);
+            padding: 12px 32px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            margin: 32px -32px -32px -32px;
+            border-radius: 0 0 var(--radius) var(--radius);
+            z-index: 10;
             flex-wrap: wrap;
         }
+        .action-bar .btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-cancel-action {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+        .btn-cancel-action:hover { background: rgba(255,255,255,0.05); }
+        .btn-draft {
+            background: var(--gold-tab);
+            color: var(--gold);
+            border: 1px solid rgba(245,200,66,0.2);
+        }
+        .btn-draft:hover { background: rgba(245,200,66,0.18); }
+        .btn-save-action {
+            background: var(--signal);
+            color: var(--ink);
+        }
+        .btn-save-action:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--signal-glow); }
+        .btn-publish-action {
+            background: var(--violet);
+            color: #fff;
+        }
+        .btn-publish-action:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
 
         .toast-container {
             position: fixed;
@@ -405,263 +529,94 @@
             z-index: 9999;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            max-width: 380px;
+            gap: 8px;
+            max-width: 360px;
             width: 100%;
         }
         .toast {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 12px;
-            padding: 14px 20px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            gap: 10px;
+            box-shadow: var(--shadow);
             animation: slideIn 0.3s ease;
             backdrop-filter: blur(10px);
             border-left: 4px solid var(--signal);
         }
-        .toast .toast-icon {
-            color: var(--signal);
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-        .toast .toast-content {
-            flex: 1;
-            font-size: 13px;
-            color: var(--text);
-            line-height: 1.4;
-        }
+        .toast .toast-icon { color: var(--signal); font-size: 16px; flex-shrink: 0; }
+        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
         .toast .toast-close {
-            background: none;
-            border: none;
-            color: var(--muted-dim);
-            cursor: pointer;
-            font-size: 14px;
-            padding: 4px;
+            background: none; border: none; color: var(--muted-dim);
+            cursor: pointer; font-size: 13px; padding: 2px;
         }
-        .toast .toast-close:hover {
-            color: var(--text);
-        }
-        .toast.error {
-            border-left-color: var(--red);
-        }
-        .toast.error .toast-icon {
-            color: var(--red);
-        }
-        .toast.success {
-            border-left-color: var(--signal);
-        }
-        .toast.success .toast-icon {
-            color: var(--signal);
-        }
+        .toast .toast-close:hover { color: var(--text); }
+        .toast.error { border-left-color: var(--red); }
+        .toast.error .toast-icon { color: var(--red); }
+        .toast.success { border-left-color: var(--signal); }
+        .toast.success .toast-icon { color: var(--signal); }
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         @keyframes slideOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(40px);
-            }
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(30px); }
         }
-        .toast.hiding {
-            animation: slideOut 0.3s ease forwards;
-        }
+        .toast.hiding { animation: slideOut 0.3s ease forwards; }
 
         .footer {
             border-top: 1px solid var(--line);
-            margin-top: 60px;
-            padding: 28px 48px;
+            margin-top: 40px;
+            padding: 20px 32px;
             text-align: center;
             color: var(--muted-dim);
-            font-size: 13px;
+            font-size: 12px;
             font-family: 'IBM Plex Mono', monospace;
             letter-spacing: 0.5px;
         }
 
-        /* Preview Box */
-        .preview-box {
-            background: var(--panel-raised);
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin-top: 12px;
-        }
-        .preview-box .preview-label {
-            font-size: 12px;
-            color: var(--muted-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-        .preview-box .preview-content {
-            color: var(--muted);
-            font-size: 14px;
-        }
-        .preview-box .preview-content .preview-message {
-            color: var(--text);
-            padding: 12px;
-            background: var(--panel);
-            border-radius: 8px;
-            border-left: 3px solid var(--signal);
-        }
-
-        /* Template Selection */
-        .template-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .template-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            background: var(--panel-raised);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.18s ease;
-        }
-        .template-item:hover {
-            border-color: var(--line-bright);
-        }
-        .template-item input[type="checkbox"] {
-            accent-color: var(--signal);
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .template-item .template-name {
-            font-size: 14px;
-            color: var(--text);
-        }
-        .template-item .template-status {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 100px;
-            font-weight: 600;
-            margin-left: auto;
-        }
-        .template-item .template-status.active {
-            background: var(--signal-tab);
-            color: var(--signal);
-        }
-        .template-item .template-status.draft {
-            background: var(--gold-tab);
-            color: var(--gold);
-        }
-        .template-item .template-status.disabled {
-            background: var(--red-bg);
-            color: var(--red);
-        }
-
         @media (max-width: 768px) {
-            .navbar {
-                padding: 0 16px;
-                height: 64px;
-                flex-wrap: wrap;
-            }
-            .nav-center {
-                display: none;
-            }
-            .page-wrapper {
-                padding: 16px;
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                position: relative;
-                top: 0;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 4px;
-                padding: 12px;
-                border-radius: 12px;
-                max-height: none;
-                height: auto;
-                margin-left: 0;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-            }
-            .sidebar .server-info {
-                display: none;
-            }
-            .sidebar .nav-section {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 4px;
-            }
-            .sidebar .section-title {
-                display: none;
-            }
-            .sidebar .nav-item {
-                padding: 6px 14px;
-                font-size: 13px;
-                width: auto;
-            }
-            .sidebar .divider {
-                display: none;
-            }
-            .form-container {
-                padding: 20px;
-            }
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            .template-list {
-                grid-template-columns: 1fr;
-            }
-            .btn-group {
-                flex-direction: column;
-            }
-            .btn-group button {
-                width: 100%;
-            }
-            .footer {
-                padding: 20px 16px;
-            }
-            .toast-container {
-                bottom: 16px;
-                right: 16px;
-                max-width: calc(100% - 32px);
-            }
+            .navbar { padding: 0 16px; }
+            .navbar-center { display: none; }
+            .page-wrapper { padding: 16px; }
+            .page-header { flex-direction: column; align-items: stretch; }
+            .page-header .header-actions { flex-wrap: wrap; }
+            .form-container { padding: 20px; }
+            .form-row { grid-template-columns: 1fr; }
+            .question-card .q-row { grid-template-columns: 1fr; }
+            .role-selector-wrapper { flex-direction: column; align-items: stretch; }
+            .action-bar { margin: 20px -20px -20px -20px; padding: 12px 16px; justify-content: center; }
+            .action-bar .btn { font-size: 11px; padding: 6px 14px; }
+            .toast-container { bottom: 12px; right: 12px; max-width: calc(100% - 24px); }
+            .page-header .header-actions .btn { font-size: 11px; padding: 6px 12px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <a href="/dashboard" class="brand">
             <div class="brand-logo">
-                <svg viewBox="0 0 245 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M104.4 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zM140.9 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z" fill="#3DFFB8"/>
-                    <path d="M189.5 20H55.5C44.7 20 36 28.7 36 39.5v140.9c0 10.8 8.7 19.5 19.5 19.5h113.5l-5.3-18.5 12.8 11.9 12.1 11.2L209 220V39.5C209 28.7 200.3 20 189.5 20zM155.7 152.1s-3.6-4.3-6.6-8.1c13.1-3.7 18.1-11.9 18.1-11.9-4.1 2.7-8 4.6-11.5 5.9-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.4 1.3-25.9-.1-5.7-1.1-10.6-2.6-14.7-4.3-2.3-.9-4.8-2-7.3-3.4-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.4-.3-2-1.1-3.1-1.9-3.1-1.9 4.7 4.3 9.3 6.5 21.7 10.2-2.9 3.8-6.6 8.1-6.6 8.1-22 0-32.1-15.2-32.1-15.2 0-32.2 14.4-58.4 14.4-58.4 14.4-10.8 28.1-10.5 28.1-10.5l1 1.2C99.2 87.7 87.9 97.4 87.9 97.4s2.9-1.6 7.8-3.8c14.1-6.2 25.3-7.9 29.9-8.3.8-.1 1.5-.2 2.3-.2 8.2-1 17.5-1.3 27.2.2 12.9 2 26.7 7.5 40.8 17.3 0 0-10.8-10.2-28.5-13.7l1.4-1.6s13.7-.3 28.1 10.5c0 0 14.4 26.2 14.4 58.4 0 0-10.2 15.2-32.1 15.2z" fill="#3DFFB8"/>
-                </svg>
+                <svg viewBox="0 0 245 240" fill="none"><path d="M104.4 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zM140.9 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z" fill="#3DFFB8"/><path d="M189.5 20H55.5C44.7 20 36 28.7 36 39.5v140.9c0 10.8 8.7 19.5 19.5 19.5h113.5l-5.3-18.5 12.8 11.9 12.1 11.2L209 220V39.5C209 28.7 200.3 20 189.5 20zM155.7 152.1s-3.6-4.3-6.6-8.1c13.1-3.7 18.1-11.9 18.1-11.9-4.1 2.7-8 4.6-11.5 5.9-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.4 1.3-25.9-.1-5.7-1.1-10.6-2.6-14.7-4.3-2.3-.9-4.8-2-7.3-3.4-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.4-.3-2-1.1-3.1-1.9-3.1-1.9 4.7 4.3 9.3 6.5 21.7 10.2-2.9 3.8-6.6 8.1-6.6 8.1-22 0-32.1-15.2-32.1-15.2 0-32.2 14.4-58.4 14.4-58.4 14.4-10.8 28.1-10.5 28.1-10.5l1 1.2C99.2 87.7 87.9 97.4 87.9 97.4s2.9-1.6 7.8-3.8c14.1-6.2 25.3-7.9 29.9-8.3.8-.1 1.5-.2 2.3-.2 8.2-1 17.5-1.3 27.2.2 12.9 2 26.7 7.5 40.8 17.3 0 0-10.8-10.2-28.5-13.7l1.4-1.6s13.7-.3 28.1 10.5c0 0 14.4 26.2 14.4 58.4 0 0-10.2 15.2-32.1 15.2z" fill="#3DFFB8"/></svg>
             </div>
             <span class="brand-name">Sentinal</span>
         </a>
-        <div class="nav-center">
+        <div class="navbar-center">
             <a href="/dashboard">Home</a>
             <a href="/servers" class="active">Servers</a>
             <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
             <a href="#">Premium</a>
         </div>
-        <div class="nav-right">
+        <div class="navbar-right">
+            <div class="actions">
+                <button class="btn-cancel" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn-save" onclick="saveTemplate(event)"><i class="fas fa-save"></i> Save</button>
+                <button class="btn-publish" onclick="publishTemplate()"><i class="fas fa-rocket"></i> Publish</button>
+            </div>
             <div class="user-pill">
                 <div class="user-avatar">
                     <% if (locals.user && user.avatar) { %>
@@ -681,202 +636,249 @@
 
     <div class="page-wrapper">
 
-        <aside class="sidebar">
-            <div class="server-info">
-                <div class="icon">
-                    <% if (locals.guild && guild.icon) { %>
-                        <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
-                    <% } else { %>
-                        <%= locals.guild ? (guild.name ? guild.name.charAt(0).toUpperCase() : '?') : '?' %>
-                    <% } %>
-                </div>
-                <div class="name"><%= locals.guild ? guild.name : 'Server' %></div>
-                <div class="plan">Free</div>
-                <a href="#" class="upgrade" onclick="showToast('Upgrade to Premium!', 'info')">Upgrade to Premium</a>
+        <!-- ===== PAGE HEADER ===== -->
+        <div class="page-header">
+            <div>
+                <h1><%= template ? template.name : 'Edit Template' %></h1>
+                <p>Define how a ticket behaves in your server</p>
             </div>
-
-            <div class="nav-section">
-                <div class="section-title">Modules</div>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>" class="nav-item">
-                    <i class="fas fa-th-large"></i> Overview
-                </a>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets" class="nav-item">
-                    <i class="fas fa-ticket"></i> Tickets
-                    <span class="badge live">Live</span>
-                </a>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>/panels" class="nav-item active">
-                    <i class="fas fa-clipboard"></i> Panels
-                    <span class="badge live">Live</span>
-                </a>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>/applications" class="nav-item">
-                    <i class="fas fa-file-alt"></i> Applications
-                    <span class="badge live">Live</span>
-                </a>
+            <div class="header-actions">
+                <button class="btn btn-cancel-header" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn btn-draft-header" onclick="saveDraft()"><i class="fas fa-file-alt"></i> Draft</button>
+                <button class="btn btn-save-header" onclick="saveTemplate(event)"><i class="fas fa-save"></i> Save</button>
+                <button class="btn btn-publish-header" onclick="publishTemplate()"><i class="fas fa-rocket"></i> Publish</button>
             </div>
-
-            <div class="divider"></div>
-
-            <div class="nav-section">
-                <div class="section-title">Support</div>
-                <button class="nav-item" onclick="showToast('Support server coming soon!', 'info')">
-                    <i class="fas fa-headset"></i> Support Server
-                </button>
-            </div>
-        </aside>
-
-        <div class="content">
-
-            <div class="page-header">
-                <div>
-                    <div class="breadcrumb">
-                        <a href="/servers/<%= guild.id %>/panels">Panels</a>
-                        <span style="color: var(--muted-dim);"> / </span>
-                        <span>Create Panel</span>
-                    </div>
-                    <h1>Create Panel</h1>
-                    <p>Create a new ticket panel that users can interact with in Discord</p>
-                </div>
-            </div>
-
-            <div class="form-container">
-                <form id="panelForm" onsubmit="createPanel(event)">
-
-                    <!-- ===== PANEL INFORMATION ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-info-circle" style="color: var(--signal);"></i>
-                            Panel Information
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="name">Panel Name <span class="required">*</span></label>
-                                <input type="text" id="name" name="name" class="form-control" placeholder="e.g., Support Panel" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <select id="status" name="status" class="form-control">
-                                    <option value="active">Active</option>
-                                    <option value="draft">Draft</option>
-                                    <option value="disabled">Disabled</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea id="description" name="description" class="form-control" placeholder="Describe what this panel is for..." rows="2"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- ===== DISCORD SETTINGS ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fab fa-discord" style="color: var(--signal);"></i>
-                            Discord Settings
-                        </div>
-
-                        <div class="form-group">
-                            <label for="channelId">Discord Channel <span class="required">*</span></label>
-                            <select id="channelId" name="channelId" class="form-control" required>
-                                <option value="">Select a channel...</option>
-                                <% if (channels && channels.length > 0) { %>
-                                    <% channels.forEach(function(ch) { %>
-                                        <option value="<%= ch.id %>">#<%= ch.name %></option>
-                                    <% }) %>
-                                <% } else { %>
-                                    <option value="" disabled>No channels found - make sure the bot is in the server</option>
-                                <% } %>
-                            </select>
-                            <div class="help-text">The Discord channel where this panel will be sent</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="message">Panel Message</label>
-                            <textarea id="message" name="message" class="form-control" rows="3" placeholder="Need help? Click a button below to create a ticket."></textarea>
-                            <div class="help-text">This message will appear above the ticket buttons</div>
-                        </div>
-
-                        <!-- Live Preview -->
-                        <div class="preview-box">
-                            <div class="preview-label">📋 Live Preview</div>
-                            <div class="preview-content">
-                                <div class="preview-message" id="previewMessage">Need help? Click a button below to create a ticket.</div>
-                                <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
-                                    <span style="padding: 6px 16px; background: var(--signal); color: var(--ink); border-radius: 6px; font-size: 13px; font-weight: 600;">📩 Support</span>
-                                    <span style="padding: 6px 16px; background: var(--panel-raised); color: var(--muted); border-radius: 6px; font-size: 13px; border: 1px solid var(--line);">📋 Report</span>
-                                </div>
-                                <div style="margin-top: 8px; font-size: 12px; color: var(--muted-dim);">Buttons will appear based on selected templates below</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ===== TEMPLATES ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-file-alt" style="color: var(--signal);"></i>
-                            Templates
-                        </div>
-
-                        <div class="form-group">
-                            <label>Select Templates</label>
-                            <div class="help-text">Choose which ticket templates this panel will use. Each selected template becomes a button.</div>
-
-                            <div class="template-list">
-                                <% if (templates && templates.length > 0) { %>
-                                    <% templates.forEach(function(template) { %>
-                                        <label class="template-item">
-                                            <input type="checkbox" name="templates" value="<%= template._id %>">
-                                            <span class="template-name"><%= template.name %></span>
-                                            <span class="template-status <%= template.status || 'active' %>"><%= template.status || 'Active' %></span>
-                                        </label>
-                                    <% }) %>
-                                <% } else { %>
-                                    <div style="grid-column: 1 / -1; color: var(--muted-dim); padding: 16px; text-align: center; background: var(--panel-raised); border-radius: 8px;">
-                                        <i class="fas fa-info-circle" style="display: block; font-size: 24px; margin-bottom: 8px;"></i>
-                                        No active templates found.
-                                        <a href="/servers/<%= guild.id %>/tickets/create" style="color: var(--signal); text-decoration: none; display: block; margin-top: 4px;">
-                                            Create a template first →
-                                        </a>
-                                    </div>
-                                <% } %>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ===== BUTTONS ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-bolt" style="color: var(--signal);"></i>
-                            Button Settings
-                        </div>
-
-                        <div class="form-group">
-                            <label for="buttonStyle">Button Style</label>
-                            <select id="buttonStyle" name="buttonStyle" class="form-control">
-                                <option value="primary">Primary (Blue)</option>
-                                <option value="secondary">Secondary (Grey)</option>
-                                <option value="success">Success (Green)</option>
-                                <option value="danger">Danger (Red)</option>
-                            </select>
-                            <div class="help-text">Style applied to all buttons in this panel</div>
-                        </div>
-                    </div>
-
-                    <!-- ===== BUTTONS ===== -->
-                    <div class="btn-group">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-plus"></i> Create Panel
-                        </button>
-                        <button type="button" class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/panels'">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                    </div>
-
-                </form>
-            </div>
-
         </div>
+
+        <!-- ===== FORM CONTAINER ===== -->
+        <div class="form-container">
+            <form id="templateForm" method="POST" action="/servers/<%= guild.id %>/tickets/<%= template ? template._id : 'create' %>" onsubmit="return false;">
+                <input type="hidden" name="guildId" value="<%= guild.id %>">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                <!-- ===== BASIC INFORMATION ===== -->
+                <div class="form-section">
+                    <div class="section-title">Basic Information</div>
+                    <div class="section-desc">Configure the basic details for this ticket template.</div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Template name</div>
+                        <div class="card-desc">The name of the ticket.</div>
+                        <input type="text" id="name" name="name" class="form-control" value="<%= template ? template.name : '' %>" placeholder="e.g., Support" required>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Ticket Logging Channel</div>
+                        <div class="card-desc">The channel where closed tickets will be logged.</div>
+                        <select id="transcriptChannel" name="transcriptChannel" class="form-control">
+                            <option value="">None</option>
+                            <% if (channels) { %>
+                                <% channels.filter(function(c) { return c.type === 0; }).forEach(function(ch) { %>
+                                    <option value="<%= ch.id %>" <%= template && template.transcriptChannel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                        <div class="validation-error" id="loggingChannelError" style="display: none;">Please select a logging channel</div>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Ticket category</div>
+                        <div class="card-desc">Tickets will be created under this category.</div>
+                        <select id="category" name="category" class="form-control">
+                            <option value="">None</option>
+                            <% if (channels) { %>
+                                <% channels.filter(function(c) { return c.type === 4; }).forEach(function(cat) { %>
+                                    <option value="<%= cat.id %>" <%= template && template.category === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                        <div class="validation-error" id="categoryError" style="display: none;">Please select a category</div>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Ticket Channel Name</div>
+                        <div class="card-desc">Format: <code>{ticket-creator-username}-{total-tickets-opened}</code></div>
+                        <input type="text" id="channelName" name="channelName" class="form-control" value="<%= template ? template.channelName || '{ticket-creator-username}-{total-tickets-opened}' : '{ticket-creator-username}-{total-tickets-opened}' %>" placeholder="ticket-creator-username-total-tickets-opened">
+                        <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">Variables: {user} · {id} · {number} · {ticket-creator-username} · {total-tickets-opened}</div>
+                    </div>
+                </div>
+
+                <!-- ===== CAN TICKET CREATOR CLOSE TICKET ===== -->
+                <div class="form-section">
+                    <div class="section-title">Ticket Permissions</div>
+                    <div class="section-desc">Control who can close tickets and access controls.</div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Can Ticket Creator Close Ticket</div>
+                        <div class="card-desc">If enabled, the ticket creator can close their own ticket. Otherwise only support team members may close it.</div>
+                        <div class="toggle-wrapper">
+                            <div class="toggle <%= template && template.creatorCanClose ? 'active' : '' %>" onclick="toggleBool(this, 'creatorCanClose')"><div class="toggle-knob"></div></div>
+                            <span class="toggle-label"><%= template && template.creatorCanClose ? 'Enabled' : 'Disabled' %></span>
+                        </div>
+                        <input type="hidden" name="creatorCanClose" id="creatorCanClose" value="<%= template && template.creatorCanClose ? 'true' : 'false' %>">
+                    </div>
+                </div>
+
+                <!-- ===== TICKET ACCESS CONTROL ===== -->
+                <div class="form-section">
+                    <div class="section-title">Ticket Access Control</div>
+                    <div class="section-desc">Configure role-based access restrictions for tickets.</div>
+
+                    <!-- Blocked Roles -->
+                    <div class="settings-card">
+                        <div class="card-label">Blocked Roles</div>
+                        <div class="card-desc">Users with these roles cannot create tickets.</div>
+                        <div class="role-selector-wrapper">
+                            <select id="blockedRoles" name="blockedRoles" multiple style="display:none;">
+                                <% if (roles) { %>
+                                    <% roles.forEach(function(role) { %>
+                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.blockedRoles && template.blockedRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                    <% }) %>
+                                <% } %>
+                            </select>
+                            <div class="role-chip-grid" id="blockedRolesGrid"></div>
+                            <span class="counter" id="blockedRolesCount">Blocked Roles: 0/10</span>
+                        </div>
+                        <div class="match-mode-selector">
+                            <button type="button" class="btn-match active" data-mode="hasAny" onclick="setMatchMode('blocked', 'hasAny')">Has any role</button>
+                            <button type="button" class="btn-match" data-mode="hasAll" onclick="setMatchMode('blocked', 'hasAll')">Has all roles</button>
+                        </div>
+                        <div class="card-desc" style="margin-top: 6px;">Users must match the selected mode to be blocked from creating tickets.</div>
+                    </div>
+
+                    <!-- Required Roles -->
+                    <div class="settings-card">
+                        <div class="card-label">Required Roles</div>
+                        <div class="card-desc">Users must have at least one of these roles to create tickets.</div>
+                        <div class="role-selector-wrapper">
+                            <select id="requiredRoles" name="requiredRoles" multiple style="display:none;">
+                                <% if (roles) { %>
+                                    <% roles.forEach(function(role) { %>
+                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.requiredRoles && template.requiredRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                    <% }) %>
+                                <% } %>
+                            </select>
+                            <div class="role-chip-grid" id="requiredRolesGrid"></div>
+                            <span class="counter" id="requiredRolesCount">Required Roles: 0/10</span>
+                        </div>
+                        <div class="match-mode-selector">
+                            <button type="button" class="btn-match active" data-mode="hasAny" onclick="setMatchMode('required', 'hasAny')">Has any role</button>
+                            <button type="button" class="btn-match" data-mode="hasAll" onclick="setMatchMode('required', 'hasAll')">Has all roles</button>
+                        </div>
+                        <div class="card-desc" style="margin-top: 6px;">Users must match the selected mode to be allowed to create tickets.</div>
+                    </div>
+                </div>
+
+                <!-- ===== MAX CONCURRENT TICKETS ===== -->
+                <div class="form-section">
+                    <div class="section-title">Ticket Limits</div>
+                    <div class="section-desc">Configure limits on ticket creation.</div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Max Concurrent Open Tickets</div>
+                        <div class="card-desc">Maximum number of tickets a user can have open at once.</div>
+                        <input type="number" id="maxTickets" name="maxTickets" class="form-control" value="<%= template ? template.maxTickets || 3 : 3 %>" min="1" max="10">
+                    </div>
+                </div>
+
+                <!-- ===== SUPPORT TEAM & PERMISSIONS ===== -->
+                <div class="form-section">
+                    <div class="section-title">Support Team & Permissions</div>
+                    <div class="section-desc">Configure support team roles and permissions.</div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Support Team Roles</div>
+                        <div class="card-desc">Users with these roles can manage tickets.</div>
+                        <div class="role-selector-wrapper">
+                            <select id="supportRoles" name="supportRoles" multiple style="display:none;">
+                                <% if (roles) { %>
+                                    <% roles.forEach(function(role) { %>
+                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.supportRoles && template.supportRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                    <% }) %>
+                                <% } %>
+                            </select>
+                            <div class="role-chip-grid" id="supportRolesGrid"></div>
+                            <span class="counter" id="supportRolesCount">Support Team Roles: 0/1</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Ping Support Roles</div>
+                        <div class="card-desc">Support roles will be automatically pinged when a ticket is created.</div>
+                        <div class="toggle-wrapper">
+                            <div class="toggle <%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'active' : '') : 'active' %>" onclick="toggleBool(this, 'autoMentionSupport')"><div class="toggle-knob"></div></div>
+                            <span class="toggle-label"><%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'Enabled' : 'Disabled') : 'Enabled' %></span>
+                        </div>
+                        <input type="hidden" name="autoMentionSupport" id="autoMentionSupport" value="<%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'true' : 'false') : 'true' %>">
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Rate Support Experience Enabled</div>
+                        <div class="card-desc">Users can rate their support experience after ticket closure.</div>
+                        <div class="toggle-wrapper">
+                            <div class="toggle <%= template && template.rateSupport ? 'active' : '' %>" onclick="toggleBool(this, 'rateSupport')"><div class="toggle-knob"></div></div>
+                            <span class="toggle-label"><%= template && template.rateSupport ? 'Enabled' : 'Disabled' %></span>
+                        </div>
+                        <input type="hidden" name="rateSupport" id="rateSupport" value="<%= template && template.rateSupport ? 'true' : 'false' %>">
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Ticket Claiming</div>
+                        <div class="card-desc">Staff can claim tickets to show ownership.</div>
+                        <div class="toggle-wrapper">
+                            <div class="toggle <%= template && template.ticketClaiming ? 'active' : '' %>" onclick="toggleBool(this, 'ticketClaiming')"><div class="toggle-knob"></div></div>
+                            <span class="toggle-label"><%= template && template.ticketClaiming ? 'Enabled' : 'Disabled' %></span>
+                        </div>
+                        <input type="hidden" name="ticketClaiming" id="ticketClaiming" value="<%= template && template.ticketClaiming ? 'true' : 'false' %>">
+                    </div>
+                </div>
+
+                <!-- ===== TICKET LIFECYCLE ===== -->
+                <div class="form-section">
+                    <div class="section-title">Ticket Lifecycle</div>
+                    <div class="section-desc">Configure what happens when a user leaves or tickets are closed.</div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Action on User Leave</div>
+                        <div class="card-desc">What happens when a user leaves the server while their ticket is open.</div>
+                        <select id="actionOnLeave" name="actionOnLeave" class="form-control">
+                            <option value="nothing" <%= template && template.actionOnLeave === 'nothing' ? 'selected' : '' %>>NOTHING</option>
+                            <option value="close" <%= template && template.actionOnLeave === 'close' ? 'selected' : '' %>>CLOSE</option>
+                            <option value="delete" <%= template && template.actionOnLeave === 'delete' ? 'selected' : '' %>>DELETE</option>
+                            <option value="archive" <%= template && template.actionOnLeave === 'archive' ? 'selected' : '' %>>ARCHIVE</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ===== TICKET FORM (QUESTIONS) ===== -->
+                <div class="form-section">
+                    <div class="section-title">Ticket Form</div>
+                    <div class="section-desc">The form which will be opened when a user attempts to open a ticket.</div>
+
+                    <div id="questionsContainer">
+                        <div id="questionsGrid">
+                            <!-- Questions rendered by JS -->
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <span id="questionsCount">Questions: 0/5</span>
+                        <button type="button" class="btn-add" id="addQuestionBtn" onclick="addQuestion()" style="width: auto; padding: 6px 16px; margin-top: 0;">
+                            <i class="fas fa-plus"></i> Add Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ===== ACTION BAR ===== -->
+                <div class="action-bar">
+                    <button type="button" class="btn btn-cancel-action" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'"><i class="fas fa-times"></i> Cancel</button>
+                    <button type="button" class="btn btn-draft" onclick="saveDraft()"><i class="fas fa-file-alt"></i> Save Draft</button>
+                    <button type="button" class="btn btn-save-action" onclick="saveTemplate(event)"><i class="fas fa-save"></i> Save Changes</button>
+                    <button type="button" class="btn btn-publish-action" onclick="publishTemplate()"><i class="fas fa-rocket"></i> Publish Panel</button>
+                </div>
+
+            </form>
+        </div>
+
     </div>
 
     <footer class="footer">
@@ -884,6 +886,11 @@
     </footer>
 
     <script>
+        // ===== STATE =====
+        var MAX_QUESTIONS = 5;
+        var questions = [];
+
+        // ===== TOAST =====
         function showToast(message, type) {
             type = type || 'info';
             var container = document.getElementById('toastContainer');
@@ -897,7 +904,7 @@
                     <i class="fas fa-times"></i>
                 </button>
             `;
-            container.appendChild(toast);
+            document.getElementById('toastContainer').appendChild(toast);
             setTimeout(function() {
                 if (toast.parentElement) {
                     toast.classList.add('hiding');
@@ -906,46 +913,265 @@
             }, 4000);
         }
 
-        // Live preview
-        document.getElementById('message').addEventListener('input', function() {
-            var preview = document.getElementById('previewMessage');
-            preview.textContent = this.value || 'Need help? Click a button below to create a ticket.';
-        });
+        // ===== TOGGLES =====
+        function toggleBool(el, id) {
+            el.classList.toggle('active');
+            var isActive = el.classList.contains('active');
+            document.getElementById(id).value = isActive ? 'true' : 'false';
+            // Update label text
+            var label = el.parentElement.querySelector('.toggle-label');
+            if (label) label.textContent = isActive ? 'Enabled' : 'Disabled';
+        }
 
-        async function createPanel(event) {
-            event.preventDefault();
-            var form = document.getElementById('panelForm');
-            var formData = new FormData(form);
+        // ===== ROLE CHIPS (generic) =====
+        var ROLE_LIMITS = {
+            blockedRoles: 10,
+            requiredRoles: 10,
+            supportRoles: 1
+        };
 
-            var templates = [];
-            document.querySelectorAll('input[name="templates"]:checked').forEach(function(el) {
-                templates.push(el.value);
+        function renderRoleChips(selectId, gridId, countId, label) {
+            var select = document.getElementById(selectId);
+            var grid = document.getElementById(gridId);
+            var countEl = document.getElementById(countId);
+            if (!select || !grid) return;
+
+            var options = Array.from(select.options);
+            var selectedCount = options.filter(function(o) { return o.selected; }).length;
+
+            grid.innerHTML = '';
+            if (options.length === 0) {
+                grid.innerHTML = '<div style="font-size: 13px; color: var(--muted-dim); padding: 6px 0;">No roles found</div>';
+                return;
+            }
+
+            var limit = ROLE_LIMITS[selectId] || 10;
+
+            options.forEach(function(opt) {
+                var atLimit = selectedCount >= limit;
+                var chip = document.createElement('span');
+                chip.className = 'role-chip' + (opt.selected ? ' selected' : '') + (!opt.selected && atLimit ? ' disabled' : '');
+                chip.innerHTML = `
+                    <span class="dot" style="background: ${opt.dataset.color || '#3DFFB8'};"></span>
+                    ${opt.textContent.trim()}
+                    ${opt.selected ? '<span class="remove"><i class="fas fa-times"></i></span>' : ''}
+                `;
+                chip.addEventListener('click', function() {
+                    if (opt.selected) {
+                        opt.selected = false;
+                    } else {
+                        var currentCount = Array.from(select.options).filter(function(o) { return o.selected; }).length;
+                        if (currentCount >= limit) return;
+                        opt.selected = true;
+                    }
+                    select.dispatchEvent(new Event('change'));
+                    renderRoleChips(selectId, gridId, countId, label);
+                });
+                grid.appendChild(chip);
             });
 
-            var data = {
-                guildId: '<%= guild.id %>',
-                name: formData.get('name'),
-                description: formData.get('description'),
-                status: formData.get('status'),
-                channelId: formData.get('channelId'),
-                message: formData.get('message'),
-                templates: templates,
-                syncStatus: 'pending',
-                type: 'buttons'
+            if (countEl) {
+                countEl.textContent = (label || 'Roles') + ': ' + selectedCount + '/' + limit;
+                countEl.style.color = selectedCount >= limit ? 'var(--signal)' : 'var(--muted)';
+            }
+        }
+
+        // ===== MATCH MODE =====
+        function setMatchMode(type, mode) {
+            var container = document.querySelector('.form-section .settings-card:has(.match-mode-selector)');
+            var btns = container.querySelectorAll('.match-mode-selector .btn-match');
+            btns.forEach(function(btn) {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            // Store in hidden input or data attribute for form submission
+            var inputId = type + 'MatchMode';
+            if (!document.getElementById(inputId)) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = inputId;
+                input.id = inputId;
+                container.appendChild(input);
+            }
+            document.getElementById(inputId).value = mode;
+        }
+
+        // ===== QUESTIONS =====
+        function renderQuestions() {
+            var grid = document.getElementById('questionsGrid');
+            var countEl = document.getElementById('questionsCount');
+            var addBtn = document.getElementById('addQuestionBtn');
+
+            grid.innerHTML = '';
+            if (countEl) countEl.textContent = 'Questions: ' + questions.length + '/' + MAX_QUESTIONS;
+            if (addBtn) addBtn.disabled = questions.length >= MAX_QUESTIONS;
+
+            questions.forEach(function(q, index) {
+                var card = document.createElement('div');
+                card.className = 'question-card';
+                card.innerHTML = `
+                    <div class="question-header">
+                        <span class="q-title">${q.title || 'Question ' + (index + 1)}</span>
+                        <button type="button" class="q-remove" onclick="removeQuestion(${index})"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="q-row">
+                        <div class="q-field">
+                            <label>Question Title</label>
+                            <input type="text" class="form-control" value="${q.title || ''}" placeholder="e.g. Do you like capybaras?" onchange="updateQuestion(${index}, 'title', this.value)">
+                        </div>
+                        <div class="q-field">
+                            <label>Description</label>
+                            <input type="text" class="form-control" value="${q.description || ''}" placeholder="Brief description" onchange="updateQuestion(${index}, 'description', this.value)">
+                        </div>
+                    </div>
+                    <div class="q-row">
+                        <div class="q-field">
+                            <label>Placeholder</label>
+                            <input type="text" class="form-control" value="${q.placeholder || ''}" placeholder="Placeholder text" onchange="updateQuestion(${index}, 'placeholder', this.value)">
+                        </div>
+                        <div class="q-field">
+                            <label>Question Type</label>
+                            <select class="form-control" onchange="updateQuestion(${index}, 'type', this.value)">
+                                <option value="short" ${q.type === 'short' ? 'selected' : ''}>Short</option>
+                                <option value="paragraph" ${q.type === 'paragraph' ? 'selected' : ''}>Paragraph</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="q-toggle-row">
+                        <div class="mini-toggle ${q.required ? 'active' : ''}" onclick="toggleQuestionBool(${index}, 'required')"><div class="knob"></div></div>
+                        <span class="q-toggle-label">Required Answer</span>
+                    </div>
+                    <div class="q-row">
+                        <div class="q-field">
+                            <label>Minimum Answer Length</label>
+                            <input type="number" class="form-control" value="${q.minLength || 1}" min="0" onchange="updateQuestion(${index}, 'minLength', parseInt(this.value) || 0)">
+                        </div>
+                        <div class="q-field">
+                            <label>Maximum Answer Length</label>
+                            <input type="number" class="form-control" value="${q.maxLength || 500}" min="1" onchange="updateQuestion(${index}, 'maxLength', parseInt(this.value) || 1)">
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function addQuestion() {
+            if (questions.length >= MAX_QUESTIONS) return;
+            questions.push({
+                title: '',
+                description: '',
+                placeholder: '',
+                type: 'paragraph',
+                required: false,
+                minLength: 1,
+                maxLength: 500
+            });
+            renderQuestions();
+        }
+
+        function removeQuestion(index) {
+            questions.splice(index, 1);
+            renderQuestions();
+        }
+
+        function updateQuestion(index, field, value) {
+            questions[index][field] = value;
+            renderQuestions();
+        }
+
+        function toggleQuestionBool(index, field) {
+            questions[index][field] = !questions[index][field];
+            renderQuestions();
+        }
+
+        function loadQuestions() {
+            var existing = <%= template ? (template.questions ? JSON.stringify(template.questions) : '[]') : '[]' %>;
+            if (Array.isArray(existing) && existing.length > 0) {
+                questions = existing;
+            } else {
+                questions = [{
+                    title: 'Do you like capybaras?',
+                    description: 'Please explain your answer in full detail.',
+                    placeholder: 'Please describe your issue in full detail.',
+                    type: 'paragraph',
+                    required: true,
+                    minLength: 1,
+                    maxLength: 500
+                }];
+            }
+            renderQuestions();
+        }
+
+        // ===== SAVE FUNCTIONS =====
+        function collectFormData() {
+            // Collect role selections
+            var blockedRoles = Array.from(document.getElementById('blockedRoles').selectedOptions).map(function(o) { return o.value; });
+            var requiredRoles = Array.from(document.getElementById('requiredRoles').selectedOptions).map(function(o) { return o.value; });
+            var supportRoles = Array.from(document.getElementById('supportRoles').selectedOptions).map(function(o) { return o.value; });
+
+            return {
+                name: document.getElementById('name').value,
+                transcriptChannel: document.getElementById('transcriptChannel').value,
+                category: document.getElementById('category').value,
+                channelName: document.getElementById('channelName').value,
+                creatorCanClose: document.getElementById('creatorCanClose').value === 'true',
+                blockedRoles: blockedRoles,
+                blockedMatchMode: document.getElementById('blockedMatchMode') ? document.getElementById('blockedMatchMode').value : 'hasAny',
+                requiredRoles: requiredRoles,
+                requiredMatchMode: document.getElementById('requiredMatchMode') ? document.getElementById('requiredMatchMode').value : 'hasAny',
+                maxTickets: parseInt(document.getElementById('maxTickets').value) || 3,
+                supportRoles: supportRoles,
+                autoMentionSupport: document.getElementById('autoMentionSupport').value === 'true',
+                rateSupport: document.getElementById('rateSupport').value === 'true',
+                ticketClaiming: document.getElementById('ticketClaiming').value === 'true',
+                actionOnLeave: document.getElementById('actionOnLeave').value,
+                questions: questions
             };
+        }
+
+        async function saveTemplate(event) {
+            if (event) event.preventDefault();
+
+            var data = collectFormData();
+            if (!data.name || !data.name.trim()) {
+                showToast('❌ Please enter a template name', 'error');
+                return;
+            }
+
+            // Validate logging channel and category
+            if (!data.transcriptChannel) {
+                document.getElementById('loggingChannelError').style.display = 'block';
+                showToast('❌ Please select a logging channel', 'error');
+                return;
+            } else {
+                document.getElementById('loggingChannelError').style.display = 'none';
+            }
+
+            if (!data.category) {
+                document.getElementById('categoryError').style.display = 'block';
+                showToast('❌ Please select a category', 'error');
+                return;
+            } else {
+                document.getElementById('categoryError').style.display = 'none';
+            }
 
             try {
-                var response = await fetch('/api/panels', {
-                    method: 'POST',
+                var url = '/api/tickets' + (templateId ? '/' + templateId : '');
+                var method = templateId ? 'PUT' : 'POST';
+
+                var response = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 var result = await response.json();
                 if (result.success) {
-                    showToast('✅ Panel created successfully!', 'success');
-                    setTimeout(function() {
-                        window.location.href = '/servers/<%= guild.id %>/panels';
-                    }, 1500);
+                    showToast('✅ Template saved successfully!', 'success');
+                    if (!templateId) {
+                        setTimeout(function() {
+                            window.location.href = '/servers/' + guildId + '/tickets/templates';
+                        }, 1500);
+                    }
                 } else {
                     showToast('❌ Error: ' + (result.error || 'Unknown error'), 'error');
                 }
@@ -954,9 +1180,62 @@
             }
         }
 
-        window.showToast = showToast;
-        window.createPanel = createPanel;
-    </script>
+        function saveDraft() {
+            document.getElementById('status') ? document.getElementById('status').value = 'draft' : null;
+            saveTemplate();
+            showToast('📝 Saved as draft', 'info');
+        }
 
+        function publishTemplate() {
+            document.getElementById('status') ? document.getElementById('status').value = 'active' : null;
+            saveTemplate();
+            showToast('🚀 Publishing panel to Discord...', 'info');
+            setTimeout(function() {
+                window.location.href = '/servers/' + guildId + '/panels';
+            }, 2000);
+        }
+
+        // ===== INIT =====
+        var templateId = '<%= template ? template._id : "" %>';
+        var guildId = '<%= guild.id %>';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Render role chips
+            renderRoleChips('blockedRoles', 'blockedRolesGrid', 'blockedRolesCount', 'Blocked Roles');
+            renderRoleChips('requiredRoles', 'requiredRolesGrid', 'requiredRolesCount', 'Required Roles');
+            renderRoleChips('supportRoles', 'supportRolesGrid', 'supportRolesCount', 'Support Team Roles');
+
+            // Load questions
+            loadQuestions();
+
+            // Set initial match modes
+            var blockedMode = '<%= template && template.blockedMatchMode ? template.blockedMatchMode : "hasAny" %>';
+            var requiredMode = '<%= template && template.requiredMatchMode ? template.requiredMatchMode : "hasAny" %>';
+            setMatchMode('blocked', blockedMode);
+            setMatchMode('required', requiredMode);
+
+            // Update toggle labels
+            document.querySelectorAll('.toggle-wrapper').forEach(function(wrapper) {
+                var toggle = wrapper.querySelector('.toggle');
+                var label = wrapper.querySelector('.toggle-label');
+                if (toggle && label) {
+                    label.textContent = toggle.classList.contains('active') ? 'Enabled' : 'Disabled';
+                }
+            });
+        });
+
+        // ===== EXPOSE =====
+        window.showToast = showToast;
+        window.toggleBool = toggleBool;
+        window.renderRoleChips = renderRoleChips;
+        window.setMatchMode = setMatchMode;
+        window.addQuestion = addQuestion;
+        window.removeQuestion = removeQuestion;
+        window.updateQuestion = updateQuestion;
+        window.toggleQuestionBool = toggleQuestionBool;
+        window.saveTemplate = saveTemplate;
+        window.saveDraft = saveDraft;
+        window.publishTemplate = publishTemplate;
+    </script>
 </body>
 </html>
