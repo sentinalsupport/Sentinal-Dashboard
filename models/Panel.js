@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const panelSchema = new mongoose.Schema({
+const PanelSchema = new mongoose.Schema({
     guildId: {
         type: String,
         required: true,
@@ -8,20 +8,12 @@ const panelSchema = new mongoose.Schema({
     },
     name: {
         type: String,
-        required: true,
-        trim: true
+        required: true
     },
     description: {
         type: String,
         default: ''
     },
-    status: {
-        type: String,
-        enum: ['active', 'disabled', 'draft'],
-        default: 'active'
-    },
-    
-    // Discord Channel
     channelId: {
         type: String,
         required: true
@@ -30,68 +22,61 @@ const panelSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    
-    // Panel Message
+    type: {
+        type: String,
+        enum: ['tickets', 'applications', 'verification', 'custom'],
+        default: 'tickets'
+    },
+    enabled: {
+        type: Boolean,
+        default: true
+    },
     message: {
         type: String,
         default: 'Need help? Click a button below to create a ticket.'
     },
     embed: {
-        type: Object,
-        default: null
+        title: { type: String, default: '' },
+        description: { type: String, default: '' },
+        color: { type: String, default: '#3DFFB8' },
+        footer: { type: String, default: '' }
     },
-    
-    // Components
-    type: {
-        type: String,
-        enum: ['buttons', 'select'],
-        default: 'buttons'
-    },
-    components: {
-        type: [{
-            type: { type: String, enum: ['button', 'select'] },
-            label: String,
-            emoji: String,
-            style: { type: String, enum: ['primary', 'secondary', 'success', 'danger'] },
-            templateId: String,
-            templateName: String,
-            confirmationRequired: { type: Boolean, default: false },
-            disabled: { type: Boolean, default: false }
-        }],
-        default: []
-    },
-    
-    // Templates linked to this panel
-    templates: {
-        type: [String],
-        default: []
-    },
-    
-    // Statistics
-    ticketsOpened: {
-        type: Number,
-        default: 0
-    },
-    lastUsed: {
-        type: Date,
-        default: null
-    },
-    
-    // Discord Message
+    components: [{
+        label: { type: String, default: '' },
+        emoji: { type: String, default: '' },
+        style: {
+            type: String,
+            enum: ['primary', 'secondary', 'success', 'danger'],
+            default: 'primary'
+        },
+        templateId: { type: String, default: '' },
+        enabled: { type: Boolean, default: true },
+        color: { type: String, default: '#5865F2' }
+    }],
+    templates: [{
+        type: String
+    }],
     messageId: {
         type: String,
         default: null
+    },
+    syncStatus: {
+        type: String,
+        enum: ['pending', 'synced', 'failed'],
+        default: 'pending'
+    },
+    ticketsOpened: {
+        type: Number,
+        default: 0
     },
     lastSent: {
         type: Date,
         default: null
     },
-    syncStatus: {
-        type: String,
-        enum: ['synced', 'pending', 'deleted'],
-        default: 'pending'
+    lastUsed: {
+        type: Date,
+        default: null
     },
-    
     createdAt: {
         type: Date,
         default: Date.now
@@ -102,4 +87,4 @@ const panelSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Panel', panelSchema);
+module.exports = mongoose.model('Panel', PanelSchema);
