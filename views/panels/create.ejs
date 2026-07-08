@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ... (keep all existing styles, they're the same) ... */
         :root {
             --ink: #060A10;
             --panel: #0D1520;
@@ -514,6 +515,19 @@
             cursor: default;
             margin-top: 4px;
         }
+        .component-card .comp-selected-template {
+            font-size: 11px;
+            color: var(--signal);
+            margin-left: 8px;
+        }
+        .component-card .comp-template-status {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 100px;
+            background: var(--signal-tab);
+            color: var(--signal);
+            margin-left: 8px;
+        }
 
         .template-selection-grid {
             display: grid;
@@ -734,7 +748,7 @@
                             <% if (templates && templates.length > 0) { %>
                                 <% templates.forEach(function(t) { %>
                                     <div class="template-selection-item" onclick="document.getElementById('template_<%= t._id %>').click();">
-                                        <input type="checkbox" class="template-checkbox" value="<%= t._id %>" id="template_<%= t._id %>">
+                                        <input type="checkbox" class="template-checkbox" value="<%= t._id %>" id="template_<%= t._id %>" onchange="updateTemplateOptions()">
                                         <label for="template_<%= t._id %>"><%= t.name %></label>
                                         <span class="template-status"><%= t.status || 'active' %></span>
                                     </div>
@@ -768,6 +782,16 @@
         var components = [];
         var panelId = '';
 
+        // ===== TEMPLATE DATA =====
+        var templateData = [];
+        <% if (templates && templates.length > 0) { %>
+            templateData = [
+                <% templates.forEach(function(t, index) { %>
+                    { id: '<%= t._id %>', name: '<%= t.name %>' }<%= index < templates.length - 1 ? ',' : '' %>
+                <% }) %>
+            ];
+        <% } %>
+
         // ===== TOAST =====
         function showToast(message, type) {
             type = type || 'info';
@@ -800,6 +824,27 @@
             if (label) label.textContent = isActive ? 'Enabled' : 'Disabled';
         }
 
+        // ===== GET SELECTED TEMPLATES =====
+        function getSelectedTemplates() {
+            var selected = [];
+            document.querySelectorAll('.template-checkbox:checked').forEach(function(cb) {
+                selected.push(cb.value);
+            });
+            return selected;
+        }
+
+        // ===== GET TEMPLATE NAME BY ID =====
+        function getTemplateName(id) {
+            var found = templateData.find(function(t) { return t.id === id; });
+            return found ? found.name : 'Select a template';
+        }
+
+        // ===== UPDATE TEMPLATE OPTIONS =====
+        function updateTemplateOptions() {
+            // Re-render components to update dropdowns
+            renderComponents();
+        }
+
         // ===== COMPONENTS =====
         function renderComponents() {
             var grid = document.getElementById('componentsGrid');
@@ -810,12 +855,15 @@
             if (countEl) countEl.textContent = 'Buttons: ' + components.length + '/' + MAX_COMPONENTS;
             if (addBtn) addBtn.disabled = components.length >= MAX_COMPONENTS;
 
-            var templateOptions = getTemplateOptions();
+            var selectedTemplates = getSelectedTemplates();
 
             components.forEach(function(comp, index) {
                 var card = document.createElement('div');
                 card.className = 'component-card';
                 var colorHex = comp.color || '#5865F2';
+                var templateName = comp.templateId ? getTemplateName(comp.templateId) : 'Select a template';
+                var hasTemplate = comp.templateId && comp.templateId !== '';
+
                 card.innerHTML = `
                     <div class="comp-header">
                         <span class="comp-title">${comp.label || 'Button ' + (index + 1)}</span>
@@ -840,8 +888,13 @@
                             <label>Template</label>
                             <select class="form-control" onchange="updateComponent(${index}, 'templateId', this.value)">
                                 <option value="">Select a template</option>
-                                ${templateOptions}
+                                ${selectedTemplates.map(function(tid) {
+                                    var name = getTemplateName(tid);
+                                    var selected = comp.templateId === tid ? 'selected' : '';
+                                    return `<option value="${tid}" ${selected}>${name}</option>`;
+                                }).join('')}
                             </select>
+                            ${hasTemplate ? `<span class="comp-selected-template">✓ ${templateName}</span>` : ''}
                         </div>
                         <div class="comp-field">
                             <label>Preview</label>
@@ -858,36 +911,27 @@
                             </div>
                         </div>
                     </div>
-                    <div style="margin-top: 8px;">
+                    <div style="margin-top: 8px; display: flex; align-items: center; gap: 12px;">
                         <span class="comp-preview-btn" style="background: ${colorHex}; color: #fff;">
                             ${comp.emoji || ''} ${comp.label || 'Button'}
                         </span>
-                        <span style="font-size: 11px; color: var(--muted-dim); margin-left: 8px;">Preview of how the button will look</span>
+                        <span style="font-size: 11px; color: var(--muted-dim);">Preview</span>
+                        ${hasTemplate ? `<span style="font-size: 11px; color: var(--signal);">→ ${templateName}</span>` : '<span style="font-size: 11px; color: var(--red);">⚠ No template selected</span>'}
                     </div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        function getTemplateOptions() {
-            var templates = document.querySelectorAll('.template-checkbox');
-            var options = '';
-            templates.forEach(function(t) {
-                var label = t.parentElement.querySelector('label');
-                var name = label ? label.textContent.trim() : 'Template';
-                var selected = components.some(function(c) { return c.templateId === t.value; });
-                options += `<option value="${t.value}" ${selected ? 'selected' : ''}>${name}</option>`;
-            });
-            return options;
-        }
-
         function addComponent() {
             if (components.length >= MAX_COMPONENTS) return;
+            var selectedTemplates = getSelectedTemplates();
+            var defaultTemplate = selectedTemplates.length > 0 ? selectedTemplates[0] : '';
             components.push({
                 label: '',
                 emoji: '',
                 color: '#5865F2',
-                templateId: '',
+                templateId: defaultTemplate,
                 enabled: true
             });
             renderComponents();
@@ -910,10 +954,7 @@
 
         // ===== SAVE FUNCTIONS =====
         function collectFormData() {
-            var selectedTemplates = [];
-            document.querySelectorAll('.template-checkbox:checked').forEach(function(cb) {
-                selectedTemplates.push(cb.value);
-            });
+            var selectedTemplates = getSelectedTemplates();
 
             return {
                 name: document.getElementById('panelName').value,
@@ -947,7 +988,6 @@
                 return;
             }
 
-            // Check if each button has a template selected
             var missingTemplate = data.components.some(function(c) { return !c.templateId; });
             if (missingTemplate) {
                 showToast('❌ Please select a template for each button', 'error');
@@ -979,7 +1019,6 @@
         }
 
         async function publishPanel() {
-            // First save the panel
             var data = collectFormData();
             if (!data.name || !data.name.trim()) {
                 showToast('❌ Please enter a panel name', 'error');
@@ -1001,7 +1040,6 @@
             }
 
             try {
-                // Save first
                 var saveUrl = panelId ? '/api/panels/' + panelId : '/api/panels';
                 var saveMethod = panelId ? 'PUT' : 'POST';
                 var saveResponse = await fetch(saveUrl, {
@@ -1022,7 +1060,6 @@
                     return;
                 }
 
-                // Then publish
                 var publishResponse = await fetch('/api/panels/' + newPanelId + '/send', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1048,17 +1085,18 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Add default component if none exist
             if (components.length === 0) {
+                var selectedTemplates = getSelectedTemplates();
+                var defaultTemplate = selectedTemplates.length > 0 ? selectedTemplates[0] : '';
                 components.push({
                     label: 'Support',
                     emoji: '🎫',
                     color: '#5865F2',
-                    templateId: '',
+                    templateId: defaultTemplate,
                     enabled: true
                 });
             }
             renderComponents();
 
-            // Update toggle labels
             document.querySelectorAll('.toggle-wrapper').forEach(function(wrapper) {
                 var toggle = wrapper.querySelector('.toggle');
                 var label = wrapper.querySelector('.toggle-label');
@@ -1077,6 +1115,8 @@
         window.toggleComponentBool = toggleComponentBool;
         window.savePanel = savePanel;
         window.publishPanel = publishPanel;
+        window.updateTemplateOptions = updateTemplateOptions;
+        window.getTemplateName = getTemplateName;
     </script>
 </body>
 </html>
