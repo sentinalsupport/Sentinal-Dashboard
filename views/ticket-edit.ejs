@@ -654,7 +654,6 @@
         <div class="form-container">
             <form id="templateForm" method="POST" action="/servers/<%= guild.id %>/tickets/<%= template ? template._id : 'create' %>" onsubmit="return false;">
                 <input type="hidden" name="guildId" value="<%= guild.id %>">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
                 <!-- ===== BASIC INFORMATION ===== -->
                 <div class="form-section">
