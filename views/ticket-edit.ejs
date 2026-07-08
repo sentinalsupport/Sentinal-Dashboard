@@ -639,7 +639,7 @@
         <!-- ===== PAGE HEADER ===== -->
         <div class="page-header">
             <div>
-                <h1><%= template ? template.name : 'Edit Template' %></h1>
+                <h1 id="templateHeaderName"><%= template ? template.name : 'Edit Template' %></h1>
                 <p>Define how a ticket behaves in your server</p>
             </div>
             <div class="header-actions">
@@ -654,7 +654,7 @@
         <div class="form-container">
             <form id="templateForm" method="POST" action="/servers/<%= guild.id %>/tickets/<%= template && template._id ? template._id : 'create' %>" onsubmit="return false;">
                 <input type="hidden" name="guildId" value="<%= guild.id %>">
-                  <!-- CSRF token removed - not needed -->
+
                 <!-- ===== BASIC INFORMATION ===== -->
                 <div class="form-section">
                     <div class="section-title">Basic Information</div>
@@ -663,7 +663,7 @@
                     <div class="settings-card">
                         <div class="card-label">Template name</div>
                         <div class="card-desc">The name of the ticket.</div>
-                        <input type="text" id="name" name="name" class="form-control" value="<%= template ? template.name : '' %>" placeholder="e.g., Support" required>
+                        <input type="text" id="name" name="name" class="form-control" value="<%= template ? template.name : '' %>" placeholder="e.g., Support" required oninput="document.getElementById('templateHeaderName').textContent = this.value || 'Edit Template'">
                     </div>
 
                     <div class="settings-card">
@@ -797,7 +797,7 @@
                                 <% } %>
                             </select>
                             <div class="role-chip-grid" id="supportRolesGrid"></div>
-                            <span class="counter" id="supportRolesCount">Support Team Roles: 0/1</span>
+                            <span class="counter" id="supportRolesCount">Support Team Roles: 0/25</span>
                         </div>
                     </div>
 
@@ -917,17 +917,31 @@
             el.classList.toggle('active');
             var isActive = el.classList.contains('active');
             document.getElementById(id).value = isActive ? 'true' : 'false';
-            // Update label text
             var label = el.parentElement.querySelector('.toggle-label');
             if (label) label.textContent = isActive ? 'Enabled' : 'Disabled';
         }
 
-        // ===== ROLE CHIPS (generic) =====
+        // ===== ROLE CHIPS =====
         var ROLE_LIMITS = {
             blockedRoles: 10,
             requiredRoles: 10,
-            supportRoles: 1
+            supportRoles: 25
         };
+
+        // Bot role IDs to filter out
+        var BOT_ROLE_IDS = ['1493217033956102215'];
+        var BOT_ROLE_NAMES = ['Sentinal', 'ProBot', 'Tickets v2', 'Tickets'];
+
+        function isBotRole(name) {
+            if (!name) return false;
+            name = name.trim();
+            if (name === '@everyone' || name === '@here') return true;
+            for (var i = 0; i < BOT_ROLE_NAMES.length; i++) {
+                if (name.includes(BOT_ROLE_NAMES[i])) return true;
+                if (name.toLowerCase().includes('bot')) return true;
+            }
+            return false;
+        }
 
         function renderRoleChips(selectId, gridId, countId, label) {
             var select = document.getElementById(selectId);
@@ -935,7 +949,12 @@
             var countEl = document.getElementById(countId);
             if (!select || !grid) return;
 
-            var options = Array.from(select.options);
+            // Filter out @everyone and bot roles
+            var options = Array.from(select.options).filter(function(opt) {
+                var name = opt.textContent.trim();
+                return !isBotRole(name) && !BOT_ROLE_IDS.includes(opt.value);
+            });
+
             var selectedCount = options.filter(function(o) { return o.selected; }).length;
 
             grid.innerHTML = '';
@@ -959,10 +978,18 @@
                     if (opt.selected) {
                         opt.selected = false;
                     } else {
-                        var currentCount = Array.from(select.options).filter(function(o) { return o.selected; }).length;
+                        var currentCount = options.filter(function(o) { return o.selected; }).length;
                         if (currentCount >= limit) return;
                         opt.selected = true;
                     }
+                    // Sync actual select
+                    var allOptions = Array.from(select.options);
+                    allOptions.forEach(function(o) {
+                        var isSelected = options.some(function(opt2) {
+                            return opt2.value === o.value && opt2.selected;
+                        });
+                        o.selected = isSelected;
+                    });
                     select.dispatchEvent(new Event('change'));
                     renderRoleChips(selectId, gridId, countId, label);
                 });
@@ -977,14 +1004,27 @@
 
         // ===== MATCH MODE =====
         function setMatchMode(type, mode) {
-            var container = document.querySelector('.form-section .settings-card:has(.match-mode-selector)');
+            var container = document.querySelector('.settings-card:has(.match-mode-selector)');
+            if (!container) {
+                // Find the specific container for this type
+                var cards = document.querySelectorAll('.settings-card');
+                for (var i = 0; i < cards.length; i++) {
+                    if (cards[i].querySelector('.match-mode-selector')) {
+                        container = cards[i];
+                        break;
+                    }
+                }
+            }
+            if (!container) return;
+            
             var btns = container.querySelectorAll('.match-mode-selector .btn-match');
             btns.forEach(function(btn) {
                 btn.classList.toggle('active', btn.dataset.mode === mode);
             });
-            // Store in hidden input or data attribute for form submission
+
             var inputId = type + 'MatchMode';
-            if (!document.getElementById(inputId)) {
+            var existing = document.getElementById(inputId);
+            if (!existing) {
                 var input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = inputId;
@@ -1103,7 +1143,6 @@
 
         // ===== SAVE FUNCTIONS =====
         function collectFormData() {
-            // Collect role selections
             var blockedRoles = Array.from(document.getElementById('blockedRoles').selectedOptions).map(function(o) { return o.value; });
             var requiredRoles = Array.from(document.getElementById('requiredRoles').selectedOptions).map(function(o) { return o.value; });
             var supportRoles = Array.from(document.getElementById('supportRoles').selectedOptions).map(function(o) { return o.value; });
@@ -1137,7 +1176,6 @@
                 return;
             }
 
-            // Validate logging channel and category
             if (!data.transcriptChannel) {
                 document.getElementById('loggingChannelError').style.display = 'block';
                 showToast('❌ Please select a logging channel', 'error');
@@ -1180,13 +1218,15 @@
         }
 
         function saveDraft() {
-            document.getElementById('status') ? document.getElementById('status').value = 'draft' : null;
+            var statusEl = document.getElementById('status');
+            if (statusEl) statusEl.value = 'draft';
             saveTemplate();
             showToast('📝 Saved as draft', 'info');
         }
 
         function publishTemplate() {
-            document.getElementById('status') ? document.getElementById('status').value = 'active' : null;
+            var statusEl = document.getElementById('status');
+            if (statusEl) statusEl.value = 'active';
             saveTemplate();
             showToast('🚀 Publishing panel to Discord...', 'info');
             setTimeout(function() {
@@ -1199,21 +1239,17 @@
         var guildId = '<%= guild.id %>';
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Render role chips
             renderRoleChips('blockedRoles', 'blockedRolesGrid', 'blockedRolesCount', 'Blocked Roles');
             renderRoleChips('requiredRoles', 'requiredRolesGrid', 'requiredRolesCount', 'Required Roles');
             renderRoleChips('supportRoles', 'supportRolesGrid', 'supportRolesCount', 'Support Team Roles');
 
-            // Load questions
             loadQuestions();
 
-            // Set initial match modes
             var blockedMode = '<%= template && template.blockedMatchMode ? template.blockedMatchMode : "hasAny" %>';
             var requiredMode = '<%= template && template.requiredMatchMode ? template.requiredMatchMode : "hasAny" %>';
             setMatchMode('blocked', blockedMode);
             setMatchMode('required', requiredMode);
 
-            // Update toggle labels
             document.querySelectorAll('.toggle-wrapper').forEach(function(wrapper) {
                 var toggle = wrapper.querySelector('.toggle');
                 var label = wrapper.querySelector('.toggle-label');
