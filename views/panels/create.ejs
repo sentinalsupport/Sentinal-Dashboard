@@ -329,6 +329,60 @@
             color: var(--text);
         }
 
+        .role-chip-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .role-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 100px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+            white-space: nowrap;
+        }
+        .role-chip:hover {
+            border-color: var(--line-bright);
+            color: var(--text);
+        }
+        .role-chip .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .role-chip.selected {
+            background: var(--signal-tab);
+            border-color: var(--signal);
+            color: var(--text);
+        }
+        .role-chip.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+        .role-chip.disabled:hover {
+            border-color: var(--line);
+            color: var(--muted);
+        }
+        .role-chip .remove {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--muted);
+            margin-left: 2px;
+        }
+        .role-chip.selected:hover .remove { color: var(--red); }
+
         .role-selector-wrapper {
             display: flex;
             flex-wrap: wrap;
@@ -639,7 +693,7 @@
         <!-- ===== PAGE HEADER ===== -->
         <div class="page-header">
             <div>
-                <h1><%= template ? template.name : 'Create Template' %></h1>
+                <h1 id="templateHeaderName"><%= template ? template.name : 'Create Template' %></h1>
                 <p>Define how a ticket behaves in your server</p>
             </div>
             <div class="header-actions">
@@ -664,7 +718,7 @@
                     <div class="settings-card">
                         <div class="card-label">Template name</div>
                         <div class="card-desc">The name of the ticket.</div>
-                        <input type="text" id="name" name="name" class="form-control" value="<%= template ? template.name : '' %>" placeholder="e.g., Support" required>
+                        <input type="text" id="name" name="name" class="form-control" value="<%= template ? template.name : '' %>" placeholder="e.g., Support" required oninput="document.getElementById('templateHeaderName').textContent = this.value || 'Create Template'">
                     </div>
 
                     <div class="settings-card">
@@ -732,7 +786,7 @@
                             <select id="blockedRoles" name="blockedRoles" multiple style="display:none;">
                                 <% if (roles) { %>
                                     <% roles.forEach(function(role) { %>
-                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.blockedRoles && template.blockedRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.blockedRoles && template.blockedRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>><%= role.name.charAt(0) === '@' ? role.name : '@' + role.name %></option>
                                     <% }) %>
                                 <% } %>
                             </select>
@@ -754,7 +808,7 @@
                             <select id="requiredRoles" name="requiredRoles" multiple style="display:none;">
                                 <% if (roles) { %>
                                     <% roles.forEach(function(role) { %>
-                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.requiredRoles && template.requiredRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.requiredRoles && template.requiredRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>><%= role.name.charAt(0) === '@' ? role.name : '@' + role.name %></option>
                                     <% }) %>
                                 <% } %>
                             </select>
@@ -793,12 +847,12 @@
                             <select id="supportRoles" name="supportRoles" multiple style="display:none;">
                                 <% if (roles) { %>
                                     <% roles.forEach(function(role) { %>
-                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.supportRoles && template.supportRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.supportRoles && template.supportRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>><%= role.name.charAt(0) === '@' ? role.name : '@' + role.name %></option>
                                     <% }) %>
                                 <% } %>
                             </select>
                             <div class="role-chip-grid" id="supportRolesGrid"></div>
-                            <span class="counter" id="supportRolesCount">Support Team Roles: 0/1</span>
+                            <span class="counter" id="supportRolesCount">Support Team Roles: 0/25</span>
                         </div>
                     </div>
 
@@ -927,8 +981,23 @@
         var ROLE_LIMITS = {
             blockedRoles: 10,
             requiredRoles: 10,
-            supportRoles: 1
+            supportRoles: 25
         };
+
+        // Bot role IDs to filter out
+        var BOT_ROLE_IDS = ['1493217033956102215'];
+        var BOT_ROLE_NAMES = ['Sentinal', 'ProBot', 'Tickets v2', 'Tickets'];
+
+        function isBotRole(name) {
+            if (!name) return false;
+            name = name.trim();
+            if (name === '@everyone' || name === '@here') return true;
+            for (var i = 0; i < BOT_ROLE_NAMES.length; i++) {
+                if (name.includes(BOT_ROLE_NAMES[i])) return true;
+                if (name.toLowerCase().includes('bot')) return true;
+            }
+            return false;
+        }
 
         function renderRoleChips(selectId, gridId, countId, label) {
             var select = document.getElementById(selectId);
@@ -936,7 +1005,12 @@
             var countEl = document.getElementById(countId);
             if (!select || !grid) return;
 
-            var options = Array.from(select.options);
+            // Filter out @everyone and bot roles
+            var options = Array.from(select.options).filter(function(opt) {
+                var name = opt.textContent.trim();
+                return !isBotRole(name) && !BOT_ROLE_IDS.includes(opt.value);
+            });
+
             var selectedCount = options.filter(function(o) { return o.selected; }).length;
 
             grid.innerHTML = '';
@@ -960,10 +1034,18 @@
                     if (opt.selected) {
                         opt.selected = false;
                     } else {
-                        var currentCount = Array.from(select.options).filter(function(o) { return o.selected; }).length;
+                        var currentCount = options.filter(function(o) { return o.selected; }).length;
                         if (currentCount >= limit) return;
                         opt.selected = true;
                     }
+                    // Sync actual select
+                    var allOptions = Array.from(select.options);
+                    allOptions.forEach(function(o) {
+                        var isSelected = options.some(function(opt2) {
+                            return opt2.value === o.value && opt2.selected;
+                        });
+                        o.selected = isSelected;
+                    });
                     select.dispatchEvent(new Event('change'));
                     renderRoleChips(selectId, gridId, countId, label);
                 });
@@ -978,14 +1060,29 @@
 
         // ===== MATCH MODE =====
         function setMatchMode(type, mode) {
-            var container = document.querySelector('.form-section .settings-card:has(.match-mode-selector)');
+            var container = null;
+            var cards = document.querySelectorAll('.settings-card');
+            for (var i = 0; i < cards.length; i++) {
+                if (cards[i].querySelector('.match-mode-selector')) {
+                    var label = cards[i].querySelector('.card-label');
+                    var isBlocked = label && label.textContent.trim() === 'Blocked Roles';
+                    var isRequired = label && label.textContent.trim() === 'Required Roles';
+                    if ((type === 'blocked' && isBlocked) || (type === 'required' && isRequired)) {
+                        container = cards[i];
+                        break;
+                    }
+                }
+            }
+            if (!container) return;
+
             var btns = container.querySelectorAll('.match-mode-selector .btn-match');
             btns.forEach(function(btn) {
                 btn.classList.toggle('active', btn.dataset.mode === mode);
             });
-            // Store in hidden input or data attribute for form submission
+
             var inputId = type + 'MatchMode';
-            if (!document.getElementById(inputId)) {
+            var existing = document.getElementById(inputId);
+            if (!existing) {
                 var input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = inputId;
