@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title || 'Create Template — Sentinal' %></title>
+    <title><%= title || 'Create Panel — Sentinal' %></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,8 +29,6 @@
             --red: #F87171;
             --red-bg: rgba(248,113,113,0.08);
             --red-border: rgba(248,113,113,0.22);
-            --discord: #5865F2;
-            --discord-hover: #4752C4;
             --shadow: 0 8px 32px rgba(0,0,0,0.4);
             --radius: 16px;
             --radius-sm: 10px;
@@ -189,12 +187,6 @@
             color: var(--text);
         }
         .btn-cancel-header:hover { background: rgba(255,255,255,0.05); }
-        .btn-draft-header {
-            background: var(--gold-tab);
-            color: var(--gold);
-            border: 1px solid rgba(245,200,66,0.2);
-        }
-        .btn-draft-header:hover { background: rgba(245,200,66,0.18); }
         .btn-save-header {
             background: var(--signal);
             color: var(--ink);
@@ -257,11 +249,6 @@
             font-size: 12px;
             color: var(--muted);
             margin-bottom: 8px;
-        }
-        .settings-card .validation-error {
-            color: var(--red);
-            font-size: 12px;
-            margin-top: 4px;
         }
 
         .form-control {
@@ -329,173 +316,6 @@
             color: var(--text);
         }
 
-        .role-chip-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .role-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 10px;
-            border-radius: 100px;
-            border: 1px solid var(--line);
-            background: var(--panel);
-            color: var(--muted);
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            user-select: none;
-            white-space: nowrap;
-        }
-        .role-chip:hover {
-            border-color: var(--line-bright);
-            color: var(--text);
-        }
-        .role-chip .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        .role-chip.selected {
-            background: var(--signal-tab);
-            border-color: var(--signal);
-            color: var(--text);
-        }
-        .role-chip.disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-        }
-        .role-chip.disabled:hover {
-            border-color: var(--line);
-            color: var(--muted);
-        }
-        .role-chip .remove {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: var(--muted);
-            margin-left: 2px;
-        }
-        .role-chip.selected:hover .remove { color: var(--red); }
-
-        .role-selector-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-        .role-selector-wrapper .role-chip-grid {
-            flex: 1;
-            min-width: 200px;
-        }
-        .role-selector-wrapper .counter {
-            font-size: 12px;
-            color: var(--muted);
-            white-space: nowrap;
-        }
-        .match-mode-selector {
-            display: flex;
-            gap: 8px;
-            margin-top: 6px;
-        }
-        .match-mode-selector .btn-match {
-            padding: 4px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--line);
-            background: transparent;
-            color: var(--muted);
-            font-size: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-        }
-        .match-mode-selector .btn-match.active {
-            background: var(--signal-tab);
-            border-color: var(--signal);
-            color: var(--signal);
-        }
-        .match-mode-selector .btn-match:hover { border-color: var(--line-bright); }
-
-        .question-card {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .question-card .question-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .question-card .question-header .q-title {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .question-card .question-header .q-remove {
-            background: none;
-            border: none;
-            color: var(--muted-dim);
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .question-card .question-header .q-remove:hover { color: var(--red); }
-        .question-card .q-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 6px;
-        }
-        .question-card .q-row .q-field label {
-            font-size: 10px;
-            color: var(--muted);
-            font-weight: 500;
-            display: block;
-            margin-bottom: 2px;
-        }
-        .question-card .q-row .q-field .form-control {
-            padding: 4px 8px;
-            font-size: 12px;
-            min-height: 28px;
-        }
-        .question-card .q-toggle-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 6px;
-        }
-        .question-card .q-toggle-row .mini-toggle {
-            width: 32px;
-            height: 18px;
-            background: var(--muted-dim);
-            border-radius: 9px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            flex-shrink: 0;
-        }
-        .question-card .q-toggle-row .mini-toggle.active { background: var(--signal); }
-        .question-card .q-toggle-row .mini-toggle .knob {
-            width: 14px; height: 14px;
-            background: #fff;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s ease;
-        }
-        .question-card .q-toggle-row .mini-toggle.active .knob { left: 16px; }
-        .question-card .q-toggle-row .q-toggle-label {
-            font-size: 12px;
-            color: var(--text);
-        }
-
         .btn-add {
             padding: 10px 16px;
             border: 2px dashed var(--line);
@@ -518,10 +338,6 @@
             border-color: var(--signal);
             color: var(--signal);
             background: var(--signal-tab);
-        }
-        .btn-add:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
         }
 
         .action-bar {
@@ -559,12 +375,6 @@
             color: var(--text);
         }
         .btn-cancel-action:hover { background: rgba(255,255,255,0.05); }
-        .btn-draft {
-            background: var(--gold-tab);
-            color: var(--gold);
-            border: 1px solid rgba(245,200,66,0.2);
-        }
-        .btn-draft:hover { background: rgba(245,200,66,0.18); }
         .btn-save-action {
             background: var(--signal);
             color: var(--ink);
@@ -632,6 +442,58 @@
             letter-spacing: 0.5px;
         }
 
+        .component-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .component-card .comp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .component-card .comp-header .comp-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .component-card .comp-header .comp-remove {
+            background: none;
+            border: none;
+            color: var(--muted-dim);
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .component-card .comp-header .comp-remove:hover { color: var(--red); }
+        .component-card .comp-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .component-card .comp-row .comp-field label {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 500;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .component-card .comp-row .comp-field .form-control {
+            padding: 4px 8px;
+            font-size: 12px;
+            min-height: 28px;
+        }
+        .component-card .comp-color-preview {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+
         @media (max-width: 768px) {
             .navbar { padding: 0 16px; }
             .navbar-center { display: none; }
@@ -640,8 +502,7 @@
             .page-header .header-actions { flex-wrap: wrap; }
             .form-container { padding: 20px; }
             .form-row { grid-template-columns: 1fr; }
-            .question-card .q-row { grid-template-columns: 1fr; }
-            .role-selector-wrapper { flex-direction: column; align-items: stretch; }
+            .component-card .comp-row { grid-template-columns: 1fr; }
             .action-bar { margin: 20px -20px -20px -20px; padding: 12px 16px; justify-content: center; }
             .action-bar .btn { font-size: 11px; padding: 6px 14px; }
             .toast-container { bottom: 12px; right: 12px; max-width: calc(100% - 24px); }
@@ -667,9 +528,9 @@
         </div>
         <div class="navbar-right">
             <div class="actions">
-                <button class="btn-cancel" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'"><i class="fas fa-times"></i> Cancel</button>
-                <button class="btn-save" onclick="saveTemplate(event)"><i class="fas fa-save"></i> Save</button>
-                <button class="btn-publish" onclick="publishTemplate()"><i class="fas fa-rocket"></i> Publish</button>
+                <button class="btn-cancel" onclick="window.location.href='/servers/<%= guild.id %>/tickets/panels'"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn-save" onclick="savePanel()"><i class="fas fa-save"></i> Save</button>
+                <button class="btn-publish" onclick="publishPanel()"><i class="fas fa-rocket"></i> Publish</button>
             </div>
             <div class="user-pill">
                 <div class="user-avatar">
@@ -693,241 +554,141 @@
         <!-- ===== PAGE HEADER ===== -->
         <div class="page-header">
             <div>
-                <h1 id="templateHeaderName"><%= template ? template.name : 'Create Template' %></h1>
-                <p>Define how a ticket behaves in your server</p>
+                <h1>Create Ticket Panel</h1>
+                <p>Create a new ticket panel for your server</p>
             </div>
             <div class="header-actions">
-                <button class="btn btn-cancel-header" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'"><i class="fas fa-times"></i> Cancel</button>
-                <button class="btn btn-draft-header" onclick="saveDraft()"><i class="fas fa-file-alt"></i> Draft</button>
-                <button class="btn btn-save-header" onclick="saveTemplate(event)"><i class="fas fa-save"></i> Save</button>
-                <button class="btn btn-publish-header" onclick="publishTemplate()"><i class="fas fa-rocket"></i> Publish</button>
+                <button class="btn btn-cancel-header" onclick="window.location.href='/servers/<%= guild.id %>/tickets/panels'"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn btn-save-header" onclick="savePanel()"><i class="fas fa-save"></i> Save</button>
+                <button class="btn btn-publish-header" onclick="publishPanel()"><i class="fas fa-rocket"></i> Publish</button>
             </div>
         </div>
 
         <!-- ===== FORM CONTAINER ===== -->
         <div class="form-container">
-            <form id="templateForm" method="POST" action="/servers/<%= guild.id %>/tickets/<%= template ? template._id : 'create' %>" onsubmit="return false;">
+            <form id="panelForm" onsubmit="return false;">
                 <input type="hidden" name="guildId" value="<%= guild.id %>">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="panelId" id="panelId" value="">
 
-                <!-- ===== BASIC INFORMATION ===== -->
+                <!-- ===== PANEL DETAILS ===== -->
                 <div class="form-section">
-                    <div class="section-title">Basic Information</div>
-                    <div class="section-desc">Configure the basic details for this ticket template.</div>
+                    <div class="section-title">Panel Details</div>
+                    <div class="section-desc">Configure the basic details for this ticket panel.</div>
 
                     <div class="settings-card">
-                        <div class="card-label">Template name</div>
-                        <div class="card-desc">The name of the ticket.</div>
-                        <input type="text" id="name" name="name" class="form-control" value="<%= template ? template.name : '' %>" placeholder="e.g., Support" required oninput="document.getElementById('templateHeaderName').textContent = this.value || 'Create Template'">
+                        <div class="card-label">Panel Name</div>
+                        <div class="card-desc">A unique name to identify this panel.</div>
+                        <input type="text" id="panelName" class="form-control" placeholder="e.g., Support Panel" required>
                     </div>
 
                     <div class="settings-card">
-                        <div class="card-label">Ticket Logging Channel</div>
-                        <div class="card-desc">The channel where closed tickets will be logged.</div>
-                        <select id="transcriptChannel" name="transcriptChannel" class="form-control">
-                            <option value="">None</option>
+                        <div class="card-label">Channel</div>
+                        <div class="card-desc">The channel where this panel will be displayed.</div>
+                        <select id="panelChannel" class="form-control">
+                            <option value="">Select a channel</option>
                             <% if (channels) { %>
-                                <% channels.filter(function(c) { return c.type === 0; }).forEach(function(ch) { %>
-                                    <option value="<%= ch.id %>" <%= template && template.transcriptChannel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% channels.forEach(function(ch) { %>
+                                    <option value="<%= ch.id %>">#<%= ch.name %></option>
                                 <% }) %>
                             <% } %>
                         </select>
-                        <div class="validation-error" id="loggingChannelError" style="display: none;">Please select a logging channel</div>
                     </div>
 
                     <div class="settings-card">
-                        <div class="card-label">Ticket category</div>
-                        <div class="card-desc">Tickets will be created under this category.</div>
-                        <select id="category" name="category" class="form-control">
-                            <option value="">None</option>
-                            <% if (channels) { %>
-                                <% channels.filter(function(c) { return c.type === 4; }).forEach(function(cat) { %>
-                                    <option value="<%= cat.id %>" <%= template && template.category === cat.id ? 'selected' : '' %>><%= cat.name %></option>
-                                <% }) %>
-                            <% } %>
-                        </select>
-                        <div class="validation-error" id="categoryError" style="display: none;">Please select a category</div>
+                        <div class="card-label">Description</div>
+                        <div class="card-desc">Optional description for internal use.</div>
+                        <textarea id="panelDescription" class="form-control" rows="2" placeholder="What is this panel for?"></textarea>
                     </div>
 
                     <div class="settings-card">
-                        <div class="card-label">Ticket Channel Name</div>
-                        <div class="card-desc">Format: <code>{ticket-creator-username}-{total-tickets-opened}</code></div>
-                        <input type="text" id="channelName" name="channelName" class="form-control" value="<%= template ? template.channelName || '{ticket-creator-username}-{total-tickets-opened}' : '{ticket-creator-username}-{total-tickets-opened}' %>" placeholder="ticket-creator-username-total-tickets-opened">
-                        <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">Variables: {user} · {id} · {number} · {ticket-creator-username} · {total-tickets-opened}</div>
-                    </div>
-                </div>
-
-                <!-- ===== CAN TICKET CREATOR CLOSE TICKET ===== -->
-                <div class="form-section">
-                    <div class="section-title">Ticket Permissions</div>
-                    <div class="section-desc">Control who can close tickets and access controls.</div>
-
-                    <div class="settings-card">
-                        <div class="card-label">Can Ticket Creator Close Ticket</div>
-                        <div class="card-desc">If enabled, the ticket creator can close their own ticket. Otherwise only support team members may close it.</div>
+                        <div class="card-label">Status</div>
+                        <div class="card-desc">Controls whether this panel is active.</div>
                         <div class="toggle-wrapper">
-                            <div class="toggle <%= template && template.creatorCanClose ? 'active' : '' %>" onclick="toggleBool(this, 'creatorCanClose')"><div class="toggle-knob"></div></div>
-                            <span class="toggle-label"><%= template && template.creatorCanClose ? 'Enabled' : 'Disabled' %></span>
+                            <div class="toggle active" onclick="toggleBool(this, 'panelEnabled')"><div class="toggle-knob"></div></div>
+                            <span class="toggle-label">Enabled</span>
                         </div>
-                        <input type="hidden" name="creatorCanClose" id="creatorCanClose" value="<%= template && template.creatorCanClose ? 'true' : 'false' %>">
+                        <input type="hidden" name="panelEnabled" id="panelEnabled" value="true">
                     </div>
                 </div>
 
-                <!-- ===== TICKET ACCESS CONTROL ===== -->
+                <!-- ===== PANEL MESSAGE ===== -->
                 <div class="form-section">
-                    <div class="section-title">Ticket Access Control</div>
-                    <div class="section-desc">Configure role-based access restrictions for tickets.</div>
+                    <div class="section-title">Panel Message</div>
+                    <div class="section-desc">Configure the message displayed on the panel.</div>
 
-                    <!-- Blocked Roles -->
                     <div class="settings-card">
-                        <div class="card-label">Blocked Roles</div>
-                        <div class="card-desc">Users with these roles cannot create tickets.</div>
-                        <div class="role-selector-wrapper">
-                            <select id="blockedRoles" name="blockedRoles" multiple style="display:none;">
-                                <% if (roles) { %>
-                                    <% roles.forEach(function(role) { %>
-                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.blockedRoles && template.blockedRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>><%= role.name.charAt(0) === '@' ? role.name : '@' + role.name %></option>
-                                    <% }) %>
-                                <% } %>
-                            </select>
-                            <div class="role-chip-grid" id="blockedRolesGrid"></div>
-                            <span class="counter" id="blockedRolesCount">Blocked Roles: 0/10</span>
-                        </div>
-                        <div class="match-mode-selector">
-                            <button type="button" class="btn-match active" data-mode="hasAny" onclick="setMatchMode('blocked', 'hasAny')">Has any role</button>
-                            <button type="button" class="btn-match" data-mode="hasAll" onclick="setMatchMode('blocked', 'hasAll')">Has all roles</button>
-                        </div>
-                        <div class="card-desc" style="margin-top: 6px;">Users must match the selected mode to be blocked from creating tickets.</div>
+                        <div class="card-label">Message Content</div>
+                        <div class="card-desc">The message text shown above the buttons.</div>
+                        <textarea id="panelMessage" class="form-control" rows="3" placeholder="Need help? Click a button below to create a ticket.">Need help? Click a button below to create a ticket.</textarea>
                     </div>
 
-                    <!-- Required Roles -->
                     <div class="settings-card">
-                        <div class="card-label">Required Roles</div>
-                        <div class="card-desc">Users must have at least one of these roles to create tickets.</div>
-                        <div class="role-selector-wrapper">
-                            <select id="requiredRoles" name="requiredRoles" multiple style="display:none;">
-                                <% if (roles) { %>
-                                    <% roles.forEach(function(role) { %>
-                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.requiredRoles && template.requiredRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>><%= role.name.charAt(0) === '@' ? role.name : '@' + role.name %></option>
-                                    <% }) %>
-                                <% } %>
-                            </select>
-                            <div class="role-chip-grid" id="requiredRolesGrid"></div>
-                            <span class="counter" id="requiredRolesCount">Required Roles: 0/10</span>
+                        <div class="card-label">Embed (Optional)</div>
+                        <div class="card-desc">Customize the embed that appears with your panel.</div>
+                        <div class="form-row">
+                            <div>
+                                <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Embed Title</label>
+                                <input type="text" id="embedTitle" class="form-control" placeholder="e.g., Support Center">
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Embed Color</label>
+                                <input type="color" id="embedColor" class="form-control" value="#3DFFB8" style="padding: 4px; height: 40px;">
+                            </div>
                         </div>
-                        <div class="match-mode-selector">
-                            <button type="button" class="btn-match active" data-mode="hasAny" onclick="setMatchMode('required', 'hasAny')">Has any role</button>
-                            <button type="button" class="btn-match" data-mode="hasAll" onclick="setMatchMode('required', 'hasAll')">Has all roles</button>
+                        <div style="margin-top: 8px;">
+                            <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Embed Description</label>
+                            <textarea id="embedDescription" class="form-control" rows="2" placeholder="Describe what this panel is for..."></textarea>
                         </div>
-                        <div class="card-desc" style="margin-top: 6px;">Users must match the selected mode to be allowed to create tickets.</div>
                     </div>
                 </div>
 
-                <!-- ===== MAX CONCURRENT TICKETS ===== -->
+                <!-- ===== BUTTONS / COMPONENTS ===== -->
                 <div class="form-section">
-                    <div class="section-title">Ticket Limits</div>
-                    <div class="section-desc">Configure limits on ticket creation.</div>
+                    <div class="section-title">Buttons</div>
+                    <div class="section-desc">Configure the buttons that users click to open tickets.</div>
 
-                    <div class="settings-card">
-                        <div class="card-label">Max Concurrent Open Tickets</div>
-                        <div class="card-desc">Maximum number of tickets a user can have open at once.</div>
-                        <input type="number" id="maxTickets" name="maxTickets" class="form-control" value="<%= template ? template.maxTickets || 3 : 3 %>" min="1" max="10">
-                    </div>
-                </div>
-
-                <!-- ===== SUPPORT TEAM & PERMISSIONS ===== -->
-                <div class="form-section">
-                    <div class="section-title">Support Team & Permissions</div>
-                    <div class="section-desc">Configure support team roles and permissions.</div>
-
-                    <div class="settings-card">
-                        <div class="card-label">Support Team Roles</div>
-                        <div class="card-desc">Users with these roles can manage tickets.</div>
-                        <div class="role-selector-wrapper">
-                            <select id="supportRoles" name="supportRoles" multiple style="display:none;">
-                                <% if (roles) { %>
-                                    <% roles.forEach(function(role) { %>
-                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.supportRoles && template.supportRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>><%= role.name.charAt(0) === '@' ? role.name : '@' + role.name %></option>
-                                    <% }) %>
-                                <% } %>
-                            </select>
-                            <div class="role-chip-grid" id="supportRolesGrid"></div>
-                            <span class="counter" id="supportRolesCount">Support Team Roles: 0/25</span>
-                        </div>
-                    </div>
-
-                    <div class="settings-card">
-                        <div class="card-label">Ping Support Roles</div>
-                        <div class="card-desc">Support roles will be automatically pinged when a ticket is created.</div>
-                        <div class="toggle-wrapper">
-                            <div class="toggle <%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'active' : '') : 'active' %>" onclick="toggleBool(this, 'autoMentionSupport')"><div class="toggle-knob"></div></div>
-                            <span class="toggle-label"><%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'Enabled' : 'Disabled') : 'Enabled' %></span>
-                        </div>
-                        <input type="hidden" name="autoMentionSupport" id="autoMentionSupport" value="<%= template && template.autoMentionSupport !== undefined ? (template.autoMentionSupport ? 'true' : 'false') : 'true' %>">
-                    </div>
-
-                    <div class="settings-card">
-                        <div class="card-label">Rate Support Experience Enabled</div>
-                        <div class="card-desc">Users can rate their support experience after ticket closure.</div>
-                        <div class="toggle-wrapper">
-                            <div class="toggle <%= template && template.rateSupport ? 'active' : '' %>" onclick="toggleBool(this, 'rateSupport')"><div class="toggle-knob"></div></div>
-                            <span class="toggle-label"><%= template && template.rateSupport ? 'Enabled' : 'Disabled' %></span>
-                        </div>
-                        <input type="hidden" name="rateSupport" id="rateSupport" value="<%= template && template.rateSupport ? 'true' : 'false' %>">
-                    </div>
-
-                    <div class="settings-card">
-                        <div class="card-label">Ticket Claiming</div>
-                        <div class="card-desc">Staff can claim tickets to show ownership.</div>
-                        <div class="toggle-wrapper">
-                            <div class="toggle <%= template && template.ticketClaiming ? 'active' : '' %>" onclick="toggleBool(this, 'ticketClaiming')"><div class="toggle-knob"></div></div>
-                            <span class="toggle-label"><%= template && template.ticketClaiming ? 'Enabled' : 'Disabled' %></span>
-                        </div>
-                        <input type="hidden" name="ticketClaiming" id="ticketClaiming" value="<%= template && template.ticketClaiming ? 'true' : 'false' %>">
-                    </div>
-                </div>
-
-                <!-- ===== TICKET LIFECYCLE ===== -->
-                <div class="form-section">
-                    <div class="section-title">Ticket Lifecycle</div>
-                    <div class="section-desc">Configure what happens when a user leaves or tickets are closed.</div>
-
-                    <div class="settings-card">
-                        <div class="card-label">Action on User Leave</div>
-                        <div class="card-desc">What happens when a user leaves the server while their ticket is open.</div>
-                        <select id="actionOnLeave" name="actionOnLeave" class="form-control">
-                            <option value="nothing" <%= template && template.actionOnLeave === 'nothing' ? 'selected' : '' %>>NOTHING</option>
-                            <option value="close" <%= template && template.actionOnLeave === 'close' ? 'selected' : '' %>>CLOSE</option>
-                            <option value="delete" <%= template && template.actionOnLeave === 'delete' ? 'selected' : '' %>>DELETE</option>
-                            <option value="archive" <%= template && template.actionOnLeave === 'archive' ? 'selected' : '' %>>ARCHIVE</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- ===== TICKET FORM (QUESTIONS) ===== -->
-                <div class="form-section">
-                    <div class="section-title">Ticket Form</div>
-                    <div class="section-desc">The form which will be opened when a user attempts to open a ticket.</div>
-
-                    <div id="questionsContainer">
-                        <div id="questionsGrid">
-                            <!-- Questions rendered by JS -->
+                    <div id="componentsContainer">
+                        <div id="componentsGrid">
+                            <!-- Components rendered by JS -->
                         </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                        <span id="questionsCount">Questions: 0/5</span>
-                        <button type="button" class="btn-add" id="addQuestionBtn" onclick="addQuestion()" style="width: auto; padding: 6px 16px; margin-top: 0;">
-                            <i class="fas fa-plus"></i> Add Question
+                        <span id="componentsCount">Buttons: 0/5</span>
+                        <button type="button" class="btn-add" id="addComponentBtn" onclick="addComponent()" style="width: auto; padding: 6px 16px; margin-top: 0;">
+                            <i class="fas fa-plus"></i> Add Button
                         </button>
+                    </div>
+                </div>
+
+                <!-- ===== TEMPLATE SELECTION ===== -->
+                <div class="form-section">
+                    <div class="section-title">Ticket Templates</div>
+                    <div class="section-desc">Select which ticket templates this panel uses.</div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Available Templates</div>
+                        <div class="card-desc">Templates must be active to appear in this list.</div>
+                        <div id="templateSelection">
+                            <% if (templates && templates.length > 0) { %>
+                                <% templates.forEach(function(t) { %>
+                                    <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; margin-bottom: 6px;">
+                                        <input type="checkbox" class="template-checkbox" value="<%= t._id %>" id="template_<%= t._id %>">
+                                        <label for="template_<%= t._id %>" style="font-size: 13px; cursor: pointer; flex: 1;"><%= t.name %></label>
+                                        <span style="font-size: 11px; color: var(--muted-dim);"><%= t.status || 'active' %></span>
+                                    </div>
+                                <% }) %>
+                            <% } else { %>
+                                <p style="color: var(--muted); font-size: 13px;">No active templates found. <a href="/servers/<%= guild.id %>/tickets/create" style="color: var(--signal);">Create one</a></p>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
 
                 <!-- ===== ACTION BAR ===== -->
                 <div class="action-bar">
-                    <button type="button" class="btn btn-cancel-action" onclick="window.location.href='/servers/<%= guild.id %>/tickets/templates'"><i class="fas fa-times"></i> Cancel</button>
-                    <button type="button" class="btn btn-draft" onclick="saveDraft()"><i class="fas fa-file-alt"></i> Save Draft</button>
-                    <button type="button" class="btn btn-save-action" onclick="saveTemplate(event)"><i class="fas fa-save"></i> Save Changes</button>
-                    <button type="button" class="btn btn-publish-action" onclick="publishTemplate()"><i class="fas fa-rocket"></i> Publish Panel</button>
+                    <button type="button" class="btn btn-cancel-action" onclick="window.location.href='/servers/<%= guild.id %>/tickets/panels'"><i class="fas fa-times"></i> Cancel</button>
+                    <button type="button" class="btn btn-save-action" onclick="savePanel()"><i class="fas fa-save"></i> Save Panel</button>
+                    <button type="button" class="btn btn-publish-action" onclick="publishPanel()"><i class="fas fa-rocket"></i> Publish to Discord</button>
                 </div>
 
             </form>
@@ -941,8 +702,9 @@
 
     <script>
         // ===== STATE =====
-        var MAX_QUESTIONS = 5;
-        var questions = [];
+        var MAX_COMPONENTS = 5;
+        var components = [];
+        var panelId = '';
 
         // ===== TOAST =====
         function showToast(message, type) {
@@ -972,179 +734,70 @@
             el.classList.toggle('active');
             var isActive = el.classList.contains('active');
             document.getElementById(id).value = isActive ? 'true' : 'false';
-            // Update label text
             var label = el.parentElement.querySelector('.toggle-label');
             if (label) label.textContent = isActive ? 'Enabled' : 'Disabled';
         }
 
-        // ===== ROLE CHIPS (generic) =====
-        var ROLE_LIMITS = {
-            blockedRoles: 10,
-            requiredRoles: 10,
-            supportRoles: 25
-        };
-
-        // Bot role IDs to filter out
-        var BOT_ROLE_IDS = ['1493217033956102215'];
-        var BOT_ROLE_NAMES = ['Sentinal', 'ProBot', 'Tickets v2', 'Tickets'];
-
-        function isBotRole(name) {
-            if (!name) return false;
-            name = name.trim();
-            if (name === '@everyone' || name === '@here') return true;
-            for (var i = 0; i < BOT_ROLE_NAMES.length; i++) {
-                if (name.includes(BOT_ROLE_NAMES[i])) return true;
-                if (name.toLowerCase().includes('bot')) return true;
-            }
-            return false;
-        }
-
-        function renderRoleChips(selectId, gridId, countId, label) {
-            var select = document.getElementById(selectId);
-            var grid = document.getElementById(gridId);
-            var countEl = document.getElementById(countId);
-            if (!select || !grid) return;
-
-            // Filter out @everyone and bot roles
-            var options = Array.from(select.options).filter(function(opt) {
-                var name = opt.textContent.trim();
-                return !isBotRole(name) && !BOT_ROLE_IDS.includes(opt.value);
-            });
-
-            var selectedCount = options.filter(function(o) { return o.selected; }).length;
+        // ===== COMPONENTS =====
+        function renderComponents() {
+            var grid = document.getElementById('componentsGrid');
+            var countEl = document.getElementById('componentsCount');
+            var addBtn = document.getElementById('addComponentBtn');
 
             grid.innerHTML = '';
-            if (options.length === 0) {
-                grid.innerHTML = '<div style="font-size: 13px; color: var(--muted-dim); padding: 6px 0;">No roles found</div>';
-                return;
-            }
+            if (countEl) countEl.textContent = 'Buttons: ' + components.length + '/' + MAX_COMPONENTS;
+            if (addBtn) addBtn.disabled = components.length >= MAX_COMPONENTS;
 
-            var limit = ROLE_LIMITS[selectId] || 10;
+            var templateOptions = getTemplateOptions();
 
-            options.forEach(function(opt) {
-                var atLimit = selectedCount >= limit;
-                var chip = document.createElement('span');
-                chip.className = 'role-chip' + (opt.selected ? ' selected' : '') + (!opt.selected && atLimit ? ' disabled' : '');
-                chip.innerHTML = `
-                    <span class="dot" style="background: ${opt.dataset.color || '#3DFFB8'};"></span>
-                    ${opt.textContent.trim()}
-                    ${opt.selected ? '<span class="remove"><i class="fas fa-times"></i></span>' : ''}
-                `;
-                chip.addEventListener('click', function() {
-                    if (opt.selected) {
-                        opt.selected = false;
-                    } else {
-                        var currentCount = options.filter(function(o) { return o.selected; }).length;
-                        if (currentCount >= limit) return;
-                        opt.selected = true;
-                    }
-                    // Sync actual select
-                    var allOptions = Array.from(select.options);
-                    allOptions.forEach(function(o) {
-                        var isSelected = options.some(function(opt2) {
-                            return opt2.value === o.value && opt2.selected;
-                        });
-                        o.selected = isSelected;
-                    });
-                    select.dispatchEvent(new Event('change'));
-                    renderRoleChips(selectId, gridId, countId, label);
-                });
-                grid.appendChild(chip);
-            });
-
-            if (countEl) {
-                countEl.textContent = (label || 'Roles') + ': ' + selectedCount + '/' + limit;
-                countEl.style.color = selectedCount >= limit ? 'var(--signal)' : 'var(--muted)';
-            }
-        }
-
-        // ===== MATCH MODE =====
-        function setMatchMode(type, mode) {
-            var container = null;
-            var cards = document.querySelectorAll('.settings-card');
-            for (var i = 0; i < cards.length; i++) {
-                if (cards[i].querySelector('.match-mode-selector')) {
-                    var label = cards[i].querySelector('.card-label');
-                    var isBlocked = label && label.textContent.trim() === 'Blocked Roles';
-                    var isRequired = label && label.textContent.trim() === 'Required Roles';
-                    if ((type === 'blocked' && isBlocked) || (type === 'required' && isRequired)) {
-                        container = cards[i];
-                        break;
-                    }
-                }
-            }
-            if (!container) return;
-
-            var btns = container.querySelectorAll('.match-mode-selector .btn-match');
-            btns.forEach(function(btn) {
-                btn.classList.toggle('active', btn.dataset.mode === mode);
-            });
-
-            var inputId = type + 'MatchMode';
-            var existing = document.getElementById(inputId);
-            if (!existing) {
-                var input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = inputId;
-                input.id = inputId;
-                container.appendChild(input);
-            }
-            document.getElementById(inputId).value = mode;
-        }
-
-        // ===== QUESTIONS =====
-        function renderQuestions() {
-            var grid = document.getElementById('questionsGrid');
-            var countEl = document.getElementById('questionsCount');
-            var addBtn = document.getElementById('addQuestionBtn');
-
-            grid.innerHTML = '';
-            if (countEl) countEl.textContent = 'Questions: ' + questions.length + '/' + MAX_QUESTIONS;
-            if (addBtn) addBtn.disabled = questions.length >= MAX_QUESTIONS;
-
-            questions.forEach(function(q, index) {
+            components.forEach(function(comp, index) {
                 var card = document.createElement('div');
-                card.className = 'question-card';
+                card.className = 'component-card';
                 card.innerHTML = `
-                    <div class="question-header">
-                        <span class="q-title">${q.title || 'Question ' + (index + 1)}</span>
-                        <button type="button" class="q-remove" onclick="removeQuestion(${index})"><i class="fas fa-times"></i></button>
+                    <div class="comp-header">
+                        <span class="comp-title">${comp.label || 'Button ' + (index + 1)}</span>
+                        <button type="button" class="comp-remove" onclick="removeComponent(${index})"><i class="fas fa-times"></i></button>
                     </div>
-                    <div class="q-row">
-                        <div class="q-field">
-                            <label>Question Title</label>
-                            <input type="text" class="form-control" value="${q.title || ''}" placeholder="e.g. Do you like capybaras?" onchange="updateQuestion(${index}, 'title', this.value)">
+                    <div class="comp-row">
+                        <div class="comp-field">
+                            <label>Label</label>
+                            <input type="text" class="form-control" value="${comp.label || ''}" placeholder="e.g. Support" onchange="updateComponent(${index}, 'label', this.value)">
                         </div>
-                        <div class="q-field">
-                            <label>Description</label>
-                            <input type="text" class="form-control" value="${q.description || ''}" placeholder="Brief description" onchange="updateQuestion(${index}, 'description', this.value)">
+                        <div class="comp-field">
+                            <label>Emoji</label>
+                            <input type="text" class="form-control" value="${comp.emoji || ''}" placeholder="e.g. 🎫" onchange="updateComponent(${index}, 'emoji', this.value)">
                         </div>
-                    </div>
-                    <div class="q-row">
-                        <div class="q-field">
-                            <label>Placeholder</label>
-                            <input type="text" class="form-control" value="${q.placeholder || ''}" placeholder="Placeholder text" onchange="updateQuestion(${index}, 'placeholder', this.value)">
-                        </div>
-                        <div class="q-field">
-                            <label>Question Type</label>
-                            <select class="form-control" onchange="updateQuestion(${index}, 'type', this.value)">
-                                <option value="short" ${q.type === 'short' ? 'selected' : ''}>Short</option>
-                                <option value="paragraph" ${q.type === 'paragraph' ? 'selected' : ''}>Paragraph</option>
+                        <div class="comp-field">
+                            <label>Style</label>
+                            <select class="form-control" onchange="updateComponent(${index}, 'style', this.value)">
+                                <option value="primary" ${comp.style === 'primary' ? 'selected' : ''}>Primary (Blue)</option>
+                                <option value="secondary" ${comp.style === 'secondary' ? 'selected' : ''}>Secondary (Gray)</option>
+                                <option value="success" ${comp.style === 'success' ? 'selected' : ''}>Success (Green)</option>
+                                <option value="danger" ${comp.style === 'danger' ? 'selected' : ''}>Danger (Red)</option>
                             </select>
                         </div>
                     </div>
-                    <div class="q-toggle-row">
-                        <div class="mini-toggle ${q.required ? 'active' : ''}" onclick="toggleQuestionBool(${index}, 'required')"><div class="knob"></div></div>
-                        <span class="q-toggle-label">Required Answer</span>
-                    </div>
-                    <div class="q-row">
-                        <div class="q-field">
-                            <label>Minimum Answer Length</label>
-                            <input type="number" class="form-control" value="${q.minLength || 1}" min="0" onchange="updateQuestion(${index}, 'minLength', parseInt(this.value) || 0)">
+                    <div class="comp-row">
+                        <div class="comp-field">
+                            <label>Template</label>
+                            <select class="form-control" onchange="updateComponent(${index}, 'templateId', this.value)">
+                                <option value="">Select a template</option>
+                                ${templateOptions}
+                            </select>
                         </div>
-                        <div class="q-field">
-                            <label>Maximum Answer Length</label>
-                            <input type="number" class="form-control" value="${q.maxLength || 500}" min="1" onchange="updateQuestion(${index}, 'maxLength', parseInt(this.value) || 1)">
+                        <div class="comp-field">
+                            <label>Color Preview</label>
+                            <div style="padding: 6px 0;">
+                                <span class="comp-color-preview" style="background: ${getStyleColor(comp.style || 'primary')};"></span>
+                                <span style="font-size: 12px; color: var(--muted);">${comp.style || 'primary'}</span>
+                            </div>
+                        </div>
+                        <div class="comp-field">
+                            <label>Status</label>
+                            <div class="toggle-wrapper" style="padding-top: 4px;">
+                                <div class="toggle ${comp.enabled !== false ? 'active' : ''}" onclick="toggleComponentBool(${index}, 'enabled')"><div class="toggle-knob"></div></div>
+                                <span class="toggle-label" style="font-size: 12px;">${comp.enabled !== false ? 'Enabled' : 'Disabled'}</span>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1152,109 +805,105 @@
             });
         }
 
-        function addQuestion() {
-            if (questions.length >= MAX_QUESTIONS) return;
-            questions.push({
-                title: '',
-                description: '',
-                placeholder: '',
-                type: 'paragraph',
-                required: false,
-                minLength: 1,
-                maxLength: 500
+        function getStyleColor(style) {
+            var colors = {
+                primary: '#5865F2',
+                secondary: '#4e5d73',
+                success: '#57F287',
+                danger: '#ED4245'
+            };
+            return colors[style] || '#5865F2';
+        }
+
+        function getTemplateOptions() {
+            var templates = document.querySelectorAll('.template-checkbox');
+            var options = '';
+            templates.forEach(function(t) {
+                var name = t.parentElement.querySelector('label').textContent.trim();
+                options += `<option value="${t.value}">${name}</option>`;
             });
-            renderQuestions();
+            return options;
         }
 
-        function removeQuestion(index) {
-            questions.splice(index, 1);
-            renderQuestions();
+        function addComponent() {
+            if (components.length >= MAX_COMPONENTS) return;
+            components.push({
+                label: '',
+                emoji: '',
+                style: 'primary',
+                templateId: '',
+                enabled: true
+            });
+            renderComponents();
         }
 
-        function updateQuestion(index, field, value) {
-            questions[index][field] = value;
-            renderQuestions();
+        function removeComponent(index) {
+            components.splice(index, 1);
+            renderComponents();
         }
 
-        function toggleQuestionBool(index, field) {
-            questions[index][field] = !questions[index][field];
-            renderQuestions();
+        function updateComponent(index, field, value) {
+            components[index][field] = value;
+            renderComponents();
         }
 
-        function loadQuestions() {
-            var existing = <%= template ? (template.questions ? JSON.stringify(template.questions) : '[]') : '[]' %>;
-            if (Array.isArray(existing) && existing.length > 0) {
-                questions = existing;
-            } else {
-                questions = [{
-                    title: 'Do you like capybaras?',
-                    description: 'Please explain your answer in full detail.',
-                    placeholder: 'Please describe your issue in full detail.',
-                    type: 'paragraph',
-                    required: true,
-                    minLength: 1,
-                    maxLength: 500
-                }];
-            }
-            renderQuestions();
+        function toggleComponentBool(index, field) {
+            components[index][field] = !components[index][field];
+            renderComponents();
         }
 
         // ===== SAVE FUNCTIONS =====
         function collectFormData() {
-            // Collect role selections
-            var blockedRoles = Array.from(document.getElementById('blockedRoles').selectedOptions).map(function(o) { return o.value; });
-            var requiredRoles = Array.from(document.getElementById('requiredRoles').selectedOptions).map(function(o) { return o.value; });
-            var supportRoles = Array.from(document.getElementById('supportRoles').selectedOptions).map(function(o) { return o.value; });
+            var selectedTemplates = [];
+            document.querySelectorAll('.template-checkbox:checked').forEach(function(cb) {
+                selectedTemplates.push(cb.value);
+            });
 
             return {
-                name: document.getElementById('name').value,
-                transcriptChannel: document.getElementById('transcriptChannel').value,
-                category: document.getElementById('category').value,
-                channelName: document.getElementById('channelName').value,
-                creatorCanClose: document.getElementById('creatorCanClose').value === 'true',
-                blockedRoles: blockedRoles,
-                blockedMatchMode: document.getElementById('blockedMatchMode') ? document.getElementById('blockedMatchMode').value : 'hasAny',
-                requiredRoles: requiredRoles,
-                requiredMatchMode: document.getElementById('requiredMatchMode') ? document.getElementById('requiredMatchMode').value : 'hasAny',
-                maxTickets: parseInt(document.getElementById('maxTickets').value) || 3,
-                supportRoles: supportRoles,
-                autoMentionSupport: document.getElementById('autoMentionSupport').value === 'true',
-                rateSupport: document.getElementById('rateSupport').value === 'true',
-                ticketClaiming: document.getElementById('ticketClaiming').value === 'true',
-                actionOnLeave: document.getElementById('actionOnLeave').value,
-                questions: questions
+                name: document.getElementById('panelName').value,
+                channelId: document.getElementById('panelChannel').value,
+                description: document.getElementById('panelDescription').value,
+                enabled: document.getElementById('panelEnabled').value === 'true',
+                message: document.getElementById('panelMessage').value,
+                embed: {
+                    title: document.getElementById('embedTitle').value,
+                    description: document.getElementById('embedDescription').value,
+                    color: document.getElementById('embedColor').value
+                },
+                components: components,
+                templates: selectedTemplates,
+                guildId: '<%= guild.id %>'
             };
         }
 
-        async function saveTemplate(event) {
-            if (event) event.preventDefault();
-
+        async function savePanel() {
             var data = collectFormData();
             if (!data.name || !data.name.trim()) {
-                showToast('❌ Please enter a template name', 'error');
+                showToast('❌ Please enter a panel name', 'error');
                 return;
             }
-
-            // Validate logging channel and category
-            if (!data.transcriptChannel) {
-                document.getElementById('loggingChannelError').style.display = 'block';
-                showToast('❌ Please select a logging channel', 'error');
+            if (!data.channelId) {
+                showToast('❌ Please select a channel', 'error');
                 return;
-            } else {
-                document.getElementById('loggingChannelError').style.display = 'none';
             }
-
-            if (!data.category) {
-                document.getElementById('categoryError').style.display = 'block';
-                showToast('❌ Please select a category', 'error');
+            if (data.components.length === 0) {
+                showToast('❌ Please add at least one button', 'error');
                 return;
-            } else {
-                document.getElementById('categoryError').style.display = 'none';
+            }
+            if (data.templates.length === 0) {
+                showToast('❌ Please select at least one template', 'error');
+                return;
             }
 
             try {
-                var url = '/api/tickets' + (templateId ? '/' + templateId : '');
-                var method = templateId ? 'PUT' : 'POST';
+                var url = panelId ? '/api/panels/' + panelId : '/api/panels';
+                var method = panelId ? 'PUT' : 'POST';
+
+                // If saving existing panel, use the update endpoint
+                if (panelId) {
+                    url = '/api/panels/' + panelId;
+                    method = 'PUT';
+                }
 
                 var response = await fetch(url, {
                     method: method,
@@ -1263,12 +912,11 @@
                 });
                 var result = await response.json();
                 if (result.success) {
-                    showToast('✅ Template saved successfully!', 'success');
-                    if (!templateId) {
-                        setTimeout(function() {
-                            window.location.href = '/servers/' + guildId + '/tickets/templates';
-                        }, 1500);
+                    if (!panelId && result.panelId) {
+                        panelId = result.panelId;
+                        document.getElementById('panelId').value = panelId;
                     }
+                    showToast('✅ Panel saved successfully!', 'success');
                 } else {
                     showToast('❌ Error: ' + (result.error || 'Unknown error'), 'error');
                 }
@@ -1277,39 +925,49 @@
             }
         }
 
-        function saveDraft() {
-            document.getElementById('status') ? document.getElementById('status').value = 'draft' : null;
-            saveTemplate();
-            showToast('📝 Saved as draft', 'info');
-        }
+        async function publishPanel() {
+            await savePanel();
+            
+            if (!panelId) {
+                showToast('❌ Please save the panel first', 'error');
+                return;
+            }
 
-        function publishTemplate() {
-            document.getElementById('status') ? document.getElementById('status').value = 'active' : null;
-            saveTemplate();
-            showToast('🚀 Publishing panel to Discord...', 'info');
-            setTimeout(function() {
-                window.location.href = '/servers/' + guildId + '/panels';
-            }, 2000);
+            try {
+                var response = await fetch('/api/panels/' + panelId + '/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ guildId: '<%= guild.id %>' })
+                });
+                var result = await response.json();
+                if (result.success) {
+                    showToast('🚀 Panel published to Discord successfully!', 'success');
+                    setTimeout(function() {
+                        window.location.href = '/servers/<%= guild.id %>/tickets/panels';
+                    }, 2000);
+                } else {
+                    showToast('❌ Error: ' + (result.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ Error: ' + error.message, 'error');
+            }
         }
 
         // ===== INIT =====
-        var templateId = '<%= template ? template._id : "" %>';
         var guildId = '<%= guild.id %>';
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Render role chips
-            renderRoleChips('blockedRoles', 'blockedRolesGrid', 'blockedRolesCount', 'Blocked Roles');
-            renderRoleChips('requiredRoles', 'requiredRolesGrid', 'requiredRolesCount', 'Required Roles');
-            renderRoleChips('supportRoles', 'supportRolesGrid', 'supportRolesCount', 'Support Team Roles');
-
-            // Load questions
-            loadQuestions();
-
-            // Set initial match modes
-            var blockedMode = '<%= template && template.blockedMatchMode ? template.blockedMatchMode : "hasAny" %>';
-            var requiredMode = '<%= template && template.requiredMatchMode ? template.requiredMatchMode : "hasAny" %>';
-            setMatchMode('blocked', blockedMode);
-            setMatchMode('required', requiredMode);
+            // Add default component if none exist
+            if (components.length === 0) {
+                components.push({
+                    label: 'Support',
+                    emoji: '🎫',
+                    style: 'primary',
+                    templateId: '',
+                    enabled: true
+                });
+            }
+            renderComponents();
 
             // Update toggle labels
             document.querySelectorAll('.toggle-wrapper').forEach(function(wrapper) {
@@ -1324,15 +982,12 @@
         // ===== EXPOSE =====
         window.showToast = showToast;
         window.toggleBool = toggleBool;
-        window.renderRoleChips = renderRoleChips;
-        window.setMatchMode = setMatchMode;
-        window.addQuestion = addQuestion;
-        window.removeQuestion = removeQuestion;
-        window.updateQuestion = updateQuestion;
-        window.toggleQuestionBool = toggleQuestionBool;
-        window.saveTemplate = saveTemplate;
-        window.saveDraft = saveDraft;
-        window.publishTemplate = publishTemplate;
+        window.addComponent = addComponent;
+        window.removeComponent = removeComponent;
+        window.updateComponent = updateComponent;
+        window.toggleComponentBool = toggleComponentBool;
+        window.savePanel = savePanel;
+        window.publishPanel = publishPanel;
     </script>
 </body>
 </html>
