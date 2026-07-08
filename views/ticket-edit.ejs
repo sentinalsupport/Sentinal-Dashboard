@@ -329,6 +329,60 @@
             color: var(--text);
         }
 
+        .role-chip-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .role-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 100px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+            white-space: nowrap;
+        }
+        .role-chip:hover {
+            border-color: var(--line-bright);
+            color: var(--text);
+        }
+        .role-chip .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .role-chip.selected {
+            background: var(--signal-tab);
+            border-color: var(--signal);
+            color: var(--text);
+        }
+        .role-chip.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+        .role-chip.disabled:hover {
+            border-color: var(--line);
+            color: var(--muted);
+        }
+        .role-chip .remove {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--muted);
+            margin-left: 2px;
+        }
+        .role-chip.selected:hover .remove { color: var(--red); }
+
         .role-selector-wrapper {
             display: flex;
             flex-wrap: wrap;
@@ -731,7 +785,7 @@
                             <select id="blockedRoles" name="blockedRoles" multiple style="display:none;">
                                 <% if (roles) { %>
                                     <% roles.forEach(function(role) { %>
-                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.blockedRoles && template.blockedRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.blockedRoles && template.blockedRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>><%= role.name.charAt(0) === '@' ? role.name : '@' + role.name %></option>
                                     <% }) %>
                                 <% } %>
                             </select>
@@ -753,7 +807,7 @@
                             <select id="requiredRoles" name="requiredRoles" multiple style="display:none;">
                                 <% if (roles) { %>
                                     <% roles.forEach(function(role) { %>
-                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.requiredRoles && template.requiredRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.requiredRoles && template.requiredRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>><%= role.name.charAt(0) === '@' ? role.name : '@' + role.name %></option>
                                     <% }) %>
                                 <% } %>
                             </select>
@@ -792,7 +846,7 @@
                             <select id="supportRoles" name="supportRoles" multiple style="display:none;">
                                 <% if (roles) { %>
                                     <% roles.forEach(function(role) { %>
-                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.supportRoles && template.supportRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>>@<%= role.name %></option>
+                                        <option value="<%= role.id %>" data-color="<%= role.color ? (typeof role.color === 'number' ? '#' + role.color.toString(16).padStart(6,'0') : role.color) : '#3DFFB8' %>" <%= template && template.supportRoles && template.supportRoles.indexOf(role.id) !== -1 ? 'selected' : '' %>><%= role.name.charAt(0) === '@' ? role.name : '@' + role.name %></option>
                                     <% }) %>
                                 <% } %>
                             </select>
