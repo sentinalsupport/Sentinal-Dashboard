@@ -1,861 +1,1616 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title || 'Edit Panel — Sentinal' %></title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --ink: #060A10;
-            --panel: #0D1520;
-            --panel-raised: #111D2C;
-            --panel-hover: #162033;
-            --line: rgba(255,255,255,0.07);
-            --line-bright: rgba(255,255,255,0.13);
-            --text: #E6EDF6;
-            --muted: #6C7A90;
-            --muted-dim: #3E4A5C;
-            --signal: #3DFFB8;
-            --signal-tab: rgba(61,255,184,0.08);
-            --signal-glow: rgba(61,255,184,0.15);
-            --signal-hover: rgba(61,255,184,0.18);
-            --gold: #F5C842;
-            --gold-tab: rgba(245,200,66,0.12);
-            --violet: #8B7EFF;
-            --violet-tab: rgba(139,126,255,0.12);
-            --red: #F87171;
-            --red-bg: rgba(248,113,113,0.08);
-            --red-border: rgba(248,113,113,0.22);
-            --discord: #5865F2;
-            --discord-hover: #4752C4;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--ink);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+const express = require('express');
+const router = express.Router();
+const axios = require('axios');
 
-        .navbar {
-            background: rgba(6,10,16,0.9);
-            backdrop-filter: blur(28px) saturate(160%);
-            border-bottom: 1px solid var(--line);
-            padding: 0 48px;
-            height: 72px;
-            display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 200;
-        }
-        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .brand-logo {
-            width: 40px; height: 40px; border-radius: 12px;
-            background: var(--panel-raised); border: 1px solid var(--line-bright);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .brand-logo svg { width: 22px; height: 22px; }
-        .brand-name {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
-        }
-        .nav-center { display: flex; align-items: center; gap: 8px; }
-        .nav-center a {
-            color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
-            padding: 8px 18px; border-radius: 10px; transition: all 0.18s ease;
-        }
-        .nav-center a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-        .nav-center a.active { color: #fff; }
-        .nav-right { display: flex; align-items: center; gap: 16px; }
-        .user-pill {
-            display: flex; align-items: center; gap: 12px;
-            background: var(--panel); border: 1px solid var(--line);
-            border-radius: 100px; padding: 6px 18px 6px 8px;
-        }
-        .user-avatar {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: var(--panel-raised); overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: 700;
-        }
-        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .user-name { font-size: 14px; font-weight: 500; color: var(--text); }
-        .user-plan {
-            font-size: 11px; font-weight: 600; color: var(--signal);
-            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.22);
-            border-radius: 100px; padding: 3px 10px; letter-spacing: 0.3px;
-        }
-        .logout-btn {
-            background: transparent; border: 1px solid var(--line); border-radius: 10px;
-            padding: 8px 14px; color: var(--muted); cursor: pointer; font-size: 14px;
-            transition: all 0.18s ease; text-decoration: none;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+// ============ MIDDLEWARE ============
+function isAuthenticated(req, res, next) {
+    if (req.session.user) {
+        return next();
+    }
+    return res.redirect('/auth/login');
+}
 
-        .page-wrapper {
-            max-width: 100%;
-            margin: 0;
-            padding: 32px 48px 60px 5px;
-            display: flex;
-            gap: 32px;
-            align-items: flex-start;
-            min-height: calc(100vh - 72px);
-        }
-
-        .sidebar {
-            width: 280px;
-            flex-shrink: 0;
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 0 14px 14px 0;
-            padding: 16px 18px;
-            position: sticky;
-            top: 88px;
-            height: calc(100vh - 108px);
-            overflow-y: auto;
-            overflow-x: hidden;
-            margin-left: -5px;
-            border-left: none;
-        }
-        .sidebar::-webkit-scrollbar { width: 3px; }
-        .sidebar::-webkit-scrollbar-track { background: transparent; }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
-
-        .sidebar .server-info {
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--line);
-            margin-bottom: 12px;
-        }
-        .sidebar .server-info .icon {
-            width: 40px; height: 40px; border-radius: 10px;
-            background: var(--panel-raised); border: 1px solid var(--line);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; font-weight: 700;
-            overflow: hidden;
-            color: var(--signal);
-            margin-bottom: 6px;
-        }
-        .sidebar .server-info .icon img { width: 100%; height: 100%; object-fit: cover; }
-        .sidebar .server-info .name {
-            font-weight: 600; font-size: 14px;
-            color: #fff;
-        }
-        .sidebar .server-info .plan {
-            font-size: 10px;
-            color: var(--signal);
-            font-weight: 500;
-            background: var(--signal-tab);
-            padding: 2px 12px;
-            border-radius: 100px;
-            display: inline-block;
-            border: 1px solid rgba(61,255,184,0.2);
-        }
-        .sidebar .server-info .upgrade {
-            display: block;
-            margin-top: 8px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            background: var(--gold-tab);
-            color: var(--gold);
-            font-size: 11px;
-            font-weight: 600;
-            text-decoration: none;
-            text-align: center;
-            border: 1px solid rgba(245,200,66,0.2);
-            transition: all 0.2s ease;
-        }
-        .sidebar .server-info .upgrade:hover { background: rgba(245,200,66,0.18); }
-
-        .sidebar .nav-section { padding: 0; }
-        .sidebar .section-title {
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--muted-dim);
-            padding: 10px 8px 6px;
-        }
-        .sidebar .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.18s ease;
-            cursor: pointer;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-        }
-        .sidebar .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
-        .sidebar .nav-item.active { background: var(--signal-tab); color: var(--signal); }
-        .sidebar .nav-item i { width: 18px; font-size: 14px; color: var(--muted-dim); }
-        .sidebar .nav-item.active i { color: var(--signal); }
-        .sidebar .nav-item .badge {
-            margin-left: auto;
-            font-size: 7px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 100px;
-            text-transform: uppercase;
-        }
-        .sidebar .nav-item .badge.live { background: var(--signal-tab); color: var(--signal); }
-        .sidebar .nav-item .badge.new { background: var(--violet-tab); color: var(--violet); }
-
-        .sidebar .divider { height: 1px; background: var(--line); margin: 8px 0; }
-
-        .content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .page-header {
-            margin-bottom: 24px;
-        }
-        .page-header .breadcrumb {
-            color: var(--muted);
-            font-size: 14px;
-        }
-        .page-header .breadcrumb a {
-            color: var(--signal);
-            text-decoration: none;
-        }
-        .page-header .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-        .page-header h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-            margin-top: 4px;
-        }
-        .page-header p {
-            color: var(--muted);
-            font-size: 16px;
-            margin-top: 4px;
-        }
-
-        .form-container {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 32px;
-            max-width: 900px;
-        }
-
-        .form-section {
-            margin-bottom: 32px;
-        }
-        .form-section:last-child {
-            margin-bottom: 0;
-        }
-        .form-section .section-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group:last-child {
-            margin-bottom: 0;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
-        .form-group label .required {
-            color: var(--red);
-            margin-left: 2px;
-        }
-        .form-group .help-text {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-        .form-control {
-            width: 100%;
-            padding: 10px 16px;
-            border-radius: 10px;
-            border: 1px solid var(--line);
-            background: var(--panel-raised);
-            color: var(--text);
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.18s ease;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: var(--signal);
-            box-shadow: 0 0 0 4px var(--signal-glow);
-        }
-        .form-control::placeholder {
-            color: var(--muted-dim);
-        }
-        select.form-control {
-            appearance: none;
-            cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236C7A90' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-        }
-        textarea.form-control {
-            resize: vertical;
-            min-height: 80px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .btn-primary {
-            padding: 10px 24px;
-            border-radius: 10px;
-            border: none;
-            background: var(--signal);
-            color: var(--ink);
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 20px var(--signal-glow);
-        }
-        .btn-secondary {
-            padding: 10px 24px;
-            border-radius: 10px;
-            border: 1px solid var(--line);
-            background: transparent;
-            color: var(--text);
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.05);
-        }
-        .btn-danger {
-            padding: 10px 24px;
-            border-radius: 10px;
-            border: 1px solid var(--red-border);
-            background: var(--red-bg);
-            color: var(--red);
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-danger:hover {
-            background: rgba(248,113,113,0.2);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-            flex-wrap: wrap;
-        }
-
-        /* Template Selection */
-        .template-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .template-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            background: var(--panel-raised);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.18s ease;
-        }
-        .template-item:hover {
-            border-color: var(--line-bright);
-        }
-        .template-item input[type="checkbox"] {
-            accent-color: var(--signal);
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .template-item .template-name {
-            font-size: 14px;
-            color: var(--text);
-        }
-        .template-item .template-status {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 100px;
-            font-weight: 600;
-            margin-left: auto;
-        }
-        .template-item .template-status.active {
-            background: var(--signal-tab);
-            color: var(--signal);
-        }
-        .template-item .template-status.draft {
-            background: var(--gold-tab);
-            color: var(--gold);
-        }
-        .template-item .template-status.disabled {
-            background: var(--red-bg);
-            color: var(--red);
-        }
-
-        .toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 380px;
-            width: 100%;
-        }
-        .toast {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-            animation: slideIn 0.3s ease;
-            backdrop-filter: blur(10px);
-            border-left: 4px solid var(--signal);
-        }
-        .toast .toast-icon { color: var(--signal); font-size: 18px; flex-shrink: 0; }
-        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
-        .toast .toast-close {
-            background: none; border: none;
-            color: var(--muted-dim);
-            cursor: pointer;
-            font-size: 14px; padding: 4px;
-        }
-        .toast .toast-close:hover { color: var(--text); }
-        .toast.error { border-left-color: var(--red); }
-        .toast.error .toast-icon { color: var(--red); }
-        .toast.success { border-left-color: var(--signal); }
-        .toast.success .toast-icon { color: var(--signal); }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(40px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideOut {
-            from { opacity: 1; transform: translateX(0); }
-            to { opacity: 0; transform: translateX(40px); }
-        }
-        .toast.hiding { animation: slideOut 0.3s ease forwards; }
-
-        .footer {
-            border-top: 1px solid var(--line);
-            margin-top: 60px;
-            padding: 28px 48px;
-            text-align: center;
-            color: var(--muted-dim);
-            font-size: 13px;
-            font-family: 'IBM Plex Mono', monospace;
-            letter-spacing: 0.5px;
-        }
-
-        @media (max-width: 768px) {
-            .navbar { padding: 0 16px; height: 64px; flex-wrap: wrap; }
-            .nav-center { display: none; }
-            .page-wrapper { padding: 16px; flex-direction: column; }
-            .sidebar {
-                width: 100%; position: relative; top: 0;
-                display: flex; flex-wrap: wrap; gap: 4px; padding: 12px;
-                border-radius: 12px; max-height: none; height: auto;
-                margin-left: 0;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-            }
-            .sidebar .server-info { display: none; }
-            .sidebar .nav-section { display: flex; flex-wrap: wrap; gap: 4px; }
-            .sidebar .section-title { display: none; }
-            .sidebar .nav-item { padding: 6px 14px; font-size: 13px; width: auto; }
-            .sidebar .divider { display: none; }
-            .form-container { padding: 20px; }
-            .form-row { grid-template-columns: 1fr; }
-            .template-list { grid-template-columns: 1fr; }
-            .btn-group { flex-direction: column; }
-            .btn-group button { width: 100%; }
-            .footer { padding: 20px 16px; }
-            .toast-container { bottom: 16px; right: 16px; max-width: calc(100% - 32px); }
-        }
-    </style>
-</head>
-<body>
-
-    <nav class="navbar">
-        <a href="/dashboard" class="brand">
-            <div class="brand-logo">
-                <svg viewBox="0 0 245 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M104.4 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zM140.9 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z" fill="#3DFFB8"/>
-                    <path d="M189.5 20H55.5C44.7 20 36 28.7 36 39.5v140.9c0 10.8 8.7 19.5 19.5 19.5h113.5l-5.3-18.5 12.8 11.9 12.1 11.2L209 220V39.5C209 28.7 200.3 20 189.5 20zM155.7 152.1s-3.6-4.3-6.6-8.1c13.1-3.7 18.1-11.9 18.1-11.9-4.1 2.7-8 4.6-11.5 5.9-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.4 1.3-25.9-.1-5.7-1.1-10.6-2.6-14.7-4.3-2.3-.9-4.8-2-7.3-3.4-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.4-.3-2-1.1-3.1-1.9-3.1-1.9 4.7 4.3 9.3 6.5 21.7 10.2-2.9 3.8-6.6 8.1-6.6 8.1-22 0-32.1-15.2-32.1-15.2 0-32.2 14.4-58.4 14.4-58.4 14.4-10.8 28.1-10.5 28.1-10.5l1 1.2C99.2 87.7 87.9 97.4 87.9 97.4s2.9-1.6 7.8-3.8c14.1-6.2 25.3-7.9 29.9-8.3.8-.1 1.5-.2 2.3-.2 8.2-1 17.5-1.3 27.2.2 12.9 2 26.7 7.5 40.8 17.3 0 0-10.8-10.2-28.5-13.7l1.4-1.6s13.7-.3 28.1 10.5c0 0 14.4 26.2 14.4 58.4 0 0-10.2 15.2-32.1 15.2z" fill="#3DFFB8"/>
-                </svg>
-            </div>
-            <span class="brand-name">Sentinal</span>
-        </a>
-        <div class="nav-center">
-            <a href="/dashboard">Home</a>
-            <a href="/servers" class="active">Servers</a>
-            <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
-            <a href="#">Premium</a>
-        </div>
-        <div class="nav-right">
-            <div class="user-pill">
-                <div class="user-avatar">
-                    <% if (locals.user && user.avatar) { %>
-                        <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
-                    <% } else { %>
-                        <%= locals.user ? (user.username ? user.username.charAt(0).toUpperCase() : 'U') : 'U' %>
-                    <% } %>
-                </div>
-                <span class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></span>
-                <span class="user-plan">Free</span>
-            </div>
-            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
-        </div>
-    </nav>
-
-    <div class="toast-container" id="toastContainer"></div>
-
-    <div class="page-wrapper">
-
-        <aside class="sidebar">
-            <div class="server-info">
-                <div class="icon">
-                    <% if (locals.guild && guild.icon) { %>
-                        <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" alt="<%= guild.name %>">
-                    <% } else { %>
-                        <%= locals.guild ? (guild.name ? guild.name.charAt(0).toUpperCase() : '?') : '?' %>
-                    <% } %>
-                </div>
-                <div class="name"><%= locals.guild ? guild.name : 'Server' %></div>
-                <div class="plan">Free</div>
-                <a href="#" class="upgrade" onclick="showToast('Upgrade to Premium!', 'info')">Upgrade to Premium</a>
-            </div>
-
-            <div class="nav-section">
-                <div class="section-title">Modules</div>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>" class="nav-item">
-                    <i class="fas fa-th-large"></i> Overview
-                </a>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>/tickets" class="nav-item">
-                    <i class="fas fa-ticket"></i> Tickets
-                    <span class="badge live">Live</span>
-                </a>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>/panels" class="nav-item active">
-                    <i class="fas fa-clipboard"></i> Panels
-                    <span class="badge live">Live</span>
-                </a>
-                <a href="/servers/<%= locals.guild ? guild.id : '' %>/applications" class="nav-item">
-                    <i class="fas fa-file-alt"></i> Applications
-                    <span class="badge live">Live</span>
-                </a>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="nav-section">
-                <div class="section-title">Support</div>
-                <button class="nav-item" onclick="showToast('Support server coming soon!', 'info')">
-                    <i class="fas fa-headset"></i> Support Server
-                </button>
-            </div>
-        </aside>
-
-        <div class="content">
-
-            <div class="page-header">
-                <div>
-                    <div class="breadcrumb">
-                        <a href="/servers/<%= guild.id %>/panels">Panels</a>
-                        <span style="color: var(--muted-dim);"> / </span>
-                        <span>Edit Panel</span>
-                    </div>
-                    <h1>Edit Panel</h1>
-                    <p>Update your ticket panel configuration</p>
-                </div>
-            </div>
-
-            <div class="form-container">
-                <form id="panelForm" onsubmit="updatePanel(event)">
-
-                    <!-- ===== PANEL INFORMATION ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-info-circle" style="color: var(--signal);"></i>
-                            Panel Information
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="name">Panel Name <span class="required">*</span></label>
-                                <input type="text" id="name" name="name" class="form-control" placeholder="e.g., Support Panel" value="<%= panel ? panel.name : '' %>" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <select id="status" name="status" class="form-control">
-                                    <option value="active" <%= panel && panel.status === 'active' ? 'selected' : '' %>>Active</option>
-                                    <option value="draft" <%= panel && panel.status === 'draft' ? 'selected' : '' %>>Draft</option>
-                                    <option value="disabled" <%= panel && panel.status === 'disabled' ? 'selected' : '' %>>Disabled</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea id="description" name="description" class="form-control" placeholder="Describe what this panel is for..." rows="2"><%= panel ? panel.description : '' %></textarea>
-                        </div>
-                    </div>
-
-                    <!-- ===== DISCORD SETTINGS ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fab fa-discord" style="color: var(--signal);"></i>
-                            Discord Settings
-                        </div>
-
-                        <div class="form-group">
-                            <label for="channelId">Discord Channel <span class="required">*</span></label>
-                            <select id="channelId" name="channelId" class="form-control" required>
-                                <option value="">Select a channel...</option>
-                                <% if (channels && channels.length > 0) { %>
-                                    <% channels.forEach(function(ch) { %>
-                                        <option value="<%= ch.id %>" <%= panel && panel.channelId === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
-                                    <% }) %>
-                                <% } else { %>
-                                    <option value="" disabled>No channels found</option>
-                                <% } %>
-                            </select>
-                            <div class="help-text">The Discord channel where this panel will be sent</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="message">Panel Message</label>
-                            <textarea id="message" name="message" class="form-control" rows="3" placeholder="Need help? Click a button below to create a ticket."><%= panel ? panel.message || 'Need help? Click a button below to create a ticket.' : '' %></textarea>
-                            <div class="help-text">This message will appear above the ticket buttons</div>
-                        </div>
-                    </div>
-
-                    <!-- ===== TEMPLATES ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-file-alt" style="color: var(--signal);"></i>
-                            Templates
-                        </div>
-
-                        <div class="form-group">
-                            <label>Select Templates</label>
-                            <div class="help-text">Choose which ticket templates this panel will use. Each selected template becomes a button.</div>
-
-                            <div class="template-list">
-                                <% if (templates && templates.length > 0) { %>
-                                    <% templates.forEach(function(template) { %>
-                                        <label class="template-item">
-                                            <input type="checkbox" name="templates" value="<%= template._id %>" <%= panel && panel.templates && panel.templates.includes(template._id) ? 'checked' : '' %>>
-                                            <span class="template-name"><%= template.name %></span>
-                                            <span class="template-status <%= template.status || 'active' %>"><%= template.status || 'Active' %></span>
-                                        </label>
-                                    <% }) %>
-                                <% } else { %>
-                                    <div style="grid-column: 1 / -1; color: var(--muted-dim); padding: 16px; text-align: center; background: var(--panel-raised); border-radius: 8px;">
-                                        <i class="fas fa-info-circle" style="display: block; font-size: 24px; margin-bottom: 8px;"></i>
-                                        No active templates found.
-                                        <a href="/servers/<%= guild.id %>/tickets/create" style="color: var(--signal); text-decoration: none; display: block; margin-top: 4px;">
-                                            Create a template first →
-                                        </a>
-                                    </div>
-                                <% } %>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ===== BUTTON SETTINGS ===== -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <i class="fas fa-bolt" style="color: var(--signal);"></i>
-                            Button Settings
-                        </div>
-
-                        <div class="form-group">
-                            <label for="buttonStyle">Button Style</label>
-                            <select id="buttonStyle" name="buttonStyle" class="form-control">
-                                <option value="primary" <%= panel && panel.buttonStyle === 'primary' ? 'selected' : '' %>>Primary (Blue)</option>
-                                <option value="secondary" <%= panel && panel.buttonStyle === 'secondary' ? 'selected' : '' %>>Secondary (Grey)</option>
-                                <option value="success" <%= panel && panel.buttonStyle === 'success' ? 'selected' : '' %>>Success (Green)</option>
-                                <option value="danger" <%= panel && panel.buttonStyle === 'danger' ? 'selected' : '' %>>Danger (Red)</option>
-                            </select>
-                            <div class="help-text">Style applied to all buttons in this panel</div>
-                        </div>
-                    </div>
-
-                    <!-- ===== BUTTONS ===== -->
-                    <div class="btn-group">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i> Update Panel
-                        </button>
-                        <button type="button" class="btn-secondary" onclick="window.location.href='/servers/<%= guild.id %>/panels'">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                        <button type="button" class="btn-danger" onclick="deletePanel()" style="margin-left: auto;">
-                            <i class="fas fa-trash"></i> Delete Panel
-                        </button>
-                    </div>
-
-                </form>
-            </div>
-
-        </div>
-    </div>
-
-    <footer class="footer">
-        © 2026 SENTINAL — STATUS: OPERATIONAL
-    </footer>
-
-    <script>
-        const panelId = '<%= panel ? panel._id : "" %>';
-        const guildId = '<%= guild.id %>';
-
-        function showToast(message, type) {
-            type = type || 'info';
-            var container = document.getElementById('toastContainer');
-            var toast = document.createElement('div');
-            toast.className = 'toast ' + type;
-            var icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
-            toast.innerHTML = `
-                <span class="toast-icon"><i class="fas fa-${icon}"></i></span>
-                <span class="toast-content">${message}</span>
-                <button class="toast-close" onclick="this.parentElement.remove();">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            container.appendChild(toast);
-            setTimeout(function() {
-                if (toast.parentElement) {
-                    toast.classList.add('hiding');
-                    setTimeout(function() { if (toast.parentElement) toast.remove(); }, 300);
+// ============ REFRESH TOKEN FUNCTION ============
+async function refreshAccessToken(refresh_token) {
+    try {
+        const response = await axios.post(
+            'https://discord.com/api/oauth2/token',
+            new URLSearchParams({
+                client_id: process.env.DISCORD_CLIENT_ID,
+                client_secret: process.env.DISCORD_CLIENT_SECRET,
+                refresh_token: refresh_token,
+                grant_type: 'refresh_token'
+            }),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            }, 4000);
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('❌ Token refresh error:', error.message);
+        throw error;
+    }
+}
+
+// ============ ENSURE VALID TOKEN ============
+async function ensureValidToken(req, res, next) {
+    if (!req.session.user) return res.redirect('/auth/login');
+
+    const tokenExpires = req.session.user.token_expires || 0;
+    const now = Date.now();
+
+    if (now > tokenExpires - 300000) {
+        try {
+            const tokenData = await refreshAccessToken(req.session.user.refresh_token);
+            req.session.user.access_token = tokenData.access_token;
+            req.session.user.token_expires = Date.now() + (tokenData.expires_in * 1000);
+            if (tokenData.refresh_token) {
+                req.session.user.refresh_token = tokenData.refresh_token;
+            }
+            req.session.save();
+        } catch (error) {
+            console.error('❌ Token refresh failed:', error.message);
+            return res.redirect('/auth/login?error=session_expired');
         }
+    }
+    next();
+}
 
-        async function updatePanel(event) {
-            event.preventDefault();
-            var form = document.getElementById('panelForm');
-            var formData = new FormData(form);
+// ============ DASHBOARD HOME ============
+router.get('/dashboard', isAuthenticated, (req, res) => {
+    return res.redirect('/servers');
+});
 
-            var templates = [];
-            document.querySelectorAll('input[name="templates"]:checked').forEach(function(el) {
-                templates.push(el.value);
+// ============ SERVERS LIST ============
+router.get('/servers', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        console.log('📋 Servers route accessed');
+        
+        const response = await axios.get('https://discord.com/api/users/@me/guilds', {
+            headers: {
+                Authorization: `Bearer ${req.session.user.access_token}`
+            }
+        });
+        
+        const guilds = response.data.filter(g => 
+            (g.permissions & 0x8) || (g.permissions & 0x20)
+        );
+        
+        const botToken = process.env.DISCORD_TOKEN;
+        const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
+        const guildsWithBotStatus = [];
+        
+        for (const guild of guilds) {
+            let botInServer = false;
+            
+            if (botToken) {
+                try {
+                    await axios.get(`https://discord.com/api/guilds/${guild.id}/members/${clientId}`, {
+                        headers: {
+                            Authorization: `Bot ${botToken}`
+                        }
+                    });
+                    botInServer = true;
+                } catch (botError) {
+                    botInServer = false;
+                }
+            }
+            
+            guildsWithBotStatus.push({
+                id: guild.id,
+                name: guild.name,
+                icon: guild.icon,
+                permissions: guild.permissions,
+                approximate_member_count: guild.approximate_member_count || 0,
+                approximate_presence_count: guild.approximate_presence_count || 0,
+                botInServer: botInServer
             });
+        }
+        
+        return res.render('servers', {
+            title: 'My Servers — Sentinal',
+            user: req.session.user,
+            guilds: guildsWithBotStatus,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error fetching guilds:', error);
+        
+        if (error.response?.status === 401) {
+            req.session.destroy(() => {
+                res.redirect('/auth/login?error=session_expired');
+            });
+            return;
+        }
+        
+        return res.status(500).render('error', {
+            message: 'Failed to load your servers. Please try again later.',
+            title: 'Error'
+        });
+    }
+});
 
-            var data = {
-                name: formData.get('name'),
-                description: formData.get('description'),
-                status: formData.get('status'),
-                channelId: formData.get('channelId'),
-                message: formData.get('message'),
-                templates: templates,
-                buttonStyle: formData.get('buttonStyle')
+// ============ SERVER SETTINGS ============
+router.get('/servers/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        console.log('🔍 Loading server settings for guild:', guildId);
+        
+        let GuildConfig;
+        try {
+            GuildConfig = require('../models/GuildConfig');
+        } catch (err) {
+            GuildConfig = {
+                findOne: async () => null,
+                findOneAndUpdate: async () => ({})
             };
-
-            try {
-                var response = await fetch('/api/panels/' + panelId, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                var result = await response.json();
-                if (result.success) {
-                    showToast('✅ Panel updated successfully!', 'success');
-                    setTimeout(function() {
-                        window.location.href = '/servers/' + guildId + '/panels';
-                    }, 1500);
-                } else {
-                    showToast('❌ Error: ' + (result.error || 'Unknown error'), 'error');
+        }
+        
+        const config = await GuildConfig.findOne({ guildId }).catch(() => null);
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0,
+            approximate_presence_count: 0
+        };
+        let botInServer = false;
+        const clientId = process.env.DISCORD_CLIENT_ID || '1493217033956102215';
+        const botToken = process.env.DISCORD_TOKEN;
+        const inviteLink = `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot+applications.commands&guild_id=${guildId}`;
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
                 }
-            } catch (error) {
-                showToast('❌ Error: ' + error.message, 'error');
+            });
+            
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0,
+                    approximate_presence_count: userGuild.approximate_presence_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild from user list:', guildsError.message);
+        }
+        
+        if (botToken) {
+            try {
+                await axios.get(`https://discord.com/api/guilds/${guildId}/members/${clientId}`, {
+                    headers: {
+                        Authorization: `Bot ${botToken}`
+                    }
+                });
+                botInServer = true;
+            } catch (botError) {
+                botInServer = false;
             }
         }
+        
+        return res.render('server', {
+            title: 'Server Settings — Sentinal',
+            user: req.session.user,
+            isAuthenticated: true,
+            guild: guildData,
+            config: config || {},
+            inviteLink: inviteLink,
+            botInServer: botInServer
+        });
+        
+    } catch (error) {
+        console.error('Error loading server settings:', error.message);
+        
+        if (error.response?.status === 401) {
+            req.session.destroy(() => {
+                res.redirect('/auth/login?error=session_expired');
+            });
+            return;
+        }
+        
+        res.status(500).render('error', {
+            message: 'Failed to load server settings. Please try again later.',
+            title: 'Error'
+        });
+    }
+});
 
-        function deletePanel() {
-            if (!confirm('Are you sure you want to delete this panel? This action cannot be undone.')) {
-                return;
-            }
-
-            fetch('/api/panels/' + panelId, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(function(response) { return response.json(); })
-            .then(function(data) {
-                if (data.success) {
-                    showToast('✅ Panel deleted successfully!', 'success');
-                    setTimeout(function() {
-                        window.location.href = '/servers/' + guildId + '/panels';
-                    }, 1500);
-                } else {
-                    showToast('❌ Error: ' + (data.error || 'Unknown error'), 'error');
+// ============ SERVER APPLICATIONS ============
+router.get('/servers/:guildId/applications', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        console.log('📋 Loading applications for guild:', guildId);
+        
+        let ApplicationForm;
+        try {
+            ApplicationForm = require('../models/ApplicationForm');
+        } catch (err) {
+            ApplicationForm = { find: async () => [] };
+        }
+        
+        const applications = await ApplicationForm.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        console.log(`✅ Found ${applications.length} applications`);
+        
+        let GuildConfig;
+        try {
+            GuildConfig = require('../models/GuildConfig');
+        } catch (err) {
+            GuildConfig = { findOne: async () => null };
+        }
+        
+        const config = await GuildConfig.findOne({ guildId }).catch(() => null);
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
                 }
-            })
-            .catch(function(error) {
-                showToast('❌ Error: ' + error.message, 'error');
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
+        res.render('applications', {
+            title: 'Applications — Sentinal',
+            user: req.session.user,
+            guild: guildData,
+            config: config || {},
+            applications: applications,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading applications:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load applications',
+            title: 'Error'
+        });
+    }
+});
+
+// ============ SERVER TICKETS ============
+router.get('/servers/:guildId/tickets', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        console.log('📋 Loading tickets for guild:', guildId);
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { find: async () => [] };
+        }
+        
+        const tickets = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        console.log(`✅ Found ${tickets.length} ticket templates`);
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
+        res.render('tickets', {
+            title: 'Tickets — Sentinal',
+            user: req.session.user,
+            guild: guildData,
+            tickets: tickets,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading tickets:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load tickets',
+            title: 'Error'
+        });
+    }
+});
+
+// ============ SERVER TICKETS TEMPLATES ============
+router.get('/servers/:guildId/tickets/templates', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        console.log('📋 Loading templates for guild:', guildId);
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { find: async () => [] };
+        }
+        
+        const templates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        console.log(`✅ Found ${templates.length} templates`);
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
+        res.render('templates/index', {
+            title: 'Templates — Sentinal',
+            user: req.session.user,
+            guild: guildData,
+            templates: templates,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading templates:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load templates',
+            title: 'Error'
+        });
+    }
+});
+
+// ============ CREATE TEMPLATE PAGE ============
+router.get('/servers/:guildId/tickets/create', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        console.log('📋 Loading create template page for guild:', guildId);
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
+        let roles = [];
+        const botToken = process.env.DISCORD_TOKEN;
+        if (botToken) {
+            try {
+                const rolesResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/roles`, {
+                    headers: {
+                        Authorization: `Bot ${botToken}`
+                    }
+                });
+                roles = rolesResponse.data.map(r => ({
+                    id: r.id,
+                    name: r.name,
+                    color: r.color
+                }));
+            } catch (err) {
+                console.warn('Could not fetch roles:', err.message);
+            }
+        }
+        
+        let channels = [];
+        if (botToken) {
+            try {
+                const channelsResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/channels`, {
+                    headers: {
+                        Authorization: `Bot ${botToken}`
+                    }
+                });
+                channels = channelsResponse.data
+                    .filter(ch => ch.type === 0 || ch.type === 2 || ch.type === 4)
+                    .map(ch => ({
+                        id: ch.id,
+                        name: ch.name,
+                        type: ch.type
+                    }));
+            } catch (err) {
+                console.warn('Could not fetch channels:', err.message);
+            }
+        }
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { find: async () => [] };
+        }
+        const allTemplates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        
+        res.render('ticket-edit', {
+            title: 'Create Template — Sentinal',
+            user: req.session.user,
+            guild: guildData,
+            template: null,
+            roles: roles,
+            channels: channels,
+            templates: allTemplates,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading create template page:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load create template page',
+            title: 'Error'
+        });
+    }
+});
+
+// ============ TICKET EDIT PAGE ============
+router.get('/servers/:guildId/tickets/edit/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const templateId = req.params.id;
+        const guildId = req.params.guildId;
+        console.log('📋 Loading ticket template for edit:', templateId);
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { findById: async () => null };
+        }
+        
+        const template = await TicketTemplate.findById(templateId);
+        
+        if (!template) {
+            return res.status(404).render('error', {
+                message: 'Ticket template not found',
+                title: 'Not Found'
             });
         }
+        
+        let roles = [];
+        const botToken = process.env.DISCORD_TOKEN;
+        if (botToken) {
+            try {
+                const rolesResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/roles`, {
+                    headers: {
+                        Authorization: `Bot ${botToken}`
+                    }
+                });
+                roles = rolesResponse.data.map(function(r) {
+                    return {
+                        id: r.id,
+                        name: r.name,
+                        color: r.color
+                    };
+                });
+            } catch (err) {
+                console.warn('Could not fetch roles:', err.message);
+            }
+        }
+        
+        let channels = [];
+        if (botToken) {
+            try {
+                const channelsResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/channels`, {
+                    headers: {
+                        Authorization: `Bot ${botToken}`
+                    }
+                });
+                channels = channelsResponse.data
+                    .filter(function(ch) { return ch.type === 0 || ch.type === 2 || ch.type === 4; })
+                    .map(function(ch) {
+                        return {
+                            id: ch.id,
+                            name: ch.name,
+                            type: ch.type
+                        };
+                    });
+            } catch (err) {
+                console.warn('Could not fetch channels:', err.message);
+            }
+        }
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(function(g) { return g.id === guildId; });
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
+        let allTemplates = [];
+        try {
+            allTemplates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(function() { return []; });
+        } catch (err) {
+            console.warn('Could not fetch templates:', err.message);
+        }
+        
+        res.render('ticket-edit', {
+            title: 'Edit Template — Sentinal',
+            user: req.session.user,
+            guild: guildData,
+            template: template,
+            roles: roles,
+            channels: channels,
+            templates: allTemplates,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading ticket template:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load ticket template',
+            title: 'Error'
+        });
+    }
+});
 
-        window.showToast = showToast;
-        window.updatePanel = updatePanel;
-        window.deletePanel = deletePanel;
-    </script>
+// ============ SERVER PANELS ============
+router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        console.log('📋 Loading panels for guild:', guildId);
+        
+        let Panel;
+        try {
+            Panel = require('../models/Panel');
+        } catch (err) {
+            Panel = { find: async () => [] };
+        }
+        
+        const panels = await Panel.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        console.log(`✅ Found ${panels.length} panels`);
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { find: async () => [] };
+        }
+        const templates = await TicketTemplate.find({ guildId, status: 'active' }).catch(() => []);
+        
+        res.render('panels', {
+            title: 'Panels — Sentinal',
+            user: req.session.user,
+            guild: guildData,
+            panels: panels,
+            templates: templates,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading panels:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load panels',
+            title: 'Error'
+        });
+    }
+});
 
-</body>
-</html>
+// ============ SERVER TICKETS PANELS ============
+router.get('/servers/:guildId/tickets/panels', isAuthenticated, ensureValidToken, async (req, res) => {
+    return res.redirect('/servers/' + req.params.guildId + '/panels');
+});
+
+// ============ CREATE PANEL PAGE ============
+router.get('/servers/:guildId/panels/create', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        console.log('📋 Loading create panel page for guild:', guildId);
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
+        let channels = [];
+        const botToken = process.env.DISCORD_TOKEN;
+        if (botToken) {
+            try {
+                const channelsResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/channels`, {
+                    headers: {
+                        Authorization: `Bot ${botToken}`
+                    }
+                });
+                channels = channelsResponse.data
+                    .filter(ch => ch.type === 0)
+                    .map(ch => ({
+                        id: ch.id,
+                        name: ch.name
+                    }));
+            } catch (err) {
+                console.warn('Could not fetch channels:', err.message);
+            }
+        }
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { find: async () => [] };
+        }
+        const templates = await TicketTemplate.find({ guildId, status: 'active' }).catch(() => []);
+        
+        res.render('panels/create', {
+            title: 'Create Panel — Sentinal',
+            user: req.session.user,
+            guild: guildData,
+            templates: templates,
+            channels: channels,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading create panel page:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load create panel page',
+            title: 'Error'
+        });
+    }
+});
+
+// ============ EDIT PANEL PAGE ============
+router.get('/servers/:guildId/panels/:panelId/edit', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        const panelId = req.params.panelId;
+        console.log('📋 Loading edit panel page for panel:', panelId);
+        
+        let Panel;
+        try {
+            Panel = require('../models/Panel');
+        } catch (err) {
+            Panel = { findById: async () => null };
+        }
+        
+        const panel = await Panel.findById(panelId);
+        if (!panel) {
+            return res.status(404).render('error', {
+                message: 'Panel not found',
+                title: 'Not Found'
+            });
+        }
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
+        let channels = [];
+        const botToken = process.env.DISCORD_TOKEN;
+        if (botToken) {
+            try {
+                const channelsResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/channels`, {
+                    headers: {
+                        Authorization: `Bot ${botToken}`
+                    }
+                });
+                channels = channelsResponse.data
+                    .filter(ch => ch.type === 0)
+                    .map(ch => ({
+                        id: ch.id,
+                        name: ch.name
+                    }));
+            } catch (err) {
+                console.warn('Could not fetch channels:', err.message);
+            }
+        }
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { find: async () => [] };
+        }
+        const templates = await TicketTemplate.find({ guildId, status: 'active' }).catch(() => []);
+        
+        res.render('panels/edit', {
+            title: 'Edit Panel — Sentinal',
+            user: req.session.user,
+            guild: guildData,
+            panel: panel,
+            templates: templates,
+            channels: channels,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading edit panel page:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load edit panel page',
+            title: 'Error'
+        });
+    }
+});
+
+// ============ API: PANELS ============
+
+// CREATE PANEL
+router.post('/api/panels', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const panelData = req.body;
+        
+        // Validate required fields
+        if (!panelData.guildId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'guildId is required' 
+            });
+        }
+        if (!panelData.channelId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'channelId is required' 
+            });
+        }
+        if (!panelData.name || !panelData.name.trim()) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Panel name is required' 
+            });
+        }
+        
+        // Create the panel
+        const panel = new Panel({
+            guildId: panelData.guildId,
+            name: panelData.name.trim(),
+            description: panelData.description || '',
+            channelId: panelData.channelId,
+            channelName: panelData.channelName || '',
+            type: 'tickets',
+            enabled: panelData.enabled !== undefined ? panelData.enabled : true,
+            message: panelData.message || 'Need help? Click a button below to create a ticket.',
+            embed: panelData.embed || {},
+            components: panelData.components || [],
+            templates: panelData.templates || [],
+            syncStatus: 'pending',
+            ticketsOpened: 0,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+        
+        await panel.save();
+        
+        console.log(`✅ Panel created: ${panel.name} (${panel._id})`);
+        
+        res.json({ 
+            success: true, 
+            panelId: panel._id.toString(),
+            panel: panel 
+        });
+    } catch (error) {
+        console.error('Error creating panel:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
+// UPDATE PANEL
+router.put('/api/panels/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const panel = await Panel.findById(req.params.id);
+        
+        if (!panel) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Panel not found' 
+            });
+        }
+        
+        const { name, description, channelId, enabled, message, embed, components, templates, syncStatus, channelName } = req.body;
+        
+        panel.name = name || panel.name;
+        panel.description = description || panel.description;
+        panel.channelId = channelId || panel.channelId;
+        panel.channelName = channelName || panel.channelName;
+        if (enabled !== undefined) panel.enabled = enabled;
+        if (message !== undefined) panel.message = message;
+        if (embed !== undefined) panel.embed = embed;
+        if (components !== undefined) panel.components = components;
+        if (templates !== undefined) panel.templates = templates;
+        if (syncStatus !== undefined) panel.syncStatus = syncStatus;
+        panel.updatedAt = new Date();
+        
+        await panel.save();
+        
+        console.log(`✅ Panel updated: ${panel.name} (${panel._id})`);
+        
+        res.json({ 
+            success: true, 
+            panelId: panel._id.toString(),
+            panel: panel 
+        });
+    } catch (error) {
+        console.error('Error updating panel:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
+// GET PANEL
+router.get('/api/panels/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const panel = await Panel.findById(req.params.id);
+        
+        if (!panel) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Panel not found' 
+            });
+        }
+        
+        res.json({ 
+            success: true, 
+            panelId: panel._id.toString(),
+            panel: panel 
+        });
+    } catch (error) {
+        console.error('Error fetching panel:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
+// SEND PANEL TO DISCORD
+router.post('/api/panels/:panelId/send', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const panel = await Panel.findById(req.params.panelId);
+        
+        if (!panel) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Panel not found' 
+            });
+        }
+        
+        const guildId = req.body.guildId || panel.guildId;
+        if (!guildId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Guild ID is required' 
+            });
+        }
+        
+        const botToken = process.env.DISCORD_TOKEN;
+        if (!botToken) {
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Bot token not configured' 
+            });
+        }
+        
+        const channelId = panel.channelId;
+        if (!channelId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'No channel configured for this panel' 
+            });
+        }
+        
+        // Build components for Discord
+        const components = [];
+        if (panel.components && panel.components.length > 0) {
+            const buttons = panel.components.filter(c => c.enabled !== false);
+            
+            for (let i = 0; i < buttons.length; i += 5) {
+                const row = buttons.slice(i, i + 5);
+                const actionRow = {
+                    type: 1,
+                    components: row.map(comp => ({
+                        type: 2,
+                        style: 1,
+                        label: comp.label || 'Button',
+                        custom_id: `ticket_${panel._id}_${comp.templateId || 'default'}`,
+                        emoji: comp.emoji ? { name: comp.emoji } : undefined,
+                        disabled: false
+                    }))
+                };
+                components.push(actionRow);
+            }
+        }
+        
+        const messagePayload = {
+            content: panel.message || 'Need help? Click a button below to create a ticket.',
+            components: components
+        };
+        
+        if (panel.embed && panel.embed.title) {
+            const embedColor = panel.embed.color ? 
+                parseInt(panel.embed.color.replace('#', ''), 16) : 
+                0x3DFFB8;
+            
+            messagePayload.embeds = [{
+                title: panel.embed.title,
+                description: panel.embed.description || '',
+                color: embedColor
+            }];
+        }
+        
+        const response = await axios.post(
+            `https://discord.com/api/channels/${channelId}/messages`,
+            messagePayload,
+            {
+                headers: {
+                    Authorization: `Bot ${botToken}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        
+        panel.messageId = response.data.id;
+        panel.syncStatus = 'synced';
+        panel.lastSent = new Date();
+        await panel.save();
+        
+        console.log(`✅ Panel sent to Discord: ${panel.name} -> channel ${channelId}`);
+        
+        res.json({ 
+            success: true, 
+            messageId: response.data.id,
+            panelId: panel._id.toString(),
+            channelId: channelId
+        });
+    } catch (error) {
+        console.error('Error sending panel to Discord:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.response?.data?.message || error.message 
+        });
+    }
+});
+
+// DUPLICATE PANEL
+router.post('/api/panels/:panelId/duplicate', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const original = await Panel.findById(req.params.panelId);
+        
+        if (!original) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Panel not found' 
+            });
+        }
+        
+        const newPanel = new Panel({
+            ...original.toObject(),
+            _id: undefined,
+            name: original.name + ' (Copy)',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            syncStatus: 'pending',
+            messageId: null,
+            lastSent: null,
+            ticketsOpened: 0
+        });
+        
+        await newPanel.save();
+        
+        res.json({ 
+            success: true, 
+            panelId: newPanel._id.toString(),
+            panel: newPanel 
+        });
+    } catch (error) {
+        console.error('Error duplicating panel:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
+// TOGGLE PANEL
+router.post('/api/panels/:id/toggle', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const panel = await Panel.findById(req.params.id);
+        
+        if (!panel) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Panel not found' 
+            });
+        }
+        
+        panel.enabled = !panel.enabled;
+        await panel.save();
+        
+        res.json({ 
+            success: true, 
+            enabled: panel.enabled,
+            panelId: panel._id.toString()
+        });
+    } catch (error) {
+        console.error('Error toggling panel:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
+// DELETE PANEL
+router.delete('/api/panels/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const Panel = require('../models/Panel');
+        const panel = await Panel.findByIdAndDelete(req.params.id);
+        
+        if (!panel) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Panel not found' 
+            });
+        }
+        
+        console.log(`✅ Panel deleted: ${panel.name} (${panel._id})`);
+        
+        res.json({ 
+            success: true,
+            panelId: req.params.id
+        });
+    } catch (error) {
+        console.error('Error deleting panel:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+});
+
+// ============ API: TICKETS ============
+router.post('/api/tickets', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const TicketTemplate = require('../models/TicketTemplate');
+        const ticket = await TicketTemplate.create(req.body);
+        res.json({ success: true, ticket: ticket });
+    } catch (error) {
+        console.error('Error creating ticket:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.get('/api/tickets/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const TicketTemplate = require('../models/TicketTemplate');
+        const ticket = await TicketTemplate.findById(req.params.id);
+        if (!ticket) {
+            return res.status(404).json({ success: false, error: 'Ticket not found' });
+        }
+        res.json({ success: true, ticket: ticket });
+    } catch (error) {
+        console.error('Error fetching ticket:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.put('/api/tickets/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const TicketTemplate = require('../models/TicketTemplate');
+        const ticket = await TicketTemplate.findById(req.params.id);
+        if (!ticket) {
+            return res.status(404).json({ success: false, error: 'Ticket not found' });
+        }
+        
+        const { name, category, description, enabled, channelName, maxTickets, blockedRoles, requiredRoles, supportRoles, ticketClaiming, actionOnLeave, pingSupport, rateSupport, formDescription, questions, transcriptChannel, topic, welcomeMessage, pinWelcome, autoMentionSupport, lockOnClose, deleteOnClose, autoClose, permissions, customButtons, creatorCanClose, blockedMatchMode, requiredMatchMode } = req.body;
+        
+        ticket.name = name || ticket.name;
+        ticket.category = category || ticket.category;
+        ticket.description = description || ticket.description;
+        if (enabled !== undefined) ticket.enabled = enabled;
+        ticket.channelName = channelName || ticket.channelName;
+        ticket.maxTickets = maxTickets || ticket.maxTickets || 3;
+        ticket.blockedRoles = blockedRoles || ticket.blockedRoles || [];
+        ticket.requiredRoles = requiredRoles || ticket.requiredRoles || [];
+        ticket.supportRoles = supportRoles || ticket.supportRoles || [];
+        ticket.ticketClaiming = ticketClaiming !== undefined ? ticketClaiming : (ticket.ticketClaiming || false);
+        ticket.actionOnLeave = actionOnLeave || ticket.actionOnLeave || 'nothing';
+        ticket.pingSupport = pingSupport !== undefined ? pingSupport : (ticket.pingSupport || false);
+        ticket.rateSupport = rateSupport !== undefined ? rateSupport : (ticket.rateSupport || false);
+        ticket.formDescription = formDescription || ticket.formDescription || '';
+        ticket.questions = questions || ticket.questions || [];
+        ticket.transcriptChannel = transcriptChannel || ticket.transcriptChannel || '';
+        ticket.topic = topic || ticket.topic || '';
+        ticket.welcomeMessage = welcomeMessage || ticket.welcomeMessage || '';
+        ticket.pinWelcome = pinWelcome !== undefined ? pinWelcome : (ticket.pinWelcome || false);
+        ticket.autoMentionSupport = autoMentionSupport !== undefined ? autoMentionSupport : (ticket.autoMentionSupport || true);
+        ticket.lockOnClose = lockOnClose !== undefined ? lockOnClose : (ticket.lockOnClose || true);
+        ticket.deleteOnClose = deleteOnClose !== undefined ? deleteOnClose : (ticket.deleteOnClose || false);
+        ticket.creatorCanClose = creatorCanClose !== undefined ? creatorCanClose : (ticket.creatorCanClose || false);
+        ticket.blockedMatchMode = blockedMatchMode || ticket.blockedMatchMode || 'hasAny';
+        ticket.requiredMatchMode = requiredMatchMode || ticket.requiredMatchMode || 'hasAny';
+        ticket.customButtons = customButtons || ticket.customButtons || [];
+        if (autoClose) {
+            ticket.autoClose = autoClose;
+        }
+        if (permissions) {
+            ticket.permissions = permissions;
+        }
+        
+        await ticket.save();
+        res.json({ success: true, ticket: ticket });
+    } catch (error) {
+        console.error('Error updating ticket:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.delete('/api/tickets/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const TicketTemplate = require('../models/TicketTemplate');
+        await TicketTemplate.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting ticket:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: TICKET TEMPLATES ============
+router.get('/api/tickets/templates/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        const TicketTemplate = require('../models/TicketTemplate');
+        const templates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 });
+        res.json({ success: true, templates });
+    } catch (error) {
+        console.error('Error fetching ticket templates:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: QUICK RESPONSES ============
+router.get('/api/quick-responses/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        let QuickResponse;
+        try {
+            QuickResponse = require('../models/QuickResponse');
+        } catch (err) {
+            return res.status(500).json({ success: false, error: 'QuickResponse model not found' });
+        }
+        
+        const responses = await QuickResponse.find({ guildId }).sort({ createdAt: -1 });
+        res.json({ success: true, responses });
+    } catch (error) {
+        console.error('Error fetching quick responses:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.post('/api/quick-responses', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const QuickResponse = require('../models/QuickResponse');
+        const response = await QuickResponse.create(req.body);
+        res.json({ success: true, response });
+    } catch (error) {
+        console.error('Error creating quick response:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.put('/api/quick-responses/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const QuickResponse = require('../models/QuickResponse');
+        const response = await QuickResponse.findById(req.params.id);
+        if (!response) {
+            return res.status(404).json({ success: false, error: 'Response not found' });
+        }
+        
+        const { name, content, enabled } = req.body;
+        response.name = name || response.name;
+        response.content = content || response.content;
+        if (enabled !== undefined) response.enabled = enabled;
+        
+        await response.save();
+        res.json({ success: true, response });
+    } catch (error) {
+        console.error('Error updating quick response:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.delete('/api/quick-responses/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const QuickResponse = require('../models/QuickResponse');
+        await QuickResponse.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting quick response:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: TRANSCRIPTS ============
+router.get('/api/transcripts/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        let Transcript;
+        try {
+            Transcript = require('../models/Transcript');
+        } catch (err) {
+            return res.status(500).json({ success: false, error: 'Transcript model not found' });
+        }
+        
+        const transcripts = await Transcript.find({ guildId })
+            .sort({ createdAt: -1 })
+            .limit(50);
+        res.json({ success: true, transcripts });
+    } catch (error) {
+        console.error('Error fetching transcripts:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.get('/api/transcripts/:guildId/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        const id = req.params.id;
+        let Transcript;
+        try {
+            Transcript = require('../models/Transcript');
+        } catch (err) {
+            return res.status(500).json({ success: false, error: 'Transcript model not found' });
+        }
+        
+        const transcript = await Transcript.findOne({ _id: id, guildId });
+        if (!transcript) {
+            return res.status(404).json({ success: false, error: 'Transcript not found' });
+        }
+        res.json({ success: true, transcript });
+    } catch (error) {
+        console.error('Error fetching transcript:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: CONFIG ============
+router.get('/api/config/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        let GuildConfig;
+        try {
+            GuildConfig = require('../models/GuildConfig');
+        } catch (err) {
+            return res.status(500).json({ 
+                success: false, 
+                error: 'GuildConfig model not found' 
+            });
+        }
+        
+        const config = await GuildConfig.findOne({ guildId });
+        
+        if (!config) {
+            return res.json({
+                success: true,
+                config: {
+                    guildId: guildId,
+                    autoRoles: {
+                        enabled: false,
+                        ignoreBots: true,
+                        roles: [],
+                        maxRoles: 2
+                    }
+                }
+            });
+        }
+        
+        res.json({ success: true, config });
+    } catch (error) {
+        console.error('Error fetching config:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.post('/api/config/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        const settings = req.body;
+        
+        const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+            headers: {
+                Authorization: `Bearer ${req.session.user.access_token}`
+            }
+        });
+        
+        const userGuild = guildsResponse.data.find(g => g.id === guildId);
+        
+        if (!userGuild || !(userGuild.permissions & 0x8)) {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'You do not have administrator access to this server.' 
+            });
+        }
+        
+        let GuildConfig;
+        try {
+            GuildConfig = require('../models/GuildConfig');
+        } catch (err) {
+            return res.status(500).json({ 
+                success: false, 
+                error: 'GuildConfig model not found' 
+            });
+        }
+        
+        let config = await GuildConfig.findOne({ guildId });
+        
+        if (!config) {
+            config = new GuildConfig({ guildId });
+        }
+        
+        if (settings.autoRoles) {
+            config.autoRoles = {
+                enabled: settings.autoRoles.enabled !== undefined ? settings.autoRoles.enabled : false,
+                ignoreBots: settings.autoRoles.ignoreBots !== undefined ? settings.autoRoles.ignoreBots : true,
+                roles: settings.autoRoles.roles || [],
+                maxRoles: settings.autoRoles.maxRoles || 2
+            };
+        }
+        
+        if (settings.welcomeMessage) config.welcomeMessage = settings.welcomeMessage;
+        if (settings.ticketCategory) config.ticketCategory = settings.ticketCategory;
+        if (settings.ticketSupportRole) config.ticketSupportRole = settings.ticketSupportRole;
+        if (settings.ticketLogChannel) config.ticketLogChannel = settings.ticketLogChannel;
+        if (settings.modLogChannel) config.modLogChannel = settings.modLogChannel;
+        if (settings.memberLogChannel) config.memberLogChannel = settings.memberLogChannel;
+        if (settings.welcomeChannel) config.welcomeChannel = settings.welcomeChannel;
+        
+        config.updatedAt = new Date();
+        await config.save();
+        
+        console.log('✅ Config saved for guild:', guildId);
+        
+        res.json({ success: true, message: 'Settings saved' });
+    } catch (error) {
+        console.error('Error saving config:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: SERVER ROLES ============
+router.get('/api/servers/:guildId/roles', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        const botToken = process.env.DISCORD_TOKEN;
+        
+        if (!botToken) {
+            return res.status(500).json({ success: false, error: 'Bot token not configured' });
+        }
+        
+        const response = await axios.get(`https://discord.com/api/guilds/${guildId}/roles`, {
+            headers: {
+                Authorization: `Bot ${botToken}`
+            }
+        });
+        
+        const roles = response.data
+            .filter(role => role.name !== '@everyone')
+            .sort((a, b) => b.position - a.position)
+            .map(role => ({
+                id: role.id,
+                name: role.name,
+                color: role.color,
+                position: role.position,
+                managed: role.managed,
+                mentionable: role.mentionable,
+                hoist: role.hoist,
+                permissions: role.permissions
+            }));
+        
+        res.json({ success: true, roles });
+    } catch (error) {
+        console.error('Error fetching roles:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: SERVER CHANNELS ============
+router.get('/api/servers/:guildId/channels', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        const botToken = process.env.DISCORD_TOKEN;
+        
+        if (!botToken) {
+            return res.status(500).json({ success: false, error: 'Bot token not configured' });
+        }
+        
+        const response = await axios.get(`https://discord.com/api/guilds/${guildId}/channels`, {
+            headers: {
+                Authorization: `Bot ${botToken}`
+            }
+        });
+        
+        const channels = response.data
+            .filter(ch => ch.type === 0 || ch.type === 2 || ch.type === 4)
+            .map(ch => ({
+                id: ch.id,
+                name: ch.name,
+                type: ch.type,
+                position: ch.position,
+                parent_id: ch.parent_id
+            }));
+        
+        res.json({ success: true, channels });
+    } catch (error) {
+        console.error('Error fetching channels:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============ API: GUILD INFO ============
+router.get('/api/guilds/:guildId', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const guildId = req.params.guildId;
+        const botToken = process.env.DISCORD_TOKEN;
+        
+        if (!botToken) {
+            return res.status(500).json({ success: false, error: 'Bot token not configured' });
+        }
+        
+        const response = await axios.get(`https://discord.com/api/guilds/${guildId}`, {
+            headers: {
+                Authorization: `Bot ${botToken}`
+            }
+        });
+        
+        res.json({ success: true, guild: response.data });
+    } catch (error) {
+        console.error('Error fetching guild info:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+module.exports = router;
