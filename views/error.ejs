@@ -3,83 +3,1166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title || 'Error — Sentinal' %></title>
+    <title><%= title || 'Create Panel — Sentinal' %></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --ink: #060A10;
+            --panel: #0D1520;
+            --panel-raised: #111D2C;
+            --panel-hover: #162033;
+            --line: rgba(255,255,255,0.06);
+            --line-bright: rgba(255,255,255,0.1);
+            --text: #E6EDF6;
+            --muted: #6C7A90;
+            --muted-dim: #3E4A5C;
+            --signal: #3DFFB8;
+            --signal-tab: rgba(61,255,184,0.08);
+            --signal-glow: rgba(61,255,184,0.12);
+            --signal-hover: rgba(61,255,184,0.18);
+            --gold: #F5C842;
+            --gold-tab: rgba(245,200,66,0.12);
+            --violet: #8B7EFF;
+            --violet-tab: rgba(139,126,255,0.12);
+            --red: #F87171;
+            --red-bg: rgba(248,113,113,0.08);
+            --red-border: rgba(248,113,113,0.22);
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background: #05070C;
-            color: #E9EDF6;
+            background: var(--ink);
+            color: var(--text);
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--muted-dim); border-radius: 10px; }
+
+        .navbar {
+            background: rgba(6,10,16,0.85);
+            backdrop-filter: blur(20px) saturate(160%);
+            border-bottom: 1px solid var(--line);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .brand-logo {
+            width: 34px; height: 34px; border-radius: 10px;
+            background: var(--panel-raised); border: 1px solid var(--line-bright);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .brand-logo svg { width: 18px; height: 18px; }
+        .brand-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+        }
+        .navbar-center { display: flex; align-items: center; gap: 6px; }
+        .navbar-center a {
+            color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500;
+            padding: 6px 14px; border-radius: 8px; transition: var(--transition);
+        }
+        .navbar-center a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+        .navbar-center a.active { color: #fff; background: rgba(255,255,255,0.06); }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .navbar-right .actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 100px;
+            padding: 4px 14px 4px 4px;
+        }
+        .user-avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--panel-raised); overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700;
+        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 12px; font-weight: 500; color: var(--text); }
+        .user-plan {
+            font-size: 9px; font-weight: 600; color: var(--signal);
+            background: var(--signal-tab); border: 1px solid rgba(61,255,184,0.2);
+            border-radius: 100px; padding: 2px 8px; letter-spacing: 0.3px;
+        }
+        .logout-btn {
+            background: transparent; border: 1px solid var(--line); border-radius: 8px;
+            padding: 6px 12px; color: var(--muted); cursor: pointer; font-size: 12px;
+            transition: var(--transition); text-decoration: none;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .logout-btn:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+
+        .btn-cancel {
+            padding: 6px 16px; border-radius: 8px; border: 1px solid var(--line);
+            background: transparent; color: var(--text); font-weight: 500; font-size: 12px;
+            cursor: pointer; transition: var(--transition); font-family: 'Inter', sans-serif;
+        }
+        .btn-cancel:hover { background: rgba(255,255,255,0.05); }
+        .btn-save {
+            padding: 6px 16px; border-radius: 8px; border: none;
+            background: var(--signal); color: var(--ink); font-weight: 600; font-size: 12px;
+            cursor: pointer; transition: var(--transition); font-family: 'Inter', sans-serif;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--signal-glow); }
+        .btn-publish {
+            padding: 6px 16px; border-radius: 8px; border: none;
+            background: var(--violet); color: #fff; font-weight: 600; font-size: 12px;
+            cursor: pointer; transition: var(--transition); font-family: 'Inter', sans-serif;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-publish:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
+
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 32px 80px 32px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .page-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .page-header p {
+            font-size: 14px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+        .page-header .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .page-header .header-actions .btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-cancel-header {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+        .btn-cancel-header:hover { background: rgba(255,255,255,0.05); }
+        .btn-save-header {
+            background: var(--signal);
+            color: var(--ink);
+        }
+        .btn-save-header:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--signal-glow); }
+        .btn-publish-header {
+            background: var(--violet);
+            color: #fff;
+        }
+        .btn-publish-header:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
+
+        .form-container {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--line);
+        }
+        .form-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .form-section .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .form-section .section-desc {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        .settings-card {
+            background: var(--panel-raised);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            transition: var(--transition);
+        }
+        .settings-card:hover { border-color: var(--line-bright); }
+        .settings-card:last-child { margin-bottom: 0; }
+        .settings-card .card-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+        .settings-card .card-desc {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition);
+            outline: none;
+        }
+        .form-control:focus {
+            border-color: var(--signal);
+            box-shadow: 0 0 0 3px var(--signal-glow);
+        }
+        .form-control::placeholder { color: var(--muted-dim); }
+        select.form-control {
+            appearance: none;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236C7A90' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 60px;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .toggle {
+            width: 40px;
+            height: 22px;
+            background: var(--muted-dim);
+            border-radius: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .toggle.active { background: var(--signal); }
+        .toggle .toggle-knob {
+            width: 18px; height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .toggle.active .toggle-knob { left: 20px; }
+        .toggle-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .btn-add {
+            padding: 10px 16px;
+            border: 2px dashed var(--line);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            padding: 20px;
-            position: relative;
+            gap: 8px;
+            width: 100%;
+            margin-top: 12px;
         }
-        body::before {
-            content: '';
-            position: fixed;
-            top: -25%; left: 50%;
-            width: 800px; height: 800px;
-            transform: translateX(-50%);
-            background: radial-gradient(circle, rgba(61, 255, 184, 0.06) 0%, rgba(61, 255, 184, 0) 60%);
-            pointer-events: none;
+        .btn-add:hover {
+            border-color: var(--signal);
+            color: var(--signal);
+            background: var(--signal-tab);
         }
-        .error-container { max-width: 500px; position: relative; z-index: 2; }
-        .error-container .icon { font-size: 64px; margin-bottom: 16px; }
-        .error-container h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 36px; font-weight: 700;
-            margin-bottom: 8px; color: #FFFFFF;
+        .btn-add:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
         }
-        .error-container p {
-            color: #6C7588;
-            font-size: 16px;
-            margin-bottom: 24px;
-            line-height: 1.6;
+
+        .action-bar {
+            position: sticky;
+            bottom: 0;
+            background: rgba(6,10,16,0.92);
+            backdrop-filter: blur(16px) saturate(160%);
+            border-top: 1px solid var(--line);
+            padding: 12px 32px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            margin: 32px -32px -32px -32px;
+            border-radius: 0 0 var(--radius) var(--radius);
+            z-index: 10;
+            flex-wrap: wrap;
         }
-        .error-container .btn {
-            display: inline-block;
-            padding: 12px 28px;
+        .action-bar .btn {
+            padding: 8px 20px;
             border-radius: 8px;
-            background: #3DFFB8;
-            color: #04140F;
-            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-cancel-action {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+        .btn-cancel-action:hover { background: rgba(255,255,255,0.05); }
+        .btn-save-action {
+            background: var(--signal);
+            color: var(--ink);
+        }
+        .btn-save-action:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--signal-glow); }
+        .btn-publish-action {
+            background: var(--violet);
+            color: #fff;
+        }
+        .btn-publish-action:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,126,255,0.3); }
+
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 360px;
+            width: 100%;
+        }
+        .toast {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--signal);
+        }
+        .toast .toast-icon { color: var(--signal); font-size: 16px; flex-shrink: 0; }
+        .toast .toast-content { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; }
+        .toast .toast-close {
+            background: none; border: none; color: var(--muted-dim);
+            cursor: pointer; font-size: 13px; padding: 2px;
+        }
+        .toast .toast-close:hover { color: var(--text); }
+        .toast.error { border-left-color: var(--red); }
+        .toast.error .toast-icon { color: var(--red); }
+        .toast.success { border-left-color: var(--signal); }
+        .toast.success .toast-icon { color: var(--signal); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(30px); }
+        }
+        .toast.hiding { animation: slideOut 0.3s ease forwards; }
+
+        .footer {
+            border-top: 1px solid var(--line);
+            margin-top: 40px;
+            padding: 20px 32px;
+            text-align: center;
+            color: var(--muted-dim);
+            font-size: 12px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .component-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .component-card .comp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .component-card .comp-header .comp-title {
             font-weight: 600;
             font-size: 14px;
-            transition: all 0.2s ease;
-            margin: 4px;
+            color: var(--text);
+        }
+        .component-card .comp-header .comp-remove {
+            background: none;
             border: none;
+            color: var(--muted-dim);
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        .component-card .comp-header .comp-remove:hover { color: var(--red); }
+        .component-card .comp-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .component-card .comp-row .comp-field label {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 500;
+            display: block;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .component-card .comp-row .comp-field .form-control {
+            padding: 4px 8px;
+            font-size: 12px;
+            min-height: 28px;
+        }
+        .component-card .comp-row .comp-field .form-control.color-picker {
+            padding: 2px;
+            height: 36px;
             cursor: pointer;
         }
-        .error-container .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(61, 255, 184, 0.3);
+        .component-card .comp-color-preview {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 1px solid var(--line);
         }
-        .error-container .btn-secondary {
-            background: transparent;
-            color: #6C7588;
-            border: 1px solid rgba(255,255,255,0.07);
+        .component-card .comp-color-hex {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
         }
-        .error-container .btn-secondary:hover {
-            background: rgba(255,255,255,0.04);
-            color: #E9EDF6;
-            box-shadow: none;
+        .component-card .comp-preview-btn {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: default;
+            margin-top: 4px;
+        }
+        .component-card .comp-selected-template {
+            font-size: 11px;
+            color: var(--signal);
+            margin-left: 8px;
+        }
+
+        .template-selection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .template-selection-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .template-selection-item:hover { border-color: var(--line-bright); }
+        .template-selection-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--signal);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .template-selection-item label {
+            font-size: 13px;
+            cursor: pointer;
+            flex: 1;
+            color: var(--text);
+        }
+        .template-selection-item .template-status {
+            font-size: 10px;
+            color: var(--muted-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 100px;
+            background: var(--signal-tab);
+            color: var(--signal);
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 0 16px; }
+            .navbar-center { display: none; }
+            .page-wrapper { padding: 16px; }
+            .page-header { flex-direction: column; align-items: stretch; }
+            .page-header .header-actions { flex-wrap: wrap; }
+            .form-container { padding: 20px; }
+            .form-row { grid-template-columns: 1fr; }
+            .component-card .comp-row { grid-template-columns: 1fr; }
+            .template-selection-grid { grid-template-columns: 1fr; }
+            .action-bar { margin: 20px -20px -20px -20px; padding: 12px 16px; justify-content: center; }
+            .action-bar .btn { font-size: 11px; padding: 6px 14px; }
+            .toast-container { bottom: 12px; right: 12px; max-width: calc(100% - 24px); }
+            .page-header .header-actions .btn { font-size: 11px; padding: 6px 12px; }
         }
     </style>
 </head>
 <body>
-    <div class="error-container">
-        <div class="icon">⚠️</div>
-        <h1><%= title || 'Something Went Wrong' %></h1>
-        <p><%= message || 'An unexpected error occurred. Please try again later.' %></p>
-        <a href="/dashboard" class="btn">Go to Dashboard</a>
-        <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <a href="/dashboard" class="brand">
+            <div class="brand-logo">
+                <svg viewBox="0 0 245 240" fill="none"><path d="M104.4 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1.1-6.1-4.5-11.1-10.2-11.1zM140.9 103.9c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.2-5 10.2-11.1s-4.5-11.1-10.2-11.1z" fill="#3DFFB8"/><path d="M189.5 20H55.5C44.7 20 36 28.7 36 39.5v140.9c0 10.8 8.7 19.5 19.5 19.5h113.5l-5.3-18.5 12.8 11.9 12.1 11.2L209 220V39.5C209 28.7 200.3 20 189.5 20zM155.7 152.1s-3.6-4.3-6.6-8.1c13.1-3.7 18.1-11.9 18.1-11.9-4.1 2.7-8 4.6-11.5 5.9-5 2.1-9.8 3.5-14.5 4.3-9.6 1.8-18.4 1.3-25.9-.1-5.7-1.1-10.6-2.6-14.7-4.3-2.3-.9-4.8-2-7.3-3.4-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.4-.3-2-1.1-3.1-1.9-3.1-1.9 4.7 4.3 9.3 6.5 21.7 10.2-2.9 3.8-6.6 8.1-6.6 8.1-22 0-32.1-15.2-32.1-15.2 0-32.2 14.4-58.4 14.4-58.4 14.4-10.8 28.1-10.5 28.1-10.5l1 1.2C99.2 87.7 87.9 97.4 87.9 97.4s2.9-1.6 7.8-3.8c14.1-6.2 25.3-7.9 29.9-8.3.8-.1 1.5-.2 2.3-.2 8.2-1 17.5-1.3 27.2.2 12.9 2 26.7 7.5 40.8 17.3 0 0-10.8-10.2-28.5-13.7l1.4-1.6s13.7-.3 28.1 10.5c0 0 14.4 26.2 14.4 58.4 0 0-10.2 15.2-32.1 15.2z" fill="#3DFFB8"/></svg>
+            </div>
+            <span class="brand-name">Sentinal</span>
+        </a>
+        <div class="navbar-center">
+            <a href="/dashboard">Home</a>
+            <a href="/servers" class="active">Servers</a>
+            <a href="#" onclick="window.open('https://discord.gg/UmqmewYWRd','_blank'); return false;">Support</a>
+            <a href="#">Premium</a>
+        </div>
+        <div class="navbar-right">
+            <div class="actions">
+                <button class="btn-cancel" onclick="window.location.href='/servers/<%= guild.id %>/tickets/panels'"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn-save" onclick="savePanel()"><i class="fas fa-save"></i> Save</button>
+                <button class="btn-publish" onclick="publishPanel()"><i class="fas fa-rocket"></i> Publish</button>
+            </div>
+            <div class="user-pill">
+                <div class="user-avatar">
+                    <% if (locals.user && user.avatar) { %>
+                        <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar">
+                    <% } else { %>
+                        <%= locals.user ? (user.username ? user.username.charAt(0).toUpperCase() : 'U') : 'U' %>
+                    <% } %>
+                </div>
+                <span class="user-name"><%= locals.user ? (user.global_name || user.username) : 'User' %></span>
+                <span class="user-plan">Free</span>
+            </div>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="page-wrapper">
+
+        <!-- ===== PAGE HEADER ===== -->
+        <div class="page-header">
+            <div>
+                <h1>Create Ticket Panel</h1>
+                <p>Create a new ticket panel for your server</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-cancel-header" onclick="window.location.href='/servers/<%= guild.id %>/tickets/panels'"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn btn-save-header" onclick="savePanel()"><i class="fas fa-save"></i> Save</button>
+                <button class="btn btn-publish-header" onclick="publishPanel()"><i class="fas fa-rocket"></i> Publish</button>
+            </div>
+        </div>
+
+        <!-- ===== FORM CONTAINER ===== -->
+        <div class="form-container">
+            <form id="panelForm" onsubmit="return false;">
+                <input type="hidden" name="guildId" value="<%= guild.id %>">
+                <input type="hidden" name="panelId" id="panelId" value="">
+
+                <!-- ===== PANEL DETAILS ===== -->
+                <div class="form-section">
+                    <div class="section-title">Panel Details</div>
+                    <div class="section-desc">Configure the basic details for this ticket panel.</div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Panel Name</div>
+                        <div class="card-desc">A unique name to identify this panel.</div>
+                        <input type="text" id="panelName" class="form-control" placeholder="e.g., Support Panel" required>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Channel</div>
+                        <div class="card-desc">The channel where this panel will be displayed.</div>
+                        <select id="panelChannel" class="form-control">
+                            <option value="">Select a channel</option>
+                            <% if (channels) { %>
+                                <% channels.forEach(function(ch) { %>
+                                    <option value="<%= ch.id %>">#<%= ch.name %></option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Description</div>
+                        <div class="card-desc">Optional description for internal use.</div>
+                        <textarea id="panelDescription" class="form-control" rows="2" placeholder="What is this panel for?"></textarea>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Status</div>
+                        <div class="card-desc">Controls whether this panel is active.</div>
+                        <div class="toggle-wrapper">
+                            <div class="toggle active" onclick="toggleBool(this, 'panelEnabled')"><div class="toggle-knob"></div></div>
+                            <span class="toggle-label">Enabled</span>
+                        </div>
+                        <input type="hidden" name="panelEnabled" id="panelEnabled" value="true">
+                    </div>
+                </div>
+
+                <!-- ===== PANEL MESSAGE ===== -->
+                <div class="form-section">
+                    <div class="section-title">Panel Message</div>
+                    <div class="section-desc">Configure the message displayed on the panel.</div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Message Content</div>
+                        <div class="card-desc">The message text shown above the buttons.</div>
+                        <textarea id="panelMessage" class="form-control" rows="3" placeholder="Need help? Click a button below to create a ticket.">Need help? Click a button below to create a ticket.</textarea>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Embed (Optional)</div>
+                        <div class="card-desc">Customize the embed that appears with your panel.</div>
+                        <div class="form-row">
+                            <div>
+                                <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Embed Title</label>
+                                <input type="text" id="embedTitle" class="form-control" placeholder="e.g., Support Center">
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Embed Color</label>
+                                <input type="color" id="embedColor" class="form-control color-picker" value="#3DFFB8">
+                            </div>
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;">Embed Description</label>
+                            <textarea id="embedDescription" class="form-control" rows="2" placeholder="Describe what this panel is for..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== BUTTONS / COMPONENTS ===== -->
+                <div class="form-section">
+                    <div class="section-title">Buttons</div>
+                    <div class="section-desc">Configure the buttons that users click to open tickets.</div>
+
+                    <div id="componentsContainer">
+                        <div id="componentsGrid">
+                            <!-- Components rendered by JS -->
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <span id="componentsCount">Buttons: 0/5</span>
+                        <button type="button" class="btn-add" id="addComponentBtn" onclick="addComponent()" style="width: auto; padding: 6px 16px; margin-top: 0;">
+                            <i class="fas fa-plus"></i> Add Button
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ===== TEMPLATE SELECTION ===== -->
+                <div class="form-section">
+                    <div class="section-title">Ticket Templates</div>
+                    <div class="section-desc">Select which ticket templates this panel uses. Each button will use the template assigned to it above.</div>
+
+                    <div class="settings-card">
+                        <div class="card-label">Available Templates</div>
+                        <div class="card-desc">Templates must be active to appear in this list.</div>
+                        <div id="templateSelection" class="template-selection-grid">
+                            <% if (templates && templates.length > 0) { %>
+                                <% templates.forEach(function(t) { %>
+                                    <div class="template-selection-item" onclick="document.getElementById('template_<%= t._id %>').click();">
+                                        <input type="checkbox" class="template-checkbox" value="<%= t._id %>" id="template_<%= t._id %>" onchange="updateTemplateOptions()">
+                                        <label for="template_<%= t._id %>"><%= t.name %></label>
+                                        <span class="template-status"><%= t.status || 'active' %></span>
+                                    </div>
+                                <% }) %>
+                            <% } else { %>
+                                <p style="color: var(--muted); font-size: 13px; grid-column: 1 / -1;">No active templates found. <a href="/servers/<%= guild.id %>/tickets/create" style="color: var(--signal);">Create one</a></p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ACTION BAR ===== -->
+                <div class="action-bar">
+                    <button type="button" class="btn btn-cancel-action" onclick="window.location.href='/servers/<%= guild.id %>/tickets/panels'"><i class="fas fa-times"></i> Cancel</button>
+                    <button type="button" class="btn btn-save-action" onclick="savePanel()"><i class="fas fa-save"></i> Save Panel</button>
+                    <button type="button" class="btn btn-publish-action" onclick="publishPanel()"><i class="fas fa-rocket"></i> Publish to Discord</button>
+                </div>
+
+            </form>
+        </div>
+
     </div>
+
+    <footer class="footer">
+        © 2026 SENTINAL — STATUS: OPERATIONAL
+    </footer>
+
+    <script>
+        // ===== STATE =====
+        var MAX_COMPONENTS = 5;
+        var components = [];
+        var panelId = '';
+
+        // ===== TEMPLATE DATA =====
+        var templateData = [];
+        <% if (templates && templates.length > 0) { %>
+            templateData = [
+                <% templates.forEach(function(t, index) { %>
+                    { id: '<%= t._id %>', name: '<%= t.name %>' }<%= index < templates.length - 1 ? ',' : '' %>
+                <% }) %>
+            ];
+        <% } %>
+
+        // ===== TOAST =====
+        function showToast(message, type) {
+            type = type || 'info';
+            var container = document.getElementById('toastContainer');
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            var icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
+            toast.innerHTML = `
+                <span class="toast-icon"><i class="fas fa-${icon}"></i></span>
+                <span class="toast-content">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove();">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            document.getElementById('toastContainer').appendChild(toast);
+            setTimeout(function() {
+                if (toast.parentElement) {
+                    toast.classList.add('hiding');
+                    setTimeout(function() { if (toast.parentElement) toast.remove(); }, 300);
+                }
+            }, 4000);
+        }
+
+        // ===== TOGGLES =====
+        function toggleBool(el, id) {
+            el.classList.toggle('active');
+            var isActive = el.classList.contains('active');
+            document.getElementById(id).value = isActive ? 'true' : 'false';
+            var label = el.parentElement.querySelector('.toggle-label');
+            if (label) label.textContent = isActive ? 'Enabled' : 'Disabled';
+        }
+
+        // ===== GET SELECTED TEMPLATES =====
+        function getSelectedTemplates() {
+            var selected = [];
+            document.querySelectorAll('.template-checkbox:checked').forEach(function(cb) {
+                selected.push(cb.value);
+            });
+            return selected;
+        }
+
+        // ===== GET TEMPLATE NAME BY ID =====
+        function getTemplateName(id) {
+            if (!id) return 'Select a template';
+            var found = templateData.find(function(t) { return t.id === id; });
+            return found ? found.name : 'Select a template';
+        }
+
+        // ===== UPDATE TEMPLATE OPTIONS =====
+        function updateTemplateOptions() {
+            renderComponents();
+        }
+
+        // ===== COMPONENTS =====
+        function renderComponents() {
+            var grid = document.getElementById('componentsGrid');
+            var countEl = document.getElementById('componentsCount');
+            var addBtn = document.getElementById('addComponentBtn');
+
+            grid.innerHTML = '';
+            if (countEl) countEl.textContent = 'Buttons: ' + components.length + '/' + MAX_COMPONENTS;
+            if (addBtn) addBtn.disabled = components.length >= MAX_COMPONENTS;
+
+            var selectedTemplates = getSelectedTemplates();
+
+            components.forEach(function(comp, index) {
+                var card = document.createElement('div');
+                card.className = 'component-card';
+                var colorHex = comp.color || '#5865F2';
+                var templateName = comp.templateId ? getTemplateName(comp.templateId) : 'Select a template';
+                var hasTemplate = comp.templateId && comp.templateId !== '';
+
+                var optionsHtml = '<option value="">Select a template</option>';
+                selectedTemplates.forEach(function(tid) {
+                    var name = getTemplateName(tid);
+                    var selected = comp.templateId === tid ? 'selected' : '';
+                    optionsHtml += `<option value="${tid}" ${selected}>${name}</option>`;
+                });
+
+                card.innerHTML = `
+                    <div class="comp-header">
+                        <span class="comp-title">${comp.label || 'Button ' + (index + 1)}</span>
+                        <button type="button" class="comp-remove" onclick="removeComponent(${index})"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-field">
+                            <label>Label</label>
+                            <input type="text" class="form-control" value="${comp.label || ''}" placeholder="e.g. Support" onchange="updateComponent(${index}, 'label', this.value)">
+                        </div>
+                        <div class="comp-field">
+                            <label>Emoji</label>
+                            <input type="text" class="form-control" value="${comp.emoji || ''}" placeholder="e.g. 🎫" onchange="updateComponent(${index}, 'emoji', this.value)">
+                        </div>
+                        <div class="comp-field">
+                            <label>Button Color</label>
+                            <input type="color" class="form-control color-picker" value="${colorHex}" onchange="updateComponent(${index}, 'color', this.value)">
+                        </div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-field">
+                            <label>Template</label>
+                            <select class="form-control" onchange="updateComponent(${index}, 'templateId', this.value)">
+                                ${optionsHtml}
+                            </select>
+                            ${hasTemplate ? `<span class="comp-selected-template">✓ ${templateName}</span>` : ''}
+                        </div>
+                        <div class="comp-field">
+                            <label>Preview</label>
+                            <div style="padding: 4px 0;">
+                                <span class="comp-color-preview" style="background: ${colorHex};"></span>
+                                <span class="comp-color-hex">${colorHex}</span>
+                            </div>
+                        </div>
+                        <div class="comp-field">
+                            <label>Status</label>
+                            <div class="toggle-wrapper" style="padding-top: 4px;">
+                                <div class="toggle ${comp.enabled !== false ? 'active' : ''}" onclick="toggleComponentBool(${index}, 'enabled')"><div class="toggle-knob"></div></div>
+                                <span class="toggle-label" style="font-size: 12px;">${comp.enabled !== false ? 'Enabled' : 'Disabled'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 8px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <span class="comp-preview-btn" style="background: ${colorHex}; color: #fff;">
+                            ${comp.emoji || ''} ${comp.label || 'Button'}
+                        </span>
+                        <span style="font-size: 11px; color: var(--muted-dim);">Preview</span>
+                        ${hasTemplate ? `<span style="font-size: 11px; color: var(--signal);">→ ${templateName}</span>` : '<span style="font-size: 11px; color: var(--red);">⚠ No template selected</span>'}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function addComponent() {
+            if (components.length >= MAX_COMPONENTS) return;
+            var selectedTemplates = getSelectedTemplates();
+            var defaultTemplate = selectedTemplates.length > 0 ? selectedTemplates[0] : '';
+            components.push({
+                label: '',
+                emoji: '',
+                color: '#5865F2',
+                templateId: defaultTemplate,
+                enabled: true
+            });
+            renderComponents();
+        }
+
+        function removeComponent(index) {
+            components.splice(index, 1);
+            renderComponents();
+        }
+
+        function updateComponent(index, field, value) {
+            components[index][field] = value;
+            renderComponents();
+        }
+
+        function toggleComponentBool(index, field) {
+            components[index][field] = !components[index][field];
+            renderComponents();
+        }
+
+        // ===== SAVE FUNCTIONS =====
+        function collectFormData() {
+            var selectedTemplates = getSelectedTemplates();
+
+            return {
+                name: document.getElementById('panelName').value,
+                channelId: document.getElementById('panelChannel').value,
+                description: document.getElementById('panelDescription').value,
+                enabled: document.getElementById('panelEnabled').value === 'true',
+                message: document.getElementById('panelMessage').value,
+                embed: {
+                    title: document.getElementById('embedTitle').value,
+                    description: document.getElementById('embedDescription').value,
+                    color: document.getElementById('embedColor').value
+                },
+                components: components.map(function(c) {
+                    return {
+                        label: c.label,
+                        emoji: c.emoji,
+                        color: c.color,
+                        templateId: c.templateId,
+                        enabled: c.enabled !== false
+                    };
+                }),
+                templates: selectedTemplates,
+                guildId: '<%= guild.id %>'
+            };
+        }
+
+        async function savePanel() {
+            var data = collectFormData();
+            if (!data.name || !data.name.trim()) {
+                showToast('❌ Please enter a panel name', 'error');
+                return;
+            }
+            if (!data.channelId) {
+                showToast('❌ Please select a channel', 'error');
+                return;
+            }
+            if (data.components.length === 0) {
+                showToast('❌ Please add at least one button', 'error');
+                return;
+            }
+
+            var missingTemplate = data.components.some(function(c) { return !c.templateId; });
+            if (missingTemplate) {
+                showToast('❌ Please select a template for each button', 'error');
+                return;
+            }
+
+            try {
+                var url = '/api/panels';
+                var method = 'POST';
+                
+                if (panelId) {
+                    url = '/api/panels/' + panelId;
+                    method = 'PUT';
+                }
+
+                var response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                var result = await response.json();
+                
+                if (result.success) {
+                    // Get the panel ID from the response
+                    var newPanelId = result.panelId || result.panel?._id || result._id || result.id;
+                    if (newPanelId && !panelId) {
+                        panelId = newPanelId;
+                        document.getElementById('panelId').value = panelId;
+                        showToast('✅ Panel saved successfully! Panel ID: ' + panelId, 'success');
+                    } else {
+                        showToast('✅ Panel saved successfully!', 'success');
+                    }
+                } else {
+                    showToast('❌ Error: ' + (result.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function publishPanel() {
+            var data = collectFormData();
+            if (!data.name || !data.name.trim()) {
+                showToast('❌ Please enter a panel name', 'error');
+                return;
+            }
+            if (!data.channelId) {
+                showToast('❌ Please select a channel', 'error');
+                return;
+            }
+            if (data.components.length === 0) {
+                showToast('❌ Please add at least one button', 'error');
+                return;
+            }
+
+            var missingTemplate = data.components.some(function(c) { return !c.templateId; });
+            if (missingTemplate) {
+                showToast('❌ Please select a template for each button', 'error');
+                return;
+            }
+
+            try {
+                // First, save the panel
+                var saveUrl = '/api/panels';
+                var saveMethod = 'POST';
+                
+                if (panelId) {
+                    saveUrl = '/api/panels/' + panelId;
+                    saveMethod = 'PUT';
+                }
+
+                var saveResponse = await fetch(saveUrl, {
+                    method: saveMethod,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                var saveResult = await saveResponse.json();
+                
+                if (!saveResult.success) {
+                    showToast('❌ Error saving: ' + (saveResult.error || 'Unknown error'), 'error');
+                    return;
+                }
+
+                // Get the panel ID from the response - try multiple possible locations
+                var newPanelId = null;
+                if (saveResult.panelId) {
+                    newPanelId = saveResult.panelId;
+                } else if (saveResult.panel && saveResult.panel._id) {
+                    newPanelId = saveResult.panel._id;
+                } else if (saveResult._id) {
+                    newPanelId = saveResult._id;
+                } else if (saveResult.id) {
+                    newPanelId = saveResult.id;
+                }
+
+                if (!newPanelId) {
+                    showToast('❌ Could not get panel ID from server response', 'error');
+                    console.error('Save response:', saveResult);
+                    return;
+                }
+
+                // Store the panel ID for future saves
+                panelId = newPanelId;
+                document.getElementById('panelId').value = panelId;
+
+                // Now publish the panel to Discord
+                var publishResponse = await fetch('/api/panels/' + panelId + '/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ guildId: '<%= guild.id %>' })
+                });
+                var publishResult = await publishResponse.json();
+                
+                if (publishResult.success) {
+                    showToast('🚀 Panel published to Discord successfully!', 'success');
+                    setTimeout(function() {
+                        window.location.href = '/servers/<%= guild.id %>/tickets/panels';
+                    }, 2000);
+                } else {
+                    showToast('❌ Error publishing: ' + (publishResult.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ Error: ' + error.message, 'error');
+                console.error('Publish error:', error);
+            }
+        }
+
+        // ===== INIT =====
+        var guildId = '<%= guild.id %>';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add default component if none exist
+            if (components.length === 0) {
+                var selectedTemplates = getSelectedTemplates();
+                var defaultTemplate = selectedTemplates.length > 0 ? selectedTemplates[0] : '';
+                components.push({
+                    label: 'Support',
+                    emoji: '🎫',
+                    color: '#5865F2',
+                    templateId: defaultTemplate,
+                    enabled: true
+                });
+            }
+            renderComponents();
+
+            document.querySelectorAll('.toggle-wrapper').forEach(function(wrapper) {
+                var toggle = wrapper.querySelector('.toggle');
+                var label = wrapper.querySelector('.toggle-label');
+                if (toggle && label) {
+                    label.textContent = toggle.classList.contains('active') ? 'Enabled' : 'Disabled';
+                }
+            });
+        });
+
+        // ===== EXPOSE =====
+        window.showToast = showToast;
+        window.toggleBool = toggleBool;
+        window.addComponent = addComponent;
+        window.removeComponent = removeComponent;
+        window.updateComponent = updateComponent;
+        window.toggleComponentBool = toggleComponentBool;
+        window.savePanel = savePanel;
+        window.publishPanel = publishPanel;
+        window.updateTemplateOptions = updateTemplateOptions;
+        window.getTemplateName = getTemplateName;
+    </script>
 </body>
 </html>
