@@ -248,10 +248,36 @@ router.get('/servers/:guildId/applications', isAuthenticated, ensureValidToken, 
         
         const config = await GuildConfig.findOne({ guildId }).catch(() => null);
         
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(g => g.id === guildId);
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
         res.render('applications', {
             title: 'Applications — Sentinal',
             user: req.session.user,
-            guild: { id: guildId },
+            guild: guildData,
             config: config || {},
             applications: applications,
             isAuthenticated: true
@@ -452,18 +478,148 @@ router.get('/servers/:guildId/tickets/create', isAuthenticated, ensureValidToken
             }
         }
         
-        res.render('templates/create', {
+        // Get all templates for dropdown
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { find: async () => [] };
+        }
+        const allTemplates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(() => []);
+        
+        res.render('ticket-edit', {
             title: 'Create Template — Sentinal',
             user: req.session.user,
             guild: guildData,
+            template: null,
             roles: roles,
             channels: channels,
+            templates: allTemplates,
             isAuthenticated: true
         });
     } catch (error) {
         console.error('Error loading create template page:', error.message);
         res.status(500).render('error', {
             message: 'Failed to load create template page',
+            title: 'Error'
+        });
+    }
+});
+
+// ============ TICKET EDIT PAGE ============
+router.get('/servers/:guildId/tickets/edit/:id', isAuthenticated, ensureValidToken, async (req, res) => {
+    try {
+        const templateId = req.params.id;
+        const guildId = req.params.guildId;
+        console.log('📋 Loading ticket template for edit:', templateId);
+        
+        let TicketTemplate;
+        try {
+            TicketTemplate = require('../models/TicketTemplate');
+        } catch (err) {
+            TicketTemplate = { findById: async () => null };
+        }
+        
+        const template = await TicketTemplate.findById(templateId);
+        
+        if (!template) {
+            return res.status(404).render('error', {
+                message: 'Ticket template not found',
+                title: 'Not Found'
+            });
+        }
+        
+        let roles = [];
+        const botToken = process.env.DISCORD_TOKEN;
+        if (botToken) {
+            try {
+                const rolesResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/roles`, {
+                    headers: {
+                        Authorization: `Bot ${botToken}`
+                    }
+                });
+                roles = rolesResponse.data.map(function(r) {
+                    return {
+                        id: r.id,
+                        name: r.name,
+                        color: r.color
+                    };
+                });
+            } catch (err) {
+                console.warn('Could not fetch roles:', err.message);
+            }
+        }
+        
+        let channels = [];
+        if (botToken) {
+            try {
+                const channelsResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/channels`, {
+                    headers: {
+                        Authorization: `Bot ${botToken}`
+                    }
+                });
+                channels = channelsResponse.data
+                    .filter(function(ch) { return ch.type === 0 || ch.type === 2 || ch.type === 4; })
+                    .map(function(ch) {
+                        return {
+                            id: ch.id,
+                            name: ch.name,
+                            type: ch.type
+                        };
+                    });
+            } catch (err) {
+                console.warn('Could not fetch channels:', err.message);
+            }
+        }
+        
+        let guildData = {
+            id: guildId,
+            name: 'Server',
+            icon: null,
+            approximate_member_count: 0
+        };
+        
+        try {
+            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
+                headers: {
+                    Authorization: `Bearer ${req.session.user.access_token}`
+                }
+            });
+            const userGuild = guildsResponse.data.find(function(g) { return g.id === guildId; });
+            if (userGuild) {
+                guildData = {
+                    id: userGuild.id,
+                    name: userGuild.name || 'Server',
+                    icon: userGuild.icon || null,
+                    approximate_member_count: userGuild.approximate_member_count || 0
+                };
+            }
+        } catch (guildsError) {
+            console.warn('Could not get guild:', guildsError.message);
+        }
+        
+        // Get all templates for dropdown
+        let allTemplates = [];
+        try {
+            allTemplates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(function() { return []; });
+        } catch (err) {
+            console.warn('Could not fetch templates:', err.message);
+        }
+        
+        res.render('ticket-edit', {
+            title: 'Edit Template — Sentinal',
+            user: req.session.user,
+            guild: guildData,
+            template: template,
+            roles: roles,
+            channels: channels,
+            templates: allTemplates,
+            isAuthenticated: true
+        });
+    } catch (error) {
+        console.error('Error loading ticket template:', error.message);
+        res.status(500).render('error', {
+            message: 'Failed to load ticket template',
             title: 'Error'
         });
     }
@@ -511,7 +667,6 @@ router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async 
             console.warn('Could not get guild:', guildsError.message);
         }
         
-        // Get all templates for the template dropdown in panels
         let TicketTemplate;
         try {
             TicketTemplate = require('../models/TicketTemplate');
@@ -537,7 +692,7 @@ router.get('/servers/:guildId/panels', isAuthenticated, ensureValidToken, async 
     }
 });
 
-// ============ SERVER TICKETS PANELS (NEW - MATCHES SIDEBAR LINK) ============
+// ============ SERVER TICKETS PANELS ============
 router.get('/servers/:guildId/tickets/panels', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
         const guildId = req.params.guildId;
@@ -579,7 +734,6 @@ router.get('/servers/:guildId/tickets/panels', isAuthenticated, ensureValidToken
             console.warn('Could not get guild:', guildsError.message);
         }
         
-        // Get all templates for the template dropdown in panels
         let TicketTemplate;
         try {
             TicketTemplate = require('../models/TicketTemplate');
@@ -637,7 +791,6 @@ router.get('/servers/:guildId/panels/create', isAuthenticated, ensureValidToken,
             console.warn('Could not get guild:', guildsError.message);
         }
         
-        // Get channels for dropdown
         let channels = [];
         const botToken = process.env.DISCORD_TOKEN;
         if (botToken) {
@@ -658,7 +811,6 @@ router.get('/servers/:guildId/panels/create', isAuthenticated, ensureValidToken,
             }
         }
         
-        // Get templates for dropdown
         let TicketTemplate;
         try {
             TicketTemplate = require('../models/TicketTemplate');
@@ -732,7 +884,6 @@ router.get('/servers/:guildId/panels/:panelId/edit', isAuthenticated, ensureVali
             console.warn('Could not get guild:', guildsError.message);
         }
         
-        // Get channels for dropdown
         let channels = [];
         const botToken = process.env.DISCORD_TOKEN;
         if (botToken) {
@@ -753,7 +904,6 @@ router.get('/servers/:guildId/panels/:panelId/edit', isAuthenticated, ensureVali
             }
         }
         
-        // Get templates for dropdown
         let TicketTemplate;
         try {
             TicketTemplate = require('../models/TicketTemplate');
@@ -976,125 +1126,6 @@ router.get('/servers/:guildId/automation', isAuthenticated, ensureValidToken, as
     }
 });
 
-// ============ TICKET EDIT PAGE ============
-router.get('/servers/:guildId/tickets/edit/:id', isAuthenticated, ensureValidToken, async (req, res) => {
-    try {
-        const templateId = req.params.id;
-        const guildId = req.params.guildId;
-        console.log('📋 Loading ticket template for edit:', templateId);
-        
-        let TicketTemplate;
-        try {
-            TicketTemplate = require('../models/TicketTemplate');
-        } catch (err) {
-            TicketTemplate = { findById: async () => null };
-        }
-        
-        const template = await TicketTemplate.findById(templateId);
-        
-        if (!template) {
-            return res.status(404).render('error', {
-                message: 'Ticket template not found',
-                title: 'Not Found'
-            });
-        }
-        
-        let roles = [];
-        const botToken = process.env.DISCORD_TOKEN;
-        if (botToken) {
-            try {
-                const rolesResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/roles`, {
-                    headers: {
-                        Authorization: `Bot ${botToken}`
-                    }
-                });
-                roles = rolesResponse.data.map(function(r) {
-                    return {
-                        id: r.id,
-                        name: r.name,
-                        color: r.color
-                    };
-                });
-            } catch (err) {
-                console.warn('Could not fetch roles:', err.message);
-            }
-        }
-        
-        let channels = [];
-        if (botToken) {
-            try {
-                const channelsResponse = await axios.get(`https://discord.com/api/guilds/${guildId}/channels`, {
-                    headers: {
-                        Authorization: `Bot ${botToken}`
-                    }
-                });
-                channels = channelsResponse.data
-                    .filter(function(ch) { return ch.type === 0 || ch.type === 2 || ch.type === 4; })
-                    .map(function(ch) {
-                        return {
-                            id: ch.id,
-                            name: ch.name,
-                            type: ch.type
-                        };
-                    });
-            } catch (err) {
-                console.warn('Could not fetch channels:', err.message);
-            }
-        }
-        
-        // ✅ FETCH ALL TEMPLATES FOR THE DROPDOWN
-        let allTemplates = [];
-        try {
-            allTemplates = await TicketTemplate.find({ guildId }).sort({ createdAt: -1 }).catch(function() { return []; });
-        } catch (err) {
-            console.warn('Could not fetch templates:', err.message);
-        }
-        
-        let guildData = {
-            id: guildId,
-            name: 'Server',
-            icon: null,
-            approximate_member_count: 0
-        };
-        
-        try {
-            const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
-                headers: {
-                    Authorization: `Bearer ${req.session.user.access_token}`
-                }
-            });
-            const userGuild = guildsResponse.data.find(function(g) { return g.id === guildId; });
-            if (userGuild) {
-                guildData = {
-                    id: userGuild.id,
-                    name: userGuild.name || 'Server',
-                    icon: userGuild.icon || null,
-                    approximate_member_count: userGuild.approximate_member_count || 0
-                };
-            }
-        } catch (guildsError) {
-            console.warn('Could not get guild:', guildsError.message);
-        }
-        
-        res.render('ticket-edit', {
-            title: 'Edit Template — Sentinal',
-            user: req.session.user,
-            guild: guildData,
-            template: template,
-            roles: roles,
-            channels: channels,
-            templates: allTemplates, // ✅ THIS IS THE KEY FIX
-            isAuthenticated: true
-        });
-    } catch (error) {
-        console.error('Error loading ticket template:', error.message);
-        res.status(500).render('error', {
-            message: 'Failed to load ticket template',
-            title: 'Error'
-        });
-    }
-});
-
 // ============ API: APPLICATIONS ============
 router.post('/api/applications', isAuthenticated, ensureValidToken, async (req, res) => {
     try {
@@ -1274,25 +1305,10 @@ router.post('/api/panels/:panelId/send', isAuthenticated, ensureValidToken, asyn
             return res.status(400).json({ success: false, error: 'No channel configured for this panel' });
         }
         
-        // Build components for Discord
-        const components = [];
-        if (panel.components && panel.components.length > 0) {
-            const row = new ActionRowBuilder();
-            panel.components.forEach(comp => {
-                const button = new ButtonBuilder()
-                    .setCustomId(`ticket_${panel._id}_${comp.templateId}`)
-                    .setLabel(comp.label)
-                    .setStyle(ButtonStyle[comp.style || 'Primary'])
-                    .setDisabled(comp.disabled || false);
-                if (comp.emoji) button.setEmoji(comp.emoji);
-                row.addComponents(button);
-            });
-            components.push(row);
-        }
-        
+        // Build message payload
         const messagePayload = {
             content: panel.message || 'Need help? Click a button below to create a ticket.',
-            components: components
+            components: panel.components || []
         };
         
         if (panel.embed) {
@@ -1459,7 +1475,7 @@ router.put('/api/tickets/:id', isAuthenticated, ensureValidToken, async (req, re
             return res.status(404).json({ success: false, error: 'Ticket not found' });
         }
         
-        const { name, category, description, enabled, channelName, maxTickets, blockedRoles, requiredRoles, supportRoles, ticketClaiming, actionOnLeave, pingSupport, rateSupport, formDescription, questions, transcriptChannel, topic, welcomeMessage, pinWelcome, autoMentionSupport, lockOnClose, deleteOnClose, autoClose, permissions } = req.body;
+        const { name, category, description, enabled, channelName, maxTickets, blockedRoles, requiredRoles, supportRoles, ticketClaiming, actionOnLeave, pingSupport, rateSupport, formDescription, questions, transcriptChannel, topic, welcomeMessage, pinWelcome, autoMentionSupport, lockOnClose, deleteOnClose, autoClose, permissions, customButtons, creatorCanClose, blockedMatchMode, requiredMatchMode } = req.body;
         
         ticket.name = name || ticket.name;
         ticket.category = category || ticket.category;
@@ -1483,6 +1499,10 @@ router.put('/api/tickets/:id', isAuthenticated, ensureValidToken, async (req, re
         ticket.autoMentionSupport = autoMentionSupport !== undefined ? autoMentionSupport : (ticket.autoMentionSupport || true);
         ticket.lockOnClose = lockOnClose !== undefined ? lockOnClose : (ticket.lockOnClose || true);
         ticket.deleteOnClose = deleteOnClose !== undefined ? deleteOnClose : (ticket.deleteOnClose || false);
+        ticket.creatorCanClose = creatorCanClose !== undefined ? creatorCanClose : (ticket.creatorCanClose || false);
+        ticket.blockedMatchMode = blockedMatchMode || ticket.blockedMatchMode || 'hasAny';
+        ticket.requiredMatchMode = requiredMatchMode || ticket.requiredMatchMode || 'hasAny';
+        ticket.customButtons = customButtons || ticket.customButtons || [];
         if (autoClose) {
             ticket.autoClose = autoClose;
         }
