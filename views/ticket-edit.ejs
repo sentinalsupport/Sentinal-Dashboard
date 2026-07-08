@@ -652,7 +652,7 @@
 
         <!-- ===== FORM CONTAINER ===== -->
         <div class="form-container">
-            <form id="templateForm" method="POST" action="/servers/<%= guild.id %>/tickets/<%= template ? template._id : 'create' %>" onsubmit="return false;">
+            <form id="templateForm" method="POST" action="/servers/<%= guild.id %>/tickets/<%= template && template._id ? template._id : 'create' %>" onsubmit="return false;">
                 <input type="hidden" name="guildId" value="<%= guild.id %>">
                   <!-- CSRF token removed - not needed -->
                 <!-- ===== BASIC INFORMATION ===== -->
