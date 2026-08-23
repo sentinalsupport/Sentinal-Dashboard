@@ -1,0 +1,1 @@
+"use client"; import {GenericSettings} from "@/components/guild-forms"; export default function Page({params}:{params:{id:string}}){ return <GenericSettings guildId={params.id} title="Autorole" desc="Auto assign role on join" settingKey="autorole" fields={[{key:"enabled",label:"Enable",type:"checkbox"},{key:"roleId",label:"Role ID",type:"text",placeholder:"Role ID"}]} />; }

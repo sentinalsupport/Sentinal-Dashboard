@@ -1,0 +1,1 @@
+import Link from "next/link"; export default function Page(){ return <div className="p-6"><h1 className="text-xl font-bold">Members</h1><p className="text-sm text-muted-foreground">Select a server: <Link href="/servers" className="text-primary underline">Servers</Link></p></div>; }

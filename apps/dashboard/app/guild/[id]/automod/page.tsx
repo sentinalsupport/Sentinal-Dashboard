@@ -1,0 +1,1 @@
+"use client"; import {AutomodForm} from "@/components/guild-forms"; export default function Page({params}:{params:{id:string}}){ return <div className="space-y-4"><h1 className="text-xl font-bold">AutoMod</h1><AutomodForm guildId={params.id} /></div>; }

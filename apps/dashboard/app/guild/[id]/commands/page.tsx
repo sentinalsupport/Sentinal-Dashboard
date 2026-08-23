@@ -1,0 +1,1 @@
+"use client"; import {CustomCommands} from "@/components/guild-forms"; export default function Page({params}:{params:{id:string}}){ return <div className="space-y-4"><h1 className="text-xl font-bold">Custom Commands</h1><CustomCommands guildId={params.id} /></div>; }

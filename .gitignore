@@ -1,0 +1,13 @@
+.env
+.env.local
+.env.production
+node_modules
+.next
+dist
+build
+.prisma
+coverage
+.turbo
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
