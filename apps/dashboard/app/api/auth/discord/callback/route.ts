@@ -26,7 +26,8 @@ export async function GET(req: NextRequest){
     try{
       await prisma.session.create({ data:{ userId: user.id, token: sessionToken, expiresAt: new Date(Date.now()+7*24*3600*1000), ipHash: req.headers.get("x-forwarded-for")||"unknown", userAgent: req.headers.get("user-agent")||"" }});
     }catch{}
-    const res = NextResponse.redirect(new URL("/servers", req.url));
+    const base = process.env.NEXTAUTH_URL || req.url;
+    const res = NextResponse.redirect(new URL("/servers", base));
     res.cookies.set("session", sessionToken, { httpOnly:true, secure: process.env.NODE_ENV==="production", sameSite:"lax", path:"/", maxAge:60*60*24*7 });
     res.cookies.set("oauth_state","",{ path:"/", maxAge:0 });
     return res;
