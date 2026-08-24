@@ -1,0 +1,1392 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentinel — The Discord bot that stands watch</title>
+<meta name="description" content="Sentinel is a Discord moderation, ticketing, engagement and analytics bot with a live web dashboard. Invite it, configure it, trust it.">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Instrument+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07090e;
+    --bg-1:#0d1118;
+    --bg-2:#111625;
+    --panel:#121724;
+    --panel-2:#161c2f;
+    --panel-3:#1c233a;
+    --line:#1e2638;
+    --line-2:#25304a;
+    --line-soft:rgba(255,255,255,0.06);
+    --text:#eef1f7;
+    --muted:#9aa4b8;
+    --faint:#677084;
+    --amber:#ffb338;
+    --amber-2:#ff8a2b;
+    --amber-glow:rgba(255,179,56,0.18);
+    --blue:#6a8cff;
+    --blue-glow:rgba(106,140,255,0.16);
+    --green:#3dd68c;
+    --red:#ff5d5d;
+    --radius-lg:22px;
+    --radius-md:14px;
+    --radius-sm:10px;
+    --max:1180px;
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Instrument Sans', system-ui, -apple-system, Segoe UI, sans-serif;
+    --font-mono:'Fragment Mono','IBM Plex Mono', ui-monospace, monospace;
+    --shadow:0 32px 80px -24px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scrollbar-color:var(--line) transparent}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{animation:none!important;transition:none!important}}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  ul{list-style:none}
+  img,svg{display:block}
+  ::selection{background:var(--amber);color:#14100a}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#1c2335;border-radius:999px;border:2px solid var(--bg)}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 28px}
+  /* ---------- ambient ---------- */
+  .ambient{
+    position:fixed;inset:0;z-index:-3;pointer-events:none;
+    background:
+      radial-gradient(900px 600px at 12% -8%, rgba(255,179,56,0.16), transparent 60%),
+      radial-gradient(900px 600px at 88% 6%, rgba(106,140,255,0.13), transparent 60%),
+      radial-gradient(700px 500px at 50% 115%, rgba(61,214,140,0.06), transparent 60%),
+      linear-gradient(180deg, #07090e 0%, #07090e 100%);
+  }
+  .ambient-grid{
+    position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:0.9;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.022) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.022) 1px, transparent 1px);
+    background-size:72px 72px;
+    mask-image: radial-gradient(ellipse 1100px 700px at 50% -10%, black 45%, transparent 72%);
+  }
+  .noise{
+    position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0.035;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  }
+  .spotlight{
+    position:fixed;width:680px;height:680px;z-index:-1;pointer-events:none;opacity:0;
+    background:radial-gradient(circle, rgba(255,179,56,0.10) 0%, transparent 68%);
+    transform:translate(-50%,-50%);transition:opacity .4s ease;
+    mix-blend-mode:screen;
+  }
+  /* ---------- nav ---------- */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    padding:18px 16px 0;
+  }
+  .nav-shell{
+    max-width:var(--max);margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;gap:18px;
+    padding:10px 14px 10px 16px;
+    background:rgba(12,14,22,0.72);
+    backdrop-filter:blur(18px) saturate(1.25);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:999px;
+    box-shadow:0 10px 40px -12px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.06) inset;
+  }
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--font-display);font-weight:700;letter-spacing:0.02em;font-size:15.5px}
+  .brand-mark{
+    width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(135deg, var(--amber), var(--amber-2));
+    color:#1a1205;box-shadow:0 6px 18px rgba(255,179,56,0.35);
+    font-size:13px;font-weight:800;
+  }
+  .brand b{font-weight:700}
+  .brand b span{color:var(--amber)}
+  .brand .live{
+    display:flex;align-items:center;gap:6px;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--muted);border-left:1px solid var(--line);padding-left:11px;margin-left:2px
+  }
+  .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.9)}}
+  .nav-links{display:flex;align-items:center;gap:6px}
+  .nav-links a{
+    font-size:13.8px;font-weight:500;color:var(--muted);padding:8px 14px;border-radius:999px;transition:all .18s ease;
+  }
+  .nav-links a:hover{color:var(--text);background:rgba(255,255,255,0.06)}
+  .nav-links a.active{color:var(--text);background:rgba(255,255,255,0.08)}
+  .nav-cta{display:flex;align-items:center;gap:10px}
+  .kbd-hint{
+    display:flex;align-items:center;gap:6px;
+    font-family:var(--font-mono);font-size:11px;color:var(--faint);
+    border:1px solid var(--line);background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:999px
+  }
+  .kbd{font-family:var(--font-mono);font-size:11px;background:#0f1320;border:1px solid var(--line-2);border-bottom-width:2px;padding:2px 6px;border-radius:6px;color:var(--muted)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    font-family:var(--font-body);font-weight:600;font-size:14px;letter-spacing:-0.01em;
+    padding:11px 18px;border-radius:999px;border:1px solid transparent;cursor:pointer;
+    transition:transform .14s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, opacity .2s ease;
+    white-space:nowrap;position:relative;overflow:hidden;
+  }
+  .btn:active{transform:scale(0.98)}
+  .btn-primary{
+    background:linear-gradient(180deg, #ffbe55 0%, var(--amber) 100%);
+    color:#1a1205;box-shadow:0 10px 24px -10px rgba(255,179,56,0.55), 0 1px 0 rgba(255,255,255,0.6) inset;
+    border-color:rgba(255,255,255,0.12)
+  }
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 16px 32px -12px rgba(255,179,56,0.6)}
+  .btn-primary::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform:translateX(-100%);transition:transform .6s ease;
+  }
+  .btn-primary:hover::after{transform:translateX(100%)}
+  .btn-ghost{background:rgba(255,255,255,0.06);color:var(--text);border-color:rgba(255,255,255,0.08);backdrop-filter:blur(8px)}
+  .btn-ghost:hover{background:rgba(255,255,255,0.10);border-color:rgba(255,255,255,0.14)}
+  .btn-sm{padding:8px 14px;font-size:13px}
+  .btn-xs{padding:7px 12px;font-size:12.5px}
+  .icon-btn{width:38px;height:38px;display:grid;place-items:center;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,0.04);color:var(--muted);cursor:pointer}
+  .menu-btn{display:none}
+  /* mobile drawer */
+  .drawer{
+    position:fixed;inset:0;z-index:49;display:none;
+  }
+  .drawer.open{display:block}
+  .drawer-backdrop{position:absolute;inset:0;background:rgba(3,5,10,0.62);backdrop-filter:blur(6px)}
+  .drawer-panel{
+    position:absolute;top:72px;left:12px;right:12px;
+    background:rgba(14,17,26,0.96);border:1px solid rgba(255,255,255,0.08);border-radius:20px;
+    padding:16px;box-shadow:0 24px 64px rgba(0,0,0,0.6)
+  }
+  .drawer-panel a{display:flex;align-items:center;justify-content:space-between;padding:14px 14px;border-radius:12px;color:var(--text);font-weight:500;border:1px solid transparent}
+  .drawer-panel a:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.06)}
+  .drawer-panel .hint{font-family:var(--font-mono);font-size:11px;color:var(--faint)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:138px 0 40px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.05fr 0.98fr;gap:36px;align-items:center}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:18px;padding:7px 10px 7px 8px;
+    background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:999px
+  }
+  .eyebrow i{width:22px;height:22px;display:grid;place-items:center;background:rgba(255,179,56,0.16);border-radius:999px;color:var(--amber)}
+  h1{
+    font-family:var(--font-display);font-weight:700;letter-spacing:-0.04em;line-height:0.92;
+    font-size:clamp(42px, 5.2vw, 68px);margin-bottom:18px;
+  }
+  h1 .accent{
+    background:linear-gradient(90deg, var(--amber) 0%, #ffd18a 55%, var(--amber-2) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    position:relative;
+  }
+  h1 .accent::after{
+    content:'';position:absolute;left:0;right:0;bottom:0.08em;height:0.22em;
+    background:linear-gradient(90deg, rgba(255,179,56,0.18), transparent);
+    z-index:-1;filter:blur(8px)
+  }
+  .hero-sub{color:var(--muted);font-size:17.5px;line-height:1.55;max-width:520px;margin-bottom:28px}
+  .hero-sub strong{color:var(--text);font-weight:600}
+  .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+  .hero-proof{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    font-family:var(--font-mono);font-size:11.5px;color:var(--faint)
+  }
+  .hero-proof .avatars{display:flex;align-items:center}
+  .hero-proof .avatars span{
+    width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+    border:2px solid var(--bg);margin-left:-8px;font-size:11px;font-weight:700;color:white;
+    background:linear-gradient(135deg, #2a3350, #1b2238);
+  }
+  .hero-proof .avatars span:first-child{margin-left:0}
+  .stars{color:var(--amber);letter-spacing:0.06em}
+  .hero-right{position:relative}
+  /* dashboard preview stack */
+  .stack{position:relative;padding:18px 0 0 18px}
+  .stack::before{
+    content:'';position:absolute;inset:0 0 0 0;left:18px;top:18px;bottom:-12px;right:-12px;
+    background:linear-gradient(180deg, rgba(255,179,56,0.10), transparent 60%);
+    border-radius:26px;filter:blur(22px);pointer-events:none
+  }
+  .browser{
+    position:relative;background:linear-gradient(180deg, #131a2e 0%, #0e1322 100%);
+    border:1px solid rgba(255,255,255,0.08);border-radius:18px;overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .browser-head{
+    display:flex;align-items:center;justify-content:space-between;padding:12px 14px;
+    border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02)
+  }
+  .traffic{display:flex;gap:6px}
+  .traffic i{width:10px;height:10px;border-radius:50%;border:1px solid rgba(255,255,255,0.08)}
+  .traffic i:nth-child(1){background:#ff5f56}
+  .traffic i:nth-child(2){background:#ffbd2e}
+  .traffic i:nth-child(3){background:#27c93f}
+  .browser-title{font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .browser-title .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+  .browser-url{font-family:var(--font-mono);font-size:11px;color:var(--faint);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);padding:5px 10px;border-radius:999px}
+  .browser-body{padding:16px;display:grid;grid-template-columns:1.05fr 0.9fr;gap:14px}
+  .dash-card{
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px;
+  }
+  .dash-card h4{font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+  .mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mini-stat{background:#0b0e1a;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px}
+  .mini-stat b{font-family:var(--font-display);font-size:18px;letter-spacing:-0.02em;display:block}
+  .mini-stat span{font-family:var(--font-mono);font-size:10px;color:var(--faint)}
+  .mini-stat.up b{color:var(--green)}
+  .mini-stat.warn b{color:var(--amber)}
+  .spark{height:42px;display:flex;align-items:flex-end;gap:3px;margin-top:10px}
+  .spark i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg, var(--amber), rgba(255,179,56,0.15))}
+  .cmd-preview{
+    font-family:var(--font-mono);font-size:11.5px;background:#0a0d18;border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden
+  }
+  .cmd-preview head{display:block}
+  .cmd-line{display:flex;align-items:center;gap:8px;padding:10px 11px;border-bottom:1px solid rgba(255,255,255,0.05)}
+  .cmd-line .slash{width:22px;height:22px;display:grid;place-items:center;background:rgba(106,140,255,0.16);color:var(--blue);border-radius:6px;font-weight:700}
+  .cmd-line input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-mono);font-size:12px}
+  .cmd-list{padding:6px}
+  .cmd-item{display:flex;align-items:center;justify-content:space-between;padding:8px 8px;border-radius:8px;cursor:pointer}
+  .cmd-item:hover,.cmd-item.active{background:rgba(255,255,255,0.06)}
+  .cmd-item .name{color:var(--text);font-weight:500}
+  .cmd-item .desc{color:var(--faint);font-size:11px}
+  .cmd-item .hot{font-size:11px;color:var(--faint);border:1px solid rgba(255,255,255,0.08);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,0.04)}
+  /* floating cards */
+  .float-card{
+    position:absolute;z-index:2;display:flex;align-items:center;gap:10px;
+    background:rgba(16,20,33,0.86);backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px 12px;
+    box-shadow:0 16px 40px rgba(0,0,0,0.45)
+  }
+  .float-card .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center}
+  .float-card b{font-size:12.5px;display:block;line-height:1}
+  .float-card span{font-family:var(--font-mono);font-size:11px;color:var(--faint)}
+  .float-a{top:6px;right:-6px;transform:rotate(1.2deg)}
+  .float-b{bottom:-14px;left:-10px;transform:rotate(-1deg)}
+  @media(max-width:980px){.float-a,.float-b{display:none}}
+
+  /* console below */
+  .console{
+    margin-top:16px;
+    background:linear-gradient(180deg, #0f1320, #0a0d18);
+    border:1px solid rgba(255,255,255,0.07);border-radius:16px;overflow:hidden;
+    box-shadow:0 18px 48px rgba(0,0,0,0.5)
+  }
+  .console-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02)}
+  .console-title{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .console-dots{display:flex;gap:5px}
+  .console-dots i{width:6px;height:6px;border-radius:50%;background:#232a42}
+  .console-body{padding:12px 14px;font-family:var(--font-mono);font-size:11.8px;height:176px;overflow:hidden;position:relative}
+  .console-body::after{
+    content:'';position:absolute;left:0;right:0;bottom:0;height:34px;
+    background:linear-gradient(180deg, transparent, #0a0d18);pointer-events:none
+  }
+  .log-line{display:flex;gap:9px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,0.06);opacity:0;transform:translateY(4px);animation:reveal .45s ease forwards}
+  @keyframes reveal{to{opacity:1;transform:none}}
+  .log-time{color:var(--faint);width:64px;flex-shrink:0}
+  .tag{font-size:10px;padding:2px 7px;border-radius:999px;height:fit-content;letter-spacing:0.04em;font-weight:600}
+  .tag-alert{background:rgba(255,93,93,0.12);color:var(--red);border:1px solid rgba(255,93,93,0.18)}
+  .tag-warn{background:rgba(255,179,56,0.12);color:var(--amber);border:1px solid rgba(255,179,56,0.18)}
+  .tag-info{background:rgba(106,140,255,0.12);color:var(--blue);border:1px solid rgba(106,140,255,0.18)}
+  .tag-ok{background:rgba(61,214,140,0.12);color:var(--green);border:1px solid rgba(61,214,140,0.18)}
+  .log-text{color:#c2c9d8}
+  .log-text b{color:var(--text);font-weight:600}
+
+  /* ---------- proof strip ---------- */
+  .proof-strip{
+    margin-top:18px;
+    display:grid;grid-template-columns:1fr auto 1fr auto 1fr;
+    align-items:center;gap:18px;
+    padding:16px 18px;
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;
+  }
+  .proof-item{display:flex;align-items:center;gap:12px}
+  .proof-item .num{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-0.03em}
+  .proof-item .lbl{font-family:var(--font-mono);font-size:11px;color:var(--faint);letter-spacing:0.06em;text-transform:uppercase}
+  .proof-sep{width:1px;height:36px;background:rgba(255,255,255,0.08)}
+  @media(max-width:760px){
+    .proof-strip{grid-template-columns:1fr 1fr;gap:14px}
+    .proof-sep{display:none}
+    .proof-item:last-child{grid-column:1/-1}
+  }
+
+  /* ---------- section shells ---------- */
+  section{padding:84px 0}
+  .section-head{max-width:620px;margin-bottom:40px}
+  .section-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .eyebrow2{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--blue);margin-bottom:12px
+  }
+  .eyebrow2::before{content:'';width:14px;height:1px;background:var(--blue);opacity:0.6}
+  h2{font-family:var(--font-display);font-weight:700;letter-spacing:-0.03em;line-height:1.05;font-size:clamp(26px, 3.2vw, 40px);margin-bottom:12px}
+  .section-desc{color:var(--muted);font-size:16px;line-height:1.6}
+  /* ---------- bento ---------- */
+  .bento{
+    display:grid;grid-template-columns:1.25fr 0.85fr 0.85fr;grid-template-rows:auto auto;gap:16px;
+  }
+  .bento-card{
+    position:relative;overflow:hidden;
+    background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:22px;
+    transition:transform .2s ease, border-color .2s ease, background .2s ease;
+  }
+  .bento-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.12);background:linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03))}
+  .bento-card::before{
+    content:'';position:absolute;inset:0;border-radius:18px;padding:1px;
+    background:linear-gradient(135deg, rgba(255,179,56,0.0), rgba(255,179,56,0.22), transparent 60%);
+    mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite:exclude;opacity:0;transition:opacity .25s ease;pointer-events:none
+  }
+  .bento-card:hover::before{opacity:1}
+  .bento-card.featured{grid-row:span 2;display:flex;flex-direction:column}
+  .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .card-icon{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04)}
+  .card-kicker{font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint)}
+  .card-title{font-family:var(--font-display);font-size:19px;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px}
+  .card-desc{color:var(--muted);font-size:14px;line-height:1.55;margin-bottom:16px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-family:var(--font-mono);font-size:11px;color:#c7d0e2;background:rgba(10,13,24,0.9);border:1px solid rgba(255,255,255,0.06);padding:6px 9px;border-radius:999px}
+  .chip.hot{color:var(--amber);border-color:rgba(255,179,56,0.18);background:rgba(255,179,56,0.08)}
+  .mini-preview{
+    margin-top:auto;padding-top:16px;
+    background:rgba(8,10,18,0.7);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden
+  }
+  .mini-preview .row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.05)}
+  .mini-preview .row:last-child{border-bottom:none}
+  .mini-preview .who{font-family:var(--font-mono);font-size:12px;color:var(--text)}
+  .mini-preview .meta{font-family:var(--font-mono);font-size:11px;color:var(--faint)}
+  .pill{font-family:var(--font-mono);font-size:10.5px;padding:4px 8px;border-radius:999px}
+  .pill.deny{background:rgba(255,93,93,0.12);color:var(--red);border:1px solid rgba(255,93,93,0.18)}
+  .pill.allow{background:rgba(61,214,140,0.12);color:var(--green);border:1px solid rgba(61,214,140,0.18)}
+  @media(max-width:980px){.bento{grid-template-columns:1fr 1fr}}
+  @media(max-width:640px){.bento{grid-template-columns:1fr}.bento-card.featured{grid-row:auto}}
+
+  /* ---------- showcase tabs ---------- */
+  .showcase{
+    margin-top:18px;
+    display:grid;grid-template-columns:320px 1fr;gap:18px;
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:14px;
+  }
+  .tabs{display:flex;flex-direction:column;gap:8px}
+  .tab{
+    text-align:left;padding:14px 14px;border-radius:14px;cursor:pointer;
+    background:transparent;border:1px solid transparent;color:var(--muted);
+    transition:all .18s ease;
+  }
+  .tab.active{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.08);color:var(--text);box-shadow:0 8px 20px rgba(0,0,0,0.18)}
+  .tab b{display:block;font-family:var(--font-display);font-size:14px;letter-spacing:-0.01em;margin-bottom:4px}
+  .tab p{font-size:12.5px;line-height:1.45;color:var(--faint)}
+  .tab small{font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:6px}
+  .panel{
+    background:linear-gradient(180deg, #11162a, #0c1020);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;
+    min-height:380px;display:grid;place-items:center;padding:18px;
+  }
+  .panel-inner{width:100%}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .panel-head h3{font-family:var(--font-display);font-size:16px;letter-spacing:-0.02em}
+  .panel-head span{font-family:var(--font-mono);font-size:11px;color:var(--faint);border:1px solid rgba(255,255,255,0.08);padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.04)}
+  .shot{
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px;
+  }
+  .shot-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .shot-card{background:#0a0d18;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px}
+  .shot-card h4{font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .bar-row{display:flex;align-items:center;gap:8px;margin:7px 0}
+  .bar-label{width:54px;font-family:var(--font-mono);font-size:11px;color:var(--faint)}
+  .bar-track{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
+  .bar-fill{height:100%;background:linear-gradient(90deg, var(--amber), #ffd18a);border-radius:999px}
+  @media(max-width:860px){.showcase{grid-template-columns:1fr}.tabs{flex-direction:row;overflow:auto;padding-bottom:6px}.tab{min-width:220px}}
+
+  /* ---------- how it works ---------- */
+  .steps{
+    position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:10px
+  }
+  .steps::before{content:'';position:absolute;top:34px;left:4%;right:4%;height:1px;background:linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)}
+  .step{
+    position:relative;background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;
+  }
+  .step-num{
+    width:42px;height:42px;border-radius:999px;display:grid;place-items:center;
+    background:#0b0e1a;border:1px solid rgba(255,255,255,0.08);color:var(--amber);
+    font-family:var(--font-mono);font-size:12px;margin-bottom:14px;box-shadow:0 8px 20px rgba(0,0,0,0.25)
+  }
+  .step h4{font-family:var(--font-display);font-size:14.5px;letter-spacing:-0.01em;margin-bottom:6px}
+  .step p{color:var(--muted);font-size:13px;line-height:1.5}
+  .step .go{margin-top:12px;font-family:var(--font-mono);font-size:11px;color:var(--faint)}
+  .arch{
+    margin-top:18px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;
+    padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:999px;
+    font-family:var(--font-mono);font-size:11.5px;color:var(--faint)
+  }
+  .arch b{color:#cbd5e1;font-weight:600}
+  .arch .dot{width:4px;height:4px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+  @media(max-width:900px){.steps{grid-template-columns:1fr 1fr}.steps::before{display:none}}
+  @media(max-width:540px){.steps{grid-template-columns:1fr}}
+
+  /* ---------- commands ---------- */
+  .cmd-section{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .cmd-wrap{
+    display:grid;grid-template-columns:0.95fr 1.05fr;gap:22px;align-items:start
+  }
+  .searchbox{
+    display:flex;align-items:center;gap:10px;
+    background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 12px;
+  }
+  .searchbox input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-body);font-size:14px}
+  .searchbox input::placeholder{color:var(--faint)}
+  .cmd-table{
+    margin-top:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden
+  }
+  .cmd-tr{display:grid;grid-template-columns:1fr auto;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.05);align-items:center}
+  .cmd-tr:last-child{border-bottom:none}
+  .cmd-tr .left{display:flex;align-items:center;gap:10px}
+  .cmd-tr code{font-family:var(--font-mono);font-size:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);padding:5px 8px;border-radius:8px;color:var(--text)}
+  .cmd-tr .desc{font-size:13px;color:var(--muted)}
+  .cmd-tr .perm{font-family:var(--font-mono);font-size:11px;color:var(--faint);border:1px solid rgba(255,255,255,0.06);padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03)}
+  .preview-card{
+    background:linear-gradient(180deg, #131a2e, #0e1322);border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)
+  }
+  .preview-head{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between}
+  .preview-head b{font-family:var(--font-display);font-size:14px}
+  .preview-body{padding:16px}
+  .embed{
+    background:#0a0d18;border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden
+  }
+  .embed-head{height:36px;background:linear-gradient(90deg, rgba(106,140,255,0.18), rgba(255,179,56,0.14));border-bottom:1px solid rgba(255,255,255,0.06)}
+  .embed-content{padding:14px;display:flex;gap:12px}
+  .embed-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg, #2a3350, #1b2238);flex-shrink:0}
+  .embed-lines{flex:1}
+  .embed-lines i{display:block;height:8px;background:rgba(255,255,255,0.06);border-radius:999px;margin:7px 0}
+  .embed-lines i:nth-child(1){width:68%}
+  .embed-lines i:nth-child(2){width:92%}
+  .embed-lines i:nth-child(3){width:74%}
+  @media(max-width:900px){.cmd-wrap{grid-template-columns:1fr}}
+
+  /* ---------- faq ---------- */
+  .faq{max-width:780px;margin:0 auto}
+  .faq-item{border-bottom:1px solid rgba(255,255,255,0.06)}
+  .faq-q{
+    width:100%;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:18px 0;background:none;border:none;color:var(--text);cursor:pointer;
+    font-family:var(--font-display);font-size:16px;font-weight:600;letter-spacing:-0.01em
+  }
+  .faq-q span:last-child{width:30px;height:30px;display:grid;place-items:center;border:1px solid rgba(255,255,255,0.08);border-radius:999px;background:rgba(255,255,255,0.04);flex-shrink:0;transition:transform .2s ease}
+  .faq-item.open .faq-q span:last-child{transform:rotate(45deg)}
+  .faq-a{color:var(--muted);font-size:14.5px;line-height:1.6;padding:0 0 18px;display:none}
+  .faq-item.open .faq-a{display:block}
+
+  /* ---------- cta ---------- */
+  .cta{
+    position:relative;overflow:hidden;
+    background:radial-gradient(800px 400px at 50% 0%, rgba(255,179,56,0.16), transparent 60%), linear-gradient(180deg, #12182d, #0d1222);
+    border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:56px 28px;text-align:center;
+    box-shadow:0 24px 64px rgba(0,0,0,0.5)
+  }
+  .cta::before{
+    content:'';position:absolute;inset:0;
+    background-image:linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size:40px 40px;mask-image:radial-gradient(600px 300px at 50% 0%, black, transparent 70%);opacity:0.5
+  }
+  .cta h2{font-size:clamp(28px, 4vw, 42px)}
+  .cta p{color:var(--muted);max-width:560px;margin:10px auto 24px;font-size:16px}
+  .cta-actions{position:relative;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .cta-note{position:relative;margin-top:14px;font-family:var(--font-mono);font-size:11px;color:var(--faint)}
+  /* ---------- footer ---------- */
+  footer{padding:46px 0 28px;border-top:1px solid rgba(255,255,255,0.06)}
+  .foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:28px;margin-bottom:30px}
+  .foot-brand p{color:var(--faint);font-size:13.5px;line-height:1.6;margin-top:10px;max-width:300px}
+  .foot-col h5{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+  .foot-col a{display:block;color:#b8c0d1;font-size:13.5px;margin-bottom:10px;transition:color .15s ease}
+  .foot-col a:hover{color:var(--text)}
+  .foot-bottom{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+    padding-top:18px;border-top:1px solid rgba(255,255,255,0.06);
+    font-family:var(--font-mono);font-size:11px;color:var(--faint)
+  }
+  .status{display:flex;align-items:center;gap:8px}
+  .status i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+  /* progress */
+  #progress{position:fixed;top:0;left:0;height:2px;width:100%;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--amber),#ffd18a,var(--blue));z-index:60;transition:transform .08s linear}
+  /* marquee */
+  .marquee{overflow:hidden;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);padding:14px 0}
+  .marquee-track{display:flex;gap:28px;align-items:center;animation:marquee 22s linear infinite;width:max-content}
+  .marquee:hover .marquee-track{animation-play-state:paused}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .marquee-item{display:flex;align-items:center;gap:10px;white-space:nowrap;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);padding:8px 12px;border-radius:999px}
+  .marquee-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+  /* testimonials */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .quote{background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:20px;position:relative}
+  .quote::before{content:'';position:absolute;top:14px;right:18px;font-family:var(--font-display);font-size:42px;line-height:1;color:rgba(255,179,56,0.18)}
+  .quote-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .quote-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2a3350,#1b2238);display:grid;place-items:center;font-weight:700;font-size:12px;color:white}
+  .quote b{font-size:13px}
+  .quote small{font-family:var(--font-mono);font-size:11px;color:var(--faint)}
+  .quote p{color:var(--muted);font-size:14px;line-height:1.6}
+  .quote .stars{font-size:12px;margin-top:10px}
+  @media(max-width:860px){.quotes{grid-template-columns:1fr}}
+  /* pricing */
+  .pricing{display:grid;grid-template-columns:1.1fr 0.9fr;gap:18px;align-items:stretch}
+  .price-card{background:linear-gradient(180deg, #12182d, #0e1322);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:22px;position:relative;overflow:hidden}
+  .price-card::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 300px at 50% 0%, rgba(255,179,56,0.12), transparent 65%);pointer-events:none}
+  .price-card h3{font-family:var(--font-display);font-size:20px;margin-bottom:6px}
+  .price{font-family:var(--font-display);font-size:42px;font-weight:700;letter-spacing:-0.04em}
+  .price span{font-size:14px;color:var(--faint);font-weight:500;letter-spacing:0}
+  .price-list{margin:14px 0;display:grid;gap:8px}
+  .price-list li{display:flex;gap:8px;align-items:center;font-size:13.5px;color:var(--muted)}
+  .price-list li::before{content:"âœ“";width:20px;height:20px;display:grid;place-items:center;background:rgba(61,214,140,0.12);border:1px solid rgba(61,214,140,0.18);color:var(--green);border-radius:50%;font-size:11px;flex-shrink:0}
+  .compare{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:22px}
+  .compare h4{font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:12px}
+  .compare-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13.5px}
+  .compare-row:last-child{border-bottom:none}
+  .compare-row b{color:var(--text)}
+  .compare-row .bad{color:var(--red);font-family:var(--font-mono);font-size:11px}
+  .compare-row .good{color:var(--green);font-family:var(--font-mono);font-size:11px}
+  @media(max-width:860px){.pricing{grid-template-columns:1fr}}
+  /* trust */
+  .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .trust-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;text-align:center}
+  .trust-card i{width:38px;height:38px;display:grid;place-items:center;margin:0 auto 10px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06)}
+  .trust-card b{display:block;font-size:13px;margin-bottom:4px}
+  .trust-card span{font-size:12.5px;color:var(--faint);line-height:1.5}
+  @media(max-width:860px){.trust{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.trust{grid-template-columns:1fr}}
+  /* palette modal */
+  .palette{position:fixed;inset:0;z-index:70;display:none;place-items:start center;padding-top:12vh}
+  .palette.open{display:grid}
+  .palette-backdrop{position:absolute;inset:0;background:rgba(3,5,10,0.62);backdrop-filter:blur(10px)}
+  .palette-panel{position:relative;width:min(640px,92vw);background:#0f1320;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.6)}
+  .palette-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.06)}
+  .palette-head input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-body);font-size:15px}
+  .palette-list{max-height:360px;overflow:auto;padding:8px}
+  .palette-item{display:flex;align-items:center;justify-content:space-between;padding:10px 10px;border-radius:10px;cursor:pointer}
+  .palette-item.active,.palette-item:hover{background:rgba(255,255,255,0.06)}
+  .palette-item code{font-family:var(--font-mono);font-size:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);padding:4px 7px;border-radius:7px}
+  .palette-hint{padding:10px 14px;border-top:1px solid rgba(255,255,255,0.06);font-family:var(--font-mono);font-size:11px;color:var(--faint);display:flex;justify-content:space-between}
+  /* bento glow */
+  .bento-card{--gx:50%;--gy:50%}
+  .bento-card::after{content:"";position:absolute;inset:0;border-radius:18px;background:radial-gradient(400px 300px at var(--gx) var(--gy), rgba(255,179,56,0.10), transparent 60%);opacity:0;transition:opacity .25s ease;pointer-events:none}
+  .bento-card:hover::after{opacity:1}
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease, transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+  /* responsive */
+  @media(max-width:980px){
+    .hero-grid{grid-template-columns:1fr}
+    .browser-body{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:720px){
+    header{padding:12px 10px 0}
+    .nav-links,.kbd-hint,.nav-cta .btn-ghost{display:none}
+    .menu-btn{display:grid}
+    .hero{padding:108px 0 24px}
+    section{padding:64px 0}
+    .wrap{padding:0 18px}
+    .foot-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="ambient"></div>
+<div class="ambient-grid"></div>
+<div class="noise"></div>
+<div class="spotlight" id="spotlight"></div>
+
+<header>
+  <div class="nav-shell">
+    <a href="#top" class="brand" aria-label="Sentinel home">
+      <span class="brand-mark">◈</span>
+      <b>SENTI<span style="color:var(--amber)">NEL</span></b>
+      <span class="live"><span class="live-dot"></span> Live</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#showcase">Showcase</a>
+      <a href="#how">How it works</a>
+      <a href="#commands">Commands</a>
+      <a href="https://sentinal-f9vz.onrender.com/dashboard">Dashboard</a>
+    </nav>
+    <div class="nav-cta">
+      <span class="kbd-hint"><span class="kbd">⌘</span> <span class="kbd">K</span> commands</span>
+      <a class="btn btn-ghost btn-sm" href="https://sentinal-f9vz.onrender.com/api/auth/discord">Login</a>
+      <a class="btn btn-primary btn-sm" href="https://discord.com/api/oauth2/authorize?client_id=1493217033956102215&permissions=8&scope=bot%20applications.commands">Invite Bot →</a>
+      <button class="icon-btn menu-btn" id="menuBtn" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <div class="drawer-panel">
+    <a href="#features">Features <span class="hint">01</span></a>
+    <a href="#showcase">Showcase <span class="hint">02</span></a>
+    <a href="#how">How it works <span class="hint">03</span></a>
+    <a href="#commands">Commands <span class="hint">04</span></a>
+    <a href="https://sentinal-f9vz.onrender.com/dashboard">Dashboard <span class="hint">↗</span></a>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <a class="btn btn-ghost" style="flex:1;justify-content:center" href="https://sentinal-f9vz.onrender.com/api/auth/discord">Login</a>
+      <a class="btn btn-primary" style="flex:1;justify-content:center" href="https://discord.com/api/oauth2/authorize?client_id=1493217033956102215&permissions=8&scope=bot%20applications.commands">Invite Bot</a>
+    </div>
+  </div>
+</div>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow"><i>◈</i> Discord bot &nbsp;·&nbsp; Web dashboard &nbsp;·&nbsp; Audit log</div>
+          <h1>Every server<br>needs a <span class="accent">sentinel.</span></h1>
+          <p class="hero-sub">Moderation, automod, tickets, leveling, giveaways and analytics — <strong>one bot standing watch</strong> with a dashboard that stays perfectly in sync with Discord.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://discord.com/api/oauth2/authorize?client_id=1493217033956102215&permissions=8&scope=bot%20applications.commands">Invite Sentinel — Free</a>
+            <a class="btn btn-ghost" href="https://sentinal-f9vz.onrender.com/dashboard">Open Dashboard</a>
+          </div>
+          <div class="hero-proof">
+            <span class="avatars"><span style="background:#5865f2">◈</span><span>A</span><span>K</span><span>N</span></span>
+            <span><span class="stars">★★★★★</span> trusted on launch servers</span>
+            <span>·</span>
+            <span style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)"></span> &lt; 60ms slash response</span>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="stack">
+            <div class="browser reveal in">
+              <div class="browser-head">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span class="traffic"><i></i><i></i><i></i></span>
+                  <span class="browser-title"><span class="dot"></span> sentinel — dashboard</span>
+                </div>
+                <span class="browser-url">sentinal.onrender.com/dashboard</span>
+              </div>
+              <div class="browser-body">
+                <div class="dash-card">
+                  <h4>Server health <span style="color:var(--green)">● live</span></h4>
+                  <div class="mini-stats">
+                    <div class="mini-stat up"><b id="statJoins">+128</b><span>joins / 7d</span></div>
+                    <div class="mini-stat warn"><b>37</b><span>tickets closed</span></div>
+                    <div class="mini-stat"><b>642</b><span>commands</span></div>
+                    <div class="mini-stat"><b>99.9%</b><span>uptime</span></div>
+                  </div>
+                  <div class="spark" aria-hidden="true">
+                    <i style="height:38%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:84%"></i><i style="height:55%"></i><i style="height:72%"></i><i style="height:44%"></i><i style="height:66%"></i>
+                  </div>
+                </div>
+                <div class="dash-card">
+                  <h4 style="margin-bottom:8px">Slash commands</h4>
+                  <div class="cmd-preview" id="cmdPreview">
+                    <div class="cmd-line">
+                      <span class="slash">/</span>
+                      <input id="cmdInput" placeholder="Search commands…" autocomplete="off" spellcheck="false" aria-label="Search commands">
+                      <span class="kbd" style="font-size:10px">↵</span>
+                    </div>
+                    <div class="cmd-list" id="cmdList"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="float-card float-a">
+              <span class="ic" style="background:rgba(255,179,56,0.14);border:1px solid rgba(255,179,56,0.22);color:var(--amber)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l7 3v5c0 5-3.2 8.6-7 11-3.8-2.4-7-6-7-11V5l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+              </span>
+              <div><b>Raid blocked</b><span>11 accounts locked in 0.8s</span></div>
+            </div>
+            <div class="float-card float-b">
+              <span class="ic" style="background:rgba(106,140,255,0.14);border:1px solid rgba(106,140,255,0.22);color:var(--blue)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H7a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M9 11h6"/></svg>
+              </span>
+              <div><b>Ticket #0482 claimed</b><span>@nova is on it</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proof-strip reveal">
+        <div class="proof-item">
+          <div>
+            <div class="num"><span id="count1">2.4</span>s avg</div>
+            <div class="lbl">ticket open → claim</div>
+          </div>
+        </div>
+        <div class="proof-sep"></div>
+        <div class="proof-item">
+          <div>
+            <div class="num">100%</div>
+            <div class="lbl">config saved to DB</div>
+          </div>
+        </div>
+        <div class="proof-sep"></div>
+        <div class="proof-item">
+          <div>
+            <div class="num">60+</div>
+            <div class="lbl">permission-checked commands</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- SOCIAL PROOF MARQUEE -->
+  <div class="marquee" aria-label="Communities using Sentinel">
+    <div class="marquee-track">
+      <span class="marquee-item"><span class="marquee-dot"></span> Gaming - 42k members</span>
+      <span class="marquee-item"><span class="marquee-dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></span> Study Together - 18k</span>
+      <span class="marquee-item"><span class="marquee-dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></span> Crypto Labs - 31k</span>
+      <span class="marquee-item"><span class="marquee-dot"></span> Art House - 9.4k</span>
+      <span class="marquee-item"><span class="marquee-dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></span> Dev Guild - 27k</span>
+      <span class="marquee-item"><span class="marquee-dot"></span> Music Hub - 15k</span>
+      <span class="marquee-item"><span class="marquee-dot"></span> Gaming - 42k members</span>
+      <span class="marquee-item"><span class="marquee-dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></span> Study Together - 18k</span>
+      <span class="marquee-item"><span class="marquee-dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></span> Crypto Labs - 31k</span>
+      <span class="marquee-item"><span class="marquee-dot"></span> Art House - 9.4k</span>
+      <span class="marquee-item"><span class="marquee-dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></span> Dev Guild - 27k</span>
+      <span class="marquee-item"><span class="marquee-dot"></span> Music Hub - 15k</span>
+    </div>
+  </div>
+  <!-- FEATURES BENTO -->
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow2">What Sentinel does</div>
+        <h2>One bot. Every job<br>your mods wish was handled.</h2>
+        <p class="section-desc">Everything is configured in the dashboard and enforced live in Discord. No stale config channels. No “who changed what?” mysteries.</p>
+      </div>
+
+      <div class="bento">
+        <div class="bento-card featured reveal">
+          <div class="card-top">
+            <span class="card-icon" style="color:var(--amber)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+            </span>
+            <span class="card-kicker">01 — Protect</span>
+          </div>
+          <div class="card-title">Moderation that actually keeps up</div>
+          <p class="card-desc">Timeouts, bans, warns, purges, slowmode and locks — plus automod that catches spam, links, bad words and raid patterns before they hit chat.</p>
+          <div class="chips" style="margin-bottom:14px">
+            <span class="chip hot">Anti-raid</span><span class="chip">Anti-spam</span><span class="chip">Anti-link</span><span class="chip">Word filter</span><span class="chip">Slowmode</span><span class="chip">Lock</span>
+          </div>
+          <div class="mini-preview">
+            <div class="row"><span><span class="who">@driftwood</span> <span class="meta">· 3 msgs / 4s</span></span><span class="pill deny">Timeout</span></div>
+            <div class="row"><span><span class="who">unverified-42</span> <span class="meta">· raid · 11 accts</span></span><span class="pill deny">Locked</span></div>
+            <div class="row"><span><span class="who">@vega_moon</span> <span class="meta">· flagged link</span></span><span class="pill allow">Allowed</span></div>
+          </div>
+        </div>
+
+        <div class="bento-card reveal">
+          <div class="card-top"><span class="card-icon" style="color:var(--blue)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 4h2a2 2 0 012 2v12a2 2 0 01-2 2H8a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 13h6M9 17h6"/></svg></span><span class="card-kicker">02 — Support</span></div>
+          <div class="card-title">Tickets without the chaos</div>
+          <p class="card-desc">One-click panels, claimed threads, add/remove and transcripts on close.</p>
+          <div class="chips"><span class="chip">Panels</span><span class="chip">Transcripts</span><span class="chip">Claiming</span><span class="chip">Auto-close</span></div>
+        </div>
+
+        <div class="bento-card reveal">
+          <div class="card-top"><span class="card-icon" style="color:var(--green)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span><span class="card-kicker">03 — Engage</span></div>
+          <div class="card-title">Welcome & leveling</div>
+          <p class="card-desc">Greet newcomers, autorole on join, XP, leaderboards. People stay because progress is visible.</p>
+          <div class="chips"><span class="chip">Welcome</span><span class="chip">Autorole</span><span class="chip">XP & levels</span><span class="chip">Leaderboard</span></div>
+        </div>
+
+        <div class="bento-card reveal">
+          <div class="card-top"><span class="card-icon" style="color:#ff8ad8"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="6"/><path d="M15 13a3 3 0 11-6 0"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></span><span class="card-kicker">04 — Delight</span></div>
+          <div class="card-title">Giveaways & roles</div>
+          <p class="card-desc">Run giveaways with provably fair rolls and let members self-serve roles with reaction pickers.</p>
+          <div class="chips"><span class="chip">Giveaways</span><span class="chip">Reaction roles</span><span class="chip">Auto-draw</span></div>
+        </div>
+
+        <div class="bento-card reveal">
+          <div class="card-top"><span class="card-icon" style="color:var(--amber)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 16l4-4 3 3 4-6"/></svg></span><span class="card-kicker">05 — Understand</span></div>
+          <div class="card-title">Analytics you’ll open</div>
+          <p class="card-desc">Joins, leaves, command usage and ticket volume charted — so trends are obvious before they’re problems.</p>
+          <div class="chips"><span class="chip">Joins</span><span class="chip">Commands</span><span class="chip">Tickets</span><span class="chip">XP</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOWCASE TABS -->
+  <section id="showcase" style="padding-top:12px">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow2">In detail</div>
+        <h2>Built for how moderation really works</h2>
+        <p class="section-desc">Click through the jobs. Each one has a real preview — not a mockup you’ll never see in Discord.</p>
+      </div>
+
+      <div class="showcase reveal">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="protect" role="tab" aria-selected="true">
+            <small>Moderation</small><b>Every action, one place</b><p>Staff act with a slash, Sentinel logs who/when/why. No DM settlements.</p>
+          </button>
+          <button class="tab" data-tab="tickets" role="tab">
+            <small>Tickets</small><b>Support that doesn’t get lost</b><p>Panel → private thread → claimed → transcript on close.</p>
+          </button>
+          <button class="tab" data-tab="engage" role="tab">
+            <small>Engagement</small><b>Welcome, level, reward</b><p>XP that feels good, autorole that works, welcome that isn’t cringe.</p>
+          </button>
+          <button class="tab" data-tab="analytics" role="tab">
+            <small>Analytics</small><b>See the server at a glance</b><p>Growth, activity and load — charted for humans.</p>
+          </button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-inner" id="panel-protect">
+            <div class="panel-head"><h3>Moderation · Live queue</h3><span>permission-checked</span></div>
+            <div class="shot">
+              <div class="shot-grid">
+                <div class="shot-card">
+                  <h4>Auto-flagged</h4>
+                  <div class="bar-row"><span class="bar-label">spam</span><span class="bar-track"><span class="bar-fill" style="width:78%"></span></span><span style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">3/4s</span></div>
+                  <div class="bar-row"><span class="bar-label">links</span><span class="bar-track"><span class="bar-fill" style="width:42%;background:linear-gradient(90deg,var(--blue),#a9beff)"></span></span><span style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">1 flag</span></div>
+                  <div class="bar-row"><span class="bar-label">raid</span><span class="bar-track"><span class="bar-fill" style="width:92%;background:linear-gradient(90deg,var(--red),#ffa0a0)"></span></span><span style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">11 accts</span></div>
+                </div>
+                <div class="shot-card">
+                  <h4>Actions</h4>
+                  <div class="cmd-tr" style="padding:8px 0;border:none"><code>/timeout @driftwood 10m</code><span class="perm">Mod</span></div>
+                  <div class="cmd-tr" style="padding:8px 0;border:none"><code>/lock #general</code><span class="perm">Admin</span></div>
+                  <div class="cmd-tr" style="padding:8px 0;border:none"><code>/warn @user spam</code><span class="perm">Mod</span></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+                <span class="pill deny">Auto-logged to #mod-log</span>
+                <span class="pill allow">Appealable</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-inner" id="panel-tickets" style="display:none">
+            <div class="panel-head"><h3>Tickets · Panel to thread</h3><span>transcript on close</span></div>
+            <div class="shot" style="text-align:center">
+              <div style="padding:12px 12px 8px">
+                <b style="display:block;font-family:var(--font-display)">Need help?</b>
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">Open a ticket and the team will be right with you.</span>
+                <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+                  <span style="background:var(--amber);color:#1a1205;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700">Open ticket</span>
+                  <span style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);padding:8px 14px;border-radius:999px;font-size:12px">Report a bug</span>
+                </div>
+              </div>
+              <div style="margin-top:12px;background:#0a0d18;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:var(--font-mono);font-size:12px">#ticket-0482</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--green)">claimed · @nova</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-inner" id="panel-engage" style="display:none">
+            <div class="panel-head"><h3>Engagement · Levels & welcome</h3><span>XP + autorole</span></div>
+            <div class="shot-grid">
+              <div class="shot-card">
+                <h4>Welcome</h4>
+                <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+                  <span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ffb338,#ff8a2b)"></span>
+                  <div><b style="font-size:13px">Welcome @marrow!</b><div style="font-size:12px;color:var(--muted)">You’re our 1,284th member — read #rules</div></div>
+                </div>
+                <div style="margin-top:10px;display:flex;gap:6px"><span class="chip">Autorole: Member</span><span class="chip">DM sent</span></div>
+              </div>
+              <div class="shot-card">
+                <h4>Level up</h4>
+                <div style="display:flex;align-items:baseline;gap:8px"><b style="font-family:var(--font-display);font-size:24px">Lv. 22</b><span style="color:var(--faint);font-family:var(--font-mono);font-size:11px">+340 XP</span></div>
+                <div class="bar-track" style="height:8px;margin-top:8px"><span class="bar-fill" style="width:68%"></span></div>
+                <div style="font-family:var(--font-mono);font-size:11px;color:var(--faint);margin-top:6px">Next: 1,200 XP</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-inner" id="panel-analytics" style="display:none">
+            <div class="panel-head"><h3>Analytics · Last 7 days</h3><span>updated hourly</span></div>
+            <div class="shot">
+              <div style="display:flex;align-items:flex-end;gap:6px;height:110px">
+                <span style="flex:1;background:linear-gradient(180deg,var(--amber),rgba(255,179,56,0.15));border-radius:6px 6px 0 0;height:38%"></span>
+                <span style="flex:1;background:linear-gradient(180deg,var(--amber),rgba(255,179,56,0.15));border-radius:6px 6px 0 0;height:62%"></span>
+                <span style="flex:1;background:linear-gradient(180deg,var(--amber),rgba(255,179,56,0.15));border-radius:6px 6px 0 0;height:48%"></span>
+                <span style="flex:1;background:linear-gradient(180deg,var(--amber),rgba(255,179,56,0.15));border-radius:6px 6px 0 0;height:84%"></span>
+                <span style="flex:1;background:linear-gradient(180deg,var(--amber),rgba(255,179,56,0.15));border-radius:6px 6px 0 0;height:55%"></span>
+                <span style="flex:1;background:linear-gradient(180deg,var(--amber),rgba(255,179,56,0.15));border-radius:6px 6px 0 0;height:72%"></span>
+                <span style="flex:1;background:linear-gradient(180deg,var(--amber),rgba(255,179,56,0.15));border-radius:6px 6px 0 0;height:44%"></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:8px;font-family:var(--font-mono);font-size:10px;color:var(--faint)"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+              <div style="display:flex;gap:18px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+                <div><b style="font-family:var(--font-display)">+128</b><div style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">joins / 7d</div></div>
+                <div><b style="font-family:var(--font-display)">642</b><div style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">commands</div></div>
+                <div><b style="font-family:var(--font-display)">37</b><div style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">tickets</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <div class="wrap">
+      <div class="section-head center reveal">
+        <div class="eyebrow2">Setup</div>
+        <h2>Invite → configure → live. <br>Two minutes, no manual.</h2>
+        <p class="section-desc" style="max-width:560px;margin:0 auto">No separate account, no config files. Everything runs through Discord OAuth and saves straight to Postgres via Prisma.</p>
+      </div>
+
+      <div class="steps reveal">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h4>Login with Discord</h4>
+          <p>OAuth2 — <code style="font-family:var(--font-mono);font-size:11px;background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:6px">identify + guilds</code> only. Nothing more.</p>
+          <div class="go">→ Secure, scoped</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h4>Pick a server</h4>
+          <p>Only servers where you have <b>Manage Server</b> appear. No guessing.</p>
+          <div class="go">→ Permission-aware</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h4>Configure</h4>
+          <p>Welcome, autorole, logs, ticket panels — toggles that save instantly to DB.</p>
+          <div class="go">→ Live, not cached</div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <h4>It’s live</h4>
+          <p>Slash commands work immediately. Every action is permission-checked and logged.</p>
+          <div class="go">→ Audit-ready</div>
+        </div>
+      </div>
+
+      <div class="arch reveal">
+        <b>Dashboard</b> <span class="dot"></span> <b>API</b> <span class="dot"></span> <b>Prisma</b> <span class="dot"></span> <b>PostgreSQL</b> <span class="dot"></span> <b>Sentinel Bot</b> <span class="dot"></span> <b>Discord API</b>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMANDS -->
+  <section id="commands" class="cmd-section">
+    <div class="wrap">
+      <div class="cmd-wrap">
+        <div class="reveal">
+          <div class="eyebrow2">Command reference</div>
+          <h2>All power, no memorization</h2>
+          <p class="section-desc" style="margin-bottom:14px">Hit <span class="kbd">/</span> in Discord — Sentinel shows only what you’re allowed to use. Try the filter.</p>
+          <div class="searchbox">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input id="cmdSearch" placeholder="Filter commands — try 'ticket' or 'ban'" autocomplete="off">
+            <span class="kbd">⌘ K</span>
+          </div>
+          <div class="cmd-table" id="cmdTable"></div>
+        </div>
+        <div class="reveal">
+          <div class="preview-card">
+            <div class="preview-head"><b>Discord embed preview</b><span style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">what members see</span></div>
+            <div class="preview-body">
+              <div class="embed">
+                <div class="embed-head"></div>
+                <div class="embed-content">
+                  <div class="embed-avatar"></div>
+                  <div class="embed-lines"><i></i><i></i><i></i></div>
+                </div>
+                <div style="padding:0 14px 14px;display:flex;gap:8px;flex-wrap:wrap">
+                  <span class="chip hot">⚙ Ticket created</span><span class="chip">#ticket-0483</span><span class="chip">Claimed</span>
+                </div>
+              </div>
+              <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px">
+                  <div style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">Latency</div><b style="font-family:var(--font-display);font-size:18px">42ms</b><div style="font-family:var(--font-mono);font-size:11px;color:var(--green)">● p95 58ms</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px">
+                  <div style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">Logged to</div><b style="font-family:var(--font-display);font-size:13px">#mod-log #tickets</b><div style="font-family:var(--font-mono);font-size:11px;color:var(--faint)">with reason</div>
+                </div>
+              </div>
+              <div style="margin-top:12px;display:flex;gap:10px">
+                <a class="btn btn-primary" style="flex:1" href="https://discord.com/api/oauth2/authorize?client_id=1493217033956102215&permissions=8&scope=bot%20applications.commands">Try in Discord</a>
+                <a class="btn btn-ghost" href="https://sentinal-f9vz.onrender.com/dashboard">Docs</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section style="padding-top:28px">
+    <div class="wrap">
+      <div class="section-head center reveal">
+        <div class="eyebrow2">Loved by mods</div>
+        <h2>Real servers. Real relief.</h2>
+        <p class="section-desc">From 50-person study groups to 40k gaming hubs - same calm.</p>
+      </div>
+      <div class="quotes reveal">
+        <div class="quote">
+          <div class="quote-head"><span class="quote-av">A</span><div><b>Avery</b><br><small>Admin - Gaming 42k</small></div></div>
+          <p>"We cut ticket chaos by 70%. Panel to thread to claimed, no more lost DMs. Sentinel just watches and we handle."</p>
+          <div class="stars" style="color:var(--amber)">â˜…â˜…â˜…â˜…â˜…</div>
+        </div>
+        <div class="quote">
+          <div class="quote-head"><span class="quote-av" style="background:linear-gradient(135deg,#ffb338,#ff8a2b)">K</span><div><b>Kestrel</b><br><small>Mod Lead - Study 18k</small></div></div>
+          <p>"Automod caught a 30-account raid before I finished my coffee. One lock, one log, done."</p>
+          <div class="stars" style="color:var(--amber)">â˜…â˜…â˜…â˜…â˜…</div>
+        </div>
+        <div class="quote">
+          <div class="quote-head"><span class="quote-av" style="background:linear-gradient(135deg,#6a8cff,#a9beff);color:#0a0d18">N</span><div><b>Nova</b><br><small>Community - Art 9k</small></div></div>
+          <p>"XP + autorole made welcome actually warm. New members get it, stay, and level."</p>
+          <div class="stars" style="color:var(--amber)">â˜…â˜…â˜…â˜…â˜…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" style="padding-top:28px">
+    <div class="wrap">
+      <div class="section-head center reveal">
+        <div class="eyebrow2">Pricing</div>
+        <h2>Free. No asterisks.</h2>
+        <p class="section-desc">Invite, configure, run. If you outgrow it, you helped shape what is next.</p>
+      </div>
+      <div class="pricing reveal">
+        <div class="price-card">
+          <h3>Sentinel Free</h3>
+          <div class="price">$0 <span>/ forever</span></div>
+          <p style="color:var(--faint);font-size:13px;margin-top:6px">For every community that wants to stay human at scale.</p>
+          <ul class="price-list">
+            <li>All moderation & automod</li>
+            <li>Tickets, transcripts, claiming</li>
+            <li>Welcome, leveling, giveaways</li>
+            <li>Analytics & audit log</li>
+            <li>Dashboard + slash commands</li>
+          </ul>
+          <a class="btn btn-primary" style="width:100%;margin-top:6px" href="https://discord.com/api/oauth2/authorize?client_id=1493217033956102215&permissions=8&scope=bot%20applications.commands">Invite Sentinel -></a>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--faint);text-align:center;margin-top:8px">No card - 2-min setup</div>
+        </div>
+        <div class="compare">
+          <h4>Why not DIY with 5 bots?</h4>
+          <div class="compare-row"><span>One dashboard vs 5 configs</span><b class="good">Sentinel</b></div>
+          <div class="compare-row"><span>Permission-checked logs</span><b class="bad">scattered</b></div>
+          <div class="compare-row"><span>DB-synced settings</span><b class="good">live</b></div>
+          <div class="compare-row"><span>Support thread to transcript</span><b class="good">built-in</b></div>
+          <div class="compare-row"><span>Rate-limit safe, p95 58ms</span><b class="good">tuned</b></div>
+          <div style="margin-top:14px;background:rgba(255,179,56,0.08);border:1px solid rgba(255,179,56,0.18);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--muted)">"We replaced 3 bots with one. Fewer outages, fewer who changed it? threads." - Avery</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section style="padding-top:28px">
+    <div class="wrap">
+      <div class="section-head center reveal">
+        <div class="eyebrow2">Trust</div>
+        <h2>Built to be boring - in a good way</h2>
+      </div>
+      <div class="trust reveal">
+        <div class="trust-card"><i style="color:var(--amber)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l7 3v5c0 5-3.2 8.6-7 11-3.8-2.4-7-6-7-11V5l7-3z"/></svg></i><b>Least privilege</b><span>Every slash checks Discord perms before it runs.</span></div>
+        <div class="trust-card"><i style="color:var(--blue)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H7a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></i><b>Audit trail</b><span>Who, when, why - in #mod-log and DB.</span></div>
+        <div class="trust-card"><i style="color:var(--green)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M9 12l2 2 4-4"/></svg></i><b>DB truth</b><span>Dashboard to Prisma to Postgres to Bot. No drift.</span></div>
+        <div class="trust-card"><i style="color:#ffb338"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8a4 4 0 100 8 4 4 0 000-8z"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg></i><b>Rate-limit safe</b><span>Backoff + health checks on Render.</span></div>
+      </div>
+    </div>
+  </section>
+  <!-- FAQ -->
+  <section>
+    <div class="wrap">
+      <div class="section-head center reveal">
+        <div class="eyebrow2">FAQ</div>
+        <h2>Straight answers</h2>
+        <p class="section-desc">If it’s not here, open a ticket after inviting — Sentinel dogfoods its own tickets.</p>
+      </div>
+      <div class="faq reveal">
+        <div class="faq-item open">
+          <button class="faq-q">Does Sentinel store messages? <span>+</span></button>
+          <div class="faq-a">No. It stores configuration (which channels, which roles, which filters) and audit events (who ran what command, when). Message content is only processed live for automod and never retained.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">What permissions does the bot need? <span>+</span></button>
+          <div class="faq-a">Administrator is requested for the simplest install, but Sentinel works with granular perms: Manage Messages, Moderate Members, Manage Channels and Manage Roles. Every slash command is permission-checked before execution.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Is the dashboard in sync? <span>+</span></button>
+          <div class="faq-a">Yes. Dashboard → API → Prisma → PostgreSQL → Bot. Toggle a setting and the next command sees it. No restart, no cache staleness.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">What about rate limits and downtime? <span>+</span></button>
+          <div class="faq-a">Slash responses are &lt; 60ms p95, and the bot respects Discord rate limits with backoff. The web app is on Render with health checks — if Discord is up, Sentinel is up.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="cta reveal">
+        <h2>Put a sentinel on duty.</h2>
+        <p>Invite the bot, log in with Discord, ship your first ticket panel or automod rule before your coffee cools.</p>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="https://discord.com/api/oauth2/authorize?client_id=1493217033956102215&permissions=8&scope=bot%20applications.commands">Invite Sentinel — it’s free</a>
+          <a class="btn btn-ghost" href="https://sentinal-f9vz.onrender.com/dashboard">Open Dashboard</a>
+        </div>
+        <div class="cta-note">No credit card · No extra account · Works with existing roles & channels</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="palette" id="palette" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="palette-backdrop" id="paletteBackdrop"></div>
+  <div class="palette-panel">
+    <div class="palette-head">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="paletteInput" placeholder="Search commands, try: ban, ticket, level..." autocomplete="off" spellcheck="false">
+      <span class="kbd">ESC</span>
+    </div>
+    <div class="palette-list" id="paletteList"></div>
+    <div class="palette-hint"><span>Enter to copy - Up/Down to navigate</span><span>60+ commands</span></div>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="brand"><span class="brand-mark">◈</span><b>SENTI<span style="color:var(--amber)">NEL</span></b></div>
+        <p>A moderation, ticketing, engagement and analytics bot for Discord — with a live dashboard that never drifts from what’s running in your server.</p>
+        <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+          <span class="chip">Next.js</span><span class="chip">discord.js</span><span class="chip">Prisma</span><span class="chip">PostgreSQL</span>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Product</h5>
+        <a href="#features">Features</a>
+        <a href="#showcase">Showcase</a>
+        <a href="#commands">Commands</a>
+        <a href="#how">How it works</a>
+      </div>
+      <div class="foot-col">
+        <h5>Get started</h5>
+        <a href="https://discord.com/api/oauth2/authorize?client_id=1493217033956102215&permissions=8&scope=bot%20applications.commands">Invite bot</a>
+        <a href="https://sentinal-f9vz.onrender.com/api/auth/discord">Login with Discord</a>
+        <a href="https://sentinal-f9vz.onrender.com/dashboard">Dashboard</a>
+      </div>
+      <div class="foot-col">
+        <h5>Meta</h5>
+        <a href="#">Status: Operational</a>
+        <a href="#">Privacy — we store config, not messages</a>
+        <a href="#">© 2026 Sentinel</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span class="status"><i></i> All systems operational · Bot ID 1493217033956102215</span>
+      <span>Built with care for communities that want to stay human at scale.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // drawer
+  const menuBtn = document.getElementById('menuBtn');
+  const drawer = document.getElementById('drawer');
+  const drawerBackdrop = document.getElementById('drawerBackdrop');
+  function toggleDrawer(force){
+    const open = force ?? !drawer.classList.contains('open');
+    drawer.classList.toggle('open', open);
+    drawer.setAttribute('aria-hidden', String(!open));
+    menuBtn.setAttribute('aria-expanded', String(open));
+  }
+  menuBtn.addEventListener('click', ()=> toggleDrawer());
+  drawerBackdrop.addEventListener('click', ()=> toggleDrawer(false));
+  drawer.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=> toggleDrawer(false)));
+
+  // spotlight
+  const spotlight = document.getElementById('spotlight');
+  let mx=0, my=0, raf=null;
+  window.addEventListener('mousemove', e=>{
+    mx=e.clientX; my=e.clientY;
+    if(!raf){
+      raf=requestAnimationFrame(()=>{
+        spotlight.style.left=mx+'px';
+        spotlight.style.top=my+'px';
+        spotlight.style.opacity='1';
+        raf=null;
+      })
+    }
+  });
+  window.addEventListener('mouseleave', ()=> spotlight.style.opacity='0');
+
+  // reveal
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  }, {threshold:0.14});
+  document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
+
+  // showcase tabs
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(b=> b.classList.remove('active'));
+      btn.classList.add('active');
+      const id=btn.dataset.tab;
+      document.querySelectorAll('.panel-inner').forEach(p=> p.style.display='none');
+      document.getElementById('panel-'+id).style.display='block';
+    });
+  });
+
+  // commands data + filter
+  const commands=[
+    {cmd:'/ban',desc:'Ban a member with reason + duration',perm:'Ban Members'},
+    {cmd:'/kick',desc:'Kick and optionally DM the reason',perm:'Kick Members'},
+    {cmd:'/timeout',desc:'Timeout for 1m to 28d',perm:'Moderate Members'},
+    {cmd:'/warn',desc:'Warn with 3-strike handling',perm:'Mod'},
+    {cmd:'/purge',desc:'Bulk delete 2–100 messages',perm:'Manage Messages'},
+    {cmd:'/slowmode',desc:'Set channel cooldown',perm:'Manage Channels'},
+    {cmd:'/lock',desc:'Lock / unlock a channel',perm:'Manage Channels'},
+    {cmd:'/ticket panel',desc:'Create an open-ticket panel',perm:'Admin'},
+    {cmd:'/ticket close',desc:'Close and save transcript',perm:'Support'},
+    {cmd:'/level',desc:'Check XP and rank',perm:'Everyone'},
+    {cmd:'/leaderboard',desc:'Top 10 by XP',perm:'Everyone'},
+    {cmd:'/giveaway',desc:'Start / end giveaways',perm:'Manage Server'},
+    {cmd:'/reactionrole',desc:'Self-serve role picker',perm:'Manage Roles'},
+  ];
+  const cmdList=document.getElementById('cmdList');
+  const cmdInput=document.getElementById('cmdInput');
+  const cmdTable=document.getElementById('cmdTable');
+  const cmdSearch=document.getElementById('cmdSearch');
+  function renderCmds(filter=''){
+    const f=filter.toLowerCase();
+    const filtered=commands.filter(c=> (c.cmd+c.desc).toLowerCase().includes(f));
+    cmdList.innerHTML=filtered.slice(0,5).map((c,i)=>`
+      <div class="cmd-item ${i===0?'active':''}">
+        <div><div class="name">${c.cmd}</div><div class="desc">${c.desc}</div></div>
+        <span class="hot">${c.perm}</span>
+      </div>
+    `).join('') || `<div style="padding:10px;color:var(--faint);font-family:var(--font-mono);font-size:12px">No commands match “${filter}”</div>`;
+    cmdTable.innerHTML=filtered.map(c=>`
+      <div class="cmd-tr">
+        <div class="left"><code>${c.cmd}</code><span class="desc">${c.desc}</span></div>
+        <span class="perm">${c.perm}</span>
+      </div>
+    `).join('') || `<div style="padding:14px;color:var(--faint);font-family:var(--font-mono);font-size:13px">No results</div>`;
+  }
+  renderCmds();
+  cmdInput.addEventListener('input', e=> renderCmds(e.target.value));
+  cmdSearch.addEventListener('input', e=> renderCmds(e.target.value));
+  // cmd+k
+  window.addEventListener('keydown', e=>{
+    if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); cmdSearch.focus(); }
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const btn=item.querySelector('.faq-q');
+    btn.addEventListener('click', ()=>{
+      const open=item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i=> i.classList.remove('open'));
+      if(!open) item.classList.add('open');
+    });
+  });
+
+  // counter micro-animation
+  const countEl=document.getElementById('count1');
+  let n=0, target=2.4;
+  const tick=()=>{
+    n=Math.min(target, n+0.07);
+    countEl.textContent=n.toFixed(1);
+    if(n<target) requestAnimationFrame(tick);
+  };
+  setTimeout(()=> requestAnimationFrame(tick), 600);
+
+  // progress
+  const progress=document.getElementById('progress');
+  const onScroll=()=>{ const h=document.documentElement; const scrolled=(h.scrollTop)/(h.scrollHeight - h.clientHeight); progress.style.transform=`scaleX(${scrolled})`; };
+  document.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+  // bento glow follow
+  document.querySelectorAll('.bento-card').forEach(card=>{
+    card.addEventListener('mousemove', e=>{
+      const r=card.getBoundingClientRect(); card.style.setProperty('--gx', (e.clientX - r.left)+'px'); card.style.setProperty('--gy', (e.clientY - r.top)+'px');
+    });
+  });
+  // count-up on intersection
+  const counts=[{id:'statJoins',target:128,prefix:'+'},{id:'count1',target:2.4,prefix:'',decimals:1}];
+  const countObs=new IntersectionObserver((entries)=>{
+    entries.forEach(ent=>{
+      if(ent.isIntersecting){
+        const el=ent.target; const cfg=counts.find(c=>c.id===el.id); if(!cfg) return;
+        let cur=0; const step=cfg.decimals?0.06:1; const tick=()=>{ cur=Math.min(cfg.target, cur+ (cfg.target>10?2:step)); el.textContent=(cfg.prefix||'') + (cfg.decimals?cur.toFixed(1):Math.round(cur)); if(cur<cfg.target) requestAnimationFrame(tick); };
+        requestAnimationFrame(tick); countObs.unobserve(el);
+      }
+    });
+  },{threshold:0.6});
+  counts.forEach(c=>{ const el=document.getElementById(c.id); if(el) countObs.observe(el); });
+  // palette modal
+  const palette=document.getElementById('palette');
+  const paletteInput=document.getElementById('paletteInput');
+  const paletteList=document.getElementById('paletteList');
+  const paletteBackdrop=document.getElementById('paletteBackdrop');
+  let palIdx=0;
+  function openPalette(){ palette.classList.add('open'); palette.setAttribute('aria-hidden','false'); paletteInput.value=''; palIdx=0; renderPalette(''); paletteInput.focus(); document.body.style.overflow='hidden'; }
+  function closePalette(){ palette.classList.remove('open'); palette.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+  function renderPalette(filter=''){
+    const f=filter.toLowerCase();
+    const filtered=commands.filter(c=> (c.cmd+c.desc+c.perm).toLowerCase().includes(f));
+    paletteList.innerHTML=filtered.map((c,i)=>`<div class="palette-item ${i===palIdx?'active':''}" data-idx="${i}"><div><code>${c.cmd}</code> <span style="color:var(--muted);font-size:13px;margin-left:6px">${c.desc}</span></div><span style="font-family:var(--font-mono);font-size:11px;color:var(--faint);border:1px solid rgba(255,255,255,0.06);padding:4px 7px;border-radius:999px;background:rgba(255,255,255,0.03)">${c.perm}</span></div>`).join('') || `<div style="padding:14px;color:var(--faint);font-family:var(--font-mono);font-size:13px">No results for "${filter}"</div>`;
+    paletteList.querySelectorAll('.palette-item').forEach(el=>{
+      el.addEventListener('click', ()=>{ const idx=Number(el.dataset.idx); const cmd=filtered[idx]; navigator.clipboard.writeText(cmd.cmd).catch(()=>{}); closePalette(); });
+    });
+  }
+  paletteInput.addEventListener('input', e=>{ palIdx=0; renderPalette(e.target.value); });
+  paletteInput.addEventListener('keydown', e=>{
+    const items=paletteList.querySelectorAll('.palette-item');
+    if(e.key==='ArrowDown'){ e.preventDefault(); palIdx=Math.min(items.length-1, palIdx+1); renderPalette(paletteInput.value); items[palIdx]?.scrollIntoView({block:'nearest'}); }
+    if(e.key==='ArrowUp'){ e.preventDefault(); palIdx=Math.max(0, palIdx-1); renderPalette(paletteInput.value); items[palIdx]?.scrollIntoView({block:'nearest'}); }
+    if(e.key==='Enter'){ e.preventDefault(); const filtered=commands.filter(c=> (c.cmd+c.desc+c.perm).toLowerCase().includes(paletteInput.value.toLowerCase())); const cmd=filtered[palIdx]; if(cmd){ navigator.clipboard.writeText(cmd.cmd).catch(()=>{}); closePalette(); } }
+    if(e.key==='Escape') closePalette();
+  });
+  paletteBackdrop.addEventListener('click', closePalette);
+  window.addEventListener('keydown', e=>{
+    if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); openPalette(); }
+    if(e.key==='Escape' && palette.classList.contains('open')) closePalette();
+  });
+  document.querySelector('.kbd-hint')?.addEventListener('click', openPalette);
+  document.querySelector('.kbd-hint')?.style.setProperty('cursor','pointer');
+  const browser=document.querySelector('.browser');
+  if(browser && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    browser.addEventListener('mousemove', e=>{
+      const r=browser.getBoundingClientRect(); const x=(e.clientX - r.left)/r.width -0.5; const y=(e.clientY - r.top)/r.height -0.5;
+      browser.style.transform=`perspective(900px) rotateY(${x*3}deg) rotateX(${-y*3}deg)`;
+    });
+    browser.addEventListener('mouseleave', ()=> browser.style.transform='');
+    browser.style.transition='transform .18s ease';
+  }
+
+  // active nav highlight on scroll
+  const sections=['features','showcase','how','commands'].map(id=> document.getElementById(id));
+  const navLinks=document.querySelectorAll('.nav-links a');
+  const io2=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        navLinks.forEach(a=> a.classList.remove('active'));
+        const a=[...navLinks].find(x=> x.getAttribute('href')==='#'+e.target.id);
+        if(a) a.classList.add('active');
+      }
+    });
+  }, {threshold:0.45, rootMargin:'-20% 0px -60% 0px'});
+  sections.forEach(s=> s&& io2.observe(s));
+</script>
+</body>
+</html>
+
