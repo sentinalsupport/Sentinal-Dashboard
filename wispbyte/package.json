@@ -2,7 +2,7 @@
   "name": "sentinal-bot-wispbyte",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "postinstall": "prisma generate --schema=./prisma/schema.prisma"
