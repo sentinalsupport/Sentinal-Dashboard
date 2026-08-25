@@ -47,7 +47,7 @@ export default async function ServersPage(){
       </CardHeader>
       <CardContent className="flex items-center justify-between">
         <span className="text-xs">{hasBot ? "✅ Bot installed" : "❌ Bot not installed"} {isAdmin ? "• ✅ Admin" : "• ❌ No admin"}</span>
-        {hasBot ? (isAdmin ? <Link href={`/guild/${g.id}`}><Button size="sm">Configure</Button></Link> : <Button size="sm" disabled>Admin only</Button>) : <a href={`https://discord.com/api/oauth2/authorize?client_id=1493217033956102215&permissions=8&scope=bot%20applications.commands&guild_id=${g.id}`} target="_blank"><Button size="sm" variant="outline">Invite Bot</Button></a>}
+        {hasBot ? (isAdmin ? <Link href={`/guild/${g.id}`}><Button size="sm">Configure</Button></Link> : <a href={`https://discord.com/api/oauth2/authorize?client_id=1493217033956102215&permissions=8&scope=bot%20applications.commands&guild_id=${g.id}`} target="_blank"><Button size="sm" className="bg-[#ffb338] text-[#1a1205] hover:bg-[#ffbe55] border-[#ffb338] font-semibold shadow-[0_6px_16px_rgba(255,179,56,0.35)]">Invite Bot</Button></a>) : <a href={`https://discord.com/api/oauth2/authorize?client_id=1493217033956102215&permissions=8&scope=bot%20applications.commands&guild_id=${g.id}`} target="_blank"><Button size="sm" className="bg-[#ffb338] text-[#1a1205] hover:bg-[#ffbe55] border-[#ffb338] font-semibold shadow-[0_6px_16px_rgba(255,179,56,0.35)]">Invite Bot</Button></a>}
       </CardContent>
     </Card>;
   };
