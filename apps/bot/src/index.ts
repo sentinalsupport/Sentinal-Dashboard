@@ -41,7 +41,7 @@ client.on(Events.InteractionCreate, async (interaction)=>{
       else await interaction.reply({content:"❌ Error: "+e.message,ephemeral:true}).catch(()=>null);
     }
     // analytics
-    if(interaction.guildId) await prisma.analytics.upsert({ where:{ guildId_date:{guildId:interaction.guildId, date: new Date(new Date().toISOString().slice(0,10))} }, update:{ commands:{increment:1}}, create:{guildId:interaction.guildId, date: new Date(new Date().toISOString().slice(0,10)), commands:1}}).catch(()=>null);
+    if(interaction.guildId) await prisma.analytics?.upsert({ where:{ guildId_date:{guildId:interaction.guildId, date: new Date(new Date().toISOString().slice(0,10))} }, update:{ commands:{increment:1}}, create:{guildId:interaction.guildId, date: new Date(new Date().toISOString().slice(0,10)), commands:1}}).catch(()=>null);
     return;
   }
   if(interaction.isButton()){
@@ -75,7 +75,7 @@ client.on(Events.InteractionCreate, async (interaction)=>{
 
 client.on(Events.GuildMemberAdd, async (member)=>{
   // analytics
-  await prisma.analytics.upsert({ where:{guildId_date:{guildId:member.guild.id, date:new Date(new Date().toISOString().slice(0,10))}}, update:{joins:{increment:1}}, create:{guildId:member.guild.id, date:new Date(new Date().toISOString().slice(0,10)), joins:1}}).catch(()=>null);
+  await prisma.analytics?.upsert({ where:{guildId_date:{guildId:member.guild.id, date:new Date(new Date().toISOString().slice(0,10))}}, update:{joins:{increment:1}}, create:{guildId:member.guild.id, date:new Date(new Date().toISOString().slice(0,10)), joins:1}}).catch(()=>null);
   // welcome
   const welcome=await prisma.welcomeSettings.findUnique({where:{guildId:member.guild.id}}).catch(()=>null);
   if(welcome?.enabled && welcome.channelId){
@@ -104,7 +104,7 @@ client.on(Events.GuildMemberAdd, async (member)=>{
 });
 
 client.on(Events.GuildMemberRemove, async (member)=>{
-  await prisma.analytics.upsert({ where:{guildId_date:{guildId:member.guild.id, date:new Date(new Date().toISOString().slice(0,10))}}, update:{leaves:{increment:1}}, create:{guildId:member.guild.id, date:new Date(new Date().toISOString().slice(0,10)), leaves:1}}).catch(()=>null);
+  await prisma.analytics?.upsert({ where:{guildId_date:{guildId:member.guild.id, date:new Date(new Date().toISOString().slice(0,10))}}, update:{leaves:{increment:1}}, create:{guildId:member.guild.id, date:new Date(new Date().toISOString().slice(0,10)), leaves:1}}).catch(()=>null);
   const goodbye=await prisma.goodbyeSettings.findUnique({where:{guildId:member.guild.id}}).catch(()=>null);
   if(goodbye?.enabled && goodbye.channelId){
     const ch=member.guild.channels.cache.get(goodbye.channelId) as any;
@@ -189,7 +189,7 @@ client.on(Events.MessageCreate, async (msg)=>{
 
   // reaction roles handle via messageReactionAdd not here
   // analytics messages
-  await prisma.analytics.upsert({ where:{guildId_date:{guildId:msg.guild.id, date:new Date(new Date().toISOString().slice(0,10))}}, update:{messages:{increment:1}}, create:{guildId:msg.guild.id, date:new Date(new Date().toISOString().slice(0,10)), messages:1}}).catch(()=>null);
+  await prisma.analytics?.upsert({ where:{guildId_date:{guildId:msg.guild.id, date:new Date(new Date().toISOString().slice(0,10))}}, update:{messages:{increment:1}}, create:{guildId:msg.guild.id, date:new Date(new Date().toISOString().slice(0,10)), messages:1}}).catch(()=>null);
 });
 
 client.on(Events.MessageDelete, async (msg)=>{
