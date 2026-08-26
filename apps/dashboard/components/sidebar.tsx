@@ -36,13 +36,34 @@ export function Sidebar({ guildId }: { guildId?: string }){
   const pathname = usePathname();
   const base = guildId ? `/guild/${guildId}` : "";
   const [open,setOpen]=React.useState(false);
+  const [guild,setGuild]=React.useState<any>(null);
+  React.useEffect(()=>{
+    if(!guildId) return;
+    fetch(`/api/guilds/${guildId}`).then(r=>r.ok?r.json():null).then(j=>{
+      if(j && !j.error) setGuild(j);
+      else if(j?.name) setGuild(j);
+    }).catch(()=>{});
+  },[guildId]);
+  const iconUrl = guild?.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64` : null;
   return <>
     <button onClick={()=>setOpen(!open)} className="lg:hidden fixed top-4 left-4 z-50 bg-card border rounded-md p-2">☰</button>
     <aside className={cn("w-64 shrink-0 border-r bg-card/50 backdrop-blur min-h-screen sticky top-0 hidden lg:block overflow-y-auto", open && "block fixed inset-0 z-40 w-64 lg:sticky")}>
       <div className="p-4 border-b flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-[#5865F2] flex items-center justify-center text-white font-bold">D</div>
-        <span className="font-semibold">Discord Dashboard</span>
-        <span className="ml-auto text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">v1.0</span>
+        {guildId && guild ? (
+          <>
+            {iconUrl ? <img src={iconUrl} alt="" className="w-8 h-8 rounded-lg ring-1 ring-white/10" /> : <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#ffb338] to-[#ff8a2b] flex items-center justify-center text-[#1a1205] font-bold">{guild.name.slice(0,1)}</div>}
+            <div className="min-w-0">
+              <div className="font-semibold text-sm leading-tight truncate" style={{fontFamily:"'Space Grotesk', sans-serif"}}>{guild.name}</div>
+              <div className="text-[11px] font-mono text-muted-foreground truncate">{guild.id}</div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="w-8 h-8 rounded-lg bg-[#5865F2] flex items-center justify-center text-white font-bold">D</div>
+            <span className="font-semibold">Discord Dashboard</span>
+            <span className="ml-auto text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">v1.0</span>
+          </>
+        )}
       </div>
       <nav className="p-2 space-y-0.5">
         {nav.map(i=>{
