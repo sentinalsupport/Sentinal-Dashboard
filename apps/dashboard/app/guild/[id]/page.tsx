@@ -19,6 +19,5 @@ export default function GuildHome({ params }: { params:{ id:string } }){
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
       {links.map(l=> <Card key={l.href}><CardHeader><CardTitle>{l.label}</CardTitle><CardDescription>Manage {l.label.toLowerCase()}</CardDescription></CardHeader><CardContent><Link href={l.href}><Button size="sm">Open</Button></Link></CardContent></Card>)}
     </div>
-    <Card><CardHeader><CardTitle>API Endpoints (protected)</CardTitle></CardHeader><CardContent className="text-xs font-mono bg-muted p-3 rounded overflow-auto">GET /api/guilds/{id}/settings<br/>PATCH /api/guilds/{id}/settings<br/>GET /api/guilds/{id}/members<br/>GET /api/guilds/{id}/roles<br/>GET /api/guilds/{id}/channels</CardContent></Card>
   </div>;
 }
