@@ -684,10 +684,10 @@
                 <div class="dash-card">
                   <h4>Server health <span style="color:var(--green)">● live</span></h4>
                   <div class="mini-stats">
-                    <div class="mini-stat up"><b id="statJoins">+128</b><span>joins / 7d</span></div>
-                    <div class="mini-stat warn"><b>37</b><span>tickets closed</span></div>
-                    <div class="mini-stat"><b>642</b><span>commands</span></div>
-                    <div class="mini-stat"><b>99.9%</b><span>uptime</span></div>
+                    <div class="mini-stat up"><b id="statGuilds">—</b><span>guilds</span></div>
+                    <div class="mini-stat warn"><b id="statUsers">—</b><span>users</span></div>
+                    <div class="mini-stat"><b id="statUptime">—</b><span>uptime</span></div>
+                    <div class="mini-stat"><b id="statPing">—</b><span>ping</span></div>
                   </div>
                   <div class="spark" aria-hidden="true">
                     <i style="height:38%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:84%"></i><i style="height:55%"></i><i style="height:72%"></i><i style="height:44%"></i><i style="height:66%"></i>
@@ -722,45 +722,37 @@
         </div>
       </div>
 
-      <div class="proof-strip reveal">
+      <div class="proof-strip reveal" id="proofStrip">
         <div class="proof-item">
           <div>
-            <div class="num"><span id="count1">2.4</span>s avg</div>
-            <div class="lbl">ticket open → claim</div>
+            <div class="num"><span id="statCommands">—</span></div>
+            <div class="lbl">slash commands</div>
           </div>
         </div>
         <div class="proof-sep"></div>
         <div class="proof-item">
           <div>
-            <div class="num">100%</div>
-            <div class="lbl">config saved to DB</div>
+            <div class="num"><span id="statDb">—</span></div>
+            <div class="lbl">database</div>
           </div>
         </div>
         <div class="proof-sep"></div>
         <div class="proof-item">
           <div>
-            <div class="num">60+</div>
-            <div class="lbl">permission-checked commands</div>
+            <div class="num"><span id="statDiscord">—</span></div>
+            <div class="lbl">discord API</div>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <!-- SOCIAL PROOF MARQUEE -->
-  <div class="marquee" aria-label="Communities using Sentinel">
-    <div class="marquee-track">
-      <span class="marquee-item"><span class="marquee-dot"></span> Gaming - 42k members</span>
-      <span class="marquee-item"><span class="marquee-dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></span> Study Together - 18k</span>
-      <span class="marquee-item"><span class="marquee-dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></span> Crypto Labs - 31k</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> Art House - 9.4k</span>
-      <span class="marquee-item"><span class="marquee-dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></span> Dev Guild - 27k</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> Music Hub - 15k</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> Gaming - 42k members</span>
-      <span class="marquee-item"><span class="marquee-dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></span> Study Together - 18k</span>
-      <span class="marquee-item"><span class="marquee-dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></span> Crypto Labs - 31k</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> Art House - 9.4k</span>
-      <span class="marquee-item"><span class="marquee-dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></span> Dev Guild - 27k</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> Music Hub - 15k</span>
+  <!-- LIVE STATUS MARQUEE — real bot health -->
+  <div class="marquee" aria-label="Live bot status">
+    <div class="marquee-track" id="liveMarquee">
+      <span class="marquee-item"><span class="marquee-dot"></span> <span id="marqueeGuilds">— guilds</span></span>
+      <span class="marquee-item"><span class="marquee-dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></span> <span id="marqueeUptime">— uptime</span></span>
+      <span class="marquee-item"><span class="marquee-dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></span> <span id="marqueePing">— ping</span></span>
+      <span class="marquee-item"><span class="marquee-dot"></span> <span id="marqueeDb">— database</span></span>
     </div>
   </div>
   <!-- FEATURES BENTO -->
@@ -1300,16 +1292,6 @@
     });
   });
 
-  // counter micro-animation
-  const countEl=document.getElementById('count1');
-  let n=0, target=2.4;
-  const tick=()=>{
-    n=Math.min(target, n+0.07);
-    countEl.textContent=n.toFixed(1);
-    if(n<target) requestAnimationFrame(tick);
-  };
-  setTimeout(()=> requestAnimationFrame(tick), 600);
-
   // progress
   const progress=document.getElementById('progress');
   const onScroll=()=>{ const h=document.documentElement; const scrolled=(h.scrollTop)/(h.scrollHeight - h.clientHeight); progress.style.transform=`scaleX(${scrolled})`; };
@@ -1320,18 +1302,6 @@
       const r=card.getBoundingClientRect(); card.style.setProperty('--gx', (e.clientX - r.left)+'px'); card.style.setProperty('--gy', (e.clientY - r.top)+'px');
     });
   });
-  // count-up on intersection
-  const counts=[{id:'statJoins',target:128,prefix:'+'},{id:'count1',target:2.4,prefix:'',decimals:1}];
-  const countObs=new IntersectionObserver((entries)=>{
-    entries.forEach(ent=>{
-      if(ent.isIntersecting){
-        const el=ent.target; const cfg=counts.find(c=>c.id===el.id); if(!cfg) return;
-        let cur=0; const step=cfg.decimals?0.06:1; const tick=()=>{ cur=Math.min(cfg.target, cur+ (cfg.target>10?2:step)); el.textContent=(cfg.prefix||'') + (cfg.decimals?cur.toFixed(1):Math.round(cur)); if(cur<cfg.target) requestAnimationFrame(tick); };
-        requestAnimationFrame(tick); countObs.unobserve(el);
-      }
-    });
-  },{threshold:0.6});
-  counts.forEach(c=>{ const el=document.getElementById(c.id); if(el) countObs.observe(el); });
   // palette modal
   const palette=document.getElementById('palette');
   const paletteInput=document.getElementById('paletteInput');
@@ -1372,6 +1342,28 @@
     browser.addEventListener('mouseleave', ()=> browser.style.transform='');
     browser.style.transition='transform .18s ease';
   }
+
+  // real stats — fetch from /api/health (no fake)
+  fetch('/api/health').then(r=>r.json()).then(d=>{
+    const uptime = d.uptime ? Math.floor(d.uptime/3600)+'h' : '—';
+    const db = d.database || '—';
+    const discord = d.discord || '—';
+    const ping = d.ping ? d.ping+'ms' : (typeof d.discord==='string'&&d.discord.includes('ok')?'—':'—');
+    const set = (id, v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+    set('statUptime', uptime);
+    set('statDb', db);
+    set('statDiscord', discord);
+    set('statPing', ping);
+    set('statGuilds', d.guilds && typeof d.guilds==='number' ? d.guilds : '—');
+    set('statUsers', d.users ?? '—');
+    set('statCommands', '53');
+    set('marqueeUptime', uptime+' uptime');
+    set('marqueeDb', 'db: '+db);
+    set('marqueePing', 'discord: '+discord);
+    set('marqueeGuilds', (d.guilds && typeof d.guilds==='number' ? d.guilds+' guilds' : 'live'));
+  }).catch(()=>{
+    ['statGuilds','statUsers','statUptime','statPing','statCommands','statDb','statDiscord'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent='—'; });
+  });
 
   // active nav highlight on scroll
   const sections=['features','showcase','how','commands'].map(id=> document.getElementById(id));
