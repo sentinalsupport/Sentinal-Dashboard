@@ -7,7 +7,6 @@ export async function GET(req: NextRequest){
     response_type: "code",
     scope: "identify guilds",
     state,
-    prompt: "consent"
   });
   const url = `https://discord.com/api/oauth2/authorize?${params.toString()}`;
   const res = NextResponse.redirect(url);
