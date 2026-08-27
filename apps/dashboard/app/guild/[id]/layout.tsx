@@ -13,7 +13,7 @@ export default async function GuildLayout({ children, params }: { children: Reac
   }catch{}
   const iconUrl = guild?.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=128` : null;
   return <div className="flex min-h-screen">
-    <Sidebar guildId={params.id} />
+    <Sidebar guildId={params.id} guild={guild} />
     <div className="flex-1 min-w-0 bg-background">
       <div className="border-b px-6 py-4 flex items-center justify-between bg-card/50 sticky top-0 z-10 backdrop-blur">
         <div className="flex items-center gap-3">

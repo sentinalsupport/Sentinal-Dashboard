@@ -32,18 +32,19 @@ const nav = [
   { label:"Settings", href:"/settings", icon: Settings },
   { label:"Premium", href:"/premium", icon: Crown },
 ];
-export function Sidebar({ guildId }: { guildId?: string }){
+export function Sidebar({ guildId, guild: initialGuild }: { guildId?: string, guild?: any }){
   const pathname = usePathname();
   const base = guildId ? `/guild/${guildId}` : "";
   const [open,setOpen]=React.useState(false);
-  const [guild,setGuild]=React.useState<any>(null);
+  const [guild,setGuild]=React.useState<any>(initialGuild || null);
   React.useEffect(()=>{
+    if(initialGuild) { setGuild(initialGuild); return; }
     if(!guildId) return;
-    fetch(`/api/guilds/${guildId}`).then(r=>r.ok?r.json():null).then(j=>{
+    fetch(`/api/guilds/${guildId}`, { credentials: 'include' }).then(r=>r.ok?r.json():null).then(j=>{
       if(j && !j.error) setGuild(j);
       else if(j?.name) setGuild(j);
     }).catch(()=>{});
-  },[guildId]);
+  },[guildId, initialGuild]);
   const iconUrl = guild?.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64` : null;
   return <>
     <button onClick={()=>setOpen(!open)} className="lg:hidden fixed top-4 left-4 z-50 bg-card border rounded-md p-2">☰</button>
