@@ -1,6 +1,6 @@
 import { Client, GatewayIntentBits, Partials, Events, EmbedBuilder } from "discord.js";
 import { commands } from "./commands/index.js";
-import { prisma } from "./lib/prisma?.js";
+import { prisma } from "./lib/prisma.js";
 import { replaceVars } from "./lib/utils.js";
 if (!process.env.DISCORD_BOT_TOKEN)
     console.warn("⚠️ DISCORD_BOT_TOKEN not set - bot will not connect");
