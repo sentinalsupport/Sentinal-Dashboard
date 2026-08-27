@@ -55,7 +55,6 @@ export function Sidebar({ guildId, guild: initialGuild }: { guildId?: string, gu
             {iconUrl ? <img src={iconUrl} alt="" className="w-8 h-8 rounded-lg ring-1 ring-white/10" /> : <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#ffb338] to-[#ff8a2b] flex items-center justify-center text-[#1a1205] font-bold">{guild.name.slice(0,1)}</div>}
             <div className="min-w-0">
               <div className="font-semibold text-sm leading-tight truncate" style={{fontFamily:"'Space Grotesk', sans-serif"}}>{guild.name}</div>
-              <div className="text-[11px] font-mono text-muted-foreground truncate">{guild.id}</div>
             </div>
           </>
         ) : (

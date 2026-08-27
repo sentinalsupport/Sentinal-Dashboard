@@ -20,7 +20,7 @@ export default async function GuildLayout({ children, params }: { children: Reac
           {iconUrl ? <img src={iconUrl} alt="" className="w-9 h-9 rounded-xl ring-1 ring-white/10" /> : <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#1c233a] to-[#121724] border border-white/5 grid place-items-center text-white font-bold">{(guild?.name || params.id).slice(0,2).toUpperCase()}</div>}
           <div>
             <div className="font-semibold leading-tight" style={{fontFamily:"'Space Grotesk', sans-serif"}}>{guild?.name || `Guild ${params.id}`}</div>
-            <div className="text-xs font-mono text-muted-foreground">{guild?.id || params.id} • {guild?.member_count ? `${guild.member_count} members` : ""}</div>
+            {guild?.member_count && <div className="text-xs font-mono text-muted-foreground">{guild.member_count} members</div>}
           </div>
         </div>
         <a href="/servers" className="text-sm text-primary hover:underline">Change server</a>
