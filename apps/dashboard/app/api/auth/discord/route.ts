@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifySessionToken } from "@/lib/auth";
 export async function GET(req: NextRequest){
+  // If already logged in, skip OAuth
+  const token = req.cookies.get("session")?.value;
+  if(token){
+    const sess = await verifySessionToken(token).catch(()=>null);
+    if(sess) return NextResponse.redirect(new URL("/servers", req.url));
+  }
   const state = Math.random().toString(36).slice(2);
   const params = new URLSearchParams({
     client_id: process.env.DISCORD_CLIENT_ID!,
