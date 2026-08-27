@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
-import { LayoutDashboard, Server, Shield, Bot, Ticket, Crown, Settings, FileText, Megaphone, BarChart3, Users, Hash, Palette, Bell, Gift, MessageSquare, Verified, TrendingUp, Webhook, Key } from "lucide-react";
+import { LayoutDashboard, Server, Shield, Bot, Ticket, Crown, Settings, FileText, Megaphone, BarChart3, Users, Hash, Palette, Bell, Gift, MessageSquare, Verified, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 const nav = [
   { label:"Dashboard", href:"/dashboard", icon: LayoutDashboard },
@@ -27,8 +27,6 @@ const nav = [
   { label:"Channels", href:"/channels", icon: Hash },
   { label:"Logging", href:"/logging", icon: FileText },
   { label:"Analytics", href:"/analytics", icon: BarChart3 },
-  { label:"Webhooks", href:"/webhooks", icon: Webhook },
-  { label:"API Keys", href:"/api-keys", icon: Key },
   { label:"Settings", href:"/settings", icon: Settings },
   { label:"Premium", href:"/premium", icon: Crown },
 ];
