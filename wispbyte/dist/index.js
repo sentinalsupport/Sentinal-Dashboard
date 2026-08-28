@@ -12,16 +12,17 @@ global.snipes = new Map();
 global.editSnipes = new Map();
 global.cooldowns = new Map();
 global.spamMap = new Map();
+global.raidMap = new Map();
 client.once(Events.ClientReady, async (c) => {
     console.log(`✅ Logged in as ${c.user.tag} (ID: ${c.user.id})`);
     console.log(`📊 Guilds: ${c.guilds.cache.size}`);
     // ensure guild records
     for (const [, g] of c.guilds.cache) {
-        await prisma?.guild?.upsert({ where: { id: g.id }, update: { name: g.name, icon: g.icon, memberCount: g.memberCount }, create: { id: g.id, name: g.name, icon: g.icon, memberCount: g.memberCount } }).catch(() => null);
+        await prisma?.guild.upsert({ where: { id: g.id }, update: { name: g.name, icon: g.icon, memberCount: g.memberCount }, create: { id: g.id, name: g.name, icon: g.icon, memberCount: g.memberCount } }).catch(() => null);
     }
 });
 client.on(Events.GuildCreate, async (g) => {
-    await prisma?.guild?.upsert({ where: { id: g.id }, update: { name: g.name }, create: { id: g.id, name: g.name, icon: g.icon } }).catch(() => null);
+    await prisma?.guild.upsert({ where: { id: g.id }, update: { name: g.name }, create: { id: g.id, name: g.name, icon: g.icon } }).catch(() => null);
     console.log(`+ Guild ${g.name} (${g.id})`);
 });
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -51,9 +52,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
         if (interaction.customId === "create_ticket") {
             await interaction.deferReply({ ephemeral: true }).catch(() => null);
             const guild = interaction.guild;
-            const existing = await prisma?.ticket?.findFirst({ where: { guildId: guild.id, creatorId: interaction.user.id, status: "open" } }).catch(() => null);
+            const existing = await prisma?.ticket.findFirst({ where: { guildId: guild.id, creatorId: interaction.user.id, status: "open" } }).catch(() => null);
             // limit check: max open tickets 3 per user
-            const openCount = await prisma?.ticket?.count({ where: { guildId: guild.id, creatorId: interaction.user.id, status: "open" } }).catch(() => 0);
+            const openCount = await prisma?.ticket.count({ where: { guildId: guild.id, creatorId: interaction.user.id, status: "open" } }).catch(() => 0);
             if (openCount >= 3) {
                 await interaction.editReply({ content: "You have too many open tickets (max 3)" });
                 return;
@@ -63,14 +64,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
                 await interaction.editReply({ content: "Failed to create ticket channel" });
                 return;
             }
-            await prisma?.ticket?.create({ data: { guildId: guild.id, channelId: ch.id, creatorId: interaction.user.id } }).catch(() => null);
+            await prisma?.ticket.create({ data: { guildId: guild.id, channelId: ch.id, creatorId: interaction.user.id } }).catch(() => null);
             await ch.send({ embeds: [new EmbedBuilder().setTitle("Ticket").setDescription(`Hello <@${interaction.user.id}>, support will be with you shortly.`).setColor(0x5865F2)], components: [{ type: 1, components: [{ type: 2, style: 4, label: "Close", custom_id: "close_ticket" }] }] }).catch(() => null);
             await interaction.editReply({ content: `Ticket created: <#${ch.id}>` });
         }
         if (interaction.customId === "close_ticket") {
-            const t = await prisma?.ticket?.findFirst({ where: { channelId: interaction.channelId } }).catch(() => null);
+            const t = await prisma?.ticket.findFirst({ where: { channelId: interaction.channelId } }).catch(() => null);
             if (t)
-                await prisma?.ticket?.update({ where: { id: t.id }, data: { status: "closed", closedAt: new Date() } }).catch(() => null);
+                await prisma?.ticket.update({ where: { id: t.id }, data: { status: "closed", closedAt: new Date() } }).catch(() => null);
             await interaction.reply({ content: "Closing in 3s..." }).catch(() => null);
             setTimeout(() => interaction.channel?.delete().catch(() => null), 3000);
         }
@@ -84,10 +85,42 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 });
 client.on(Events.GuildMemberAdd, async (member) => {
+    // raid protect
+    try {
+        const raidRule = await prisma?.autoModRule.findUnique({ where: { guildId_type: { guildId: member.guild.id, type: "raid" } } }).catch(() => null);
+        if (raidRule?.enabled) {
+            const cfg = raidRule.config || {};
+            const threshold = cfg.threshold || 10;
+            const windowSec = cfg.window || 60;
+            const key = `raid:${member.guild.id}`;
+            const arr = global.raidMap.get(key) || [];
+            const now = Date.now();
+            const filtered = arr.filter((t) => now - t < windowSec * 1000);
+            filtered.push(now);
+            global.raidMap.set(key, filtered);
+            if (filtered.length >= threshold) {
+                // action: lock, log, etc.
+                const action = cfg.action || raidRule.action || "lock";
+                if (action === "lock") {
+                    for (const [, ch] of member.guild.channels.cache)
+                        if (ch.type === 0)
+                            await ch.permissionOverwrites.edit(member.guild.roles.everyone, { SendMessages: false }).catch(() => null);
+                }
+                const logId = (await prisma?.loggingSettings.findUnique({ where: { guildId: member.guild.id } }).catch(() => null))?.channelId;
+                if (logId) {
+                    const ch = member.guild.channels.cache.get(logId);
+                    if (ch)
+                        await ch.send({ embeds: [new EmbedBuilder().setTitle("🚨 Raid Detected").setDescription(`${filtered.length} joins in ${windowSec}s — action: ${action}`).setColor(0xED4245).setTimestamp()] }).catch(() => null);
+                }
+                global.raidMap.set(key, []);
+            }
+        }
+    }
+    catch { }
     // analytics
     await prisma?.analytics?.upsert({ where: { guildId_date: { guildId: member.guild.id, date: new Date(new Date().toISOString().slice(0, 10)) } }, update: { joins: { increment: 1 } }, create: { guildId: member.guild.id, date: new Date(new Date().toISOString().slice(0, 10)), joins: 1 } }).catch(() => null);
     // welcome
-    const welcome = await prisma?.welcomeSettings?.findUnique({ where: { guildId: member.guild.id } }).catch(() => null);
+    const welcome = await prisma?.welcomeSettings.findUnique({ where: { guildId: member.guild.id } }).catch(() => null);
     if (welcome?.enabled && welcome.channelId) {
         const ch = member.guild.channels.cache.get(welcome.channelId);
         if (ch) {
@@ -99,7 +132,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
         }
     }
     // autorole
-    const ar = await prisma?.autoRoleSettings?.findUnique({ where: { guildId: member.guild.id } }).catch(() => null);
+    const ar = await prisma?.autoRoleSettings.findUnique({ where: { guildId: member.guild.id } }).catch(() => null);
     if (ar?.enabled && ar.roleId) {
         const role = member.guild.roles.cache.get(ar.roleId);
         const botHighest = member.guild.members.me?.roles.highest;
@@ -107,7 +140,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
             await member.roles.add(role.id).catch(() => null);
     }
     // logging
-    const logging = await prisma?.loggingSettings?.findUnique({ where: { guildId: member.guild.id } }).catch(() => null);
+    const logging = await prisma?.loggingSettings.findUnique({ where: { guildId: member.guild.id } }).catch(() => null);
     const logChId = logging?.memberLogChannelId || logging?.channelId;
     if (logging?.enabled && logging.logMemberJoin && logChId) {
         const ch = member.guild.channels.cache.get(logChId);
@@ -117,7 +150,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
 });
 client.on(Events.GuildMemberRemove, async (member) => {
     await prisma?.analytics?.upsert({ where: { guildId_date: { guildId: member.guild.id, date: new Date(new Date().toISOString().slice(0, 10)) } }, update: { leaves: { increment: 1 } }, create: { guildId: member.guild.id, date: new Date(new Date().toISOString().slice(0, 10)), leaves: 1 } }).catch(() => null);
-    const goodbye = await prisma?.goodbyeSettings?.findUnique({ where: { guildId: member.guild.id } }).catch(() => null);
+    const goodbye = await prisma?.goodbyeSettings.findUnique({ where: { guildId: member.guild.id } }).catch(() => null);
     if (goodbye?.enabled && goodbye.channelId) {
         const ch = member.guild.channels.cache.get(goodbye.channelId);
         if (ch) {
@@ -131,7 +164,7 @@ client.on(Events.MessageCreate, async (msg) => {
         return;
     // automod & leveling & snipe setup
     // leveling
-    const lvlSettings = await prisma?.levelSettings?.findUnique({ where: { guildId: msg.guild.id } }).catch(() => null);
+    const lvlSettings = await prisma?.levelSettings.findUnique({ where: { guildId: msg.guild.id } }).catch(() => null);
     if (!lvlSettings || lvlSettings.enabled === false) {
         // default enabled with cooldown
     }
@@ -144,13 +177,13 @@ client.on(Events.MessageCreate, async (msg) => {
         global.cooldowns.set(key, now);
         const xpGain = Math.floor((lvlSettings?.xpPerMessage || 15) * (lvlSettings?.xpMultiplier || 1));
         if (!lvlSettings?.ignoredChannelIds?.includes(msg.channelId) && !msg.member?.roles.cache.some((r) => lvlSettings?.ignoredRoleIds?.includes(r.id))) {
-            const current = await prisma?.level?.findUnique({ where: { guildId_userId: { guildId: msg.guild.id, userId: msg.author.id } } }).catch(() => null);
+            const current = await prisma?.level.findUnique({ where: { guildId_userId: { guildId: msg.guild.id, userId: msg.author.id } } }).catch(() => null);
             const newXp = (current?.xp || 0) + xpGain;
             const newLevel = Math.floor(0.1 * Math.sqrt(newXp));
             if (current)
-                await prisma?.level?.update({ where: { id: current.id }, data: { xp: newXp, level: newLevel, messageCount: { increment: 1 }, lastXpAt: new Date() } }).catch(() => null);
+                await prisma?.level.update({ where: { id: current.id }, data: { xp: newXp, level: newLevel, messageCount: { increment: 1 }, lastXpAt: new Date() } }).catch(() => null);
             else
-                await prisma?.level?.create({ data: { guildId: msg.guild.id, userId: msg.author.id, xp: newXp, level: newLevel, messageCount: 1, lastXpAt: new Date() } }).catch(() => null);
+                await prisma?.level.create({ data: { guildId: msg.guild.id, userId: msg.author.id, xp: newXp, level: newLevel, messageCount: 1, lastXpAt: new Date() } }).catch(() => null);
             // level rewards check
             if (newLevel !== current?.level) {
                 const rewards = lvlSettings?.levelRewards || {};
@@ -161,7 +194,7 @@ client.on(Events.MessageCreate, async (msg) => {
         }
     }
     // automod
-    const rules = await prisma?.autoModRule?.findMany({ where: { guildId: msg.guild.id, enabled: true } }).catch(() => []);
+    const rules = await prisma?.autoModRule.findMany({ where: { guildId: msg.guild.id, enabled: true } }).catch(() => []);
     for (const rule of rules) {
         const cfg = rule.config;
         if (rule.type === "antiLink" && cfg?.enabled !== false) {
@@ -181,7 +214,7 @@ client.on(Events.MessageCreate, async (msg) => {
             if (words.some((w) => msg.content.toLowerCase().includes(w.toLowerCase()))) {
                 await msg.delete().catch(() => null);
                 if (rule.action === "warn")
-                    await prisma?.warning?.create({ data: { guildId: msg.guild.id, userId: msg.author.id, moderatorId: msg.client.user.id, reason: "Bad word" } }).catch(() => null);
+                    await prisma?.warning.create({ data: { guildId: msg.guild.id, userId: msg.author.id, moderatorId: msg.client.user.id, reason: "Bad word" } }).catch(() => null);
                 break;
             }
         }
@@ -211,7 +244,7 @@ client.on(Events.MessageCreate, async (msg) => {
     // custom commands via prefix "!"? check DB
     if (msg.content.startsWith("!")) {
         const name = msg.content.slice(1).split(" ")[0].toLowerCase();
-        const cc = await prisma?.customCommand?.findUnique({ where: { guildId_name: { guildId: msg.guild.id, name } } }).catch(() => null);
+        const cc = await prisma?.customCommand.findUnique({ where: { guildId_name: { guildId: msg.guild.id, name } } }).catch(() => null);
         if (cc?.enabled) {
             let content = cc.response;
             let embeds = undefined;
@@ -228,7 +261,7 @@ client.on(Events.MessageDelete, async (msg) => {
     if (!msg.guild || msg.author?.bot)
         return;
     global.snipes.set(msg.channelId, { content: msg.content, author: msg.author?.tag, createdAt: Date.now() });
-    const logging = await prisma?.loggingSettings?.findUnique({ where: { guildId: msg.guild.id } }).catch(() => null);
+    const logging = await prisma?.loggingSettings.findUnique({ where: { guildId: msg.guild.id } }).catch(() => null);
     const chId = logging?.messageLogChannelId || logging?.channelId;
     if (logging?.enabled && logging.logMessageDelete && chId) {
         const ch = msg.guild.channels.cache.get(chId);
@@ -242,7 +275,7 @@ client.on(Events.MessageUpdate, async (oldMsg, newMsg) => {
     global.editSnipes.set(newMsg.channelId, { before: oldMsg.content, after: newMsg.content, author: newMsg.author?.tag });
 });
 client.on(Events.GuildRoleCreate, async (role) => {
-    const logging = await prisma?.loggingSettings?.findUnique({ where: { guildId: role.guild.id } }).catch(() => null);
+    const logging = await prisma?.loggingSettings.findUnique({ where: { guildId: role.guild.id } }).catch(() => null);
     const chId = logging?.serverLogChannelId || logging?.channelId;
     if (logging?.enabled && logging.logRoleChanges && chId) {
         const ch = role.guild.channels.cache.get(chId);
@@ -253,20 +286,20 @@ client.on(Events.GuildRoleCreate, async (role) => {
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
     if (user.bot)
         return;
-    const rr = await prisma?.reactionRole?.findFirst({ where: { messageId: reaction.message.id, emoji: reaction.emoji.name || reaction.emoji.toString() } }).catch(() => null);
+    const rr = await prisma?.reactionRole.findFirst({ where: { messageId: reaction.message.id, emoji: reaction.emoji.name || reaction.emoji.toString() } }).catch(() => null);
     if (rr) {
         const member = await reaction.message.guild?.members.fetch(user.id).catch(() => null);
         if (member)
             await member.roles.add(rr.roleId).catch(() => null);
     }
     // giveaway entry
-    const giveaway = await prisma?.giveaway?.findFirst({ where: { messageId: reaction.message.id } }).catch(() => null);
+    const giveaway = await prisma?.giveaway.findFirst({ where: { messageId: reaction.message.id } }).catch(() => null);
     if (giveaway && reaction.emoji.name === "🎉") {
-        await prisma?.giveawayEntry?.upsert({ where: { giveawayId_userId: { giveawayId: giveaway.id, userId: user.id } }, update: {}, create: { giveawayId: giveaway.id, userId: user.id } }).catch(() => null);
+        await prisma?.giveawayEntry.upsert({ where: { giveawayId_userId: { giveawayId: giveaway.id, userId: user.id } }, update: {}, create: { giveawayId: giveaway.id, userId: user.id } }).catch(() => null);
     }
 });
 client.on(Events.VoiceStateUpdate, async (oldS, newS) => {
-    const logging = await prisma?.loggingSettings?.findUnique({ where: { guildId: newS.guild.id } }).catch(() => null);
+    const logging = await prisma?.loggingSettings.findUnique({ where: { guildId: newS.guild.id } }).catch(() => null);
     if (logging?.enabled && logging.logVoice && logging.voiceLogChannelId) {
         const ch = newS.guild.channels.cache.get(logging.voiceLogChannelId);
         if (ch)

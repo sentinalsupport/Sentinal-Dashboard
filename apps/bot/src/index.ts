@@ -1,6 +1,6 @@
 import { Client, GatewayIntentBits, Partials, Events, EmbedBuilder } from "discord.js";
 import { commands } from "./commands/index.js";
-import { prisma } from "./lib/prisma?.js";
+import { prisma } from "./lib/prisma.js";
 import { replaceVars } from "./lib/utils.js";
 
 if(!process.env.DISCORD_BOT_TOKEN) console.warn("⚠️ DISCORD_BOT_TOKEN not set - bot will not connect");
@@ -13,6 +13,7 @@ const client = new Client({
 (global as any).editSnipes = new Map();
 (global as any).cooldowns = new Map();
 (global as any).spamMap = new Map();
+(global as any).raidMap = new Map();
 
 client.once(Events.ClientReady, async (c)=>{
   console.log(`✅ Logged in as ${c.user.tag} (ID: ${c.user.id})`);
@@ -74,6 +75,34 @@ client.on(Events.InteractionCreate, async (interaction)=>{
 });
 
 client.on(Events.GuildMemberAdd, async (member)=>{
+  // raid protect
+  try{
+    const raidRule = await prisma?.autoModRule.findUnique({ where:{ guildId_type:{ guildId: member.guild.id, type:"raid" } }}).catch(()=>null);
+    if(raidRule?.enabled){
+      const cfg:any = raidRule.config || {};
+      const threshold = cfg.threshold || 10;
+      const windowSec = cfg.window || 60;
+      const key = `raid:${member.guild.id}`;
+      const arr:number[] = (global as any).raidMap.get(key) || [];
+      const now = Date.now();
+      const filtered = arr.filter((t:number)=> now - t < windowSec*1000);
+      filtered.push(now);
+      (global as any).raidMap.set(key, filtered);
+      if(filtered.length >= threshold){
+        // action: lock, log, etc.
+        const action = cfg.action || raidRule.action || "lock";
+        if(action==="lock"){
+          for(const [,ch] of member.guild.channels.cache) if(ch.type===0) await (ch as any).permissionOverwrites.edit(member.guild.roles.everyone, { SendMessages:false }).catch(()=>null);
+        }
+        const logId = (await prisma?.loggingSettings.findUnique({where:{guildId:member.guild.id}}).catch(()=>null))?.channelId;
+        if(logId){
+          const ch = member.guild.channels.cache.get(logId) as any;
+          if(ch) await ch.send({ embeds:[new EmbedBuilder().setTitle("🚨 Raid Detected").setDescription(`${filtered.length} joins in ${windowSec}s — action: ${action}`).setColor(0xED4245).setTimestamp()] }).catch(()=>null);
+        }
+        (global as any).raidMap.set(key, []);
+      }
+    }
+  }catch{}
   // analytics
   await prisma?.analytics?.upsert({ where:{guildId_date:{guildId:member.guild.id, date:new Date(new Date().toISOString().slice(0,10))}}, update:{joins:{increment:1}}, create:{guildId:member.guild.id, date:new Date(new Date().toISOString().slice(0,10)), joins:1}}).catch(()=>null);
   // welcome

@@ -95,7 +95,13 @@ export function AutomodForm({guildId}:{guildId:string}){
       <label className="flex gap-2"><input type="checkbox" checked={!!cfg.badWords?.enabled} onChange={e=>update("badWords",{enabled:e.target.checked})} /> Enabled</label>
       <Label>Words (comma separated)</Label><Input value={(cfg.badWords?.words||[]).join(",")} onChange={e=>update("badWords",{words:e.target.value.split(",").map((s:string)=>s.trim()).filter(Boolean)})} />
     </CardContent></Card>
-    <Button onClick={save}>Save Automod</Button>{msg && <span className="ml-2 text-sm">{msg}</span>}
+    <Card className="border-[#ffb338]/20"><CardHeader><CardTitle className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#ff5d5d]"/> Raid Protection (Security Bot-style)</CardTitle></CardHeader><CardContent className="space-y-2">
+      <label className="flex gap-2"><input type="checkbox" checked={!!cfg.raid?.enabled} onChange={e=>update("raid",{enabled:e.target.checked})} /> Enabled</label>
+      <Label>Joins threshold (e.g. 10)</Label><Input type="number" value={cfg.raid?.threshold||10} onChange={e=>update("raid",{threshold:parseInt(e.target.value)})} />
+      <Label>Window (seconds, e.g. 60)</Label><Input type="number" value={cfg.raid?.window||60} onChange={e=>update("raid",{window:parseInt(e.target.value)})} />
+      <Label>Action</Label><select value={cfg.raid?.action||"lock"} onChange={e=>update("raid",{action:e.target.value})} className="border rounded px-2 py-1"><option value="lock">Lock all channels</option><option value="timeout">Timeout</option><option value="delete">Delete</option></select>
+    </CardContent></Card>
+    <Button onClick={save} className="bg-[#ffb338] text-[#1a1205] hover:bg-[#ffbe55]">Save Automod</Button>{msg && <span className="ml-2 text-sm">{msg}</span>}
   </div>;
 }
 
