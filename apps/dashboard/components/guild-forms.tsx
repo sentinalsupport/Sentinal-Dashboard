@@ -77,31 +77,32 @@ export function AutomodForm({guildId}:{guildId:string}){
     setMsg(r.ok?"Saved ✅":"Error");
     setTimeout(()=>setMsg(""),2000);
   };
-  if(!cfg) return <p>Loading...</p>;
+  if(!cfg) return <div className="animate-pulse space-y-4"><div className="h-32 rounded-2xl bg-white/5"/><div className="h-32 rounded-2xl bg-white/5"/></div>;
   const update=(k:string,v:any)=> setCfg({...cfg,[k]:{...cfg[k],...v}});
-  return <div className="space-y-4">
-    <Card><CardHeader><CardTitle>Anti-Spam</CardTitle></CardHeader><CardContent className="space-y-2">
-      <label className="flex gap-2"><input type="checkbox" checked={!!cfg.antiSpam?.enabled} onChange={e=>update("antiSpam",{enabled:e.target.checked})} /> Enabled</label>
-      <Label>Messages per interval</Label><Input type="number" value={cfg.antiSpam?.messages||5} onChange={e=>update("antiSpam",{messages:parseInt(e.target.value)})} />
-      <Label>Interval (s)</Label><Input type="number" value={cfg.antiSpam?.interval||5} onChange={e=>update("antiSpam",{interval:parseInt(e.target.value)})} />
-      <Label>Action</Label><select value={cfg.antiSpam?.action||"delete"} onChange={e=>update("antiSpam",{action:e.target.value})} className="border rounded px-2 py-1"><option value="delete">Delete</option><option value="warn">Warn</option><option value="timeout">Timeout</option></select>
+  const Toggle = ({checked,onChange}:{checked:boolean,onChange:(v:boolean)=>void})=> <button onClick={()=>onChange(!checked)} className={`relative w-11 h-6 rounded-full transition ${checked?"bg-[#ffb338]":"bg-white/10"} border border-white/10`}><span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition ${checked?"translate-x-5":""}`} /></button>;
+  return <div className="space-y-6">
+    <div className="rounded-[18px] border border-white/5 bg-gradient-to-br from-[#121724] via-[#0e1322] to-[#07090e] p-5 flex items-center justify-between">
+      <div><h2 className="font-bold text-lg" style={{fontFamily:"'Space Grotesk', sans-serif"}}>Moderation — AutoMod</h2><p className="text-sm text-[#9aa4b8]">Security Bot-style protection, live from dashboard to Discord.</p></div>
+      <Button onClick={save} className="bg-[#ffb338] text-[#1a1205] hover:bg-[#ffbe55] font-semibold shadow-[0_8px_20px_rgba(255,179,56,0.35)]">Save All</Button>
+    </div>
+    <div className="grid md:grid-cols-2 gap-4">
+    <Card className="border-white/5 bg-gradient-to-b from-white/[0.04] to-white/[0.02] hover:border-[#ffb338]/20 transition"><CardHeader className="flex flex-row items-center justify-between"><CardTitle className="flex items-center gap-2 text-[15px]"><span className="w-8 h-8 rounded-lg bg-[#ffb338]/15 border border-[#ffb338]/20 grid place-items-center text-[#ffb338]">⚡</span> Anti-Spam</CardTitle><Toggle checked={!!cfg.antiSpam?.enabled} onChange={v=>update("antiSpam",{enabled:v})} /></CardHeader><CardContent className="space-y-3">
+      <div><Label className="text-xs text-[#9aa4b8]">Messages / Interval</Label><div className="flex gap-2 mt-1"><Input type="number" className="bg-black/20" value={cfg.antiSpam?.messages||5} onChange={e=>update("antiSpam",{messages:parseInt(e.target.value)})} /><Input type="number" className="bg-black/20" value={cfg.antiSpam?.interval||5} onChange={e=>update("antiSpam",{interval:parseInt(e.target.value)})} /></div></div>
+      <div><Label className="text-xs text-[#9aa4b8]">Action</Label><select value={cfg.antiSpam?.action||"delete"} onChange={e=>update("antiSpam",{action:e.target.value})} className="w-full mt-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm"><option value="delete">Delete message</option><option value="warn">Warn</option><option value="timeout">Timeout 10m</option></select></div>
     </CardContent></Card>
-    <Card><CardHeader><CardTitle>Anti-Link</CardTitle></CardHeader><CardContent className="space-y-2">
-      <label className="flex gap-2"><input type="checkbox" checked={!!cfg.antiLink?.enabled} onChange={e=>update("antiLink",{enabled:e.target.checked})} /> Enabled</label>
-      <Label>Allowed domains (comma separated)</Label><Input value={(cfg.antiLink?.allowedDomains||[]).join(",")} onChange={e=>update("antiLink",{allowedDomains:e.target.value.split(",").map((s:string)=>s.trim()).filter(Boolean)})} />
-      <label className="flex gap-2"><input type="checkbox" checked={!!cfg.antiLink?.blockInvite} onChange={e=>update("antiLink",{blockInvite:e.target.checked})} /> Block Discord invites</label>
+    <Card className="border-white/5 bg-gradient-to-b from-white/[0.04] to-white/[0.02] hover:border-[#6a8cff]/20 transition"><CardHeader className="flex flex-row items-center justify-between"><CardTitle className="flex items-center gap-2 text-[15px]"><span className="w-8 h-8 rounded-lg bg-[#6a8cff]/15 border border-[#6a8cff]/20 grid place-items-center text-[#6a8cff]">🔗</span> Anti-Link</CardTitle><Toggle checked={!!cfg.antiLink?.enabled} onChange={v=>update("antiLink",{enabled:v})} /></CardHeader><CardContent className="space-y-3">
+      <div><Label className="text-xs text-[#9aa4b8]">Allowed domains</Label><Input className="bg-black/20 mt-1" placeholder="example.com, yoursite.gg" value={(cfg.antiLink?.allowedDomains||[]).join(", ")} onChange={e=>update("antiLink",{allowedDomains:e.target.value.split(",").map((s:string)=>s.trim()).filter(Boolean)})} /></div>
+      <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!cfg.antiLink?.blockInvite} onChange={e=>update("antiLink",{blockInvite:e.target.checked})} className="accent-[#6a8cff]" /> Block Discord invites</label>
     </CardContent></Card>
-    <Card><CardHeader><CardTitle>Bad Words</CardTitle></CardHeader><CardContent className="space-y-2">
-      <label className="flex gap-2"><input type="checkbox" checked={!!cfg.badWords?.enabled} onChange={e=>update("badWords",{enabled:e.target.checked})} /> Enabled</label>
-      <Label>Words (comma separated)</Label><Input value={(cfg.badWords?.words||[]).join(",")} onChange={e=>update("badWords",{words:e.target.value.split(",").map((s:string)=>s.trim()).filter(Boolean)})} />
+    <Card className="border-white/5 bg-gradient-to-b from-white/[0.04] to-white/[0.02]"><CardHeader className="flex flex-row items-center justify-between"><CardTitle className="flex items-center gap-2 text-[15px]"><span className="w-8 h-8 rounded-lg bg-[#ff5d5d]/15 border border-[#ff5d5d]/20 grid place-items-center text-[#ff5d5d]">⛔</span> Bad Words</CardTitle><Toggle checked={!!cfg.badWords?.enabled} onChange={v=>update("badWords",{enabled:v})} /></CardHeader><CardContent>
+      <Label className="text-xs text-[#9aa4b8]">Words (comma separated)</Label><Input className="bg-black/20 mt-1" placeholder="badword1, badword2" value={(cfg.badWords?.words||[]).join(", ")} onChange={e=>update("badWords",{words:e.target.value.split(",").map((s:string)=>s.trim()).filter(Boolean)})} />
     </CardContent></Card>
-    <Card className="border-[#ffb338]/20"><CardHeader><CardTitle className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#ff5d5d]"/> Raid Protection (Security Bot-style)</CardTitle></CardHeader><CardContent className="space-y-2">
-      <label className="flex gap-2"><input type="checkbox" checked={!!cfg.raid?.enabled} onChange={e=>update("raid",{enabled:e.target.checked})} /> Enabled</label>
-      <Label>Joins threshold (e.g. 10)</Label><Input type="number" value={cfg.raid?.threshold||10} onChange={e=>update("raid",{threshold:parseInt(e.target.value)})} />
-      <Label>Window (seconds, e.g. 60)</Label><Input type="number" value={cfg.raid?.window||60} onChange={e=>update("raid",{window:parseInt(e.target.value)})} />
-      <Label>Action</Label><select value={cfg.raid?.action||"lock"} onChange={e=>update("raid",{action:e.target.value})} className="border rounded px-2 py-1"><option value="lock">Lock all channels</option><option value="timeout">Timeout</option><option value="delete">Delete</option></select>
+    <Card className="border-[#ffb338]/20 bg-gradient-to-br from-[#ffb338]/10 via-[#121724] to-[#0e1322]"><CardHeader className="flex flex-row items-center justify-between"><CardTitle className="flex items-center gap-2 text-[15px]"><span className="w-8 h-8 rounded-lg bg-[#ff5d5d]/20 border border-[#ff5d5d]/30 grid place-items-center">🛡️</span> Raid Protection</CardTitle><Toggle checked={!!cfg.raid?.enabled} onChange={v=>update("raid",{enabled:v})} /></CardHeader><CardContent className="space-y-3">
+      <div className="grid grid-cols-2 gap-2"><div><Label className="text-xs text-[#9aa4b8]">Threshold</Label><Input type="number" className="bg-black/20 mt-1" value={cfg.raid?.threshold||10} onChange={e=>update("raid",{threshold:parseInt(e.target.value)})} /></div><div><Label className="text-xs text-[#9aa4b8]">Window (s)</Label><Input type="number" className="bg-black/20 mt-1" value={cfg.raid?.window||60} onChange={e=>update("raid",{window:parseInt(e.target.value)})} /></div></div>
+      <div><Label className="text-xs text-[#9aa4b8]">Action</Label><select value={cfg.raid?.action||"lock"} onChange={e=>update("raid",{action:e.target.value})} className="w-full mt-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm"><option value="lock">Lock all channels</option><option value="timeout">Timeout mass joiners</option></select></div>
     </CardContent></Card>
-    <Button onClick={save} className="bg-[#ffb338] text-[#1a1205] hover:bg-[#ffbe55]">Save Automod</Button>{msg && <span className="ml-2 text-sm">{msg}</span>}
+    </div>
+    <div className="flex items-center gap-3"><Button onClick={save} className="bg-[#ffb338] text-[#1a1205] hover:bg-[#ffbe55] font-semibold px-8">Save Automod</Button>{msg && <span className="text-sm text-[#3dd68c]">{msg}</span>}<span className="text-xs font-mono text-[#677084]">Security Bot-style • live via Prisma</span></div>
   </div>;
 }
 
